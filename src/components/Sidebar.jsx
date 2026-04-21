@@ -16,21 +16,9 @@ export default function Sidebar() {
             display: 'flex', flexDirection: 'column', gap: '4px', flexShrink: 0,
         }}>
             {/* Logo */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '32px', paddingLeft: '8px' }}>
-                <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
-                    <rect width="32" height="32" rx="8" fill="#1A1265" />
-                    <rect x="6" y="6" width="8" height="8" rx="1" fill="#EBEBDF" />
-                    <rect x="18" y="6" width="8" height="8" rx="1" fill="#EBEBDF" />
-                    <rect x="6" y="18" width="8" height="8" rx="1" fill="#EBEBDF" />
-                    <rect x="18" y="18" width="3" height="3" rx="0.5" fill="#EBEBDF" />
-                    <rect x="23" y="18" width="3" height="3" rx="0.5" fill="#EBEBDF" />
-                    <rect x="18" y="23" width="3" height="3" rx="0.5" fill="#EBEBDF" />
-                    <rect x="23" y="23" width="3" height="3" rx="0.5" fill="#EBEBDF" />
-                </svg>
-                <span style={{ fontFamily: 'var(--font-display)', fontWeight: '800', fontSize: '18px', color: 'var(--accent)' }}>
-                    QR Crafter
-                </span>
-            </div>
+<div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '32px', paddingLeft: '8px' }}>
+  <img src="/logo.png" alt="NFCrafter" style={{ height: '32px', width: 'auto' }} />
+</div>
 
             {links.map(link => (
                 <button key={link.path} onClick={() => navigate(link.path)}

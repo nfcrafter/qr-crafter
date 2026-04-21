@@ -35,18 +35,9 @@ export default function Login() {
             }}>
                 {/* Logo */}
                 <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-                    <svg width="48" height="48" viewBox="0 0 32 32" fill="none" style={{ marginBottom: '12px' }}>
-                        <rect width="32" height="32" rx="8" fill="#1A1265" />
-                        <rect x="6" y="6" width="8" height="8" rx="1" fill="#EBEBDF" />
-                        <rect x="18" y="6" width="8" height="8" rx="1" fill="#EBEBDF" />
-                        <rect x="6" y="18" width="8" height="8" rx="1" fill="#EBEBDF" />
-                        <rect x="18" y="18" width="3" height="3" rx="0.5" fill="#EBEBDF" />
-                        <rect x="23" y="18" width="3" height="3" rx="0.5" fill="#EBEBDF" />
-                        <rect x="18" y="23" width="3" height="3" rx="0.5" fill="#EBEBDF" />
-                        <rect x="23" y="23" width="3" height="3" rx="0.5" fill="#EBEBDF" />
-                    </svg>
+                    <img src="/logo.png" alt="NFCrafter" style={{ height: '64px', width: 'auto', marginBottom: '12px' }} />
                     <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontWeight: '800', color: 'var(--accent)' }}>
-                        QR Crafter
+                        NFCrafter
                     </h1>
                     <p style={{ color: 'var(--text-light)', fontSize: '14px', marginTop: '4px' }}>
                         Connectez-vous pour accéder à votre espace
