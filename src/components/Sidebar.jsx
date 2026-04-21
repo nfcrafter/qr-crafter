@@ -16,8 +16,8 @@ export default function Sidebar() {
             display: 'flex', flexDirection: 'column', gap: '4px', flexShrink: 0,
         }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '32px', paddingLeft: '8px' }}>
-                <img src="/logo.png" alt="NFCrafter" style={{ height: '32px', width: 'auto' }} />
-                <span style={{ fontFamily: 'var(--font-display)', fontWeight: '800', fontSize: '18px', color: 'var(--accent)' }}>
+                <img src="/logo.png" alt="NFCrafter" style={{ height: '40px', width: 'auto', flexShrink: 0 }} />
+                <span style={{ fontFamily: 'var(--font-display)', fontWeight: '800', fontSize: '18px', color: 'var(--accent)', whiteSpace: 'nowrap' }}>
                     NFCrafter
                 </span>
             </div>
