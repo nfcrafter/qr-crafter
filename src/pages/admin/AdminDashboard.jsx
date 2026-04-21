@@ -9,6 +9,9 @@ export default function AdminDashboard() {
     const [newCardId, setNewCardId] = useState('')
     const [creating, setCreating] = useState(false)
     const [copied, setCopied] = useState('')
+    const [linkModal, setLinkModal] = useState(null)
+    const [userId, setUserId] = useState('')
+    const [linking, setLinking] = useState(false)
 
     useEffect(() => { loadCards() }, [])
 
@@ -16,7 +19,7 @@ export default function AdminDashboard() {
         setLoading(true)
         const { data } = await supabase
             .from('cards')
-            .select('*, profiles(full_name, photo_url, whatsapp)')
+            .select('*, profiles(full_name, photo_url, whatsapp, email)')
             .order('created_at', { ascending: false })
         setCards(data || [])
         setLoading(false)
@@ -35,6 +38,58 @@ export default function AdminDashboard() {
             loadCards()
         }
         setCreating(false)
+    }
+
+    async function linkCard() {
+        if (!userId.trim() || !linkModal) return
+        setLinking(true)
+
+        // Vérifier que l'utilisateur existe
+        const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('id, full_name')
+            .eq('id', userId.trim())
+            .single()
+
+        if (profileError || !profile) {
+            alert('❌ Aucun utilisateur trouvé avec cet ID. Vérifiez l\'ID.')
+            setLinking(false)
+            return
+        }
+
+        // Lier la carte à l'utilisateur
+        const { error: cardError } = await supabase
+            .from('cards')
+            .update({ owner_id: userId.trim(), status: 'active' })
+            .eq('card_id', linkModal)
+
+        if (cardError) {
+            alert('Erreur : ' + cardError.message)
+            setLinking(false)
+            return
+        }
+
+        // Mettre à jour le profil avec le card_id
+        await supabase
+            .from('profiles')
+            .update({ card_id: linkModal })
+            .eq('id', userId.trim())
+
+        alert(`✅ Carte ${linkModal} liée à ${profile.full_name} avec succès !`)
+        setLinking(false)
+        setLinkModal(null)
+        setUserId('')
+        loadCards()
+    }
+
+    async function unlinkCard(cardId) {
+        if (!confirm('Délier cette carte de son propriétaire ?')) return
+        const card = cards.find(c => c.card_id === cardId)
+        if (card?.owner_id) {
+            await supabase.from('profiles').update({ card_id: null }).eq('id', card.owner_id)
+        }
+        await supabase.from('cards').update({ owner_id: null, status: 'pending' }).eq('card_id', cardId)
+        loadCards()
     }
 
     async function deleteCard(cardId) {
@@ -150,7 +205,7 @@ export default function AdminDashboard() {
                             {cards.map(card => (
                                 <div key={card.card_id} style={{
                                     display: 'flex', alignItems: 'center', gap: '16px',
-                                    padding: '16px', border: '1px solid var(--border)',
+                                    padding: '16px 20px', border: '1px solid var(--border)',
                                     borderRadius: 'var(--radius-md)', background: 'var(--bg)',
                                 }}>
                                     {/* Avatar */}
@@ -182,17 +237,37 @@ export default function AdminDashboard() {
                                             </span>
                                         </div>
                                         <p style={{ fontSize: '12px', color: 'var(--text-light)' }}>
-                                            ID : <strong>{card.card_id}</strong> · {window.location.origin}/u/{card.card_id}
+                                            ID carte : <strong>{card.card_id}</strong> · {window.location.origin}/u/{card.card_id}
                                         </p>
+                                        {card.profiles?.email && (
+                                            <p style={{ fontSize: '12px', color: 'var(--text-light)' }}>
+                                                ✉️ {card.profiles.email}
+                                            </p>
+                                        )}
                                     </div>
 
                                     {/* Actions */}
-                                    <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
+                                    <div style={{ display: 'flex', gap: '8px', flexShrink: 0, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
                                         <button className="btn-ghost"
                                             onClick={() => copyLink(card.card_id)}
                                             style={{ padding: '8px 12px', fontSize: '13px' }}>
                                             {copied === card.card_id ? '✓ Copié' : '🔗 Lien'}
                                         </button>
+
+                                        {card.status === 'pending' ? (
+                                            <button className="btn-primary"
+                                                onClick={() => { setLinkModal(card.card_id); setUserId('') }}
+                                                style={{ padding: '8px 14px', fontSize: '13px' }}>
+                                                🔗 Lier un client
+                                            </button>
+                                        ) : (
+                                            <button className="btn-ghost"
+                                                onClick={() => unlinkCard(card.card_id)}
+                                                style={{ padding: '8px 12px', fontSize: '13px', color: '#e65100', borderColor: '#e65100' }}>
+                                                🔓 Délier
+                                            </button>
+                                        )}
+
                                         <a href={`${window.location.origin}/u/${card.card_id}`} target="_blank"
                                             style={{
                                                 padding: '8px 12px', fontSize: '13px', borderRadius: 'var(--radius-sm)',
@@ -201,6 +276,7 @@ export default function AdminDashboard() {
                                             }}>
                                             👁 Voir
                                         </a>
+
                                         <button onClick={() => deleteCard(card.card_id)} style={{
                                             background: 'transparent', border: '1px solid #ffcdd2',
                                             color: '#e53935', borderRadius: 'var(--radius-sm)',
@@ -215,6 +291,48 @@ export default function AdminDashboard() {
                     )}
                 </div>
             </main>
+
+            {/* Modal liaison */}
+            {linkModal && (
+                <div style={{
+                    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    zIndex: 1000, padding: '16px',
+                }}>
+                    <div style={{
+                        background: 'var(--bg-white)', borderRadius: 'var(--radius-lg)',
+                        padding: '32px', width: '100%', maxWidth: '480px',
+                        boxShadow: 'var(--shadow-lg)',
+                    }}>
+                        <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: '700', color: 'var(--accent)', marginBottom: '8px' }}>
+                            🔗 Lier la carte {linkModal}
+                        </h3>
+                        <p style={{ fontSize: '13px', color: 'var(--text-light)', marginBottom: '20px' }}>
+                            Collez l'ID du client envoyé par WhatsApp pour activer sa carte.
+                        </p>
+                        <div className="field">
+                            <label>ID du client *</label>
+                            <textarea
+                                rows={3}
+                                placeholder="Collez l'ID ici (ex: a1b2c3d4-e5f6-...)"
+                                value={userId}
+                                onChange={e => setUserId(e.target.value)}
+                                style={{ fontFamily: 'monospace', fontSize: '12px' }}
+                            />
+                        </div>
+                        <div style={{ display: 'flex', gap: '12px' }}>
+                            <button className="btn-ghost" onClick={() => { setLinkModal(null); setUserId('') }}
+                                style={{ flex: 1 }}>
+                                Annuler
+                            </button>
+                            <button className="btn-primary" onClick={linkCard} disabled={linking || !userId.trim()}
+                                style={{ flex: 1, justifyContent: 'center' }}>
+                                {linking ? 'Liaison...' : '✅ Activer la carte'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
