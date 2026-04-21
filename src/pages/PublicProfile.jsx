@@ -98,67 +98,75 @@ export default function PublicProfile() {
 
             {/* Bannière */}
             <div style={{
-                height: '160px',
+                height: '180px',
                 background: profile.banner_url
                     ? `url(${profile.banner_url}) center/cover no-repeat`
                     : themeColor,
+                width: '100%',
             }} />
 
-            {/* Card profil */}
-            <div style={{ maxWidth: '480px', margin: '0 auto', padding: '0 16px' }}>
-                <div style={{
-                    background: 'white', borderRadius: '16px',
-                    marginTop: '-60px', padding: '0 0 24px',
-                    boxShadow: '0 4px 24px rgba(0,0,0,0.1)',
-                    overflow: 'hidden', animation: 'fadeUp 0.4s ease',
-                }}>
-                    {/* Avatar */}
-                    <div style={{ padding: '16px 20px 0', display: 'flex', alignItems: 'flex-end', gap: '16px', marginTop: '-48px' }}>
-                        <div style={{
-                            width: '96px', height: '96px', borderRadius: '50%',
-                            border: '4px solid white', overflow: 'hidden',
-                            background: profile.photo_url ? 'transparent' : themeColor,
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            fontSize: '36px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                            flexShrink: 0,
-                        }}>
-                            {profile.photo_url
-                                ? <img src={profile.photo_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt={profile.full_name} />
-                                : '👤'
-                            }
-                        </div>
-                    </div>
-
-                    {/* Infos */}
-                    <div style={{ padding: '12px 20px 20px' }}>
-                        <h1 style={{ fontSize: '22px', fontWeight: '800', color: '#1a1a1a', marginBottom: '4px' }}>
-                            {profile.full_name}
-                        </h1>
-                        {profile.title && (
-                            <p style={{ fontSize: '14px', color: themeColor, fontWeight: '600', marginBottom: '8px' }}>
-                                {profile.title}
-                            </p>
-                        )}
-                        {profile.bio && (
-                            <p style={{ fontSize: '14px', color: '#555', lineHeight: '1.5' }}>
-                                {profile.bio}
-                            </p>
-                        )}
-                    </div>
-
-                    {/* Bouton enregistrer contact */}
-                    <div style={{ padding: '0 16px 8px' }}>
-                        <button onClick={saveContact} style={{
-                            width: '100%', padding: '14px',
-                            background: themeColor, color: 'white',
-                            border: 'none', borderRadius: '12px', cursor: 'pointer',
-                            fontSize: '15px', fontWeight: '700',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                        }}>
-                            👤 Enregistrer le contact
-                        </button>
+            
+            {/* Section profil */}
+            <div style={{
+                background: 'white',
+                borderRadius: '16px',
+                marginTop: '-20px',
+                boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+                marginBottom: '16px',
+                animation: 'fadeUp 0.4s ease',
+                overflow: 'visible',
+            }}>
+                {/* Avatar positionné sur la bannière */}
+                <div style={{ padding: '0 20px', position: 'relative', height: '50px' }}>
+                    <div style={{
+                        position: 'absolute',
+                        top: '-50px',
+                        left: '20px',
+                        width: '100px', height: '100px', borderRadius: '50%',
+                        border: '4px solid white',
+                        overflow: 'hidden',
+                        background: profile.photo_url ? 'transparent' : themeColor,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: '36px', boxShadow: '0 2px 12px rgba(0,0,0,0.2)',
+                        zIndex: 10,
+                    }}>
+                        {profile.photo_url
+                            ? <img src={profile.photo_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt={profile.full_name} />
+                            : '👤'
+                        }
                     </div>
                 </div>
+
+                {/* Nom + titre + bio */}
+                <div style={{ padding: '12px 20px 16px' }}>
+                    <h1 style={{ fontSize: '22px', fontWeight: '800', color: '#1a1a1a', marginBottom: '4px' }}>
+                        {profile.full_name}
+                    </h1>
+                    {profile.title && (
+                        <p style={{ fontSize: '14px', color: themeColor, fontWeight: '600', marginBottom: '8px' }}>
+                            {profile.title}
+                        </p>
+                    )}
+                    {profile.bio && (
+                        <p style={{ fontSize: '14px', color: '#555', lineHeight: '1.6' }}>
+                            {profile.bio}
+                        </p>
+                    )}
+                </div>
+
+                {/* Bouton enregistrer contact */}
+                <div style={{ padding: '0 16px 20px' }}>
+                    <button onClick={saveContact} style={{
+                        width: '100%', padding: '14px',
+                        background: themeColor, color: 'white',
+                        border: 'none', borderRadius: '12px', cursor: 'pointer',
+                        fontSize: '15px', fontWeight: '700',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                    }}>
+                        👤 Enregistrer le contact
+                    </button>
+                </div>
+            </div>
 
                 {/* Liens */}
                 <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '10px', animation: 'fadeUp 0.5s ease' }}>
