@@ -98,9 +98,10 @@ export default function PublicProfile() {
 
             {/* Bannière */}
             <div style={{
-                height: '200px',
-                background: profile.banner_url ? `url(${profile.banner_url}) center/cover no-repeat` : themeColor,
-                position: 'relative',
+                height: '160px',
+                background: profile.banner_url
+                    ? `url(${profile.banner_url}) center/cover no-repeat`
+                    : themeColor,
             }} />
 
             {/* Card profil */}
@@ -112,13 +113,14 @@ export default function PublicProfile() {
                     overflow: 'hidden', animation: 'fadeUp 0.4s ease',
                 }}>
                     {/* Avatar */}
-                    <div style={{ padding: '0 20px', marginTop: '-48px', marginBottom: '12px' }}>
+                    <div style={{ padding: '16px 20px 0', display: 'flex', alignItems: 'flex-end', gap: '16px', marginTop: '-48px' }}>
                         <div style={{
                             width: '96px', height: '96px', borderRadius: '50%',
                             border: '4px solid white', overflow: 'hidden',
                             background: profile.photo_url ? 'transparent' : themeColor,
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             fontSize: '36px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                            flexShrink: 0,
                         }}>
                             {profile.photo_url
                                 ? <img src={profile.photo_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt={profile.full_name} />
@@ -128,7 +130,7 @@ export default function PublicProfile() {
                     </div>
 
                     {/* Infos */}
-                    <div style={{ padding: '0 20px 20px' }}>
+                    <div style={{ padding: '12px 20px 20px' }}>
                         <h1 style={{ fontSize: '22px', fontWeight: '800', color: '#1a1a1a', marginBottom: '4px' }}>
                             {profile.full_name}
                         </h1>
