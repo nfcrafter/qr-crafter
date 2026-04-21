@@ -104,6 +104,9 @@ export default function Creator() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
                         onClick={() => navigate('/')}>
                         <img src="/logo.png" alt="NFCrafter" style={{ height: '32px', width: 'auto' }} />
+                        <span style={{ fontFamily: 'var(--font-display)', fontWeight: '800', fontSize: '18px', color: 'var(--accent)' }}>
+                            NFCrafter
+                        </span>
                     </div>
 
                     {/* Stepper */}

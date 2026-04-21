@@ -15,10 +15,12 @@ export default function Sidebar() {
             borderRight: '1px solid var(--border)', padding: '24px 16px',
             display: 'flex', flexDirection: 'column', gap: '4px', flexShrink: 0,
         }}>
-            {/* Logo */}
-<div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '32px', paddingLeft: '8px' }}>
-  <img src="/logo.png" alt="NFCrafter" style={{ height: '32px', width: 'auto' }} />
-</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '32px', paddingLeft: '8px' }}>
+                <img src="/logo.png" alt="NFCrafter" style={{ height: '32px', width: 'auto' }} />
+                <span style={{ fontFamily: 'var(--font-display)', fontWeight: '800', fontSize: '18px', color: 'var(--accent)' }}>
+                    NFCrafter
+                </span>
+            </div>
 
             {links.map(link => (
                 <button key={link.path} onClick={() => navigate(link.path)}
