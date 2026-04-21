@@ -29,10 +29,9 @@ export default function PublicProfile() {
     async function loadProfile() {
         setLoading(true)
 
-        // Charger la carte
         const { data: card, error } = await supabase
             .from('cards')
-            .select('*, profiles(*)')
+            .select('*')
             .eq('card_id', cardId)
             .single()
 
@@ -42,6 +41,16 @@ export default function PublicProfile() {
             return
         }
 
+        // Charger le profil séparément
+        if (card.owner_id) {
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', card.owner_id)
+                .single()
+            setProfile(profile)
+        }
+
         // Enregistrer le scan
         await supabase.from('scan_logs').insert({
             card_id: cardId,
@@ -49,7 +58,6 @@ export default function PublicProfile() {
         })
 
         setCard(card)
-        setProfile(card.profiles)
         setLoading(false)
     }
 

@@ -111,12 +111,6 @@ export default function ClientDashboard() {
                         </span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        {cardStatus && (
-                            <a href={`${window.location.origin}/u/${cardStatus.card_id}`} target="_blank"
-                                style={{ fontSize: '13px', color: 'var(--accent)', textDecoration: 'none', fontWeight: '600' }}>
-                                👁 Voir ma page
-                            </a>
-                        )}
                         <button className="btn-ghost" onClick={logout} style={{ padding: '8px 16px', fontSize: '13px' }}>
                             Déconnexion
                         </button>
