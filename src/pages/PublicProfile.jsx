@@ -28,15 +28,12 @@ export default function PublicProfile() {
         setLoading(true)
         const { data: card, error } = await supabase
             .from('cards').select('*').eq('card_id', cardId).single()
-
         if (error || !card) { setNotFound(true); setLoading(false); return }
-
         if (card.owner_id) {
             const { data: profile } = await supabase
                 .from('profiles').select('*').eq('id', card.owner_id).single()
             setProfile(profile)
         }
-
         await supabase.from('scan_logs').insert({ card_id: cardId, user_agent: navigator.userAgent })
         setCard(card)
         setLoading(false)
@@ -60,11 +57,11 @@ export default function PublicProfile() {
 
     if (loading) return (
         <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f5f5' }}>
+            <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
             <div style={{ textAlign: 'center' }}>
                 <div style={{ width: '40px', height: '40px', border: '3px solid #1A1265', borderTop: '3px solid transparent', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 12px' }} />
                 <p style={{ color: '#666', fontSize: '14px' }}>Chargement...</p>
             </div>
-            <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
         </div>
     )
 
@@ -96,7 +93,7 @@ export default function PublicProfile() {
         <div style={{ minHeight: '100vh', background: '#f5f5f5', fontFamily: 'var(--font-body)' }}>
             <style>{`@keyframes fadeUp { from { opacity:0; transform:translateY(16px) } to { opacity:1; transform:translateY(0) } }`}</style>
 
-            {/* Bannière */}
+            {/* Bannière pleine largeur */}
             <div style={{
                 height: '180px',
                 background: profile.banner_url
@@ -105,71 +102,68 @@ export default function PublicProfile() {
                 width: '100%',
             }} />
 
-            
-            {/* Section profil */}
-            <div style={{
-                background: 'white',
-                borderRadius: '16px',
-                marginTop: '-20px',
-                boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
-                marginBottom: '16px',
-                animation: 'fadeUp 0.4s ease',
-                overflow: 'visible',
-            }}>
-                {/* Avatar positionné sur la bannière */}
-                <div style={{ padding: '0 20px', position: 'relative', height: '50px' }}>
-                    <div style={{
-                        position: 'absolute',
-                        top: '-50px',
-                        left: '20px',
-                        width: '100px', height: '100px', borderRadius: '50%',
-                        border: '4px solid white',
-                        overflow: 'hidden',
-                        background: profile.photo_url ? 'transparent' : themeColor,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: '36px', boxShadow: '0 2px 12px rgba(0,0,0,0.2)',
-                        zIndex: 10,
-                    }}>
-                        {profile.photo_url
-                            ? <img src={profile.photo_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt={profile.full_name} />
-                            : '👤'
-                        }
+            {/* Conteneur centré */}
+            <div style={{ maxWidth: '680px', margin: '0 auto', padding: '0 16px' }}>
+
+                {/* Card profil */}
+                <div style={{
+                    background: 'white', borderRadius: '16px',
+                    marginTop: '-20px', marginBottom: '16px',
+                    boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+                    animation: 'fadeUp 0.4s ease',
+                    overflow: 'visible', position: 'relative',
+                }}>
+                    {/* Avatar */}
+                    <div style={{ padding: '0 20px', position: 'relative', height: '56px' }}>
+                        <div style={{
+                            position: 'absolute', top: '-48px', left: '20px',
+                            width: '96px', height: '96px', borderRadius: '50%',
+                            border: '4px solid white', overflow: 'hidden',
+                            background: profile.photo_url ? 'transparent' : themeColor,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: '32px', boxShadow: '0 2px 12px rgba(0,0,0,0.2)',
+                            zIndex: 10,
+                        }}>
+                            {profile.photo_url
+                                ? <img src={profile.photo_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt={profile.full_name} />
+                                : '👤'
+                            }
+                        </div>
+                    </div>
+
+                    {/* Nom + titre + bio */}
+                    <div style={{ padding: '8px 20px 16px' }}>
+                        <h1 style={{ fontSize: '22px', fontWeight: '800', color: '#1a1a1a', marginBottom: '4px' }}>
+                            {profile.full_name}
+                        </h1>
+                        {profile.title && (
+                            <p style={{ fontSize: '14px', color: themeColor, fontWeight: '600', marginBottom: '8px' }}>
+                                {profile.title}
+                            </p>
+                        )}
+                        {profile.bio && (
+                            <p style={{ fontSize: '14px', color: '#555', lineHeight: '1.6' }}>
+                                {profile.bio}
+                            </p>
+                        )}
+                    </div>
+
+                    {/* Bouton contact */}
+                    <div style={{ padding: '0 16px 20px' }}>
+                        <button onClick={saveContact} style={{
+                            width: '100%', padding: '14px',
+                            background: themeColor, color: 'white',
+                            border: 'none', borderRadius: '12px', cursor: 'pointer',
+                            fontSize: '15px', fontWeight: '700',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                        }}>
+                            👤 Enregistrer le contact
+                        </button>
                     </div>
                 </div>
 
-                {/* Nom + titre + bio */}
-                <div style={{ padding: '12px 20px 16px' }}>
-                    <h1 style={{ fontSize: '22px', fontWeight: '800', color: '#1a1a1a', marginBottom: '4px' }}>
-                        {profile.full_name}
-                    </h1>
-                    {profile.title && (
-                        <p style={{ fontSize: '14px', color: themeColor, fontWeight: '600', marginBottom: '8px' }}>
-                            {profile.title}
-                        </p>
-                    )}
-                    {profile.bio && (
-                        <p style={{ fontSize: '14px', color: '#555', lineHeight: '1.6' }}>
-                            {profile.bio}
-                        </p>
-                    )}
-                </div>
-
-                {/* Bouton enregistrer contact */}
-                <div style={{ padding: '0 16px 20px' }}>
-                    <button onClick={saveContact} style={{
-                        width: '100%', padding: '14px',
-                        background: themeColor, color: 'white',
-                        border: 'none', borderRadius: '12px', cursor: 'pointer',
-                        fontSize: '15px', fontWeight: '700',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                    }}>
-                        👤 Enregistrer le contact
-                    </button>
-                </div>
-            </div>
-
-                {/* Liens */}
-                <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '10px', animation: 'fadeUp 0.5s ease' }}>
+                {/* Liens sociaux */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', animation: 'fadeUp 0.5s ease' }}>
                     {activeLinks.map((link, i) => (
                         <a key={link.key}
                             href={link.getUrl(profile[link.key])}
@@ -181,13 +175,12 @@ export default function PublicProfile() {
                                 borderRadius: '14px', textDecoration: 'none', color: '#1a1a1a',
                                 boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
                                 border: '1px solid rgba(0,0,0,0.06)',
-                                animationDelay: `${i * 0.05}s`,
                             }}>
                             <div style={{
                                 width: '44px', height: '44px', borderRadius: '12px',
                                 background: link.color + '15',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                flexShrink: 0, color: link.color,
+                                flexShrink: 0,
                             }}
                                 dangerouslySetInnerHTML={{ __html: `<div style="width:22px;height:22px;color:${link.color}">${link.svg}</div>` }}
                             />
@@ -206,6 +199,7 @@ export default function PublicProfile() {
                         <img src="/logo.png" alt="NFCrafter" style={{ height: '28px', opacity: 0.5 }} />
                     </a>
                 </div>
+
             </div>
         </div>
     )
