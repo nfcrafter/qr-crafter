@@ -21,6 +21,7 @@ export default function PublicProfile() {
     const [card, setCard] = useState(null)
     const [loading, setLoading] = useState(true)
     const [notFound, setNotFound] = useState(false)
+    const [customLinks, setCustomLinks] = useState([])
 
     useEffect(() => { loadProfile() }, [cardId])
 
@@ -29,11 +30,23 @@ export default function PublicProfile() {
         const { data: card, error } = await supabase
             .from('cards').select('*').eq('card_id', cardId).single()
         if (error || !card) { setNotFound(true); setLoading(false); return }
+
         if (card.owner_id) {
-            const { data: profile } = await supabase
+            const { data: profileData } = await supabase
                 .from('profiles').select('*').eq('id', card.owner_id).single()
-            setProfile(profile)
+            // Fusionner admin_profile avec le profil client
+            const adminProfile = card.admin_profile || {}
+            const merged = { ...adminProfile, ...profileData }
+            setProfile(merged)
+            const { data: linksData } = await supabase
+                .from('custom_links').select('*')
+                .eq('profile_id', card.owner_id).order('position')
+            setCustomLinks(linksData || [])
+        } else if (card.admin_profile && Object.keys(card.admin_profile).length > 0) {
+            // Carte pas encore activée mais admin a rempli le profil
+            setProfile(card.admin_profile)
         }
+
         await supabase.from('scan_logs').insert({ card_id: cardId, user_agent: navigator.userAgent })
         setCard(card)
         setLoading(false)
@@ -191,6 +204,34 @@ export default function PublicProfile() {
                         </a>
                     ))}
                 </div>
+
+                {/* Liens personnalisés */}
+                {customLinks.length > 0 && customLinks.map((link, i) => (
+                    <a key={link.id}
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                            display: 'flex', alignItems: 'center', gap: '14px',
+                            padding: '14px 18px', background: 'white',
+                            borderRadius: '14px', textDecoration: 'none', color: '#1a1a1a',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                            border: '1px solid rgba(0,0,0,0.06)',
+                        }}>
+                        <div style={{
+                            width: '44px', height: '44px', borderRadius: '12px',
+                            background: themeColor + '15',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            flexShrink: 0, fontSize: '22px',
+                        }}>
+                            {link.icon}
+                        </div>
+                        <span style={{ fontWeight: '600', fontSize: '15px', flex: 1 }}>{link.title}</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="2">
+                            <path d="M5 12h14M12 5l7 7-7 7" />
+                        </svg>
+                    </a>
+                ))}
 
                 {/* Footer */}
                 <div style={{ textAlign: 'center', marginTop: '32px', paddingBottom: '32px' }}>

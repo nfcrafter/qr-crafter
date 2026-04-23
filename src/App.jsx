@@ -8,6 +8,7 @@ import ClientDashboard from './pages/client/ClientDashboard.jsx'
 import PublicProfile from './pages/PublicProfile.jsx'
 import CardRedirect from './pages/CardRedirect.jsx'
 import WhatsAppSupport from './components/WhatsAppSupport.jsx'
+import Activate from './pages/Activate.jsx'
 
 function LoadingScreen() {
     return (
@@ -75,6 +76,7 @@ export default function App() {
                                 <Navigate to="/dashboard" replace />
                 } />
                 <Route path="*" element={<Navigate to="/" replace />} />
+                <Route path="/activate" element={<Activate />} />
             </Routes>
             <WhatsAppSupport />
         </>
