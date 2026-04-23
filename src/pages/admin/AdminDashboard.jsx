@@ -1,12 +1,34 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase.js'
 import { useToast } from '../../components/Toast.jsx'
 import Modal from '../../components/Modal.jsx'
+import QRCodeStyling from 'qr-code-styling'
+
+const SOCIAL_FIELDS = [
+    { key: 'full_name', label: 'Nom complet', type: 'text', placeholder: 'Jean Dupont' },
+    { key: 'title', label: 'Titre / Poste', type: 'text', placeholder: 'Designer, Entrepreneur...' },
+    { key: 'bio', label: 'Bio', type: 'textarea', placeholder: 'Description...' },
+    { key: 'photo_url', label: 'Photo (URL)', type: 'text', placeholder: 'https://...' },
+    { key: 'banner_url', label: 'Bannière (URL)', type: 'text', placeholder: 'https://...' },
+    { key: 'theme_color', label: 'Couleur thème', type: 'color' },
+    { key: 'whatsapp', label: 'WhatsApp', type: 'text', placeholder: '+229...' },
+    { key: 'phone', label: 'Téléphone', type: 'text', placeholder: '+229...' },
+    { key: 'email', label: 'Email', type: 'email', placeholder: 'jean@example.com' },
+    { key: 'instagram', label: 'Instagram', type: 'text', placeholder: 'https://instagram.com/...' },
+    { key: 'facebook', label: 'Facebook', type: 'text', placeholder: 'https://facebook.com/...' },
+    { key: 'tiktok', label: 'TikTok', type: 'text', placeholder: 'https://tiktok.com/...' },
+    { key: 'twitter', label: 'X / Twitter', type: 'text', placeholder: 'https://x.com/...' },
+    { key: 'linkedin', label: 'LinkedIn', type: 'text', placeholder: 'https://linkedin.com/...' },
+    { key: 'youtube', label: 'YouTube', type: 'text', placeholder: 'https://youtube.com/...' },
+    { key: 'website', label: 'Site web', type: 'text', placeholder: 'https://...' },
+]
 
 export default function AdminDashboard() {
     const navigate = useNavigate()
     const toast = useToast()
+    const qrRef = useRef(null)
+    const qrCode = useRef(null)
 
     const [cards, setCards] = useState([])
     const [loading, setLoading] = useState(true)
@@ -15,13 +37,44 @@ export default function AdminDashboard() {
     const [page, setPage] = useState(1)
     const [perPage] = useState(10)
 
-    // Modal créer carte
+    // Modals
     const [createModal, setCreateModal] = useState(false)
+    const [profileModal, setProfileModal] = useState(null)
+    const [qrModal, setQrModal] = useState(null)
+    const [linkModal, setLinkModal] = useState(null)
+    const [deleteModal, setDeleteModal] = useState(null)
+
+    // Forms
     const [newCardId, setNewCardId] = useState('')
     const [newCardName, setNewCardName] = useState('')
     const [creating, setCreating] = useState(false)
+    const [profileForm, setProfileForm] = useState({})
+    const [savingProfile, setSavingProfile] = useState(false)
+    const [userId, setUserId] = useState('')
+    const [linking, setLinking] = useState(false)
 
     useEffect(() => { loadCards() }, [])
+
+    useEffect(() => {
+        if (qrModal && qrRef.current) {
+            const url = `${window.location.origin}/u/${qrModal.card_id}`
+            if (!qrCode.current) {
+                qrCode.current = new QRCodeStyling({
+                    width: 240, height: 240, type: 'svg',
+                    data: url,
+                    dotsOptions: { color: '#1A1265', type: 'rounded' },
+                    backgroundOptions: { color: '#EBEBDF' },
+                    cornersSquareOptions: { color: '#1A1265', type: 'extra-rounded' },
+                })
+                qrRef.current.innerHTML = ''
+                qrCode.current.append(qrRef.current)
+            } else {
+                qrCode.current.update({ data: url })
+                qrRef.current.innerHTML = ''
+                qrCode.current.append(qrRef.current)
+            }
+        }
+    }, [qrModal])
 
     async function loadCards() {
         setLoading(true)
@@ -32,7 +85,7 @@ export default function AdminDashboard() {
     }
 
     async function createCard() {
-        if (!newCardId.trim()) { toast("L'ID de la carte est obligatoire", 'error'); return }
+        if (!newCardId.trim()) { toast('L\'ID de la carte est obligatoire', 'error'); return }
         setCreating(true)
         const token = Math.random().toString(36).substring(2, 10).toUpperCase()
         const { error } = await supabase.from('cards').insert({
@@ -45,12 +98,83 @@ export default function AdminDashboard() {
         if (error) {
             toast(error.message.includes('unique') ? 'Cet ID existe déjà' : error.message, 'error')
         } else {
-            toast(`Carte "${newCardId}" créée !`, 'success')
+            toast(`Carte "${newCardId}" créée avec succès !`, 'success')
             setNewCardId(''); setNewCardName('')
             setCreateModal(false)
             loadCards()
         }
         setCreating(false)
+    }
+
+    async function saveProfile() {
+        if (!profileModal) return
+        setSavingProfile(true)
+        const { error } = await supabase.from('cards')
+            .update({ admin_profile: profileForm })
+            .eq('card_id', profileModal.card_id)
+        if (error) toast('Erreur lors de la sauvegarde', 'error')
+        else {
+            toast('Profil sauvegardé !', 'success')
+            loadCards()
+        }
+        setSavingProfile(false)
+    }
+
+    async function linkCard() {
+        if (!userId.trim() || !linkModal) return
+        setLinking(true)
+        const { data: profile, error } = await supabase
+            .from('profiles').select('id, full_name').eq('id', userId.trim()).single()
+        if (error || !profile) {
+            toast('Aucun utilisateur trouvé avec cet ID', 'error')
+            setLinking(false)
+            return
+        }
+        await supabase.from('cards')
+            .update({ owner_id: userId.trim(), status: 'active' })
+            .eq('card_id', linkModal.card_id)
+        await supabase.from('profiles')
+            .update({ card_id: linkModal.card_id })
+            .eq('id', userId.trim())
+        await supabase.from('user_cards').upsert({
+            user_id: userId.trim(),
+            card_id: linkModal.card_id,
+            profile_name: profile.full_name,
+        })
+        toast(`Carte liée à ${profile.full_name} !`, 'success')
+        setLinking(false)
+        setLinkModal(null)
+        setUserId('')
+        loadCards()
+    }
+
+    async function deleteCard() {
+        if (!deleteModal) return
+        const { error } = await supabase.from('cards').delete().eq('card_id', deleteModal.card_id)
+        if (error) toast('Erreur lors de la suppression', 'error')
+        else {
+            toast(`Carte "${deleteModal.card_id}" supprimée`, 'warning')
+            setDeleteModal(null)
+            loadCards()
+        }
+    }
+
+    function downloadQR(card) {
+        const url = `${window.location.origin}/u/${card.card_id}`
+        const qr = new QRCodeStyling({
+            width: 1024, height: 1024, type: 'svg',
+            data: url,
+            dotsOptions: { color: '#1A1265', type: 'rounded' },
+            backgroundOptions: { color: '#EBEBDF' },
+            cornersSquareOptions: { color: '#1A1265', type: 'extra-rounded' },
+        })
+        qr.download({ name: `QR-NFCrafter-${card.card_id}`, extension: 'png' })
+        toast('QR Code téléchargé !', 'success')
+    }
+
+    function copyText(text, label) {
+        navigator.clipboard.writeText(text)
+        toast(`${label} copié !`, 'info')
     }
 
     // Filtrage + pagination
@@ -63,6 +187,17 @@ export default function AdminDashboard() {
         return matchSearch && matchStatus
     })
 
+    // Grouper par owner
+    const grouped = {}
+    filtered.forEach(card => {
+        const key = card.owner_id || `__pending__${card.card_id}`
+        const name = card.admin_profile?.full_name || card.card_name || 'Sans client'
+        if (!grouped[key]) grouped[key] = { name, cards: [], owner_id: card.owner_id }
+        grouped[key].cards.push(card)
+    })
+    const groups = Object.values(grouped)
+
+    // Pagination sur les cartes filtrées
     const totalPages = Math.ceil(filtered.length / perPage)
     const paginated = filtered.slice((page - 1) * perPage, page * perPage)
 
@@ -125,13 +260,13 @@ export default function AdminDashboard() {
                     </div>
                 </div>
 
-                {/* Table */}
+                {/* Data Table */}
                 <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-                    {/* En-tête */}
+                    {/* En-tête table */}
                     <div style={{
                         display: 'grid',
-                        gridTemplateColumns: '100px 1fr 140px 120px 140px',
-                        padding: '12px 20px',
+                        gridTemplateColumns: '100px 1fr 140px 120px 200px',
+                        gap: '0', padding: '12px 20px',
                         background: 'var(--bg)', borderBottom: '1px solid var(--border)',
                         fontSize: '12px', fontWeight: '700', color: 'var(--text-light)',
                         textTransform: 'uppercase', letterSpacing: '0.5px',
@@ -140,7 +275,7 @@ export default function AdminDashboard() {
                         <span>Client</span>
                         <span>Statut</span>
                         <span>Scans</span>
-                        <span style={{ textAlign: 'right' }}>Action</span>
+                        <span style={{ textAlign: 'right' }}>Actions</span>
                     </div>
 
                     {loading ? (
@@ -154,12 +289,11 @@ export default function AdminDashboard() {
                         paginated.map((card, i) => (
                             <div key={card.card_id} style={{
                                 display: 'grid',
-                                gridTemplateColumns: '100px 1fr 140px 120px 140px',
-                                padding: '14px 20px',
+                                gridTemplateColumns: '100px 1fr 140px 120px 200px',
+                                gap: '0', padding: '14px 20px',
                                 borderBottom: i < paginated.length - 1 ? '1px solid var(--border)' : 'none',
                                 alignItems: 'center',
                                 transition: 'background 0.15s',
-                                cursor: 'default',
                             }}
                                 onMouseEnter={e => e.currentTarget.style.background = 'var(--bg)'}
                                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
@@ -174,9 +308,9 @@ export default function AdminDashboard() {
                                     <div style={{ fontWeight: '600', fontSize: '14px', color: 'var(--text)' }}>
                                         {card.admin_profile?.full_name || card.card_name || '—'}
                                     </div>
-                                    {card.card_name && card.admin_profile?.full_name && (
-                                        <div style={{ fontSize: '12px', color: 'var(--text-light)' }}>{card.card_name}</div>
-                                    )}
+                                    <div style={{ fontSize: '12px', color: 'var(--text-light)' }}>
+                                        {card.card_name && card.admin_profile?.full_name ? card.card_name : ''}
+                                    </div>
                                 </div>
 
                                 {/* Statut */}
@@ -193,35 +327,19 @@ export default function AdminDashboard() {
 
                                 {/* Scans */}
                                 <span style={{ fontSize: '14px', color: 'var(--text-light)', fontWeight: '600' }}>
-                                    —
+                                    — scans
                                 </span>
 
-                                {/* Bouton Paramètres */}
-                                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                                    <button
-                                        onClick={() => navigate(`/admin/cards/${card.card_id}`)}
-                                        style={{
-                                            display: 'flex', alignItems: 'center', gap: '6px',
-                                            padding: '8px 16px',
-                                            background: 'var(--bg-white)',
-                                            border: '1.5px solid var(--border)',
-                                            borderRadius: 'var(--radius-sm)',
-                                            cursor: 'pointer', fontSize: '13px',
-                                            fontWeight: '600', color: 'var(--accent)',
-                                            fontFamily: 'var(--font-body)',
-                                            transition: 'all 0.15s',
-                                        }}
-                                        onMouseEnter={e => {
-                                            e.currentTarget.style.background = 'var(--accent-light)'
-                                            e.currentTarget.style.borderColor = 'var(--accent)'
-                                        }}
-                                        onMouseLeave={e => {
-                                            e.currentTarget.style.background = 'var(--bg-white)'
-                                            e.currentTarget.style.borderColor = 'var(--border)'
-                                        }}
-                                    >
-                                        ⚙️ Paramètres
-                                    </button>
+                                {/* Actions */}
+                                <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                                    <ActionBtn title="Voir la page" icon="👁" onClick={() => window.open(`/u/${card.card_id}`, '_blank')} color="var(--text-light)" />
+                                    <ActionBtn title="Copier lien NFC" icon="📡" onClick={() => copyText(`${window.location.origin}/u/${card.card_id}`, 'Lien NFC')} color="#1A1265" />
+                                    <ActionBtn title="QR Code" icon="▣" onClick={() => setQrModal(card)} color="#7C3AED" />
+                                    <ActionBtn title="Modifier profil" icon="✏️" onClick={() => { setProfileModal(card); setProfileForm(card.admin_profile || {}) }} color="#0A66C2" />
+                                    {card.status === 'pending' && (
+                                        <ActionBtn title="Lier un client" icon="🔗" onClick={() => { setLinkModal(card); setUserId('') }} color="#27AE60" />
+                                    )}
+                                    <ActionBtn title="Supprimer" icon="🗑" onClick={() => setDeleteModal(card)} color="#e53935" />
                                 </div>
                             </div>
                         ))
@@ -259,7 +377,10 @@ export default function AdminDashboard() {
                         </div>
                     )}
                 </div>
+
             </main>
+
+            {/* ===== MODALS ===== */}
 
             {/* Modal créer carte */}
             <Modal isOpen={createModal} onClose={() => setCreateModal(false)} title="➕ Créer une nouvelle carte" size="sm">
@@ -288,6 +409,173 @@ export default function AdminDashboard() {
                     </button>
                 </div>
             </Modal>
+
+            {/* Modal profil */}
+            <Modal isOpen={!!profileModal} onClose={() => setProfileModal(null)} title={`✏️ Profil — ${profileModal?.card_name || profileModal?.card_id}`} size="lg">
+                {profileModal && (
+                    <>
+                        {/* Lien activation */}
+                        <div style={{ padding: '12px', background: 'var(--accent-light)', borderRadius: 'var(--radius-md)', marginBottom: '20px' }}>
+                            <p style={{ fontSize: '12px', fontWeight: '700', color: 'var(--accent)', marginBottom: '8px' }}>
+                                🔗 Lien d'activation à envoyer au client
+                            </p>
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                                <input type="text" readOnly
+                                    value={`${window.location.origin}/register?card=${profileModal.card_id}&token=${profileModal.activation_token}`}
+                                    style={{ flex: 1, fontSize: '11px', fontFamily: 'monospace' }}
+                                />
+                                <button className="btn-primary" style={{ whiteSpace: 'nowrap', padding: '8px 14px', fontSize: '12px' }}
+                                    onClick={() => copyText(`${window.location.origin}/register?card=${profileModal.card_id}&token=${profileModal.activation_token}`, 'Lien d\'activation')}>
+                                    📋 Copier
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Champs profil */}
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 16px' }}>
+                            {SOCIAL_FIELDS.map(field => (
+                                <div key={field.key} className="field" style={{ gridColumn: field.type === 'textarea' ? 'span 2' : 'span 1' }}>
+                                    <label>{field.label}</label>
+                                    {field.type === 'textarea' ? (
+                                        <textarea rows={2} placeholder={field.placeholder}
+                                            value={profileForm[field.key] || ''}
+                                            onChange={e => setProfileForm(f => ({ ...f, [field.key]: e.target.value }))}
+                                            style={{ resize: 'none' }}
+                                        />
+                                    ) : field.type === 'color' ? (
+                                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                            <input type="color" value={profileForm[field.key] || '#1A1265'}
+                                                onChange={e => setProfileForm(f => ({ ...f, [field.key]: e.target.value }))}
+                                                style={{ width: '44px', height: '38px', padding: '2px', cursor: 'pointer' }}
+                                            />
+                                            <input type="text" value={profileForm[field.key] || '#1A1265'}
+                                                onChange={e => setProfileForm(f => ({ ...f, [field.key]: e.target.value }))}
+                                                style={{ flex: 1, fontFamily: 'monospace' }}
+                                            />
+                                        </div>
+                                    ) : (
+                                        <input type={field.type} placeholder={field.placeholder}
+                                            value={profileForm[field.key] || ''}
+                                            onChange={e => setProfileForm(f => ({ ...f, [field.key]: e.target.value }))}
+                                        />
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
+                            <button className="btn-ghost" onClick={() => setProfileModal(null)} style={{ flex: 1 }}>Annuler</button>
+                            <button className="btn-primary" onClick={saveProfile} disabled={savingProfile} style={{ flex: 1, justifyContent: 'center' }}>
+                                {savingProfile ? 'Sauvegarde...' : '💾 Sauvegarder'}
+                            </button>
+                        </div>
+                    </>
+                )}
+            </Modal>
+
+            {/* Modal QR Code */}
+            <Modal isOpen={!!qrModal} onClose={() => { setQrModal(null); qrCode.current = null }} title={`▣ QR Code — ${qrModal?.card_id}`} size="sm">
+                {qrModal && (
+                    <div style={{ textAlign: 'center' }}>
+                        <div ref={qrRef} style={{ display: 'inline-block', borderRadius: '12px', overflow: 'hidden', marginBottom: '16px' }} />
+                        <p style={{ fontSize: '12px', color: 'var(--text-light)', marginBottom: '20px', fontFamily: 'monospace' }}>
+                            {window.location.origin}/u/{qrModal.card_id}
+                        </p>
+                        <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                            <button className="btn-secondary" onClick={() => copyText(`${window.location.origin}/u/${qrModal.card_id}`, 'Lien NFC')}
+                                style={{ padding: '10px 20px' }}>
+                                📡 Copier lien NFC
+                            </button>
+                            <button className="btn-primary" onClick={() => downloadQR(qrModal)}
+                                style={{ padding: '10px 20px' }}>
+                                ⬇ Télécharger PNG
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </Modal>
+
+            {/* Modal lier client */}
+            <Modal isOpen={!!linkModal} onClose={() => { setLinkModal(null); setUserId('') }} title={`🔗 Lier la carte ${linkModal?.card_id}`} size="sm">
+                {linkModal && (
+                    <>
+                        <p style={{ fontSize: '13px', color: 'var(--text-light)', marginBottom: '16px' }}>
+                            Collez l'ID du client pour activer sa carte.
+                        </p>
+                        <div className="field">
+                            <label>ID du client *</label>
+                            <textarea rows={3} placeholder="Collez l'ID ici..."
+                                value={userId} onChange={e => setUserId(e.target.value)}
+                                style={{ fontFamily: 'monospace', fontSize: '12px' }}
+                                autoFocus
+                            />
+                        </div>
+                        <div style={{ display: 'flex', gap: '12px' }}>
+                            <button className="btn-ghost" onClick={() => { setLinkModal(null); setUserId('') }} style={{ flex: 1 }}>
+                                Annuler
+                            </button>
+                            <button className="btn-primary" onClick={linkCard} disabled={linking || !userId.trim()} style={{ flex: 1, justifyContent: 'center' }}>
+                                {linking ? 'Liaison...' : '✅ Activer la carte'}
+                            </button>
+                        </div>
+                    </>
+                )}
+            </Modal>
+
+            {/* Modal supprimer */}
+            <Modal isOpen={!!deleteModal} onClose={() => setDeleteModal(null)} title="🗑 Supprimer la carte" size="sm">
+                {deleteModal && (
+                    <>
+                        <p style={{ fontSize: '15px', color: 'var(--text)', marginBottom: '8px' }}>
+                            Voulez-vous vraiment supprimer la carte <strong>{deleteModal.card_id}</strong> ?
+                        </p>
+                        <p style={{ fontSize: '13px', color: 'var(--error)', marginBottom: '24px' }}>
+                            ⚠️ Cette action est irréversible. Le lien `/u/{deleteModal.card_id}` ne fonctionnera plus.
+                        </p>
+                        <div style={{ display: 'flex', gap: '12px' }}>
+                            <button className="btn-ghost" onClick={() => setDeleteModal(null)} style={{ flex: 1 }}>
+                                Annuler
+                            </button>
+                            <button onClick={deleteCard} style={{
+                                flex: 1, padding: '11px', background: '#e53935', color: 'white',
+                                border: 'none', borderRadius: 'var(--radius-sm)', cursor: 'pointer',
+                                fontSize: '14px', fontWeight: '600',
+                            }}>
+                                🗑 Supprimer définitivement
+                            </button>
+                        </div>
+                    </>
+                )}
+            </Modal>
+
         </div>
+    )
+}
+
+function ActionBtn({ icon, title, onClick, color }) {
+    return (
+        <button
+            title={title}
+            onClick={onClick}
+            style={{
+                width: '32px', height: '32px',
+                border: '1px solid var(--border)',
+                borderRadius: 'var(--radius-sm)',
+                background: 'var(--bg-white)',
+                cursor: 'pointer', fontSize: '15px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                transition: 'all 0.15s', color,
+            }}
+            onMouseEnter={e => {
+                e.currentTarget.style.background = color + '15'
+                e.currentTarget.style.borderColor = color
+            }}
+            onMouseLeave={e => {
+                e.currentTarget.style.background = 'var(--bg-white)'
+                e.currentTarget.style.borderColor = 'var(--border)'
+            }}
+        >
+            {icon}
+        </button>
     )
 }
