@@ -7,6 +7,7 @@ export default function AdminDashboard() {
     const [cards, setCards] = useState([])
     const [loading, setLoading] = useState(true)
     const [newCardId, setNewCardId] = useState('')
+    const [newCardName, setNewCardName] = useState('')
     const [creating, setCreating] = useState(false)
     const [copied, setCopied] = useState('')
     const [linkModal, setLinkModal] = useState(null)
@@ -30,11 +31,16 @@ export default function AdminDashboard() {
         setCreating(true)
         const { error } = await supabase
             .from('cards')
-            .insert({ card_id: newCardId.trim().toLowerCase(), status: 'pending' })
+            .insert({
+                card_id: newCardId.trim().toLowerCase(),
+                card_name: newCardName.trim() || newCardId.trim(),
+                status: 'pending'
+            })
         if (error) {
             alert('Erreur : ' + error.message)
         } else {
             setNewCardId('')
+            setNewCardName('')
             loadCards()
         }
         setCreating(false)
@@ -169,22 +175,38 @@ export default function AdminDashboard() {
                     <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: '700', color: 'var(--accent)', marginBottom: '16px' }}>
                         ➕ Créer une nouvelle carte
                     </h2>
-                    <div style={{ display: 'flex', gap: '12px' }}>
-                        <input
-                            type="text"
-                            placeholder="ID de la carte (ex: 001, abc123...)"
-                            value={newCardId}
-                            onChange={e => setNewCardId(e.target.value)}
-                            onKeyDown={e => e.key === 'Enter' && createCard()}
-                            style={{ flex: 1 }}
-                        />
-                        <button className="btn-primary" onClick={createCard} disabled={creating}
-                            style={{ whiteSpace: 'nowrap', padding: '10px 24px' }}>
-                            {creating ? 'Création...' : 'Créer la carte'}
-                        </button>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+                        <div>
+                            <label style={{ fontSize: '12px', color: 'var(--text-light)', marginBottom: '4px', display: 'block' }}>
+                                ID unique *
+                            </label>
+                            <input
+                                type="text"
+                                placeholder="ex: 001, abc123..."
+                                value={newCardId}
+                                onChange={e => setNewCardId(e.target.value)}
+                                onKeyDown={e => e.key === 'Enter' && createCard()}
+                            />
+                        </div>
+                        <div>
+                            <label style={{ fontSize: '12px', color: 'var(--text-light)', marginBottom: '4px', display: 'block' }}>
+                                Nom du client (pour toi)
+                            </label>
+                            <input
+                                type="text"
+                                placeholder="ex: Jean Dupont - Bénin"
+                                value={newCardName}
+                                onChange={e => setNewCardName(e.target.value)}
+                                onKeyDown={e => e.key === 'Enter' && createCard()}
+                            />
+                        </div>
                     </div>
+                    <button className="btn-primary" onClick={createCard} disabled={creating}
+                        style={{ width: '100%', justifyContent: 'center' }}>
+                        {creating ? 'Création...' : '➕ Créer la carte'}
+                    </button>
                     <p style={{ fontSize: '12px', color: 'var(--text-light)', marginTop: '8px' }}>
-                        Le lien généré sera : {window.location.origin}/u/<strong>{newCardId || 'id-carte'}</strong>
+                        Lien généré : {window.location.origin}/u/<strong>{newCardId || 'id-carte'}</strong>
                     </p>
                 </div>
 
@@ -224,9 +246,16 @@ export default function AdminDashboard() {
                                     {/* Infos */}
                                     <div style={{ flex: 1, minWidth: 0 }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                                            <span style={{ fontWeight: '700', fontSize: '15px', color: 'var(--text)' }}>
-                                                {card.profiles?.full_name || 'Non activée'}
-                                            </span>
+                                            <div>
+                                                <span style={{ fontWeight: '700', fontSize: '15px', color: 'var(--text)' }}>
+                                                    {card.profiles?.full_name || 'Non activée'}
+                                                </span>
+                                                {card.card_name && (
+                                                    <span style={{ fontSize: '12px', color: 'var(--text-light)', marginLeft: '8px' }}>
+                                                        ({card.card_name})
+                                                    </span>
+                                                )}
+                                            </div>
                                             <span style={{
                                                 fontSize: '11px', fontWeight: '600', padding: '2px 8px',
                                                 borderRadius: 'var(--radius-pill)',

@@ -7,6 +7,7 @@ import AdminDashboard from './pages/admin/AdminDashboard.jsx'
 import ClientDashboard from './pages/client/ClientDashboard.jsx'
 import PublicProfile from './pages/PublicProfile.jsx'
 import CardRedirect from './pages/CardRedirect.jsx'
+import WhatsAppSupport from './components/WhatsAppSupport.jsx'
 
 function LoadingScreen() {
     return (
@@ -52,35 +53,30 @@ export default function App() {
     }
 
     return (
-        <Routes>
-            {/* Pages publiques */}
-            <Route path="/u/:cardId" element={<PublicProfile />} />
-            <Route path="/login" element={session ? <Navigate to="/" replace /> : <Login />} />
-            <Route path="/register" element={<Register />} />
-
-            {/* Admin */}
-            <Route path="/admin" element={
-                <ProtectedAdmin session={session} isAdmin={isAdmin}>
-                    <AdminDashboard />
-                </ProtectedAdmin>
-            } />
-
-            {/* Client */}
-            <Route path="/dashboard" element={
-                <ProtectedClient session={session}>
-                    <ClientDashboard />
-                </ProtectedClient>
-            } />
-
-            {/* Redirect racine */}
-            <Route path="/" element={
-                session === undefined ? <LoadingScreen /> :
-                    !session ? <Navigate to="/login" replace /> :
-                        isAdmin ? <Navigate to="/admin" replace /> :
-                            <Navigate to="/dashboard" replace />
-            } />
-
-            <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        <>
+            <Routes>
+                <Route path="/u/:cardId" element={<PublicProfile />} />
+                <Route path="/login" element={session ? <Navigate to="/" replace /> : <Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/admin" element={
+                    <ProtectedAdmin session={session} isAdmin={isAdmin}>
+                        <AdminDashboard />
+                    </ProtectedAdmin>
+                } />
+                <Route path="/dashboard" element={
+                    <ProtectedClient session={session}>
+                        <ClientDashboard />
+                    </ProtectedClient>
+                } />
+                <Route path="/" element={
+                    session === undefined ? <LoadingScreen /> :
+                        !session ? <Navigate to="/login" replace /> :
+                            isAdmin ? <Navigate to="/admin" replace /> :
+                                <Navigate to="/dashboard" replace />
+                } />
+                <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+            <WhatsAppSupport />
+        </>
     )
 }

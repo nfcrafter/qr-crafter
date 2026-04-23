@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../../lib/supabase.js'
 import { useNavigate } from 'react-router-dom'
+import CustomLinks from '../../components/client/CustomLinks.jsx'
 
 const SOCIAL_FIELDS = [
     { key: 'whatsapp', label: 'WhatsApp', placeholder: '+229 XX XX XX XX', icon: '💬' },
@@ -319,6 +320,16 @@ export default function ClientDashboard() {
                                 />
                             </div>
                         ))}
+                        {/* Liens personnalisés */}
+                        <div style={{ marginTop: '24px', paddingTop: '24px', borderTop: '1px solid var(--border)' }}>
+                            <h3 style={{ fontWeight: '700', color: 'var(--accent)', marginBottom: '12px', fontSize: '15px' }}>
+                                🔗 Liens personnalisés
+                            </h3>
+                            <p style={{ fontSize: '13px', color: 'var(--text-light)', marginBottom: '16px' }}>
+                                Ajoutez vos propres liens (portfolio, boutique, événement...)
+                            </p>
+                            {user && <CustomLinks profileId={user.id} />}
+                        </div>
                     </div>
                 )}
 
