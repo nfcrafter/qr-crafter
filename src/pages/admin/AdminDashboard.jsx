@@ -1,10 +1,12 @@
-import { useState, useEffect, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { supabase } from '../../lib/supabase.js'
-import { useToast } from '../../components/Toast.jsx'
-import Modal from '../../components/Modal.jsx'
-import QRCodeStyling from 'qr-code-styling'
-import QRModal from '../../components/admin/QRModal.jsx'
+// src/pages/admin/AdminDashboard.jsx
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '../../lib/supabase.js';
+import { useToast } from '../../components/Toast.jsx';
+import Modal from '../../components/Modal.jsx';
+import QRCodeStyling from 'qr-code-styling';
+import QRModal from '../../components/admin/QRModal.jsx';
+import { generateUniqueCardId } from '../../lib/utils.js';
 
 const SOCIAL_FIELDS = [
     { key: 'full_name', label: 'Nom complet', type: 'text', placeholder: 'Jean Dupont' },
@@ -23,42 +25,60 @@ const SOCIAL_FIELDS = [
     { key: 'linkedin', label: 'LinkedIn', type: 'text', placeholder: 'https://linkedin.com/...' },
     { key: 'youtube', label: 'YouTube', type: 'text', placeholder: 'https://youtube.com/...' },
     { key: 'website', label: 'Site web', type: 'text', placeholder: 'https://...' },
-]
+];
 
 export default function AdminDashboard() {
-    const navigate = useNavigate()
-    const toast = useToast()
-    const qrRef = useRef(null)
-    const qrCode = useRef(null)
+    const navigate = useNavigate();
+    const toast = useToast();
+    const qrRef = useRef(null);
+    const qrCode = useRef(null);
 
-    const [cards, setCards] = useState([])
-    const [loading, setLoading] = useState(true)
-    const [search, setSearch] = useState('')
-    const [filterStatus, setFilterStatus] = useState('')
-    const [page, setPage] = useState(1)
-    const [perPage] = useState(10)
+    const [cards, setCards] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [search, setSearch] = useState('');
+    const [filterStatus, setFilterStatus] = useState('');
+    const [filterFolder, setFilterFolder] = useState('');
+    const [page, setPage] = useState(1);
+    const [perPage] = useState(10);
 
     // Modals
-    const [createModal, setCreateModal] = useState(false)
-    const [profileModal, setProfileModal] = useState(null)
-    const [qrModal, setQrModal] = useState(null)
-    const [linkModal, setLinkModal] = useState(null)
-    const [deleteModal, setDeleteModal] = useState(null)
+    const [createModal, setCreateModal] = useState(false);
+    const [profileModal, setProfileModal] = useState(null);
+    const [qrModal, setQrModal] = useState(null);
+    const [linkModal, setLinkModal] = useState(null);
+    const [deleteModal, setDeleteModal] = useState(null);
 
-    // Forms
-    const [newCardId, setNewCardId] = useState('')
-    const [newCardName, setNewCardName] = useState('')
-    const [creating, setCreating] = useState(false)
-    const [profileForm, setProfileForm] = useState({})
-    const [savingProfile, setSavingProfile] = useState(false)
-    const [userId, setUserId] = useState('')
-    const [linking, setLinking] = useState(false)
+    // Étape 1 du formulaire de création
+    const [createStep, setCreateStep] = useState(1);
+    const [clientInfo, setClientInfo] = useState({
+        clientName: '',
+        city: '',
+        country: 'Bénin'
+    });
+    const [pageType, setPageType] = useState('profile');
+    const [redirectUrl, setRedirectUrl] = useState('');
+    const [wifiSsid, setWifiSsid] = useState('');
+    const [wifiPassword, setWifiPassword] = useState('');
+    const [wifiSecurity, setWifiSecurity] = useState('WPA');
+    const [generating, setGenerating] = useState(false);
 
-    useEffect(() => { loadCards() }, [])
+    // Profil modal
+    const [profileForm, setProfileForm] = useState({});
+    const [savingProfile, setSavingProfile] = useState(false);
+    const [userId, setUserId] = useState('');
+    const [linking, setLinking] = useState(false);
+
+    // Dossiers
+    const [folders, setFolders] = useState([]);
+
+    useEffect(() => {
+        loadCards();
+        loadFolders();
+    }, []);
 
     useEffect(() => {
         if (qrModal && qrRef.current) {
-            const url = `${window.location.origin}/u/${qrModal.card_id}`
+            const url = `${window.location.origin}/u/${qrModal.card_id}`;
             if (!qrCode.current) {
                 qrCode.current = new QRCodeStyling({
                     width: 240, height: 240, type: 'svg',
@@ -66,116 +86,181 @@ export default function AdminDashboard() {
                     dotsOptions: { color: '#1A1265', type: 'rounded' },
                     backgroundOptions: { color: '#EBEBDF' },
                     cornersSquareOptions: { color: '#1A1265', type: 'extra-rounded' },
-                })
-                qrRef.current.innerHTML = ''
-                qrCode.current.append(qrRef.current)
+                });
+                qrRef.current.innerHTML = '';
+                qrCode.current.append(qrRef.current);
             } else {
-                qrCode.current.update({ data: url })
-                qrRef.current.innerHTML = ''
-                qrCode.current.append(qrRef.current)
+                qrCode.current.update({ data: url });
+                qrRef.current.innerHTML = '';
+                qrCode.current.append(qrRef.current);
             }
         }
-    }, [qrModal])
+    }, [qrModal]);
 
     async function loadCards() {
-        setLoading(true)
-        const { data } = await supabase
-            .from('cards').select('*').order('created_at', { ascending: false })
-        setCards(data || [])
-        setLoading(false)
+        setLoading(true);
+        let query = supabase.from('cards').select('*').order('created_at', { ascending: false });
+        if (filterFolder) {
+            query = query.eq('folder_id', filterFolder);
+        }
+        const { data } = await query;
+        setCards(data || []);
+        setLoading(false);
     }
 
-    async function createCard() {
-        if (!newCardId.trim()) { toast('L\'ID de la carte est obligatoire', 'error'); return }
-        setCreating(true)
-        const token = Math.random().toString(36).substring(2, 10).toUpperCase()
-        const { error } = await supabase.from('cards').insert({
-            card_id: newCardId.trim().toLowerCase(),
-            card_name: newCardName.trim() || newCardId.trim(),
+    async function loadFolders() {
+        const { data } = await supabase.from('folders').select('*').order('created_at');
+        setFolders(data || []);
+    }
+
+    async function loadCardsByFolder(folderId) {
+        setFilterFolder(folderId);
+        setPage(1);
+        await loadCards();
+    }
+
+    // ÉTAPE 1 : validation
+    function validateStep1() {
+        if (!clientInfo.clientName.trim()) {
+            toast('Le nom du client est obligatoire', 'error');
+            return false;
+        }
+        return true;
+    }
+
+    function goToStep2() {
+        if (validateStep1()) {
+            setCreateStep(2);
+        }
+    }
+
+    function goToStep1() {
+        setCreateStep(1);
+    }
+
+    // Création finale
+    async function finalizeCreateCard() {
+        if (pageType === 'url' && !redirectUrl.trim()) {
+            toast('L’URL de redirection est obligatoire', 'error');
+            return;
+        }
+        if (pageType === 'wifi' && !wifiSsid.trim()) {
+            toast('Le SSID (nom du réseau) est obligatoire', 'error');
+            return;
+        }
+
+        setGenerating(true);
+        const cardId = await generateUniqueCardId();
+        const token = Math.random().toString(36).substring(2, 10).toUpperCase();
+
+        const cardData = {
+            card_id: cardId,
+            card_name: clientInfo.clientName.trim(),
             status: 'pending',
             activation_token: token,
-            admin_profile: {},
-        })
-        if (error) {
-            toast(error.message.includes('unique') ? 'Cet ID existe déjà' : error.message, 'error')
-        } else {
-            toast(`Carte "${newCardId}" créée avec succès !`, 'success')
-            setNewCardId(''); setNewCardName('')
-            setCreateModal(false)
-            loadCards()
+            city: clientInfo.city,
+            country: clientInfo.country,
+            page_type: pageType,
+            admin_profile: { full_name: clientInfo.clientName.trim() }
+        };
+
+        if (pageType === 'url') {
+            cardData.redirect_url = redirectUrl.trim();
+        } else if (pageType === 'wifi') {
+            cardData.wifi_ssid = wifiSsid.trim();
+            cardData.wifi_password = wifiPassword;
+            cardData.wifi_security = wifiSecurity;
         }
-        setCreating(false)
+
+        const { error } = await supabase.from('cards').insert(cardData);
+        if (error) {
+            toast('Erreur : ' + error.message, 'error');
+        } else {
+            toast(`Carte ${cardId} créée avec succès !`, 'success');
+            // Reset formulaire
+            setCreateStep(1);
+            setClientInfo({ clientName: '', city: '', country: 'Bénin' });
+            setPageType('profile');
+            setRedirectUrl('');
+            setWifiSsid('');
+            setWifiPassword('');
+            setWifiSecurity('WPA');
+            setCreateModal(false);
+            loadCards();
+        }
+        setGenerating(false);
     }
 
     async function saveProfile() {
-        if (!profileModal) return
-        setSavingProfile(true)
+        if (!profileModal) return;
+        setSavingProfile(true);
         const { error } = await supabase.from('cards')
             .update({ admin_profile: profileForm })
-            .eq('card_id', profileModal.card_id)
-        if (error) toast('Erreur lors de la sauvegarde', 'error')
+            .eq('card_id', profileModal.card_id);
+        if (error) toast('Erreur lors de la sauvegarde', 'error');
         else {
-            toast('Profil sauvegardé !', 'success')
-            loadCards()
+            toast('Profil sauvegardé !', 'success');
+            loadCards();
+            setProfileModal(null);
         }
-        setSavingProfile(false)
+        setSavingProfile(false);
     }
 
     async function linkCard() {
-        if (!userId.trim() || !linkModal) return
-        setLinking(true)
+        if (!userId.trim() || !linkModal) return;
+        setLinking(true);
         const { data: profile, error } = await supabase
-            .from('profiles').select('id, full_name').eq('id', userId.trim()).single()
+            .from('profiles').select('id, full_name').eq('id', userId.trim()).single();
         if (error || !profile) {
-            toast('Aucun utilisateur trouvé avec cet ID', 'error')
-            setLinking(false)
-            return
+            toast('Aucun utilisateur trouvé avec cet ID', 'error');
+            setLinking(false);
+            return;
         }
         await supabase.from('cards')
             .update({ owner_id: userId.trim(), status: 'active' })
-            .eq('card_id', linkModal.card_id)
+            .eq('card_id', linkModal.card_id);
         await supabase.from('profiles')
             .update({ card_id: linkModal.card_id })
-            .eq('id', userId.trim())
+            .eq('id', userId.trim());
         await supabase.from('user_cards').upsert({
             user_id: userId.trim(),
             card_id: linkModal.card_id,
             profile_name: profile.full_name,
-        })
-        toast(`Carte liée à ${profile.full_name} !`, 'success')
-        setLinking(false)
-        setLinkModal(null)
-        setUserId('')
-        loadCards()
+        });
+        toast(`Carte liée à ${profile.full_name} !`, 'success');
+        setLinking(false);
+        setLinkModal(null);
+        setUserId('');
+        loadCards();
     }
 
     async function deleteCard() {
-        if (!deleteModal) return
-        const { error } = await supabase.from('cards').delete().eq('card_id', deleteModal.card_id)
-        if (error) toast('Erreur lors de la suppression', 'error')
+        if (!deleteModal) return;
+        const { error } = await supabase.from('cards').delete().eq('card_id', deleteModal.card_id);
+        if (error) toast('Erreur lors de la suppression', 'error');
         else {
-            toast(`Carte "${deleteModal.card_id}" supprimée`, 'warning')
-            setDeleteModal(null)
-            loadCards()
+            toast(`Carte "${deleteModal.card_id}" supprimée`, 'warning');
+            setDeleteModal(null);
+            loadCards();
         }
     }
 
     function downloadQR(card) {
-        const url = `${window.location.origin}/u/${card.card_id}`
+        const url = `${window.location.origin}/u/${card.card_id}`;
         const qr = new QRCodeStyling({
             width: 1024, height: 1024, type: 'svg',
             data: url,
             dotsOptions: { color: '#1A1265', type: 'rounded' },
             backgroundOptions: { color: '#EBEBDF' },
             cornersSquareOptions: { color: '#1A1265', type: 'extra-rounded' },
-        })
-        qr.download({ name: `QR-NFCrafter-${card.card_id}`, extension: 'png' })
-        toast('QR Code téléchargé !', 'success')
+        });
+        qr.download({ name: `QR-NFCrafter-${card.card_id}`, extension: 'png' });
+        toast('QR Code téléchargé !', 'success');
     }
 
     function copyText(text, label) {
-        navigator.clipboard.writeText(text)
-        toast(`${label} copié !`, 'info')
+        navigator.clipboard.writeText(text);
+        toast(`${label} copié !`, 'info');
     }
 
     // Filtrage + pagination
@@ -183,35 +268,33 @@ export default function AdminDashboard() {
         const matchSearch = !search ||
             c.card_id?.toLowerCase().includes(search.toLowerCase()) ||
             c.card_name?.toLowerCase().includes(search.toLowerCase()) ||
-            (c.admin_profile?.full_name || '').toLowerCase().includes(search.toLowerCase())
-        const matchStatus = !filterStatus || c.status === filterStatus
-        return matchSearch && matchStatus
-    })
+            (c.admin_profile?.full_name || '').toLowerCase().includes(search.toLowerCase());
+        const matchStatus = !filterStatus || c.status === filterStatus;
+        return matchSearch && matchStatus;
+    });
 
-    // Grouper par owner
-    const grouped = {}
-    filtered.forEach(card => {
-        const key = card.owner_id || `__pending__${card.card_id}`
-        const name = card.admin_profile?.full_name || card.card_name || 'Sans client'
-        if (!grouped[key]) grouped[key] = { name, cards: [], owner_id: card.owner_id }
-        grouped[key].cards.push(card)
-    })
-    const groups = Object.values(grouped)
-
-    // Pagination sur les cartes filtrées
-    const totalPages = Math.ceil(filtered.length / perPage)
-    const paginated = filtered.slice((page - 1) * perPage, page * perPage)
+    const totalPages = Math.ceil(filtered.length / perPage);
+    const paginated = filtered.slice((page - 1) * perPage, page * perPage);
 
     const stats = {
         total: cards.length,
         active: cards.filter(c => c.status === 'active').length,
         pending: cards.filter(c => c.status === 'pending').length,
-    }
+    };
+
+    const openCreateModal = () => {
+        setCreateStep(1);
+        setClientInfo({ clientName: '', city: '', country: 'Bénin' });
+        setPageType('profile');
+        setRedirectUrl('');
+        setWifiSsid('');
+        setWifiPassword('');
+        setWifiSecurity('WPA');
+        setCreateModal(true);
+    };
 
     return (
         <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
-
-            {/* Header */}
             <header style={{ background: 'var(--bg-white)', borderBottom: '1px solid var(--border)', padding: '0 32px', position: 'sticky', top: 0, zIndex: 100 }}>
                 <div style={{ maxWidth: '1200px', margin: '0 auto', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -219,14 +302,13 @@ export default function AdminDashboard() {
                         <span style={{ fontFamily: 'var(--font-display)', fontWeight: '800', fontSize: '18px', color: 'var(--accent)' }}>NFCrafter</span>
                         <span style={{ background: 'var(--accent)', color: 'white', fontSize: '11px', fontWeight: '700', padding: '2px 8px', borderRadius: 'var(--radius-pill)' }}>ADMIN</span>
                     </div>
-                    <button className="btn-ghost" onClick={async () => { await supabase.auth.signOut(); navigate('/login') }} style={{ fontSize: '13px' }}>
+                    <button className="btn-ghost" onClick={async () => { await supabase.auth.signOut(); navigate('/login'); }} style={{ fontSize: '13px' }}>
                         Déconnexion
                     </button>
                 </div>
             </header>
 
             <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 16px' }}>
-
                 {/* Stats */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '16px', marginBottom: '24px' }}>
                     {[
@@ -245,17 +327,22 @@ export default function AdminDashboard() {
                 {/* Barre d'outils */}
                 <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap', alignItems: 'center' }}>
                     <input type="text" placeholder="🔍 Rechercher par nom, ID..."
-                        value={search} onChange={e => { setSearch(e.target.value); setPage(1) }}
+                        value={search} onChange={e => { setSearch(e.target.value); setPage(1); }}
                         style={{ flex: 1, minWidth: '200px', maxWidth: '320px' }}
                     />
-                    <select value={filterStatus} onChange={e => { setFilterStatus(e.target.value); setPage(1) }}
+                    <select value={filterStatus} onChange={e => { setFilterStatus(e.target.value); setPage(1); }}
                         style={{ width: '160px' }}>
                         <option value="">Tous les statuts</option>
                         <option value="active">✅ Actives</option>
                         <option value="pending">⏳ En attente</option>
                     </select>
+                    <select value={filterFolder} onChange={e => { setFilterFolder(e.target.value); setPage(1); loadCards(); }}
+                        style={{ width: '180px' }}>
+                        <option value="">Tous les dossiers</option>
+                        {folders.map(f => <option key={f.id} value={f.id}>📁 {f.name}</option>)}
+                    </select>
                     <div style={{ marginLeft: 'auto' }}>
-                        <button className="btn-primary" onClick={() => setCreateModal(true)} style={{ whiteSpace: 'nowrap' }}>
+                        <button className="btn-primary" onClick={openCreateModal} style={{ whiteSpace: 'nowrap' }}>
                             ➕ Nouvelle carte
                         </button>
                     </div>
@@ -263,7 +350,6 @@ export default function AdminDashboard() {
 
                 {/* Data Table */}
                 <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-                    {/* En-tête table */}
                     <div style={{
                         display: 'grid',
                         gridTemplateColumns: '100px 1fr 140px 120px 200px',
@@ -299,22 +385,17 @@ export default function AdminDashboard() {
                                 onMouseEnter={e => e.currentTarget.style.background = 'var(--bg)'}
                                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                             >
-                                {/* ID */}
                                 <span style={{ fontFamily: 'monospace', fontWeight: '700', fontSize: '13px', color: 'var(--accent)' }}>
                                     {card.card_id}
                                 </span>
-
-                                {/* Client */}
                                 <div>
                                     <div style={{ fontWeight: '600', fontSize: '14px', color: 'var(--text)' }}>
                                         {card.admin_profile?.full_name || card.card_name || '—'}
                                     </div>
                                     <div style={{ fontSize: '12px', color: 'var(--text-light)' }}>
-                                        {card.card_name && card.admin_profile?.full_name ? card.card_name : ''}
+                                        {card.city && `${card.city}, ${card.country || 'Bénin'}`}
                                     </div>
                                 </div>
-
-                                {/* Statut */}
                                 <span style={{
                                     display: 'inline-flex', alignItems: 'center', gap: '4px',
                                     fontSize: '12px', fontWeight: '600', padding: '4px 10px',
@@ -325,17 +406,15 @@ export default function AdminDashboard() {
                                 }}>
                                     {card.status === 'active' ? '✅ Active' : '⏳ En attente'}
                                 </span>
-
-                                {/* Scans */}
                                 <span style={{ fontSize: '14px', color: 'var(--text-light)', fontWeight: '600' }}>
                                     — scans
                                 </span>
-
-                                {/* Actions */}
                                 <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
                                     <ActionBtn title="Voir la page" icon="👁" onClick={() => window.open(`/u/${card.card_id}`, '_blank')} color="var(--text-light)" />
                                     <ActionBtn title="QR Code" icon="▣" onClick={() => setQrModal(card)} color="#7C3AED" />
-                                    <ActionBtn title="Paramètres" icon="⚙️" onClick={() => navigate(`/admin/card/${card.card_id}`)} color="#1A1265" />
+                                    <ActionBtn title="Modifier profil" icon="✏️" onClick={() => { setProfileForm(card.admin_profile || {}); setProfileModal(card); }} color="#1A1265" />
+                                    <ActionBtn title="Lier client" icon="🔗" onClick={() => setLinkModal(card)} color="#25D366" />
+                                    <ActionBtn title="Supprimer" icon="🗑" onClick={() => setDeleteModal(card)} color="#e53935" />
                                 </div>
                             </div>
                         ))
@@ -356,7 +435,7 @@ export default function AdminDashboard() {
                                     style={{ padding: '6px 14px', fontSize: '13px' }}>
                                     ← Précédent
                                 </button>
-                                {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                                {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => i + 1).map(p => (
                                     <button key={p} onClick={() => setPage(p)} style={{
                                         padding: '6px 12px', fontSize: '13px', borderRadius: 'var(--radius-sm)',
                                         border: p === page ? 'none' : '1px solid var(--border)',
@@ -365,6 +444,7 @@ export default function AdminDashboard() {
                                         cursor: 'pointer',
                                     }}>{p}</button>
                                 ))}
+                                {totalPages > 5 && <span>...</span>}
                                 <button className="btn-ghost" onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
                                     style={{ padding: '6px 14px', fontSize: '13px' }}>
                                     Suivant →
@@ -373,44 +453,126 @@ export default function AdminDashboard() {
                         </div>
                     )}
                 </div>
-
             </main>
 
-            {/* ===== MODALS ===== */}
+            {/* ===== MODAL CRÉATION 2 ÉTAPES ===== */}
+            <Modal isOpen={createModal} onClose={() => setCreateModal(false)} title="➕ Nouvelle carte" size="md">
+                {createStep === 1 ? (
+                    <>
+                        <div className="field">
+                            <label>Nom complet du client *</label>
+                            <input
+                                type="text"
+                                placeholder="Jean Dupont"
+                                value={clientInfo.clientName}
+                                onChange={e => setClientInfo({ ...clientInfo, clientName: e.target.value })}
+                                autoFocus
+                            />
+                        </div>
+                        <div className="field-row">
+                            <div className="field">
+                                <label>Ville</label>
+                                <input
+                                    type="text"
+                                    placeholder="Cotonou"
+                                    value={clientInfo.city}
+                                    onChange={e => setClientInfo({ ...clientInfo, city: e.target.value })}
+                                />
+                            </div>
+                            <div className="field">
+                                <label>Pays</label>
+                                <input
+                                    type="text"
+                                    placeholder="Bénin"
+                                    value={clientInfo.country}
+                                    onChange={e => setClientInfo({ ...clientInfo, country: e.target.value })}
+                                />
+                            </div>
+                        </div>
+                        <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
+                            <button className="btn-ghost" onClick={() => setCreateModal(false)} style={{ flex: 1 }}>
+                                Annuler
+                            </button>
+                            <button className="btn-primary" onClick={goToStep2} style={{ flex: 1 }}>
+                                Suivant →
+                            </button>
+                        </div>
+                    </>
+                ) : (
+                    <>
+                        <div className="field">
+                            <label>Type de page *</label>
+                            <select value={pageType} onChange={e => setPageType(e.target.value)}>
+                                <option value="profile">📄 Page profil personnalisable (le client modifie son contenu)</option>
+                                <option value="url">🔗 Redirection vers une URL fixe</option>
+                                <option value="wifi">📶 Page Wi-Fi (affiche SSID + mot de passe)</option>
+                            </select>
+                        </div>
 
-            {/* Modal créer carte */}
-            <Modal isOpen={createModal} onClose={() => setCreateModal(false)} title="➕ Créer une nouvelle carte" size="sm">
-                <div className="field">
-                    <label>ID unique de la carte *</label>
-                    <input type="text" placeholder="ex: 001, abc123..."
-                        value={newCardId} onChange={e => setNewCardId(e.target.value)}
-                        onKeyDown={e => e.key === 'Enter' && createCard()}
-                        autoFocus
-                    />
-                    <p style={{ fontSize: '12px', color: 'var(--text-light)', marginTop: '4px' }}>
-                        Lien généré : {window.location.origin}/u/<strong>{newCardId || 'id-carte'}</strong>
-                    </p>
-                </div>
-                <div className="field">
-                    <label>Nom du client (pour ta référence)</label>
-                    <input type="text" placeholder="ex: Jean Dupont - Cotonou"
-                        value={newCardName} onChange={e => setNewCardName(e.target.value)}
-                        onKeyDown={e => e.key === 'Enter' && createCard()}
-                    />
-                </div>
-                <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
-                    <button className="btn-ghost" onClick={() => setCreateModal(false)} style={{ flex: 1 }}>Annuler</button>
-                    <button className="btn-primary" onClick={createCard} disabled={creating} style={{ flex: 1, justifyContent: 'center' }}>
-                        {creating ? 'Création...' : '➕ Créer'}
-                    </button>
-                </div>
+                        {pageType === 'url' && (
+                            <div className="field">
+                                <label>URL de redirection *</label>
+                                <input
+                                    type="url"
+                                    placeholder="https://exemple.com"
+                                    value={redirectUrl}
+                                    onChange={e => setRedirectUrl(e.target.value)}
+                                />
+                            </div>
+                        )}
+
+                        {pageType === 'wifi' && (
+                            <>
+                                <div className="field">
+                                    <label>SSID (nom du réseau) *</label>
+                                    <input
+                                        type="text"
+                                        placeholder="MonWiFi"
+                                        value={wifiSsid}
+                                        onChange={e => setWifiSsid(e.target.value)}
+                                    />
+                                </div>
+                                <div className="field">
+                                    <label>Mot de passe</label>
+                                    <input
+                                        type="text"
+                                        placeholder="••••••••"
+                                        value={wifiPassword}
+                                        onChange={e => setWifiPassword(e.target.value)}
+                                    />
+                                </div>
+                                <div className="field">
+                                    <label>Sécurité</label>
+                                    <select value={wifiSecurity} onChange={e => setWifiSecurity(e.target.value)}>
+                                        <option>WPA</option>
+                                        <option>WEP</option>
+                                        <option>nopass</option>
+                                    </select>
+                                </div>
+                            </>
+                        )}
+
+                        <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
+                            <button className="btn-ghost" onClick={goToStep1} style={{ flex: 1 }}>
+                                ← Retour
+                            </button>
+                            <button
+                                className="btn-primary"
+                                onClick={finalizeCreateCard}
+                                disabled={generating}
+                                style={{ flex: 1, justifyContent: 'center' }}
+                            >
+                                {generating ? 'Création...' : '➕ Créer la carte'}
+                            </button>
+                        </div>
+                    </>
+                )}
             </Modal>
 
-            {/* Modal profil */}
+            {/* MODAL PROFIL */}
             <Modal isOpen={!!profileModal} onClose={() => setProfileModal(null)} title={`✏️ Profil — ${profileModal?.card_name || profileModal?.card_id}`} size="lg">
                 {profileModal && (
                     <>
-                        {/* Lien activation */}
                         <div style={{ padding: '12px', background: 'var(--accent-light)', borderRadius: 'var(--radius-md)', marginBottom: '20px' }}>
                             <p style={{ fontSize: '12px', fontWeight: '700', color: 'var(--accent)', marginBottom: '8px' }}>
                                 🔗 Lien d'activation à envoyer au client
@@ -427,7 +589,6 @@ export default function AdminDashboard() {
                             </div>
                         </div>
 
-                        {/* Champs profil */}
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 16px' }}>
                             {SOCIAL_FIELDS.map(field => (
                                 <div key={field.key} className="field" style={{ gridColumn: field.type === 'textarea' ? 'span 2' : 'span 1' }}>
@@ -469,13 +630,28 @@ export default function AdminDashboard() {
                 )}
             </Modal>
 
-            {/* Modal QR */}
+            {/* MODAL QR */}
             <Modal isOpen={!!qrModal} onClose={() => setQrModal(null)} title={`▣ QR — ${qrModal?.card_id}`} size="sm">
-                {qrModal && <QRModal card={qrModal} onCopy={copyText} onDownload={downloadQR} />}
+                {qrModal && (
+                    <div style={{ textAlign: 'center' }}>
+                        <div ref={qrRef} style={{ display: 'inline-block', borderRadius: '12px', overflow: 'hidden', marginBottom: '12px', boxShadow: 'var(--shadow-lg)' }} />
+                        <p style={{ fontSize: '12px', color: 'var(--text-light)', fontFamily: 'monospace', marginBottom: '16px', wordBreak: 'break-all' }}>
+                            {`${window.location.origin}/u/${qrModal.card_id}`}
+                        </p>
+                        <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                            <button className="btn-secondary" onClick={() => copyText(`${window.location.origin}/u/${qrModal.card_id}`, 'Lien NFC')} style={{ padding: '10px 16px', width: 'auto' }}>
+                                📡 Copier lien
+                            </button>
+                            <button className="btn-primary" onClick={() => downloadQR(qrModal)} style={{ padding: '10px 16px', width: 'auto' }}>
+                                ⬇ PNG
+                            </button>
+                        </div>
+                    </div>
+                )}
             </Modal>
 
-            {/* Modal lier client */}
-            <Modal isOpen={!!linkModal} onClose={() => { setLinkModal(null); setUserId('') }} title={`🔗 Lier la carte ${linkModal?.card_id}`} size="sm">
+            {/* MODAL LIER CLIENT */}
+            <Modal isOpen={!!linkModal} onClose={() => { setLinkModal(null); setUserId(''); }} title={`🔗 Lier la carte ${linkModal?.card_id}`} size="sm">
                 {linkModal && (
                     <>
                         <p style={{ fontSize: '13px', color: 'var(--text-light)', marginBottom: '16px' }}>
@@ -490,7 +666,7 @@ export default function AdminDashboard() {
                             />
                         </div>
                         <div style={{ display: 'flex', gap: '12px' }}>
-                            <button className="btn-ghost" onClick={() => { setLinkModal(null); setUserId('') }} style={{ flex: 1 }}>
+                            <button className="btn-ghost" onClick={() => { setLinkModal(null); setUserId(''); }} style={{ flex: 1 }}>
                                 Annuler
                             </button>
                             <button className="btn-primary" onClick={linkCard} disabled={linking || !userId.trim()} style={{ flex: 1, justifyContent: 'center' }}>
@@ -501,7 +677,7 @@ export default function AdminDashboard() {
                 )}
             </Modal>
 
-            {/* Modal supprimer */}
+            {/* MODAL SUPPRIMER */}
             <Modal isOpen={!!deleteModal} onClose={() => setDeleteModal(null)} title="🗑 Supprimer la carte" size="sm">
                 {deleteModal && (
                     <>
@@ -526,9 +702,8 @@ export default function AdminDashboard() {
                     </>
                 )}
             </Modal>
-
         </div>
-    )
+    );
 }
 
 function ActionBtn({ icon, title, onClick, color }) {
@@ -546,15 +721,15 @@ function ActionBtn({ icon, title, onClick, color }) {
                 transition: 'all 0.15s', color,
             }}
             onMouseEnter={e => {
-                e.currentTarget.style.background = color + '15'
-                e.currentTarget.style.borderColor = color
+                e.currentTarget.style.background = color + '15';
+                e.currentTarget.style.borderColor = color;
             }}
             onMouseLeave={e => {
-                e.currentTarget.style.background = 'var(--bg-white)'
-                e.currentTarget.style.borderColor = 'var(--border)'
+                e.currentTarget.style.background = 'var(--bg-white)';
+                e.currentTarget.style.borderColor = 'var(--border)';
             }}
         >
             {icon}
         </button>
-    )
+    );
 }
