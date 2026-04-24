@@ -9,6 +9,7 @@ import PublicProfile from './pages/PublicProfile.jsx'
 import CardRedirect from './pages/CardRedirect.jsx'
 import WhatsAppSupport from './components/WhatsAppSupport.jsx'
 import Activate from './pages/Activate.jsx'
+import CardSettings from './pages/admin/CardSettings.jsx'
 
 function LoadingScreen() {
     return (
@@ -74,6 +75,11 @@ export default function App() {
                         !session ? <Navigate to="/login" replace /> :
                             isAdmin ? <Navigate to="/admin" replace /> :
                                 <Navigate to="/dashboard" replace />
+                } />
+                <Route path="/admin/card/:cardId" element={
+                    <ProtectedAdmin session={session} isAdmin={isAdmin}>
+                        <CardSettings />
+                    </ProtectedAdmin>
                 } />
                 <Route path="*" element={<Navigate to="/" replace />} />
                 <Route path="/activate" element={<Activate />} />

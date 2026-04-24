@@ -333,13 +333,8 @@ export default function AdminDashboard() {
                                 {/* Actions */}
                                 <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
                                     <ActionBtn title="Voir la page" icon="👁" onClick={() => window.open(`/u/${card.card_id}`, '_blank')} color="var(--text-light)" />
-                                    <ActionBtn title="Copier lien NFC" icon="📡" onClick={() => copyText(`${window.location.origin}/u/${card.card_id}`, 'Lien NFC')} color="#1A1265" />
                                     <ActionBtn title="QR Code" icon="▣" onClick={() => setQrModal(card)} color="#7C3AED" />
-                                    <ActionBtn title="Modifier profil" icon="✏️" onClick={() => { setProfileModal(card); setProfileForm(card.admin_profile || {}) }} color="#0A66C2" />
-                                    {card.status === 'pending' && (
-                                        <ActionBtn title="Lier un client" icon="🔗" onClick={() => { setLinkModal(card); setUserId('') }} color="#27AE60" />
-                                    )}
-                                    <ActionBtn title="Supprimer" icon="🗑" onClick={() => setDeleteModal(card)} color="#e53935" />
+                                    <ActionBtn title="Paramètres" icon="⚙️" onClick={() => navigate(`/admin/card/${card.card_id}`)} color="#1A1265" />
                                 </div>
                             </div>
                         ))
