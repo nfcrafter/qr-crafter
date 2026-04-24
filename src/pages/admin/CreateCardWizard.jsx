@@ -16,19 +16,20 @@ export default function CreateCardWizard() {
     const toast = useToast();
     const qrRef = useRef(null);
     const qrCode = useRef(null);
+    const [generatedCardId, setGeneratedCardId] = useState(null);
 
     const [step, setStep] = useState(1);
     const [generating, setGenerating] = useState(false);
     const [uploadingLogo, setUploadingLogo] = useState(false);
 
-    // Étape 1 : Infos privées du client (visible uniquement par l'admin)
+    // Étape 1 : Infos privées du client
     const [clientInfo, setClientInfo] = useState({
         clientName: '',
         city: '',
         country: 'Bénin'
     });
 
-    // Étape 2 : Type de carte et son contenu
+    // Étape 2 : Type de carte et contenu
     const [pageType, setPageType] = useState('profile');
 
     // Pour type URL
@@ -73,7 +74,7 @@ export default function CreateCardWizard() {
         logo: null,
     });
 
-    // Dossiers disponibles
+    // Dossiers
     const [folders, setFolders] = useState([]);
     const [selectedFolder, setSelectedFolder] = useState('');
 
@@ -82,16 +83,16 @@ export default function CreateCardWizard() {
     }, []);
 
     useEffect(() => {
-        if (step === 3 && qrRef.current && !qrCode.current) {
+        if (step === 3 && qrRef.current && !qrCode.current && generatedCardId) {
             initQRCode();
         }
-    }, [step]);
+    }, [step, generatedCardId]);
 
     useEffect(() => {
-        if (qrCode.current && step === 3) {
+        if (qrCode.current && step === 3 && generatedCardId) {
             updateQRCode();
         }
-    }, [qrAppearance, step]);
+    }, [qrAppearance, step, generatedCardId]);
 
     async function loadFolders() {
         const { data } = await supabase.from('folders').select('*').order('created_at');
@@ -99,10 +100,11 @@ export default function CreateCardWizard() {
     }
 
     function initQRCode() {
-        const previewData = 'https://nfcrafter.app/apercu';
+        if (!generatedCardId) return;
+        const url = `${window.location.origin}/u/${generatedCardId}`;
         qrCode.current = new QRCodeStyling({
             width: 280, height: 280, type: 'svg',
-            data: previewData,
+            data: url,
             dotsOptions: { color: qrAppearance.dotsColor, type: qrAppearance.dotsType },
             backgroundOptions: { color: qrAppearance.bgColor },
             cornersSquareOptions: { color: qrAppearance.cornersColor, type: qrAppearance.cornersType },
@@ -118,8 +120,10 @@ export default function CreateCardWizard() {
     }
 
     function updateQRCode() {
+        if (!generatedCardId) return;
+        const url = `${window.location.origin}/u/${generatedCardId}`;
         qrCode.current.update({
-            data: 'https://nfcrafter.app/apercu',
+            data: url,
             dotsOptions: { color: qrAppearance.dotsColor, type: qrAppearance.dotsType },
             backgroundOptions: { color: qrAppearance.bgColor },
             cornersSquareOptions: { color: qrAppearance.cornersColor, type: qrAppearance.cornersType },
@@ -155,8 +159,8 @@ export default function CreateCardWizard() {
         const reader = new FileReader();
         reader.onload = (ev) => {
             setPublicProfile({ ...publicProfile, photo_url: ev.target.result });
-            setUploadingAvatar(false);
             toast('Photo ajoutée', 'success');
+            setUploadingAvatar(false);
         };
         reader.readAsDataURL(file);
     }
@@ -167,8 +171,8 @@ export default function CreateCardWizard() {
         const reader = new FileReader();
         reader.onload = (ev) => {
             setPublicProfile({ ...publicProfile, banner_url: ev.target.result });
-            setUploadingBanner(false);
             toast('Bannière ajoutée', 'success');
+            setUploadingBanner(false);
         };
         reader.readAsDataURL(file);
     }
@@ -201,10 +205,13 @@ export default function CreateCardWizard() {
         if (!validateStep1() || !validateStep2()) return;
 
         setGenerating(true);
+
+        // Générer l'ID UNIQUEMENT ici
         const cardId = await generateUniqueCardId();
+        setGeneratedCardId(cardId);
+
         const token = Math.random().toString(36).substring(2, 10).toUpperCase();
 
-        // Construction du profil admin (qui sera le profil public si type = profile)
         let adminProfile = {};
         if (pageType === 'profile') {
             adminProfile = { ...publicProfile };
@@ -244,9 +251,18 @@ export default function CreateCardWizard() {
         const { error } = await supabase.from('cards').insert(cardData);
         if (error) {
             toast('Erreur : ' + error.message, 'error');
+            setGenerating(false);
         } else {
             toast(`Carte ${cardId} créée avec succès !`, 'success');
-            navigate('/admin');
+
+            // Attendre un peu pour que le QR s'initialise
+            setTimeout(() => {
+                // Télécharger le QR automatiquement
+                if (qrCode.current) {
+                    qrCode.current.download({ name: `QR-${cardId}`, extension: 'png' });
+                }
+                navigate('/admin');
+            }, 500);
         }
         setGenerating(false);
     }
@@ -258,10 +274,16 @@ export default function CreateCardWizard() {
         }
     }, [clientInfo.clientName, pageType]);
 
+    // Pré-générer l'ID pour l'aperçu QR quand on arrive à l'étape 3
+    useEffect(() => {
+        if (step === 3 && !generatedCardId && !generating) {
+            generateUniqueCardId().then(id => setGeneratedCardId(id));
+        }
+    }, [step]);
+
     return (
-        <div style={{ minHeight: '100vh', background: 'var(--bg)', padding: '32px 24px' }}>
+        <div style={{ minHeight: '100vh', background: '#EBEBDF', padding: '32px 24px' }}>
             <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
-                {/* Header avec stepper */}
                 <div style={{ marginBottom: '32px' }}>
                     <button onClick={() => navigate('/admin')} className="btn-ghost" style={{ marginBottom: '16px' }}>
                         ← Retour à l'administration
@@ -276,58 +298,36 @@ export default function CreateCardWizard() {
                                 <div style={{
                                     width: '32px', height: '32px', borderRadius: '50%',
                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    background: step > s.step ? 'var(--success)' : step === s.step ? 'var(--accent)' : 'var(--border)',
-                                    color: step >= s.step ? 'white' : 'var(--text-light)',
+                                    background: step > s.step ? '#27AE60' : step === s.step ? '#1A1265' : '#D4D4C8',
+                                    color: step >= s.step ? 'white' : '#5A5A7A',
                                     fontWeight: '700', fontSize: '14px',
                                 }}>
                                     {step > s.step ? '✓' : s.step}
                                 </div>
-                                <span style={{ fontWeight: step === s.step ? '600' : '400', color: step === s.step ? 'var(--accent)' : 'var(--text-light)' }}>
+                                <span style={{ fontWeight: step === s.step ? '600' : '400', color: step === s.step ? '#1A1265' : '#5A5A7A' }}>
                                     {s.label}
                                 </span>
-                                {s.step < 3 && <div style={{ width: '40px', height: '1px', background: 'var(--border)', marginLeft: '8px' }} />}
+                                {s.step < 3 && <div style={{ width: '40px', height: '1px', background: '#D4D4C8', marginLeft: '8px' }} />}
                             </div>
                         ))}
                     </div>
                 </div>
 
-                {/* ÉTAPE 1 : Infos privées du client */}
+                {/* ÉTAPE 1 */}
                 {step === 1 && (
-                    <div className="card" style={{ maxWidth: '500px' }}>
-                        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', marginBottom: '8px' }}>👤 Informations client</h2>
-                        <p style={{ fontSize: '13px', color: 'var(--text-light)', marginBottom: '24px' }}>
+                    <div style={{ background: 'white', borderRadius: '16px', padding: '24px', maxWidth: '500px', border: '1px solid #D4D4C8' }}>
+                        <h2 style={{ fontFamily: 'Inter', fontSize: '20px', marginBottom: '8px' }}>👤 Informations client</h2>
+                        <p style={{ fontSize: '13px', color: '#5A5A7A', marginBottom: '24px' }}>
                             Ces informations sont privées et visibles uniquement par l'administrateur.
                         </p>
 
                         <div className="field">
                             <label>Nom complet *</label>
-                            <input
-                                type="text"
-                                placeholder="Jean Dupont"
-                                autoFocus
-                                value={clientInfo.clientName}
-                                onChange={e => setClientInfo({ ...clientInfo, clientName: e.target.value })}
-                            />
+                            <input type="text" placeholder="Jean Dupont" autoFocus value={clientInfo.clientName} onChange={e => setClientInfo({ ...clientInfo, clientName: e.target.value })} />
                         </div>
                         <div className="field-row">
-                            <div className="field">
-                                <label>Ville</label>
-                                <input
-                                    type="text"
-                                    placeholder="Cotonou"
-                                    value={clientInfo.city}
-                                    onChange={e => setClientInfo({ ...clientInfo, city: e.target.value })}
-                                />
-                            </div>
-                            <div className="field">
-                                <label>Pays</label>
-                                <input
-                                    type="text"
-                                    placeholder="Bénin"
-                                    value={clientInfo.country}
-                                    onChange={e => setClientInfo({ ...clientInfo, country: e.target.value })}
-                                />
-                            </div>
+                            <div className="field"><label>Ville</label><input type="text" placeholder="Cotonou" value={clientInfo.city} onChange={e => setClientInfo({ ...clientInfo, city: e.target.value })} /></div>
+                            <div className="field"><label>Pays</label><input type="text" placeholder="Bénin" value={clientInfo.country} onChange={e => setClientInfo({ ...clientInfo, country: e.target.value })} /></div>
                         </div>
                         <div className="field">
                             <label>📁 Dossier (optionnel)</label>
@@ -337,18 +337,16 @@ export default function CreateCardWizard() {
                             </select>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '24px' }}>
-                            <button className="btn-primary" onClick={() => { if (validateStep1()) setStep(2); }}>
-                                Suivant →
-                            </button>
+                            <button className="btn-primary" onClick={() => { if (validateStep1()) setStep(2); }}>Suivant →</button>
                         </div>
                     </div>
                 )}
 
-                {/* ÉTAPE 2 : Type de carte et contenu */}
+                {/* ÉTAPE 2 */}
                 {step === 2 && (
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: '32px' }}>
-                        <div className="card">
-                            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', marginBottom: '24px' }}>📄 Type de carte</h2>
+                        <div style={{ background: 'white', borderRadius: '16px', padding: '24px', border: '1px solid #D4D4C8' }}>
+                            <h2 style={{ fontFamily: 'Inter', fontSize: '20px', marginBottom: '24px' }}>📄 Type de carte</h2>
 
                             <div className="field">
                                 <label>Type de carte *</label>
@@ -357,123 +355,51 @@ export default function CreateCardWizard() {
                                     <option value="url">🔗 Redirection URL (client modifie l'URL)</option>
                                     <option value="wifi">📶 Connexion Wi-Fi (client modifie SSID/mot de passe)</option>
                                 </select>
-                                <p style={{ fontSize: '11px', color: 'var(--text-light)', marginTop: '4px' }}>
-                                    {pageType === 'profile' && 'Le client pourra modifier son nom, bio, photo, liens sociaux, etc.'}
-                                    {pageType === 'url' && 'Le client pourra modifier l\'URL de redirection.'}
-                                    {pageType === 'wifi' && 'Le client pourra modifier le SSID et le mot de passe.'}
-                                </p>
                             </div>
 
-                            {/* Formulaire pour type URL */}
                             {pageType === 'url' && (
                                 <div className="field">
                                     <label>URL de redirection par défaut *</label>
-                                    <input
-                                        type="url"
-                                        placeholder="https://exemple.com"
-                                        value={redirectUrl}
-                                        onChange={e => setRedirectUrl(e.target.value)}
-                                    />
+                                    <input type="url" placeholder="https://exemple.com" value={redirectUrl} onChange={e => setRedirectUrl(e.target.value)} />
                                 </div>
                             )}
 
-                            {/* Formulaire pour type Wi-Fi */}
                             {pageType === 'wifi' && (
                                 <>
-                                    <div className="field">
-                                        <label>SSID (nom du réseau) *</label>
-                                        <input
-                                            type="text"
-                                            placeholder="MonWiFi"
-                                            value={wifiSsid}
-                                            onChange={e => setWifiSsid(e.target.value)}
-                                        />
-                                    </div>
-                                    <div className="field">
-                                        <label>Mot de passe</label>
-                                        <input
-                                            type="text"
-                                            placeholder="••••••••"
-                                            value={wifiPassword}
-                                            onChange={e => setWifiPassword(e.target.value)}
-                                        />
-                                    </div>
-                                    <div className="field">
-                                        <label>Sécurité</label>
-                                        <select value={wifiSecurity} onChange={e => setWifiSecurity(e.target.value)}>
-                                            <option value="WPA">WPA/WPA2</option>
-                                            <option value="WEP">WEP</option>
-                                            <option value="nopass">Aucun (réseau ouvert)</option>
-                                        </select>
-                                    </div>
+                                    <div className="field"><label>SSID (nom du réseau) *</label><input type="text" placeholder="MonWiFi" value={wifiSsid} onChange={e => setWifiSsid(e.target.value)} /></div>
+                                    <div className="field"><label>Mot de passe</label><input type="text" placeholder="••••••••" value={wifiPassword} onChange={e => setWifiPassword(e.target.value)} /></div>
+                                    <div className="field"><label>Sécurité</label><select value={wifiSecurity} onChange={e => setWifiSecurity(e.target.value)}><option>WPA</option><option>WEP</option><option>nopass</option></select></div>
                                 </>
                             )}
 
-                            {/* Formulaire pour type Profile (profil public) */}
                             {pageType === 'profile' && (
                                 <>
-                                    <p style={{ fontSize: '13px', color: 'var(--accent)', fontWeight: '600', marginBottom: '16px' }}>
-                                        📝 Remplissez le profil public du client
-                                    </p>
-                                    <ProfileForm
-                                        form={publicProfile}
-                                        onChange={setPublicProfile}
-                                        onUploadAvatar={uploadPublicAvatar}
-                                        onUploadBanner={uploadPublicBanner}
-                                        uploadingAvatar={uploadingAvatar}
-                                        uploadingBanner={uploadingBanner}
-                                        readOnly={false}
-                                    />
+                                    <ProfileForm form={publicProfile} onChange={setPublicProfile} onUploadAvatar={uploadPublicAvatar} onUploadBanner={uploadPublicBanner} uploadingAvatar={uploadingAvatar} uploadingBanner={uploadingBanner} readOnly={false} />
                                 </>
                             )}
 
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '24px' }}>
                                 <button className="btn-ghost" onClick={() => setStep(1)}>← Retour</button>
-                                <button className="btn-primary" onClick={() => { if (validateStep2()) setStep(3); }}>
-                                    Suivant →
-                                </button>
+                                <button className="btn-primary" onClick={() => { if (validateStep2()) setStep(3); }}>Suivant →</button>
                             </div>
                         </div>
 
                         {/* Aperçu téléphone */}
                         <div style={{ position: 'sticky', top: '20px' }}>
-                            <div className="card" style={{ textAlign: 'center' }}>
+                            <div style={{ background: 'white', borderRadius: '16px', padding: '24px', textAlign: 'center', border: '1px solid #D4D4C8' }}>
                                 <h3 style={{ marginBottom: '16px' }}>📱 Aperçu de la page publique</h3>
-                                <div style={{
-                                    background: '#1A1A2E', borderRadius: '32px', padding: '12px',
-                                    width: '260px', margin: '0 auto'
-                                }}>
+                                <div style={{ background: '#1A1A2E', borderRadius: '32px', padding: '12px', width: '260px', margin: '0 auto' }}>
                                     <div style={{ background: '#000', borderRadius: '16px', padding: '8px' }}>
                                         <div style={{ background: '#fff', borderRadius: '24px', minHeight: '420px', padding: '16px' }}>
                                             {pageType === 'profile' && (
                                                 <div style={{ textAlign: 'center' }}>
-                                                    <div style={{
-                                                        width: '60px', height: '60px', borderRadius: '50%',
-                                                        background: publicProfile.photo_url ? `url(${publicProfile.photo_url}) center/cover` : '#1A1265',
-                                                        margin: '0 auto 12px',
-                                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                        fontSize: '24px', color: 'white'
-                                                    }}>
-                                                        {!publicProfile.photo_url && '👤'}
-                                                    </div>
+                                                    <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: '#1A1265', margin: '0 auto 12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', color: 'white' }}>👤</div>
                                                     <p style={{ fontWeight: 'bold' }}>{publicProfile.full_name || 'Nom du client'}</p>
                                                     <p style={{ fontSize: '11px', color: '#666' }}>{publicProfile.title || 'Titre'}</p>
                                                 </div>
                                             )}
-                                            {pageType === 'url' && (
-                                                <div style={{ textAlign: 'center', padding: '20px' }}>
-                                                    <div style={{ fontSize: '48px', marginBottom: '12px' }}>🔗</div>
-                                                    <p style={{ fontSize: '12px', wordBreak: 'break-all' }}>{redirectUrl || 'https://exemple.com'}</p>
-                                                    <p style={{ fontSize: '11px', color: '#666', marginTop: '12px' }}>Redirection automatique</p>
-                                                </div>
-                                            )}
-                                            {pageType === 'wifi' && (
-                                                <div style={{ textAlign: 'center', padding: '20px' }}>
-                                                    <div style={{ fontSize: '48px', marginBottom: '12px' }}>📶</div>
-                                                    <p style={{ fontWeight: 'bold' }}>{wifiSsid || 'Nom du réseau'}</p>
-                                                    {wifiPassword && <p style={{ fontSize: '11px', color: '#666' }}>Mot de passe : ••••••••</p>}
-                                                </div>
-                                            )}
+                                            {pageType === 'url' && <div style={{ textAlign: 'center', padding: '20px' }}><div style={{ fontSize: '48px' }}>🔗</div><p style={{ fontSize: '12px' }}>{redirectUrl || 'https://exemple.com'}</p></div>}
+                                            {pageType === 'wifi' && <div style={{ textAlign: 'center', padding: '20px' }}><div style={{ fontSize: '48px' }}>📶</div><p style={{ fontWeight: 'bold' }}>{wifiSsid || 'Nom du réseau'}</p></div>}
                                         </div>
                                     </div>
                                 </div>
@@ -482,167 +408,32 @@ export default function CreateCardWizard() {
                     </div>
                 )}
 
-                {/* ÉTAPE 3 : Apparence QR */}
+                {/* ÉTAPE 3 */}
                 {step === 3 && (
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '32px' }}>
                         <div>
-                            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', marginBottom: '24px' }}>🎨 Personnalisation du QR Code</h2>
+                            <h2 style={{ fontFamily: 'Inter', fontSize: '20px', marginBottom: '24px' }}>🎨 Personnalisation du QR Code</h2>
 
-                            {/* Style des points */}
-                            <div className="card" style={{ marginBottom: '16px' }}>
+                            <div style={{ background: 'white', borderRadius: '16px', padding: '24px', marginBottom: '16px', border: '1px solid #D4D4C8' }}>
                                 <h3 style={{ fontWeight: '700', marginBottom: '16px' }}>Motif</h3>
-                                <div className="field">
-                                    <label>Style</label>
-                                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                                        {DOT_STYLES.map(s => (
-                                            <button
-                                                key={s}
-                                                onClick={() => updateQR('dotsType', s)}
-                                                style={{
-                                                    padding: '6px 12px', borderRadius: '20px',
-                                                    border: qrAppearance.dotsType === s ? 'none' : '1px solid var(--border)',
-                                                    background: qrAppearance.dotsType === s ? 'var(--accent)' : 'transparent',
-                                                    color: qrAppearance.dotsType === s ? 'white' : 'var(--text-light)',
-                                                    cursor: 'pointer'
-                                                }}
-                                            >
-                                                {s}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                                <div className="field">
-                                    <label>Couleur</label>
-                                    <div style={{ display: 'flex', gap: '8px' }}>
-                                        <input
-                                            type="color"
-                                            value={qrAppearance.dotsColor}
-                                            onChange={e => updateQR('dotsColor', e.target.value)}
-                                            style={{ width: '48px' }}
-                                        />
-                                        <input
-                                            type="text"
-                                            value={qrAppearance.dotsColor}
-                                            onChange={e => updateQR('dotsColor', e.target.value)}
-                                            style={{ flex: 1 }}
-                                        />
-                                    </div>
-                                </div>
-                                <div className="field">
-                                    <label>Fond</label>
-                                    <div style={{ display: 'flex', gap: '8px' }}>
-                                        <input
-                                            type="color"
-                                            value={qrAppearance.bgColor}
-                                            onChange={e => updateQR('bgColor', e.target.value)}
-                                            style={{ width: '48px' }}
-                                        />
-                                        <input
-                                            type="text"
-                                            value={qrAppearance.bgColor}
-                                            onChange={e => updateQR('bgColor', e.target.value)}
-                                            style={{ flex: 1 }}
-                                        />
-                                    </div>
-                                </div>
+                                <div className="field"><label>Style</label><div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>{DOT_STYLES.map(s => <button key={s} onClick={() => updateQR('dotsType', s)} style={{ padding: '6px 12px', borderRadius: '20px', border: qrAppearance.dotsType === s ? 'none' : '1px solid #D4D4C8', background: qrAppearance.dotsType === s ? '#1A1265' : 'transparent', color: qrAppearance.dotsType === s ? 'white' : '#5A5A7A', cursor: 'pointer' }}>{s}</button>)}</div></div>
+                                <div className="field"><label>Couleur</label><div style={{ display: 'flex', gap: '8px' }}><input type="color" value={qrAppearance.dotsColor} onChange={e => updateQR('dotsColor', e.target.value)} style={{ width: '48px' }} /><input type="text" value={qrAppearance.dotsColor} onChange={e => updateQR('dotsColor', e.target.value)} style={{ flex: 1 }} /></div></div>
+                                <div className="field"><label>Fond</label><div style={{ display: 'flex', gap: '8px' }}><input type="color" value={qrAppearance.bgColor} onChange={e => updateQR('bgColor', e.target.value)} style={{ width: '48px' }} /><input type="text" value={qrAppearance.bgColor} onChange={e => updateQR('bgColor', e.target.value)} style={{ flex: 1 }} /></div></div>
                             </div>
 
-                            {/* Style des coins */}
-                            <div className="card" style={{ marginBottom: '16px' }}>
+                            <div style={{ background: 'white', borderRadius: '16px', padding: '24px', marginBottom: '16px', border: '1px solid #D4D4C8' }}>
                                 <h3 style={{ fontWeight: '700', marginBottom: '16px' }}>Coins</h3>
-                                <div className="field">
-                                    <label>Style des coins</label>
-                                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                                        {CORNER_STYLES.map(s => (
-                                            <button
-                                                key={s}
-                                                onClick={() => updateQR('cornersType', s)}
-                                                style={{
-                                                    padding: '6px 12px', borderRadius: '20px',
-                                                    border: qrAppearance.cornersType === s ? 'none' : '1px solid var(--border)',
-                                                    background: qrAppearance.cornersType === s ? 'var(--accent)' : 'transparent',
-                                                    color: qrAppearance.cornersType === s ? 'white' : 'var(--text-light)',
-                                                    cursor: 'pointer'
-                                                }}
-                                            >
-                                                {s}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                                <div className="field">
-                                    <label>Couleur des coins</label>
-                                    <div style={{ display: 'flex', gap: '8px' }}>
-                                        <input
-                                            type="color"
-                                            value={qrAppearance.cornersColor}
-                                            onChange={e => updateQR('cornersColor', e.target.value)}
-                                            style={{ width: '48px' }}
-                                        />
-                                        <input
-                                            type="text"
-                                            value={qrAppearance.cornersColor}
-                                            onChange={e => updateQR('cornersColor', e.target.value)}
-                                            style={{ flex: 1 }}
-                                        />
-                                    </div>
-                                </div>
-                                <div className="field">
-                                    <label>Style des points intérieurs</label>
-                                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                                        {CORNER_DOT_STYLES.map(s => (
-                                            <button
-                                                key={s}
-                                                onClick={() => updateQR('cornersDotType', s)}
-                                                style={{
-                                                    padding: '6px 12px', borderRadius: '20px',
-                                                    border: qrAppearance.cornersDotType === s ? 'none' : '1px solid var(--border)',
-                                                    background: qrAppearance.cornersDotType === s ? 'var(--accent)' : 'transparent',
-                                                    color: qrAppearance.cornersDotType === s ? 'white' : 'var(--text-light)',
-                                                    cursor: 'pointer'
-                                                }}
-                                            >
-                                                {s}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                                <div className="field">
-                                    <label>Couleur des points intérieurs</label>
-                                    <div style={{ display: 'flex', gap: '8px' }}>
-                                        <input
-                                            type="color"
-                                            value={qrAppearance.cornersDotColor}
-                                            onChange={e => updateQR('cornersDotColor', e.target.value)}
-                                            style={{ width: '48px' }}
-                                        />
-                                        <input
-                                            type="text"
-                                            value={qrAppearance.cornersDotColor}
-                                            onChange={e => updateQR('cornersDotColor', e.target.value)}
-                                            style={{ flex: 1 }}
-                                        />
-                                    </div>
-                                </div>
+                                <div className="field"><label>Style des coins</label><div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>{CORNER_STYLES.map(s => <button key={s} onClick={() => updateQR('cornersType', s)} style={{ padding: '6px 12px', borderRadius: '20px', border: qrAppearance.cornersType === s ? 'none' : '1px solid #D4D4C8', background: qrAppearance.cornersType === s ? '#1A1265' : 'transparent', color: qrAppearance.cornersType === s ? 'white' : '#5A5A7A', cursor: 'pointer' }}>{s}</button>)}</div></div>
+                                <div className="field"><label>Couleur des coins</label><div style={{ display: 'flex', gap: '8px' }}><input type="color" value={qrAppearance.cornersColor} onChange={e => updateQR('cornersColor', e.target.value)} style={{ width: '48px' }} /><input type="text" value={qrAppearance.cornersColor} onChange={e => updateQR('cornersColor', e.target.value)} style={{ flex: 1 }} /></div></div>
+                                <div className="field"><label>Style des points intérieurs</label><div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>{CORNER_DOT_STYLES.map(s => <button key={s} onClick={() => updateQR('cornersDotType', s)} style={{ padding: '6px 12px', borderRadius: '20px', border: qrAppearance.cornersDotType === s ? 'none' : '1px solid #D4D4C8', background: qrAppearance.cornersDotType === s ? '#1A1265' : 'transparent', color: qrAppearance.cornersDotType === s ? 'white' : '#5A5A7A', cursor: 'pointer' }}>{s}</button>)}</div></div>
+                                <div className="field"><label>Couleur des points intérieurs</label><div style={{ display: 'flex', gap: '8px' }}><input type="color" value={qrAppearance.cornersDotColor} onChange={e => updateQR('cornersDotColor', e.target.value)} style={{ width: '48px' }} /><input type="text" value={qrAppearance.cornersDotColor} onChange={e => updateQR('cornersDotColor', e.target.value)} style={{ flex: 1 }} /></div></div>
                             </div>
 
-                            {/* Logo */}
-                            <div className="card">
+                            <div style={{ background: 'white', borderRadius: '16px', padding: '24px', border: '1px solid #D4D4C8' }}>
                                 <h3 style={{ fontWeight: '700', marginBottom: '16px' }}>Logo</h3>
-                                <div className="field">
-                                    <label>Image (PNG, SVG, JPG)</label>
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={e => e.target.files[0] && uploadLogo(e.target.files[0])}
-                                    />
-                                    {uploadingLogo && <p style={{ fontSize: '12px', marginTop: '8px' }}>Chargement...</p>}
-                                </div>
-                                {qrAppearance.logo && (
-                                    <button className="btn-ghost" onClick={removeLogo} style={{ marginTop: '8px' }}>
-                                        🗑 Supprimer le logo
-                                    </button>
-                                )}
+                                <div className="field"><label>Image (PNG, SVG, JPG)</label><input type="file" accept="image/*" onChange={e => e.target.files[0] && uploadLogo(e.target.files[0])} /></div>
+                                {uploadingLogo && <p style={{ fontSize: '12px', marginTop: '8px' }}>Chargement...</p>}
+                                {qrAppearance.logo && <button className="btn-ghost" onClick={removeLogo} style={{ marginTop: '8px' }}>🗑 Supprimer le logo</button>}
                             </div>
 
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '24px' }}>
@@ -653,13 +444,18 @@ export default function CreateCardWizard() {
                             </div>
                         </div>
 
-                        {/* Aperçu QR */}
+                        {/* Aperçu QR avec le VRAI lien */}
                         <div style={{ position: 'sticky', top: '20px' }}>
-                            <div className="card" style={{ textAlign: 'center' }}>
+                            <div style={{ background: 'white', borderRadius: '16px', padding: '24px', textAlign: 'center', border: '1px solid #D4D4C8' }}>
                                 <h3 style={{ marginBottom: '16px' }}>🔍 Aperçu du QR</h3>
                                 <div ref={qrRef} style={{ display: 'inline-block', borderRadius: '12px', overflow: 'hidden', marginBottom: '16px' }} />
-                                <p style={{ fontSize: '12px', color: 'var(--text-light)' }}>
-                                    Le QR pointera vers: <code style={{ fontSize: '11px' }}>/u/ID_CARTE</code>
+                                {generatedCardId && (
+                                    <p style={{ fontSize: '12px', color: '#5A5A7A', fontFamily: 'monospace' }}>
+                                        {window.location.origin}/u/{generatedCardId}
+                                    </p>
+                                )}
+                                <p style={{ fontSize: '11px', color: '#5A5A7A', marginTop: '8px' }}>
+                                    Ce QR pointera vers la page publique de la carte
                                 </p>
                             </div>
                         </div>

@@ -4,7 +4,6 @@ import { supabase } from '../../lib/supabase.js';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../../components/Toast.jsx';
 import ProfileForm from '../../components/ProfileForm.jsx';
-import QRCodeStyling from 'qr-code-styling';
 
 export default function ClientDashboard() {
     const navigate = useNavigate();
@@ -14,26 +13,20 @@ export default function ClientDashboard() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
 
-    // Profil privé (visible uniquement par le client)
-    const [profile, setProfile] = useState({
-        full_name: '',
-        city: '',
-        country: 'Bénin'
-    });
+    // Profil privé
+    const [profile, setProfile] = useState({ full_name: '', city: '', country: 'Bénin' });
 
     // Mot de passe
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [updatingPassword, setUpdatingPassword] = useState(false);
 
-    // Cartes du client
+    // Cartes
     const [userCards, setUserCards] = useState([]);
     const [selectedCard, setSelectedCard] = useState(null);
     const [cardDetails, setCardDetails] = useState(null);
-    const [qrCodeImage, setQrCodeImage] = useState(null);
-    const [generatingQR, setGeneratingQR] = useState(false);
 
-    // Contenu modifiable selon le type de carte
+    // Contenu modifiable
     const [cardContent, setCardContent] = useState({});
     const [savingContent, setSavingContent] = useState(false);
 
@@ -43,19 +36,13 @@ export default function ClientDashboard() {
     const [uploadingBanner, setUploadingBanner] = useState(false);
     const [savingPublicProfile, setSavingPublicProfile] = useState(false);
 
-    // Onglet actif
     const [activeTab, setActiveTab] = useState('profil');
 
-    useEffect(() => {
-        loadUserData();
-    }, []);
+    useEffect(() => { loadUserData(); }, []);
 
     useEffect(() => {
         if (selectedCard) {
             loadCardDetails();
-            if (cardDetails?.page_type === 'profile') {
-                loadPublicProfile();
-            }
         }
     }, [selectedCard]);
 
@@ -64,7 +51,6 @@ export default function ClientDashboard() {
         const { data: { user } } = await supabase.auth.getUser();
         setUser(user);
 
-        // Charger profil privé
         let { data: profileData } = await supabase
             .from('profiles')
             .select('full_name, city, country')
@@ -77,7 +63,6 @@ export default function ClientDashboard() {
         }
         setProfile(profileData);
 
-        // Charger les cartes du client
         const { data: cards } = await supabase
             .from('user_cards')
             .select('card_id, profile_name')
@@ -96,29 +81,23 @@ export default function ClientDashboard() {
 
         const { data } = await supabase
             .from('cards')
-            .select('page_type, redirect_url, wifi_ssid, wifi_password, wifi_security')
+            .select('page_type, redirect_url, wifi_ssid, wifi_password, wifi_security, admin_profile')
             .eq('card_id', selectedCard.card_id)
             .single();
 
         setCardDetails(data);
-        setCardContent({
-            redirect_url: data?.redirect_url || '',
-            wifi_ssid: data?.wifi_ssid || '',
-            wifi_password: data?.wifi_password || '',
-            wifi_security: data?.wifi_security || 'WPA'
-        });
-    }
 
-    async function loadPublicProfile() {
-        if (!selectedCard) return;
-        const { data } = await supabase
-            .from('cards')
-            .select('admin_profile')
-            .eq('card_id', selectedCard.card_id)
-            .single();
-
-        if (data?.admin_profile) {
-            setPublicProfile(data.admin_profile);
+        // Charger le contenu selon le type
+        if (data?.page_type === 'url') {
+            setCardContent({ redirect_url: data.redirect_url || '' });
+        } else if (data?.page_type === 'wifi') {
+            setCardContent({
+                wifi_ssid: data.wifi_ssid || '',
+                wifi_password: data.wifi_password || '',
+                wifi_security: data.wifi_security || 'WPA'
+            });
+        } else if (data?.page_type === 'profile') {
+            setPublicProfile(data.admin_profile || {});
         }
     }
 
@@ -178,6 +157,7 @@ export default function ClientDashboard() {
     }
 
     async function savePublicProfile() {
+        if (!selectedCard) return;
         setSavingPublicProfile(true);
         const { error } = await supabase
             .from('cards')
@@ -192,48 +172,25 @@ export default function ClientDashboard() {
     async function uploadPublicAvatar(file) {
         if (!file) return;
         setUploadingAvatar(true);
-        const ext = file.name.split('.').pop();
-        const path = `public/${selectedCard.card_id}/avatar_${Date.now()}.${ext}`;
-        const { error } = await supabase.storage.from('avatars').upload(path, file, { upsert: true });
-        if (error) toast('Erreur upload', 'error');
-        else {
-            const { data } = supabase.storage.from('avatars').getPublicUrl(path);
-            setPublicProfile({ ...publicProfile, photo_url: data.publicUrl });
-            toast('Photo mise à jour !', 'success');
-        }
-        setUploadingAvatar(false);
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            setPublicProfile({ ...publicProfile, photo_url: ev.target.result });
+            toast('Photo mise à jour', 'success');
+            setUploadingAvatar(false);
+        };
+        reader.readAsDataURL(file);
     }
 
     async function uploadPublicBanner(file) {
         if (!file) return;
         setUploadingBanner(true);
-        const ext = file.name.split('.').pop();
-        const path = `public/${selectedCard.card_id}/banner_${Date.now()}.${ext}`;
-        const { error } = await supabase.storage.from('banners').upload(path, file, { upsert: true });
-        if (error) toast('Erreur upload', 'error');
-        else {
-            const { data } = supabase.storage.from('banners').getPublicUrl(path);
-            setPublicProfile({ ...publicProfile, banner_url: data.publicUrl });
-            toast('Bannière mise à jour !', 'success');
-        }
-        setUploadingBanner(false);
-    }
-
-    async function generateQR() {
-        if (!selectedCard) return;
-        setGeneratingQR(true);
-        const url = `${window.location.origin}/u/${selectedCard.card_id}`;
-        const QRCodeStyling = (await import('qr-code-styling')).default;
-        const qr = new QRCodeStyling({
-            width: 300, height: 300, type: 'svg',
-            data: url,
-            dotsOptions: { color: '#1A1265', type: 'rounded' },
-            backgroundOptions: { color: '#EBEBDF' },
-            cornersSquareOptions: { color: '#1A1265', type: 'extra-rounded' },
-        });
-        const canvas = await qr.getRawData('png');
-        setQrCodeImage(canvas);
-        setGeneratingQR(false);
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            setPublicProfile({ ...publicProfile, banner_url: ev.target.result });
+            toast('Bannière mise à jour', 'success');
+            setUploadingBanner(false);
+        };
+        reader.readAsDataURL(file);
     }
 
     async function logout() {
@@ -242,140 +199,66 @@ export default function ClientDashboard() {
     }
 
     if (loading) {
-        return (
-            <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}>
-                <p>Chargement...</p>
-            </div>
-        );
+        return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#EBEBDF' }}><p>Chargement...</p></div>;
     }
 
-    // Déterminer les onglets disponibles
     const getTabs = () => {
         const tabs = [{ id: 'profil', label: '👤 Mon profil' }];
-
         if (selectedCard) {
-            tabs.push({ id: 'carte', label: '💳 Ma carte' });
-
-            if (cardDetails?.page_type === 'url') {
-                tabs.push({ id: 'contenu', label: '🔗 URL' });
-            } else if (cardDetails?.page_type === 'wifi') {
-                tabs.push({ id: 'contenu', label: '📶 Wi-Fi' });
-            } else if (cardDetails?.page_type === 'profile') {
-                tabs.push({ id: 'contenu', label: '📄 Mon profil public' });
-            }
-
+            if (cardDetails?.page_type === 'url') tabs.push({ id: 'contenu', label: '🔗 URL' });
+            else if (cardDetails?.page_type === 'wifi') tabs.push({ id: 'contenu', label: '📶 Wi-Fi' });
+            else if (cardDetails?.page_type === 'profile') tabs.push({ id: 'contenu', label: '📄 Mon profil public' });
             tabs.push({ id: 'qr', label: '▣ QR Code' });
         }
-
         tabs.push({ id: 'securite', label: '🔒 Sécurité' });
         return tabs;
     };
 
-    const tabs = getTabs();
+    const publicUrl = selectedCard ? `${window.location.origin}/u/${selectedCard.card_id}` : '';
 
     return (
-        <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
-            {/* Header */}
-            <header style={{
-                background: 'var(--bg-white)', borderBottom: '1px solid var(--border)',
-                padding: '0 24px', position: 'sticky', top: 0, zIndex: 100,
-            }}>
-                <div style={{
-                    maxWidth: '680px', margin: '0 auto', height: '64px',
-                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                }}>
+        <div style={{ minHeight: '100vh', background: '#EBEBDF' }}>
+            <header style={{ background: 'white', borderBottom: '1px solid #D4D4C8', padding: '0 24px', position: 'sticky', top: 0, zIndex: 100 }}>
+                <div style={{ maxWidth: '680px', margin: '0 auto', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <img src="/logo.png" alt="NFCrafter" style={{ height: '32px' }} />
-                        <span style={{ fontWeight: '800', fontSize: '18px', color: 'var(--accent)' }}>NFCrafter</span>
+                        <span style={{ fontWeight: '800', fontSize: '18px', color: '#1A1265' }}>NFCrafter</span>
                     </div>
-                    <button className="btn-ghost" onClick={logout} style={{ padding: '8px 16px', fontSize: '13px' }}>
-                        Déconnexion
-                    </button>
+                    <button onClick={logout} style={{ background: 'transparent', border: '1px solid #D4D4C8', borderRadius: '6px', padding: '8px 16px', cursor: 'pointer' }}>Déconnexion</button>
                 </div>
             </header>
 
             <main style={{ maxWidth: '680px', margin: '0 auto', padding: '24px 16px' }}>
-
-                {/* Sélecteur de carte (si plusieurs cartes) */}
                 {userCards.length > 1 && (
-                    <div className="card" style={{ marginBottom: '20px' }}>
+                    <div style={{ background: 'white', borderRadius: '10px', padding: '20px', marginBottom: '20px', border: '1px solid #D4D4C8' }}>
                         <label>Mes cartes</label>
-                        <select
-                            value={selectedCard?.card_id || ''}
-                            onChange={e => setSelectedCard(userCards.find(c => c.card_id === e.target.value))}
-                        >
-                            {userCards.map(c => (
-                                <option key={c.card_id} value={c.card_id}>
-                                    {c.profile_name || c.card_id}
-                                </option>
-                            ))}
+                        <select value={selectedCard?.card_id || ''} onChange={e => setSelectedCard(userCards.find(c => c.card_id === e.target.value))}>
+                            {userCards.map(c => <option key={c.card_id} value={c.card_id}>{c.profile_name || c.card_id}</option>)}
                         </select>
                     </div>
                 )}
 
-                {/* Onglets */}
                 <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>
-                    {tabs.map(tab => (
+                    {getTabs().map(tab => (
                         <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
-                            padding: '10px 16px', borderRadius: 'var(--radius-md)',
-                            border: 'none', cursor: 'pointer', fontSize: '13px', fontWeight: '600',
-                            background: activeTab === tab.id ? 'var(--accent)' : 'var(--bg-white)',
-                            color: activeTab === tab.id ? 'white' : 'var(--text-light)',
-                        }}>
-                            {tab.label}
-                        </button>
+                            padding: '10px 16px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontSize: '13px', fontWeight: '600',
+                            background: activeTab === tab.id ? '#1A1265' : 'white', color: activeTab === tab.id ? 'white' : '#5A5A7A'
+                        }}>{tab.label}</button>
                     ))}
                 </div>
 
-                {/* Tab PROFIL PRIVÉ */}
                 {activeTab === 'profil' && (
-                    <div className="card">
-                        <h3 style={{ fontWeight: '700', marginBottom: '16px', color: 'var(--accent)' }}>👤 Mes informations personnelles</h3>
-                        <p style={{ fontSize: '13px', color: 'var(--text-light)', marginBottom: '16px' }}>
-                            Ces informations sont privées et visibles uniquement par vous.
-                        </p>
-
-                        <div className="field">
-                            <label>Nom complet</label>
-                            <input type="text" value={profile.full_name || ''} onChange={e => setProfile({ ...profile, full_name: e.target.value })} />
-                        </div>
-                        <div className="field-row">
-                            <div className="field">
-                                <label>Ville</label>
-                                <input type="text" placeholder="Cotonou" value={profile.city || ''} onChange={e => setProfile({ ...profile, city: e.target.value })} />
-                            </div>
-                            <div className="field">
-                                <label>Pays</label>
-                                <input type="text" placeholder="Bénin" value={profile.country || ''} onChange={e => setProfile({ ...profile, country: e.target.value })} />
-                            </div>
-                        </div>
-
-                        <button className="btn-primary" onClick={savePrivateProfile} disabled={saving} style={{ width: '100%', justifyContent: 'center' }}>
-                            {saving ? 'Sauvegarde...' : '💾 Sauvegarder mon profil'}
-                        </button>
+                    <div style={{ background: 'white', borderRadius: '16px', padding: '24px', border: '1px solid #D4D4C8' }}>
+                        <h3 style={{ marginBottom: '16px', color: '#1A1265' }}>👤 Mes informations personnelles</h3>
+                        <div className="field"><label>Nom complet</label><input type="text" value={profile.full_name || ''} onChange={e => setProfile({ ...profile, full_name: e.target.value })} /></div>
+                        <div className="field-row"><div className="field"><label>Ville</label><input type="text" value={profile.city || ''} onChange={e => setProfile({ ...profile, city: e.target.value })} /></div><div className="field"><label>Pays</label><input type="text" value={profile.country || ''} onChange={e => setProfile({ ...profile, country: e.target.value })} /></div></div>
+                        <button onClick={savePrivateProfile} disabled={saving} style={{ width: '100%', background: '#1A1265', color: 'white', border: 'none', padding: '12px', borderRadius: '6px', cursor: 'pointer' }}>{saving ? 'Sauvegarde...' : '💾 Sauvegarder'}</button>
                     </div>
                 )}
 
-                {/* Tab INFO CARTE */}
-                {activeTab === 'carte' && selectedCard && (
-                    <div className="card">
-                        <h3 style={{ fontWeight: '700', marginBottom: '16px', color: 'var(--accent)' }}>💳 Informations de ma carte</h3>
-
-                        <InfoRow label="ID de la carte" value={selectedCard.card_id} />
-                        <InfoRow label="Nom de la carte" value={selectedCard.profile_name || '—'} />
-                        <InfoRow label="Type de carte" value={
-                            cardDetails?.page_type === 'profile' ? '📄 Page profil' :
-                                cardDetails?.page_type === 'url' ? '🔗 Redirection URL' :
-                                    cardDetails?.page_type === 'wifi' ? '📶 Connexion Wi-Fi' : '—'
-                        } />
-                        <InfoRow label="Lien public" value={`${window.location.origin}/u/${selectedCard.card_id}`} isLink />
-                    </div>
-                )}
-
-                {/* Tab CONTENU (selon le type de carte) */}
                 {activeTab === 'contenu' && cardDetails && (
-                    <div className="card">
-                        <h3 style={{ fontWeight: '700', marginBottom: '16px', color: 'var(--accent)' }}>
+                    <div style={{ background: 'white', borderRadius: '16px', padding: '24px', border: '1px solid #D4D4C8' }}>
+                        <h3 style={{ marginBottom: '16px', color: '#1A1265' }}>
                             {cardDetails.page_type === 'url' && '🔗 URL de redirection'}
                             {cardDetails.page_type === 'wifi' && '📶 Configuration Wi-Fi'}
                             {cardDetails.page_type === 'profile' && '📄 Mon profil public'}
@@ -383,132 +266,52 @@ export default function ClientDashboard() {
 
                         {cardDetails.page_type === 'url' && (
                             <>
-                                <div className="field">
-                                    <label>URL de redirection</label>
-                                    <input
-                                        type="url"
-                                        placeholder="https://exemple.com"
-                                        value={cardContent.redirect_url || ''}
-                                        onChange={e => setCardContent({ ...cardContent, redirect_url: e.target.value })}
-                                    />
-                                    <p style={{ fontSize: '11px', color: 'var(--text-light)', marginTop: '4px' }}>
-                                        Les personnes qui scannent votre carte seront redirigées vers cette URL.
-                                    </p>
-                                </div>
-                                <button className="btn-primary" onClick={saveCardContent} disabled={savingContent} style={{ width: '100%' }}>
-                                    {savingContent ? 'Sauvegarde...' : '💾 Sauvegarder l\'URL'}
-                                </button>
+                                <div className="field"><label>URL de redirection</label><input type="url" placeholder="https://exemple.com" value={cardContent.redirect_url || ''} onChange={e => setCardContent({ ...cardContent, redirect_url: e.target.value })} /></div>
+                                <button onClick={saveCardContent} disabled={savingContent} style={{ width: '100%', background: '#1A1265', color: 'white', border: 'none', padding: '12px', borderRadius: '6px', cursor: 'pointer' }}>{savingContent ? 'Sauvegarde...' : '💾 Sauvegarder'}</button>
                             </>
                         )}
 
                         {cardDetails.page_type === 'wifi' && (
                             <>
-                                <div className="field">
-                                    <label>SSID (nom du réseau)</label>
-                                    <input type="text" value={cardContent.wifi_ssid || ''} onChange={e => setCardContent({ ...cardContent, wifi_ssid: e.target.value })} />
-                                </div>
-                                <div className="field">
-                                    <label>Mot de passe</label>
-                                    <input type="text" value={cardContent.wifi_password || ''} onChange={e => setCardContent({ ...cardContent, wifi_password: e.target.value })} />
-                                </div>
-                                <div className="field">
-                                    <label>Sécurité</label>
-                                    <select value={cardContent.wifi_security || 'WPA'} onChange={e => setCardContent({ ...cardContent, wifi_security: e.target.value })}>
-                                        <option>WPA</option><option>WEP</option><option>nopass</option>
-                                    </select>
-                                </div>
-                                <button className="btn-primary" onClick={saveCardContent} disabled={savingContent} style={{ width: '100%' }}>
-                                    {savingContent ? 'Sauvegarde...' : '💾 Sauvegarder le Wi-Fi'}
-                                </button>
+                                <div className="field"><label>SSID</label><input type="text" value={cardContent.wifi_ssid || ''} onChange={e => setCardContent({ ...cardContent, wifi_ssid: e.target.value })} /></div>
+                                <div className="field"><label>Mot de passe</label><input type="text" value={cardContent.wifi_password || ''} onChange={e => setCardContent({ ...cardContent, wifi_password: e.target.value })} /></div>
+                                <button onClick={saveCardContent} disabled={savingContent} style={{ width: '100%', background: '#1A1265', color: 'white', border: 'none', padding: '12px', borderRadius: '6px', cursor: 'pointer' }}>{savingContent ? 'Sauvegarde...' : '💾 Sauvegarder'}</button>
                             </>
                         )}
 
                         {cardDetails.page_type === 'profile' && (
                             <>
-                                <ProfileForm
-                                    form={publicProfile}
-                                    onChange={setPublicProfile}
-                                    onUploadAvatar={uploadPublicAvatar}
-                                    onUploadBanner={uploadPublicBanner}
-                                    uploadingAvatar={uploadingAvatar}
-                                    uploadingBanner={uploadingBanner}
-                                    readOnly={false}
-                                />
-                                <button className="btn-primary" onClick={savePublicProfile} disabled={savingPublicProfile} style={{ width: '100%', marginTop: '16px' }}>
-                                    {savingPublicProfile ? 'Sauvegarde...' : '💾 Sauvegarder mon profil public'}
-                                </button>
+                                <ProfileForm form={publicProfile} onChange={setPublicProfile} onUploadAvatar={uploadPublicAvatar} onUploadBanner={uploadPublicBanner} uploadingAvatar={uploadingAvatar} uploadingBanner={uploadingBanner} readOnly={false} />
+                                <button onClick={savePublicProfile} disabled={savingPublicProfile} style={{ width: '100%', background: '#1A1265', color: 'white', border: 'none', padding: '12px', borderRadius: '6px', cursor: 'pointer', marginTop: '16px' }}>{savingPublicProfile ? 'Sauvegarde...' : '💾 Sauvegarder mon profil public'}</button>
                             </>
                         )}
                     </div>
                 )}
 
-                {/* Tab QR CODE */}
                 {activeTab === 'qr' && selectedCard && (
-                    <div className="card" style={{ textAlign: 'center' }}>
-                        <h3 style={{ fontWeight: '700', marginBottom: '16px', color: 'var(--accent)' }}>📱 Mon QR Code</h3>
-                        <p style={{ fontSize: '13px', color: 'var(--text-light)', marginBottom: '16px' }}>
-                            Scannez ce QR pour accéder à votre page publique
-                        </p>
-
-                        {qrCodeImage ? (
-                            <div>
-                                <img src={URL.createObjectURL(qrCodeImage)} alt="QR Code" style={{ width: '200px', height: '200px' }} />
-                                <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginTop: '16px' }}>
-                                    <a href={URL.createObjectURL(qrCodeImage)} download={`qr-${selectedCard.card_id}.png`} className="btn-primary" style={{ textDecoration: 'none' }}>
-                                        ⬇ Télécharger PNG
-                                    </a>
-                                    <button className="btn-secondary" onClick={() => navigator.clipboard.writeText(`${window.location.origin}/u/${selectedCard.card_id}`)}>
-                                        📋 Copier le lien
-                                    </button>
-                                </div>
-                            </div>
-                        ) : (
-                            <button className="btn-primary" onClick={generateQR} disabled={generatingQR}>
-                                {generatingQR ? 'Génération...' : '🎨 Générer mon QR Code'}
-                            </button>
-                        )}
+                    <div style={{ background: 'white', borderRadius: '16px', padding: '24px', textAlign: 'center', border: '1px solid #D4D4C8' }}>
+                        <h3 style={{ marginBottom: '16px', color: '#1A1265' }}>📱 Mon QR Code</h3>
+                        <p style={{ marginBottom: '16px', fontSize: '13px', color: '#666' }}>Scannez ce QR pour accéder à votre page publique</p>
+                        <div id="qr-container" style={{ display: 'inline-block', background: '#EBEBDF', padding: '16px', borderRadius: '12px' }}>
+                            <p style={{ fontSize: '12px' }}>QR Code généré à la création de la carte</p>
+                            <p style={{ fontSize: '11px', fontFamily: 'monospace', marginTop: '8px' }}>{publicUrl}</p>
+                        </div>
+                        <div style={{ marginTop: '16px', display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                            <button onClick={() => window.open(publicUrl, '_blank')} style={{ background: '#1A1265', color: 'white', border: 'none', padding: '8px 20px', borderRadius: '6px', cursor: 'pointer' }}>Voir ma page</button>
+                            <button onClick={() => navigator.clipboard.writeText(publicUrl)} style={{ background: 'transparent', border: '1px solid #1A1265', color: '#1A1265', padding: '8px 20px', borderRadius: '6px', cursor: 'pointer' }}>Copier le lien</button>
+                        </div>
                     </div>
                 )}
 
-                {/* Tab SÉCURITÉ */}
                 {activeTab === 'securite' && (
-                    <div className="card">
-                        <h3 style={{ fontWeight: '700', marginBottom: '16px', color: 'var(--accent)' }}>🔒 Changer mon mot de passe</h3>
-
-                        <div className="field">
-                            <label>Nouveau mot de passe</label>
-                            <input type="password" placeholder="••••••••" value={newPassword} onChange={e => setNewPassword(e.target.value)} />
-                        </div>
-                        <div className="field">
-                            <label>Confirmer</label>
-                            <input type="password" placeholder="••••••••" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} />
-                        </div>
-
-                        <button className="btn-primary" onClick={updatePassword} disabled={updatingPassword} style={{ width: '100%', justifyContent: 'center' }}>
-                            {updatingPassword ? 'Mise à jour...' : 'Mettre à jour le mot de passe'}
-                        </button>
+                    <div style={{ background: 'white', borderRadius: '16px', padding: '24px', border: '1px solid #D4D4C8' }}>
+                        <h3 style={{ marginBottom: '16px', color: '#1A1265' }}>🔒 Changer mon mot de passe</h3>
+                        <div className="field"><label>Nouveau mot de passe</label><input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} /></div>
+                        <div className="field"><label>Confirmer</label><input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} /></div>
+                        <button onClick={updatePassword} disabled={updatingPassword} style={{ width: '100%', background: '#1A1265', color: 'white', border: 'none', padding: '12px', borderRadius: '6px', cursor: 'pointer' }}>{updatingPassword ? 'Mise à jour...' : 'Mettre à jour'}</button>
                     </div>
                 )}
-
             </main>
-        </div>
-    );
-}
-
-function InfoRow({ label, value, isLink }) {
-    return (
-        <div style={{ marginBottom: '12px' }}>
-            <p style={{ fontSize: '12px', color: 'var(--text-light)', marginBottom: '2px' }}>{label}</p>
-            {isLink ? (
-                <div style={{ display: 'flex', gap: '8px' }}>
-                    <input readOnly value={value} style={{ flex: 1, fontSize: '12px', fontFamily: 'monospace' }} />
-                    <button className="btn-secondary" onClick={() => navigator.clipboard.writeText(value)} style={{ padding: '6px 12px', fontSize: '12px' }}>
-                        Copier
-                    </button>
-                </div>
-            ) : (
-                <p style={{ fontWeight: '600', fontFamily: value.includes('/') ? 'monospace' : 'inherit' }}>{value}</p>
-            )}
         </div>
     );
 }
