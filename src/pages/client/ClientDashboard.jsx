@@ -13,7 +13,7 @@ export default function ClientDashboard() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
 
-    // Profil privé
+    // Profil privé (toujours visible pour tous les clients)
     const [profile, setProfile] = useState({ full_name: '', city: '', country: 'Bénin' });
 
     // Mot de passe
@@ -21,16 +21,19 @@ export default function ClientDashboard() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [updatingPassword, setUpdatingPassword] = useState(false);
 
-    // Cartes
+    // Cartes du client
     const [userCards, setUserCards] = useState([]);
     const [selectedCard, setSelectedCard] = useState(null);
     const [cardDetails, setCardDetails] = useState(null);
 
-    // Contenu modifiable
-    const [cardContent, setCardContent] = useState({});
+    // Contenu selon le type de carte
+    const [redirectUrl, setRedirectUrl] = useState('');
+    const [wifiSsid, setWifiSsid] = useState('');
+    const [wifiPassword, setWifiPassword] = useState('');
+    const [wifiSecurity, setWifiSecurity] = useState('WPA');
     const [savingContent, setSavingContent] = useState(false);
 
-    // Profil public (pour type profile)
+    // Profil public (UNIQUEMENT pour les cartes de type 'profile')
     const [publicProfile, setPublicProfile] = useState({});
     const [uploadingAvatar, setUploadingAvatar] = useState(false);
     const [uploadingBanner, setUploadingBanner] = useState(false);
@@ -87,15 +90,13 @@ export default function ClientDashboard() {
 
         setCardDetails(data);
 
-        // Charger le contenu selon le type
+        // Charger le contenu selon le type de carte
         if (data?.page_type === 'url') {
-            setCardContent({ redirect_url: data.redirect_url || '' });
+            setRedirectUrl(data.redirect_url || '');
         } else if (data?.page_type === 'wifi') {
-            setCardContent({
-                wifi_ssid: data.wifi_ssid || '',
-                wifi_password: data.wifi_password || '',
-                wifi_security: data.wifi_security || 'WPA'
-            });
+            setWifiSsid(data.wifi_ssid || '');
+            setWifiPassword(data.wifi_password || '');
+            setWifiSecurity(data.wifi_security || 'WPA');
         } else if (data?.page_type === 'profile') {
             setPublicProfile(data.admin_profile || {});
         }
@@ -133,26 +134,35 @@ export default function ClientDashboard() {
         setUpdatingPassword(false);
     }
 
-    async function saveCardContent() {
+    async function saveUrlContent() {
         if (!selectedCard) return;
         setSavingContent(true);
 
-        const updateData = {};
-        if (cardDetails?.page_type === 'url') {
-            updateData.redirect_url = cardContent.redirect_url;
-        } else if (cardDetails?.page_type === 'wifi') {
-            updateData.wifi_ssid = cardContent.wifi_ssid;
-            updateData.wifi_password = cardContent.wifi_password;
-            updateData.wifi_security = cardContent.wifi_security;
-        }
-
         const { error } = await supabase
             .from('cards')
-            .update(updateData)
+            .update({ redirect_url: redirectUrl })
             .eq('card_id', selectedCard.card_id);
 
         if (error) toast('Erreur : ' + error.message, 'error');
-        else toast('Contenu mis à jour !', 'success');
+        else toast('URL mise à jour !', 'success');
+        setSavingContent(false);
+    }
+
+    async function saveWifiContent() {
+        if (!selectedCard) return;
+        setSavingContent(true);
+
+        const { error } = await supabase
+            .from('cards')
+            .update({
+                wifi_ssid: wifiSsid,
+                wifi_password: wifiPassword,
+                wifi_security: wifiSecurity
+            })
+            .eq('card_id', selectedCard.card_id);
+
+        if (error) toast('Erreur : ' + error.message, 'error');
+        else toast('Wi-Fi mis à jour !', 'success');
         setSavingContent(false);
     }
 
@@ -199,17 +209,28 @@ export default function ClientDashboard() {
     }
 
     if (loading) {
-        return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#EBEBDF' }}><p>Chargement...</p></div>;
+        return (
+            <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#EBEBDF' }}>
+                <p>Chargement...</p>
+            </div>
+        );
     }
 
+    // Déterminer les onglets disponibles
     const getTabs = () => {
         const tabs = [{ id: 'profil', label: '👤 Mon profil' }];
+
         if (selectedCard) {
-            if (cardDetails?.page_type === 'url') tabs.push({ id: 'contenu', label: '🔗 URL' });
-            else if (cardDetails?.page_type === 'wifi') tabs.push({ id: 'contenu', label: '📶 Wi-Fi' });
-            else if (cardDetails?.page_type === 'profile') tabs.push({ id: 'contenu', label: '📄 Mon profil public' });
+            if (cardDetails?.page_type === 'url') {
+                tabs.push({ id: 'url', label: '🔗 URL' });
+            } else if (cardDetails?.page_type === 'wifi') {
+                tabs.push({ id: 'wifi', label: '📶 Wi-Fi' });
+            } else if (cardDetails?.page_type === 'profile') {
+                tabs.push({ id: 'public', label: '📄 Mon profil public' });
+            }
             tabs.push({ id: 'qr', label: '▣ QR Code' });
         }
+
         tabs.push({ id: 'securite', label: '🔒 Sécurité' });
         return tabs;
     };
@@ -229,6 +250,7 @@ export default function ClientDashboard() {
             </header>
 
             <main style={{ maxWidth: '680px', margin: '0 auto', padding: '24px 16px' }}>
+                {/* Sélecteur de carte */}
                 {userCards.length > 1 && (
                     <div style={{ background: 'white', borderRadius: '10px', padding: '20px', marginBottom: '20px', border: '1px solid #D4D4C8' }}>
                         <label>Mes cartes</label>
@@ -238,6 +260,7 @@ export default function ClientDashboard() {
                     </div>
                 )}
 
+                {/* Onglets */}
                 <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>
                     {getTabs().map(tab => (
                         <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
@@ -247,68 +270,85 @@ export default function ClientDashboard() {
                     ))}
                 </div>
 
+                {/* ===== ONGLET PROFIL PRIVÉ ===== */}
                 {activeTab === 'profil' && (
                     <div style={{ background: 'white', borderRadius: '16px', padding: '24px', border: '1px solid #D4D4C8' }}>
                         <h3 style={{ marginBottom: '16px', color: '#1A1265' }}>👤 Mes informations personnelles</h3>
+                        <p style={{ fontSize: '13px', color: '#666', marginBottom: '16px' }}>Ces informations sont privées et visibles uniquement par vous.</p>
                         <div className="field"><label>Nom complet</label><input type="text" value={profile.full_name || ''} onChange={e => setProfile({ ...profile, full_name: e.target.value })} /></div>
                         <div className="field-row"><div className="field"><label>Ville</label><input type="text" value={profile.city || ''} onChange={e => setProfile({ ...profile, city: e.target.value })} /></div><div className="field"><label>Pays</label><input type="text" value={profile.country || ''} onChange={e => setProfile({ ...profile, country: e.target.value })} /></div></div>
-                        <button onClick={savePrivateProfile} disabled={saving} style={{ width: '100%', background: '#1A1265', color: 'white', border: 'none', padding: '12px', borderRadius: '6px', cursor: 'pointer' }}>{saving ? 'Sauvegarde...' : '💾 Sauvegarder'}</button>
+                        <button onClick={savePrivateProfile} disabled={saving} className="btn-primary" style={{ width: '100%' }}>{saving ? 'Sauvegarde...' : '💾 Sauvegarder'}</button>
                     </div>
                 )}
 
-                {activeTab === 'contenu' && cardDetails && (
+                {/* ===== ONGLET URL (type url uniquement) ===== */}
+                {activeTab === 'url' && cardDetails?.page_type === 'url' && (
                     <div style={{ background: 'white', borderRadius: '16px', padding: '24px', border: '1px solid #D4D4C8' }}>
-                        <h3 style={{ marginBottom: '16px', color: '#1A1265' }}>
-                            {cardDetails.page_type === 'url' && '🔗 URL de redirection'}
-                            {cardDetails.page_type === 'wifi' && '📶 Configuration Wi-Fi'}
-                            {cardDetails.page_type === 'profile' && '📄 Mon profil public'}
-                        </h3>
-
-                        {cardDetails.page_type === 'url' && (
-                            <>
-                                <div className="field"><label>URL de redirection</label><input type="url" placeholder="https://exemple.com" value={cardContent.redirect_url || ''} onChange={e => setCardContent({ ...cardContent, redirect_url: e.target.value })} /></div>
-                                <button onClick={saveCardContent} disabled={savingContent} style={{ width: '100%', background: '#1A1265', color: 'white', border: 'none', padding: '12px', borderRadius: '6px', cursor: 'pointer' }}>{savingContent ? 'Sauvegarde...' : '💾 Sauvegarder'}</button>
-                            </>
-                        )}
-
-                        {cardDetails.page_type === 'wifi' && (
-                            <>
-                                <div className="field"><label>SSID</label><input type="text" value={cardContent.wifi_ssid || ''} onChange={e => setCardContent({ ...cardContent, wifi_ssid: e.target.value })} /></div>
-                                <div className="field"><label>Mot de passe</label><input type="text" value={cardContent.wifi_password || ''} onChange={e => setCardContent({ ...cardContent, wifi_password: e.target.value })} /></div>
-                                <button onClick={saveCardContent} disabled={savingContent} style={{ width: '100%', background: '#1A1265', color: 'white', border: 'none', padding: '12px', borderRadius: '6px', cursor: 'pointer' }}>{savingContent ? 'Sauvegarde...' : '💾 Sauvegarder'}</button>
-                            </>
-                        )}
-
-                        {cardDetails.page_type === 'profile' && (
-                            <>
-                                <ProfileForm form={publicProfile} onChange={setPublicProfile} onUploadAvatar={uploadPublicAvatar} onUploadBanner={uploadPublicBanner} uploadingAvatar={uploadingAvatar} uploadingBanner={uploadingBanner} readOnly={false} />
-                                <button onClick={savePublicProfile} disabled={savingPublicProfile} style={{ width: '100%', background: '#1A1265', color: 'white', border: 'none', padding: '12px', borderRadius: '6px', cursor: 'pointer', marginTop: '16px' }}>{savingPublicProfile ? 'Sauvegarde...' : '💾 Sauvegarder mon profil public'}</button>
-                            </>
-                        )}
+                        <h3 style={{ marginBottom: '16px', color: '#1A1265' }}>🔗 URL de redirection</h3>
+                        <p style={{ fontSize: '13px', color: '#666', marginBottom: '16px' }}>Les personnes qui scannent votre carte seront redirigées vers cette URL.</p>
+                        <div className="field"><label>URL</label><input type="url" placeholder="https://exemple.com" value={redirectUrl} onChange={e => setRedirectUrl(e.target.value)} /></div>
+                        <button onClick={saveUrlContent} disabled={savingContent} className="btn-primary" style={{ width: '100%' }}>{savingContent ? 'Sauvegarde...' : '💾 Sauvegarder'}</button>
                     </div>
                 )}
 
+                {/* ===== ONGLET WIFI (type wifi uniquement) ===== */}
+                {activeTab === 'wifi' && cardDetails?.page_type === 'wifi' && (
+                    <div style={{ background: 'white', borderRadius: '16px', padding: '24px', border: '1px solid #D4D4C8' }}>
+                        <h3 style={{ marginBottom: '16px', color: '#1A1265' }}>📶 Configuration Wi-Fi</h3>
+                        <div className="field"><label>SSID (nom du réseau)</label><input type="text" value={wifiSsid} onChange={e => setWifiSsid(e.target.value)} /></div>
+                        <div className="field"><label>Mot de passe</label><input type="text" value={wifiPassword} onChange={e => setWifiPassword(e.target.value)} /></div>
+                        <div className="field"><label>Sécurité</label><select value={wifiSecurity} onChange={e => setWifiSecurity(e.target.value)}><option>WPA</option><option>WEP</option><option>nopass</option></select></div>
+                        <button onClick={saveWifiContent} disabled={savingContent} className="btn-primary" style={{ width: '100%' }}>{savingContent ? 'Sauvegarde...' : '💾 Sauvegarder'}</button>
+                    </div>
+                )}
+
+                {/* ===== ONGLET PROFIL PUBLIC (type profile uniquement) ===== */}
+                {activeTab === 'public' && cardDetails?.page_type === 'profile' && (
+                    <div style={{ background: 'white', borderRadius: '16px', padding: '24px', border: '1px solid #D4D4C8' }}>
+                        <h3 style={{ marginBottom: '16px', color: '#1A1265' }}>📄 Mon profil public</h3>
+                        <p style={{ fontSize: '13px', color: '#666', marginBottom: '16px' }}>Ces informations seront visibles sur votre page publique.</p>
+                        <ProfileForm
+                            form={publicProfile}
+                            onChange={setPublicProfile}
+                            onUploadAvatar={uploadPublicAvatar}
+                            onUploadBanner={uploadPublicBanner}
+                            uploadingAvatar={uploadingAvatar}
+                            uploadingBanner={uploadingBanner}
+                            readOnly={false}
+                        />
+                        <button onClick={savePublicProfile} disabled={savingPublicProfile} className="btn-primary" style={{ width: '100%', marginTop: '16px' }}>
+                            {savingPublicProfile ? 'Sauvegarde...' : '💾 Sauvegarder mon profil public'}
+                        </button>
+                    </div>
+                )}
+
+                {/* ===== ONGLET QR CODE ===== */}
                 {activeTab === 'qr' && selectedCard && (
                     <div style={{ background: 'white', borderRadius: '16px', padding: '24px', textAlign: 'center', border: '1px solid #D4D4C8' }}>
                         <h3 style={{ marginBottom: '16px', color: '#1A1265' }}>📱 Mon QR Code</h3>
                         <p style={{ marginBottom: '16px', fontSize: '13px', color: '#666' }}>Scannez ce QR pour accéder à votre page publique</p>
-                        <div id="qr-container" style={{ display: 'inline-block', background: '#EBEBDF', padding: '16px', borderRadius: '12px' }}>
-                            <p style={{ fontSize: '12px' }}>QR Code généré à la création de la carte</p>
-                            <p style={{ fontSize: '11px', fontFamily: 'monospace', marginTop: '8px' }}>{publicUrl}</p>
+                        <div style={{ background: '#EBEBDF', padding: '20px', borderRadius: '12px', display: 'inline-block' }}>
+                            <img
+                                src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(publicUrl)}`}
+                                alt="QR Code"
+                                style={{ width: '200px', height: '200px' }}
+                            />
                         </div>
+                        <p style={{ fontSize: '11px', fontFamily: 'monospace', marginTop: '16px', wordBreak: 'break-all' }}>{publicUrl}</p>
                         <div style={{ marginTop: '16px', display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                            <button onClick={() => window.open(publicUrl, '_blank')} style={{ background: '#1A1265', color: 'white', border: 'none', padding: '8px 20px', borderRadius: '6px', cursor: 'pointer' }}>Voir ma page</button>
-                            <button onClick={() => navigator.clipboard.writeText(publicUrl)} style={{ background: 'transparent', border: '1px solid #1A1265', color: '#1A1265', padding: '8px 20px', borderRadius: '6px', cursor: 'pointer' }}>Copier le lien</button>
+                            <button onClick={() => window.open(publicUrl, '_blank')} className="btn-primary">Voir ma page</button>
+                            <button onClick={() => navigator.clipboard.writeText(publicUrl)} className="btn-secondary">Copier le lien</button>
                         </div>
                     </div>
                 )}
 
+                {/* ===== ONGLET SÉCURITÉ ===== */}
                 {activeTab === 'securite' && (
                     <div style={{ background: 'white', borderRadius: '16px', padding: '24px', border: '1px solid #D4D4C8' }}>
                         <h3 style={{ marginBottom: '16px', color: '#1A1265' }}>🔒 Changer mon mot de passe</h3>
                         <div className="field"><label>Nouveau mot de passe</label><input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} /></div>
                         <div className="field"><label>Confirmer</label><input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} /></div>
-                        <button onClick={updatePassword} disabled={updatingPassword} style={{ width: '100%', background: '#1A1265', color: 'white', border: 'none', padding: '12px', borderRadius: '6px', cursor: 'pointer' }}>{updatingPassword ? 'Mise à jour...' : 'Mettre à jour'}</button>
+                        <button onClick={updatePassword} disabled={updatingPassword} className="btn-primary" style={{ width: '100%' }}>{updatingPassword ? 'Mise à jour...' : 'Mettre à jour'}</button>
                     </div>
                 )}
             </main>
