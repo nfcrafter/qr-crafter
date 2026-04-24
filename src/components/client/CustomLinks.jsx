@@ -1,64 +1,57 @@
-// src/components/client/CustomLinks.jsx
-import { useState, useEffect } from 'react';
-import { supabase } from '../../lib/supabase.js';
+import { useState, useEffect } from 'react'
+import { supabase } from '../../lib/supabase.js'
 
-const EMOJI_OPTIONS = ['🔗', '🌐', '📱', '💼', '🎵', '🎬', '📸', '🛍️', '📧', '📞', '💬', '🎮', '📚', '🎨', '🏪', '💰', '🎯', '⭐'];
+const EMOJI_OPTIONS = ['🔗', '🌐', '📱', '💼', '🎵', '🎬', '📸', '🛍️', '📧', '📞', '💬', '🎮', '📚', '🎨', '🏪', '💰', '🎯', '⭐']
 
-export default function CustomLinks({ profileId, readOnly = false }) {
-    const [links, setLinks] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [adding, setAdding] = useState(false);
-    const [form, setForm] = useState({ title: '', url: '', icon: '🔗' });
-    const [saving, setSaving] = useState(false);
+export default function CustomLinks({ profileId }) {
+    const [links, setLinks] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [adding, setAdding] = useState(false)
+    const [form, setForm] = useState({ title: '', url: '', icon: '🔗' })
+    const [saving, setSaving] = useState(false)
 
-    useEffect(() => {
-        if (profileId) loadLinks();
-    }, [profileId]);
+    useEffect(() => { loadLinks() }, [profileId])
 
     async function loadLinks() {
         const { data } = await supabase
             .from('custom_links')
             .select('*')
             .eq('profile_id', profileId)
-            .order('position');
-        setLinks(data || []);
-        setLoading(false);
+            .order('position')
+        setLinks(data || [])
+        setLoading(false)
     }
 
     async function addLink() {
-        if (!form.title.trim() || !form.url.trim()) return;
-        setSaving(true);
-        let url = form.url;
-        if (!url.startsWith('http')) url = 'https://' + url;
-
+        if (!form.title.trim() || !form.url.trim()) return
+        setSaving(true)
+        let url = form.url
+        if (!url.startsWith('http')) url = 'https://' + url
         const { error } = await supabase.from('custom_links').insert({
             profile_id: profileId,
             title: form.title.trim(),
             url,
             icon: form.icon,
             position: links.length,
-        });
-
+        })
         if (!error) {
-            setForm({ title: '', url: '', icon: '🔗' });
-            setAdding(false);
-            loadLinks();
-        } else {
-            console.error('Error adding link:', error);
+            setForm({ title: '', url: '', icon: '🔗' })
+            setAdding(false)
+            loadLinks()
         }
-        setSaving(false);
+        setSaving(false)
     }
 
     async function deleteLink(id) {
-        if (readOnly) return;
-        await supabase.from('custom_links').delete().eq('id', id);
-        loadLinks();
+        await supabase.from('custom_links').delete().eq('id', id)
+        loadLinks()
     }
 
-    if (loading) return <p style={{ color: 'var(--text-light)', fontSize: '13px' }}>Chargement...</p>;
+    if (loading) return <p style={{ color: 'var(--text-light)', fontSize: '13px' }}>Chargement...</p>
 
     return (
         <div>
+            {/* Liste des liens */}
             {links.map(link => (
                 <div key={link.id} style={{
                     display: 'flex', alignItems: 'center', gap: '12px',
@@ -73,29 +66,17 @@ export default function CustomLinks({ profileId, readOnly = false }) {
                             {link.url}
                         </div>
                     </div>
-                    {!readOnly && (
-                        <button onClick={() => deleteLink(link.id)} style={{
-                            background: 'transparent', border: 'none', color: '#e53935',
-                            cursor: 'pointer', fontSize: '16px', padding: '4px',
-                        }}>🗑</button>
-                    )}
+                    <button onClick={() => deleteLink(link.id)} style={{
+                        background: 'transparent', border: 'none', color: '#e53935',
+                        cursor: 'pointer', fontSize: '16px', padding: '4px',
+                    }}>🗑</button>
                 </div>
             ))}
 
-            {!readOnly && !adding && (
-                <button onClick={() => setAdding(true)} style={{
-                    width: '100%', padding: '12px',
-                    border: '2px dashed var(--border)', borderRadius: 'var(--radius-md)',
-                    background: 'transparent', cursor: 'pointer',
-                    color: 'var(--accent)', fontSize: '14px', fontWeight: '600',
-                    marginTop: '8px', transition: 'all 0.2s',
-                }}>
-                    ＋ Ajouter un lien personnalisé
-                </button>
-            )}
-
-            {!readOnly && adding && (
+            {/* Formulaire ajout */}
+            {adding ? (
                 <div style={{ padding: '16px', background: 'var(--bg)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', marginTop: '8px' }}>
+                    {/* Sélecteur emoji */}
                     <div style={{ marginBottom: '12px' }}>
                         <label style={{ fontSize: '12px', color: 'var(--text-light)', marginBottom: '6px', display: 'block' }}>Icône</label>
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
@@ -126,13 +107,25 @@ export default function CustomLinks({ profileId, readOnly = false }) {
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '8px' }}>
-                        <button className="btn-ghost" onClick={() => setAdding(false)} style={{ flex: 1 }}>Annuler</button>
+                        <button className="btn-ghost" onClick={() => setAdding(false)} style={{ flex: 1 }}>
+                            Annuler
+                        </button>
                         <button className="btn-primary" onClick={addLink} disabled={saving} style={{ flex: 1, justifyContent: 'center' }}>
                             {saving ? 'Ajout...' : 'Ajouter'}
                         </button>
                     </div>
                 </div>
+            ) : (
+                <button onClick={() => setAdding(true)} style={{
+                    width: '100%', padding: '12px',
+                    border: '2px dashed var(--border)', borderRadius: 'var(--radius-md)',
+                    background: 'transparent', cursor: 'pointer',
+                    color: 'var(--accent)', fontSize: '14px', fontWeight: '600',
+                    marginTop: '8px', transition: 'all 0.2s',
+                }}>
+                    ＋ Ajouter un lien personnalisé
+                </button>
             )}
         </div>
-    );
+    )
 }

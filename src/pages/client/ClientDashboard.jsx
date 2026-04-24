@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabase.js';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../../components/Toast.jsx';
 import ProfileForm from '../../components/ProfileForm.jsx';
+import CustomLinks from '../../components/client/CustomLinks.jsx'
 
 export default function ClientDashboard() {
     const navigate = useNavigate();

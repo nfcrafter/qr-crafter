@@ -88,6 +88,14 @@ export default function App() {
                         <CreateCardWizard />
                     </ProtectedAdmin>
                 } />
+                import CreateCardWizard from './pages/admin/CreateCardWizard.jsx'
+
+                // Dans les Routes admin :
+                <Route path="/admin/create" element={
+                    <ProtectedAdmin session={session} isAdmin={isAdmin}>
+                        <CreateCardWizard />
+                    </ProtectedAdmin>
+                } />
                 <Route path="*" element={<Navigate to="/" replace />} />
                 <Route path="/activate" element={<Activate />} />
             </Routes>
