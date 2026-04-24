@@ -114,6 +114,7 @@ export default function CardSettings() {
         setProfileForm(data.admin_profile || {});
 
         if (data.qr_appearance) {
+            console.log('QR appearance from DB:', data.qr_appearance);
             setQrAppearance({
                 ...qrAppearance,
                 ...data.qr_appearance,
@@ -145,34 +146,44 @@ export default function CardSettings() {
     async function uploadLogo(file) {
         if (!file) return;
         setUploadingLogo(true);
-        const reader = new FileReader();
-        reader.onload = async (ev) => {
-            const base64 = ev.target.result;
-            const blob = dataURLToBlob(base64);
-            const fileName = `qr-logo-${cardId}-${Date.now()}.png`;
-            const { error: uploadError } = await supabase.storage
-                .from('qr-logos')
-                .upload(fileName, blob, { upsert: true });
 
-            if (uploadError) {
-                toast('Erreur upload logo', 'error');
-                setUploadingLogo(false);
-                return;
-            }
-
-            const { data: urlData } = supabase.storage
-                .from('qr-logos')
-                .getPublicUrl(fileName);
-
-            setQrAppearance(prev => ({
-                ...prev,
-                logo: urlData.publicUrl,
-                logo_url: urlData.publicUrl
-            }));
-            toast('Logo ajouté !', 'success');
+        // Vérifier le bucket
+        const { data: buckets } = await supabase.storage.listBuckets();
+        const qrLogosBucket = buckets.find(b => b.name === 'qr-logos');
+        if (!qrLogosBucket) {
+            toast('Bucket qr-logos non trouvé. Contactez l\'administrateur.', 'error');
             setUploadingLogo(false);
-        };
-        reader.readAsDataURL(file);
+            return;
+        }
+
+        const fileName = `qr-logo-${cardId}-${Date.now()}.png`;
+
+        // Upload direct du fichier (sans conversion base64)
+        const { error: uploadError } = await supabase.storage
+            .from('qr-logos')
+            .upload(fileName, file, { upsert: true, cacheControl: '3600' });
+
+        if (uploadError) {
+            console.error('Upload error:', uploadError);
+            toast('Erreur upload logo: ' + uploadError.message, 'error');
+            setUploadingLogo(false);
+            return;
+        }
+
+        const { data: urlData } = supabase.storage
+            .from('qr-logos')
+            .getPublicUrl(fileName);
+
+        console.log('Logo uploaded, public URL:', urlData.publicUrl);
+
+        setQrAppearance(prev => ({
+            ...prev,
+            logo: urlData.publicUrl,
+            logo_url: urlData.publicUrl
+        }));
+
+        toast('Logo ajouté !', 'success');
+        setUploadingLogo(false);
     }
 
     function removeLogo() {
@@ -190,14 +201,18 @@ export default function CardSettings() {
             cornersSquareOptions: { color: qrAppearance.cornersColor, type: qrAppearance.cornersType },
             cornersDotOptions: { color: qrAppearance.cornersDotColor, type: qrAppearance.cornersDotType },
         });
-        if (qrAppearance.logo_url) {
+
+        // Vérifier que logo_url existe et est une URL valide
+        if (qrAppearance.logo_url && qrAppearance.logo_url.startsWith('http')) {
             qrCode.current.update({ image: qrAppearance.logo_url });
         }
+
         if (qrRef.current) {
             qrRef.current.innerHTML = '';
             qrCode.current.append(qrRef.current);
         }
     }
+
 
     function updateQRCode() {
         const url = `${window.location.origin}/u/${cardId}`;
@@ -207,7 +222,7 @@ export default function CardSettings() {
             backgroundOptions: { color: qrAppearance.bgColor },
             cornersSquareOptions: { color: qrAppearance.cornersColor, type: qrAppearance.cornersType },
             cornersDotOptions: { color: qrAppearance.cornersDotColor, type: qrAppearance.cornersDotType },
-            image: qrAppearance.logo_url || '',
+            image: (qrAppearance.logo_url && qrAppearance.logo_url.startsWith('http')) ? qrAppearance.logo_url : '',
         });
     }
 
