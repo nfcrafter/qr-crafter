@@ -154,6 +154,15 @@ export default function AdminDashboard() {
             setCreateModal(false);
             loadCards();
         }
+
+        // Dans finalizeCreate, après avoir récupéré les dossiers
+        const folderMap = {
+            profile: folders.find(f => f.name === '📄 Profils')?.id,
+            url: folders.find(f => f.name === '🔗 Redirections')?.id,
+            wifi: folders.find(f => f.name === '📶 Wi-Fi')?.id,
+        };
+        cardData.folder_id = folderMap[pageType] || null;
+        
         setGenerating(false);
     }
 
@@ -339,7 +348,7 @@ export default function AdminDashboard() {
                         </button>
                     )}
                     <div style={{ marginLeft: 'auto' }}>
-                        <button className="btn-primary" onClick={openCreateModal} style={{ whiteSpace: 'nowrap' }}>
+                        <button className="btn-primary" onClick={() => navigate('/admin/create')} style={{ whiteSpace: 'nowrap' }}>
                             ➕ Nouvelle carte
                         </button>
                     </div>

@@ -1,7 +1,9 @@
-import { useState, useEffect, useRef } from 'react'
-import { supabase } from '../../lib/supabase.js'
-import { useNavigate } from 'react-router-dom'
-import CustomLinks from '../../components/client/CustomLinks.jsx'
+// src/pages/client/ClientDashboard.jsx
+import { useState, useEffect, useRef } from 'react';
+import { supabase } from '../../lib/supabase.js';
+import { useNavigate } from 'react-router-dom';
+import { useToast } from '../../components/Toast.jsx';
+import CustomLinks from '../../components/client/CustomLinks.jsx';
 
 const SOCIAL_FIELDS = [
     { key: 'whatsapp', label: 'WhatsApp', placeholder: '+229 XX XX XX XX', icon: '💬' },
@@ -14,7 +16,7 @@ const SOCIAL_FIELDS = [
     { key: 'website', label: 'Site web', placeholder: 'https://monsite.com', icon: '🌐' },
     { key: 'email', label: 'Email', placeholder: 'mon@email.com', icon: '✉️' },
     { key: 'phone', label: 'Téléphone', placeholder: '+229 XX XX XX XX', icon: '📞' },
-]
+];
 
 const COLORS = [
     { label: 'NFCrafter', bg: '#1A1265', text: '#FFFFFF' },
@@ -25,34 +27,37 @@ const COLORS = [
     { label: 'Or', bg: '#F59E0B', text: '#1a1a1a' },
     { label: 'Rose', bg: '#E1306C', text: '#FFFFFF' },
     { label: 'Violet', bg: '#7C3AED', text: '#FFFFFF' },
-]
+];
 
 export default function ClientDashboard() {
-    const navigate = useNavigate()
-    const [form, setForm] = useState({})
-    const [loading, setLoading] = useState(true)
-    const [saving, setSaving] = useState(false)
-    const [saved, setSaved] = useState(false)
-    const [user, setUser] = useState(null)
-    const [cardStatus, setCardStatus] = useState(null)
-    const [uploadingAvatar, setUploadingAvatar] = useState(false)
-    const [uploadingBanner, setUploadingBanner] = useState(false)
-    const [activeTab, setActiveTab] = useState('profil')
-    const avatarRef = useRef()
-    const bannerRef = useRef()
+    const navigate = useNavigate();
+    const toast = useToast();
+    const [form, setForm] = useState({});
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [saved, setSaved] = useState(false);
+    const [user, setUser] = useState(null);
+    const [cardStatus, setCardStatus] = useState(null);
+    const [cardData, setCardData] = useState(null);
+    const [uploadingAvatar, setUploadingAvatar] = useState(false);
+    const [uploadingBanner, setUploadingBanner] = useState(false);
+    const [activeTab, setActiveTab] = useState('profil');
+    const [savingContent, setSavingContent] = useState(false);
+    const avatarRef = useRef();
+    const bannerRef = useRef();
 
-    useEffect(() => { loadProfile() }, [])
+    useEffect(() => { loadProfile(); }, []);
 
     async function loadProfile() {
-        setLoading(true)
-        const { data: { user } } = await supabase.auth.getUser()
-        setUser(user)
+        setLoading(true);
+        const { data: { user } } = await supabase.auth.getUser();
+        setUser(user);
 
         let { data: profile } = await supabase
             .from('profiles')
             .select('*')
             .eq('id', user.id)
-            .single()
+            .single();
 
         if (!profile) {
             const newProfile = {
@@ -61,89 +66,144 @@ export default function ClientDashboard() {
                 email: user.email,
                 theme_color: '#1A1265',
                 theme_text: '#FFFFFF',
-            }
-            await supabase.from('profiles').insert(newProfile)
-            profile = newProfile
+            };
+            await supabase.from('profiles').insert(newProfile);
+            profile = newProfile;
         }
 
-        setForm(profile)
+        setForm(profile);
 
         if (profile.card_id) {
             const { data: card } = await supabase
                 .from('cards')
-                .select('status, card_id')
+                .select('status, card_id, page_type, redirect_url, wifi_ssid, wifi_password, wifi_security')
                 .eq('card_id', profile.card_id)
-                .single()
-            setCardStatus(card)
+                .single();
+            setCardStatus(card);
+            setCardData(card);
         }
-        setLoading(false)
+        setLoading(false);
+    }
+
+    async function saveCardContent() {
+        if (!cardData || !user?.id) return;
+        setSavingContent(true);
+        const updateData = {};
+
+        if (cardData.page_type === 'url') {
+            if (!cardData.redirect_url?.trim()) {
+                toast('L’URL de redirection est obligatoire', 'error');
+                setSavingContent(false);
+                return;
+            }
+            updateData.redirect_url = cardData.redirect_url.trim();
+        } else if (cardData.page_type === 'wifi') {
+            if (!cardData.wifi_ssid?.trim()) {
+                toast('Le SSID (nom du réseau) est obligatoire', 'error');
+                setSavingContent(false);
+                return;
+            }
+            updateData.wifi_ssid = cardData.wifi_ssid.trim();
+            updateData.wifi_password = cardData.wifi_password;
+            updateData.wifi_security = cardData.wifi_security;
+        }
+
+        const { error } = await supabase
+            .from('cards')
+            .update(updateData)
+            .eq('card_id', cardData.card_id);
+
+        if (error) {
+            toast('Erreur : ' + error.message, 'error');
+        } else {
+            toast('Contenu mis à jour !', 'success');
+            // Recharger les données
+            const { data: refreshed } = await supabase
+                .from('cards')
+                .select('page_type, redirect_url, wifi_ssid, wifi_password, wifi_security')
+                .eq('card_id', cardData.card_id)
+                .single();
+            setCardData(refreshed);
+        }
+        setSavingContent(false);
     }
 
     async function uploadImage(file, bucket, field) {
-        const maxSize = bucket === 'avatars' ? 3 * 1024 * 1024 : 8 * 1024 * 1024
+        const maxSize = bucket === 'avatars' ? 3 * 1024 * 1024 : 8 * 1024 * 1024;
         if (file.size > maxSize) {
-            alert(`❌ Image trop lourde. Veuillez compresser votre image en ligne ou choisir une autre image.`)
-            return
+            toast('❌ Image trop lourde. Max 3MB pour avatar, 8MB pour bannière.', 'error');
+            return;
         }
 
-        if (bucket === 'avatars') setUploadingAvatar(true)
-        else setUploadingBanner(true)
+        if (bucket === 'avatars') setUploadingAvatar(true);
+        else setUploadingBanner(true);
 
-        const ext = file.name.split('.').pop()
-        const path = `${user.id}/${Date.now()}.${ext}`
+        const ext = file.name.split('.').pop();
+        const path = `${user.id}/${Date.now()}.${ext}`;
 
-        const { error } = await supabase.storage.from(bucket).upload(path, file, { upsert: true })
+        const { error } = await supabase.storage.from(bucket).upload(path, file, { upsert: true });
 
         if (error) {
-            alert('Erreur upload : ' + error.message)
+            toast('Erreur upload : ' + error.message, 'error');
         } else {
-            const { data } = supabase.storage.from(bucket).getPublicUrl(path)
-            setForm(f => ({ ...f, [field]: data.publicUrl }))
+            const { data } = supabase.storage.from(bucket).getPublicUrl(path);
+            setForm(f => ({ ...f, [field]: data.publicUrl }));
+            toast('Image uploadée !', 'success');
         }
 
-        if (bucket === 'avatars') setUploadingAvatar(false)
-        else setUploadingBanner(false)
+        if (bucket === 'avatars') setUploadingAvatar(false);
+        else setUploadingBanner(false);
     }
 
     async function saveProfile() {
-        setSaving(true)
+        setSaving(true);
         const { error } = await supabase
             .from('profiles')
-            .upsert({ ...form, id: user.id, updated_at: new Date().toISOString() })
+            .upsert({ ...form, id: user.id, updated_at: new Date().toISOString() });
         if (!error) {
-            setSaved(true)
-            setTimeout(() => setSaved(false), 2500)
+            setSaved(true);
+            toast('Profil sauvegardé !', 'success');
+            setTimeout(() => setSaved(false), 2500);
+        } else {
+            toast('Erreur : ' + error.message, 'error');
         }
-        setSaving(false)
+        setSaving(false);
     }
 
     async function logout() {
-        await supabase.auth.signOut()
-        navigate('/login')
+        await supabase.auth.signOut();
+        navigate('/login');
     }
 
-    function update(k, v) { setForm(f => ({ ...f, [k]: v })) }
+    function update(k, v) { setForm(f => ({ ...f, [k]: v })); }
+    function updateCard(k, v) { setCardData(f => ({ ...f, [k]: v })); }
 
     function copyId() {
-        navigator.clipboard.writeText(user?.id || '')
-        alert('✅ Votre ID a été copié ! Envoyez-le à NFCrafter pour activer votre carte.')
+        navigator.clipboard.writeText(user?.id || '');
+        toast('✅ Votre ID a été copié ! Envoyez-le à NFCrafter pour activer votre carte.', 'info');
     }
 
     if (loading) return (
         <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}>
             <p style={{ color: 'var(--text-light)' }}>Chargement...</p>
         </div>
-    )
+    );
 
     const TABS = [
         { id: 'profil', label: '👤 Profil' },
+        ...(cardData?.page_type !== 'profile' ? [{ id: 'contenu', label: '📄 Contenu carte' }] : []),
         { id: 'liens', label: '🔗 Liens' },
         { id: 'design', label: '🎨 Design' },
-    ]
+    ];
+
+    const getPageTypeLabel = () => {
+        if (cardData?.page_type === 'url') return '🔗 Redirection URL';
+        if (cardData?.page_type === 'wifi') return '📶 Connexion Wi-Fi';
+        return '📄 Page profil';
+    };
 
     return (
         <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
-
             {/* Header */}
             <header style={{
                 background: 'var(--bg-white)', borderBottom: '1px solid var(--border)',
@@ -173,12 +233,13 @@ export default function ClientDashboard() {
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
                             <div>
                                 <h3 style={{ fontWeight: '700', color: 'var(--success)', marginBottom: '4px' }}>✅ Carte activée</h3>
-                                <p style={{ fontSize: '13px', color: 'var(--text-light)' }}>ID : <strong>{cardStatus.card_id}</strong></p>
+                                <p style={{ fontSize: '13px', color: 'var(--text-light)' }}>
+                                    Type : <strong>{getPageTypeLabel()}</strong> · ID : <strong>{cardStatus.card_id}</strong>
+                                </p>
                             </div>
                             <a href={`/u/${cardStatus.card_id}`} target="_blank" style={{
                                 padding: '10px 20px', background: 'var(--accent)', color: 'white',
-                                borderRadius: 'var(--radius-sm)', textDecoration: 'none',
-                                fontWeight: '600', fontSize: '13px',
+                                borderRadius: 'var(--radius-sm)', textDecoration: 'none', fontWeight: '600', fontSize: '13px',
                             }}>
                                 Voir ma page →
                             </a>
@@ -190,9 +251,7 @@ export default function ClientDashboard() {
                                 Envoyez votre ID à NFCrafter pour activer votre carte.
                             </p>
                             <div style={{ display: 'flex', gap: '8px' }}>
-                                <input type="text" readOnly value={user?.id || ''}
-                                    style={{ flex: 1, fontSize: '11px', fontFamily: 'monospace', background: 'var(--bg)' }}
-                                />
+                                <input type="text" readOnly value={user?.id || ''} style={{ flex: 1, fontSize: '11px', fontFamily: 'monospace', background: 'var(--bg)' }} />
                                 <button className="btn-primary" onClick={copyId} style={{ whiteSpace: 'nowrap', fontSize: '13px', padding: '10px 16px' }}>
                                     📋 Copier
                                 </button>
@@ -202,7 +261,7 @@ export default function ClientDashboard() {
                 </div>
 
                 {/* Onglets */}
-                <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>
                     {TABS.map(tab => (
                         <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
                             flex: 1, padding: '10px', borderRadius: 'var(--radius-md)',
@@ -221,15 +280,12 @@ export default function ClientDashboard() {
                     <div className="card">
                         {/* Bannière */}
                         <div style={{ position: 'relative', marginBottom: '60px' }}>
-                            <div
-                                onClick={() => bannerRef.current.click()}
-                                style={{
-                                    height: '140px', borderRadius: 'var(--radius-md)',
-                                    background: form.banner_url ? `url(${form.banner_url}) center/cover` : form.theme_color || 'var(--accent)',
-                                    cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    border: '2px dashed rgba(255,255,255,0.3)',
-                                    position: 'relative', overflow: 'hidden',
-                                }}>
+                            <div onClick={() => bannerRef.current.click()} style={{
+                                height: '140px', borderRadius: 'var(--radius-md)',
+                                background: form.banner_url ? `url(${form.banner_url}) center/cover` : (form.theme_color || 'var(--accent)'),
+                                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                border: '2px dashed rgba(255,255,255,0.3)', position: 'relative', overflow: 'hidden',
+                            }}>
                                 {!form.banner_url && (
                                     <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '13px' }}>
                                         {uploadingBanner ? 'Upload...' : '📷 Ajouter une bannière'}
@@ -249,21 +305,17 @@ export default function ClientDashboard() {
                                 )}
                             </div>
                             <input ref={bannerRef} type="file" accept="image/*" style={{ display: 'none' }}
-                                onChange={e => e.target.files[0] && uploadImage(e.target.files[0], 'banners', 'banner_url')}
-                            />
+                                onChange={e => e.target.files[0] && uploadImage(e.target.files[0], 'banners', 'banner_url')} />
 
                             {/* Avatar */}
                             <div style={{ position: 'absolute', bottom: '-48px', left: '20px' }}>
-                                <div
-                                    onClick={() => avatarRef.current.click()}
-                                    style={{
-                                        width: '96px', height: '96px', borderRadius: '50%',
-                                        border: '4px solid white', cursor: 'pointer', overflow: 'hidden',
-                                        background: form.photo_url ? `url(${form.photo_url}) center/cover` : 'var(--accent-light)',
-                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                        fontSize: '32px', boxShadow: 'var(--shadow)',
-                                        position: 'relative',
-                                    }}>
+                                <div onClick={() => avatarRef.current.click()} style={{
+                                    width: '96px', height: '96px', borderRadius: '50%',
+                                    border: '4px solid white', cursor: 'pointer', overflow: 'hidden',
+                                    background: form.photo_url ? `url(${form.photo_url}) center/cover` : 'var(--accent-light)',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    fontSize: '32px', boxShadow: 'var(--shadow)', position: 'relative',
+                                }}>
                                     {!form.photo_url && (uploadingAvatar ? '⏳' : '👤')}
                                     {form.photo_url && (
                                         <div style={{
@@ -279,27 +331,90 @@ export default function ClientDashboard() {
                                     )}
                                 </div>
                                 <input ref={avatarRef} type="file" accept="image/*" style={{ display: 'none' }}
-                                    onChange={e => e.target.files[0] && uploadImage(e.target.files[0], 'avatars', 'photo_url')}
-                                />
+                                    onChange={e => e.target.files[0] && uploadImage(e.target.files[0], 'avatars', 'photo_url')} />
                             </div>
                         </div>
 
                         <div className="field">
                             <label>Nom complet *</label>
-                            <input type="text" placeholder="Jean Dupont"
-                                value={form.full_name || ''} onChange={e => update('full_name', e.target.value)} />
+                            <input type="text" placeholder="Jean Dupont" value={form.full_name || ''} onChange={e => update('full_name', e.target.value)} />
                         </div>
                         <div className="field">
                             <label>Titre / Poste</label>
-                            <input type="text" placeholder="Ex: Designer Graphique, Entrepreneur..."
-                                value={form.title || ''} onChange={e => update('title', e.target.value)} />
+                            <input type="text" placeholder="Ex: Designer Graphique, Entrepreneur..." value={form.title || ''} onChange={e => update('title', e.target.value)} />
                         </div>
                         <div className="field">
                             <label>Bio</label>
-                            <textarea rows={3} placeholder="Décrivez-vous en quelques mots..."
-                                value={form.bio || ''} onChange={e => update('bio', e.target.value)}
-                                style={{ resize: 'vertical' }} />
+                            <textarea rows={3} placeholder="Décrivez-vous en quelques mots..." value={form.bio || ''} onChange={e => update('bio', e.target.value)} style={{ resize: 'vertical' }} />
                         </div>
+                    </div>
+                )}
+
+                {/* Tab Contenu carte (UNIQUEMENT pour URL et Wi-Fi) */}
+                {activeTab === 'contenu' && cardData && cardData.page_type !== 'profile' && (
+                    <div className="card">
+                        <h3 style={{ fontWeight: '700', marginBottom: '16px', color: 'var(--accent)' }}>
+                            {cardData.page_type === 'url' && '🔗 Configuration de la redirection'}
+                            {cardData.page_type === 'wifi' && '📶 Configuration du réseau Wi-Fi'}
+                        </h3>
+
+                        {cardData.page_type === 'url' && (
+                            <div className="field">
+                                <label>URL de redirection</label>
+                                <input
+                                    type="url"
+                                    placeholder="https://exemple.com"
+                                    value={cardData.redirect_url || ''}
+                                    onChange={e => updateCard('redirect_url', e.target.value)}
+                                />
+                                <p style={{ fontSize: '11px', color: 'var(--text-light)', marginTop: '4px' }}>
+                                    Les utilisateurs scannant votre carte seront redirigés vers cette URL.
+                                </p>
+                            </div>
+                        )}
+
+                        {cardData.page_type === 'wifi' && (
+                            <>
+                                <div className="field">
+                                    <label>SSID (nom du réseau) *</label>
+                                    <input
+                                        type="text"
+                                        placeholder="MonWiFi"
+                                        value={cardData.wifi_ssid || ''}
+                                        onChange={e => updateCard('wifi_ssid', e.target.value)}
+                                    />
+                                </div>
+                                <div className="field">
+                                    <label>Mot de passe</label>
+                                    <input
+                                        type="text"
+                                        placeholder="••••••••"
+                                        value={cardData.wifi_password || ''}
+                                        onChange={e => updateCard('wifi_password', e.target.value)}
+                                    />
+                                </div>
+                                <div className="field">
+                                    <label>Sécurité</label>
+                                    <select
+                                        value={cardData.wifi_security || 'WPA'}
+                                        onChange={e => updateCard('wifi_security', e.target.value)}
+                                    >
+                                        <option>WPA</option>
+                                        <option>WEP</option>
+                                        <option>nopass</option>
+                                    </select>
+                                </div>
+                            </>
+                        )}
+
+                        <button
+                            className="btn-primary"
+                            onClick={saveCardContent}
+                            disabled={savingContent}
+                            style={{ width: '100%', justifyContent: 'center' }}
+                        >
+                            {savingContent ? 'Sauvegarde...' : '💾 Sauvegarder le contenu'}
+                        </button>
                     </div>
                 )}
 
@@ -307,7 +422,7 @@ export default function ClientDashboard() {
                 {activeTab === 'liens' && (
                     <div className="card">
                         <p style={{ fontSize: '13px', color: 'var(--text-light)', marginBottom: '20px' }}>
-                            Remplissez uniquement les liens que vous souhaitez afficher.
+                            Remplissez uniquement les liens que vous souhaitez afficher sur votre page publique.
                         </p>
                         {SOCIAL_FIELDS.map(field => (
                             <div key={field.key} className="field">
@@ -320,7 +435,6 @@ export default function ClientDashboard() {
                                 />
                             </div>
                         ))}
-                        {/* Liens personnalisés */}
                         <div style={{ marginTop: '24px', paddingTop: '24px', borderTop: '1px solid var(--border)' }}>
                             <h3 style={{ fontWeight: '700', color: 'var(--accent)', marginBottom: '12px', fontSize: '15px' }}>
                                 🔗 Liens personnalisés
@@ -341,14 +455,13 @@ export default function ClientDashboard() {
                         </h3>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px', marginBottom: '24px' }}>
                             {COLORS.map(c => (
-                                <button key={c.label} onClick={() => { update('theme_color', c.bg); update('theme_text', c.text) }}
+                                <button key={c.label} onClick={() => { update('theme_color', c.bg); update('theme_text', c.text); }}
                                     style={{
                                         height: '48px', borderRadius: 'var(--radius-md)',
                                         background: c.bg, border: form.theme_color === c.bg ? '3px solid var(--accent)' : '2px solid transparent',
                                         cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
                                         color: c.text, fontSize: '11px', fontWeight: '600',
                                         outline: form.theme_color === c.bg ? '2px solid white' : 'none',
-                                        boxShadow: form.theme_color === c.bg ? '0 0 0 3px var(--accent)' : 'var(--shadow)',
                                     }}>
                                     {c.label}
                                 </button>
@@ -359,14 +472,8 @@ export default function ClientDashboard() {
                             🎨 Couleur personnalisée
                         </h3>
                         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                            <input type="color" value={form.theme_color || '#1A1265'}
-                                onChange={e => update('theme_color', e.target.value)}
-                                style={{ width: '48px', height: '40px', padding: '2px', cursor: 'pointer' }}
-                            />
-                            <input type="text" value={form.theme_color || '#1A1265'}
-                                onChange={e => update('theme_color', e.target.value)}
-                                style={{ flex: 1, fontFamily: 'monospace' }}
-                            />
+                            <input type="color" value={form.theme_color || '#1A1265'} onChange={e => update('theme_color', e.target.value)} style={{ width: '48px', height: '40px' }} />
+                            <input type="text" value={form.theme_color || '#1A1265'} onChange={e => update('theme_color', e.target.value)} style={{ flex: 1, fontFamily: 'monospace' }} />
                         </div>
 
                         {/* Aperçu */}
@@ -380,7 +487,7 @@ export default function ClientDashboard() {
                     </div>
                 )}
 
-                {/* Bouton sauvegarder */}
+                {/* Bouton sauvegarder (pour profil, liens et design) */}
                 <button className="btn-primary" onClick={saveProfile} disabled={saving}
                     style={{ width: '100%', justifyContent: 'center', padding: '14px', fontSize: '15px', marginTop: '20px' }}>
                     {saving ? 'Sauvegarde...' : saved ? '✅ Sauvegardé !' : '💾 Sauvegarder'}
@@ -388,5 +495,5 @@ export default function ClientDashboard() {
 
             </main>
         </div>
-    )
+    );
 }

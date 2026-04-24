@@ -10,6 +10,8 @@ import CardRedirect from './pages/CardRedirect.jsx'
 import WhatsAppSupport from './components/WhatsAppSupport.jsx'
 import Activate from './pages/Activate.jsx'
 import CardSettings from './pages/admin/CardSettings.jsx'
+import CreateCardWizard from './pages/admin/CreateCardWizard.jsx';
+
 
 function LoadingScreen() {
     return (
@@ -79,6 +81,11 @@ export default function App() {
                 <Route path="/admin/card/:cardId" element={
                     <ProtectedAdmin session={session} isAdmin={isAdmin}>
                         <CardSettings />
+                    </ProtectedAdmin>
+                } />
+                <Route path="/admin/create" element={
+                    <ProtectedAdmin session={session} isAdmin={isAdmin}>
+                        <CreateCardWizard />
                     </ProtectedAdmin>
                 } />
                 <Route path="*" element={<Navigate to="/" replace />} />
