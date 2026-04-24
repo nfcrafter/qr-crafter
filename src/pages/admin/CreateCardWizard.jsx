@@ -21,26 +21,15 @@ export default function CreateCardWizard() {
     const [step, setStep] = useState(1);
     const [generating, setGenerating] = useState(false);
     const [uploadingLogo, setUploadingLogo] = useState(false);
+    const [uploadingAvatar, setUploadingAvatar] = useState(false);
+    const [uploadingBanner, setUploadingBanner] = useState(false);
 
-    // Étape 1 : Infos privées du client
     const [clientInfo, setClientInfo] = useState({
         clientName: '',
         city: '',
         country: 'Bénin'
     });
 
-    // Étape 2 : Type de carte et contenu
-    const [pageType, setPageType] = useState('profile');
-
-    // Pour type URL
-    const [redirectUrl, setRedirectUrl] = useState('');
-
-    // Pour type Wi-Fi
-    const [wifiSsid, setWifiSsid] = useState('');
-    const [wifiPassword, setWifiPassword] = useState('');
-    const [wifiSecurity, setWifiSecurity] = useState('WPA');
-
-    // Pour type Profile (profil public)
     const [publicProfile, setPublicProfile] = useState({
         full_name: '',
         title: '',
@@ -59,10 +48,7 @@ export default function CreateCardWizard() {
         email: '',
         phone: '',
     });
-    const [uploadingAvatar, setUploadingAvatar] = useState(false);
-    const [uploadingBanner, setUploadingBanner] = useState(false);
 
-    // Étape 3 : Apparence QR
     const [qrAppearance, setQrAppearance] = useState({
         dotsType: 'rounded',
         dotsColor: '#1A1265',
@@ -74,7 +60,6 @@ export default function CreateCardWizard() {
         logo: null,
     });
 
-    // Dossiers
     const [folders, setFolders] = useState([]);
     const [selectedFolder, setSelectedFolder] = useState('');
 
@@ -99,8 +84,57 @@ export default function CreateCardWizard() {
         setFolders(data || []);
     }
 
+    function dataURLToBlob(dataURL) {
+        const arr = dataURL.split(',');
+        const mime = arr[0].match(/:(.*?);/)[1];
+        const bstr = atob(arr[1]);
+        let n = bstr.length;
+        const u8arr = new Uint8Array(n);
+        while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new Blob([u8arr], { type: mime });
+    }
+
+    async function uploadLogo(file) {
+        if (!file) return;
+        setUploadingLogo(true);
+        const reader = new FileReader();
+        reader.onload = async (ev) => {
+            const base64 = ev.target.result;
+            const blob = dataURLToBlob(base64);
+            const fileName = `qr-logo-${generatedCardId || 'temp'}-${Date.now()}.png`;
+            const { error: uploadError } = await supabase.storage
+                .from('qr-logos')
+                .upload(fileName, blob, { upsert: true });
+
+            if (uploadError) {
+                toast('Erreur upload logo', 'error');
+                setUploadingLogo(false);
+                return;
+            }
+
+            const { data: urlData } = supabase.storage
+                .from('qr-logos')
+                .getPublicUrl(fileName);
+
+            setQrAppearance(prev => ({
+                ...prev,
+                logo: urlData.publicUrl,
+                logo_url: urlData.publicUrl
+            }));
+            toast('Logo ajouté !', 'success');
+            setUploadingLogo(false);
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function removeLogo() {
+        setQrAppearance(prev => ({ ...prev, logo: null, logo_url: null }));
+        toast('Logo supprimé', 'info');
+    }
+
     function initQRCode() {
-        if (!generatedCardId) return;
         const url = `${window.location.origin}/u/${generatedCardId}`;
         qrCode.current = new QRCodeStyling({
             width: 280, height: 280, type: 'svg',
@@ -110,8 +144,8 @@ export default function CreateCardWizard() {
             cornersSquareOptions: { color: qrAppearance.cornersColor, type: qrAppearance.cornersType },
             cornersDotOptions: { color: qrAppearance.cornersDotColor, type: qrAppearance.cornersDotType },
         });
-        if (qrAppearance.logo) {
-            qrCode.current.update({ image: qrAppearance.logo });
+        if (qrAppearance.logo_url) {
+            qrCode.current.update({ image: qrAppearance.logo_url });
         }
         if (qrRef.current) {
             qrRef.current.innerHTML = '';
@@ -120,7 +154,6 @@ export default function CreateCardWizard() {
     }
 
     function updateQRCode() {
-        if (!generatedCardId) return;
         const url = `${window.location.origin}/u/${generatedCardId}`;
         qrCode.current.update({
             data: url,
@@ -128,29 +161,12 @@ export default function CreateCardWizard() {
             backgroundOptions: { color: qrAppearance.bgColor },
             cornersSquareOptions: { color: qrAppearance.cornersColor, type: qrAppearance.cornersType },
             cornersDotOptions: { color: qrAppearance.cornersDotColor, type: qrAppearance.cornersDotType },
-            image: qrAppearance.logo || '',
+            image: qrAppearance.logo_url || '',
         });
     }
 
     function updateQR(key, value) {
         setQrAppearance(prev => ({ ...prev, [key]: value }));
-    }
-
-    async function uploadLogo(file) {
-        if (!file) return;
-        setUploadingLogo(true);
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-            updateQR('logo', ev.target.result);
-            toast('Logo ajouté !', 'success');
-            setUploadingLogo(false);
-        };
-        reader.readAsDataURL(file);
-    }
-
-    function removeLogo() {
-        updateQR('logo', null);
-        toast('Logo supprimé', 'info');
     }
 
     async function uploadPublicAvatar(file) {
@@ -186,15 +202,7 @@ export default function CreateCardWizard() {
     }
 
     function validateStep2() {
-        if (pageType === 'url' && !redirectUrl.trim()) {
-            toast('L’URL de redirection est obligatoire', 'error');
-            return false;
-        }
-        if (pageType === 'wifi' && !wifiSsid.trim()) {
-            toast('Le SSID (nom du réseau) est obligatoire', 'error');
-            return false;
-        }
-        if (pageType === 'profile' && !publicProfile.full_name?.trim()) {
+        if (!publicProfile.full_name?.trim()) {
             toast('Le nom complet du profil public est obligatoire', 'error');
             return false;
         }
@@ -205,19 +213,9 @@ export default function CreateCardWizard() {
         if (!validateStep1() || !validateStep2()) return;
 
         setGenerating(true);
-
-        // Générer l'ID UNIQUEMENT ici
         const cardId = await generateUniqueCardId();
         setGeneratedCardId(cardId);
-
         const token = Math.random().toString(36).substring(2, 10).toUpperCase();
-
-        let adminProfile = {};
-        if (pageType === 'profile') {
-            adminProfile = { ...publicProfile };
-        } else {
-            adminProfile = { full_name: clientInfo.clientName.trim() };
-        }
 
         const cardData = {
             card_id: cardId,
@@ -226,9 +224,8 @@ export default function CreateCardWizard() {
             activation_token: token,
             city: clientInfo.city,
             country: clientInfo.country,
-            page_type: pageType,
             folder_id: selectedFolder || null,
-            admin_profile: adminProfile,
+            admin_profile: publicProfile,
             qr_appearance: {
                 dotsType: qrAppearance.dotsType,
                 dotsColor: qrAppearance.dotsColor,
@@ -237,27 +234,16 @@ export default function CreateCardWizard() {
                 cornersDotType: qrAppearance.cornersDotType,
                 cornersColor: qrAppearance.cornersColor,
                 cornersDotColor: qrAppearance.cornersDotColor,
+                logo_url: qrAppearance.logo_url,
             },
         };
-
-        if (pageType === 'url') {
-            cardData.redirect_url = redirectUrl.trim();
-        } else if (pageType === 'wifi') {
-            cardData.wifi_ssid = wifiSsid.trim();
-            cardData.wifi_password = wifiPassword;
-            cardData.wifi_security = wifiSecurity;
-        }
 
         const { error } = await supabase.from('cards').insert(cardData);
         if (error) {
             toast('Erreur : ' + error.message, 'error');
-            setGenerating(false);
         } else {
             toast(`Carte ${cardId} créée avec succès !`, 'success');
-
-            // Attendre un peu pour que le QR s'initialise
             setTimeout(() => {
-                // Télécharger le QR automatiquement
                 if (qrCode.current) {
                     qrCode.current.download({ name: `QR-${cardId}`, extension: 'png' });
                 }
@@ -267,14 +253,12 @@ export default function CreateCardWizard() {
         setGenerating(false);
     }
 
-    // Mise à jour automatique du nom dans le profil public
     useEffect(() => {
-        if (pageType === 'profile' && clientInfo.clientName) {
+        if (clientInfo.clientName && !publicProfile.full_name) {
             setPublicProfile(prev => ({ ...prev, full_name: clientInfo.clientName }));
         }
-    }, [clientInfo.clientName, pageType]);
+    }, [clientInfo.clientName]);
 
-    // Pré-générer l'ID pour l'aperçu QR quand on arrive à l'étape 3
     useEffect(() => {
         if (step === 3 && !generatedCardId && !generating) {
             generateUniqueCardId().then(id => setGeneratedCardId(id));
@@ -291,7 +275,7 @@ export default function CreateCardWizard() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                         {[
                             { step: 1, label: 'Infos client' },
-                            { step: 2, label: 'Type de carte' },
+                            { step: 2, label: 'Profil public' },
                             { step: 3, label: 'Apparence QR' },
                         ].map(s => (
                             <div key={s.step} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -313,7 +297,6 @@ export default function CreateCardWizard() {
                     </div>
                 </div>
 
-                {/* ÉTAPE 1 */}
                 {step === 1 && (
                     <div style={{ background: 'white', borderRadius: '16px', padding: '24px', maxWidth: '500px', border: '1px solid #D4D4C8' }}>
                         <h2 style={{ fontFamily: 'Inter', fontSize: '20px', marginBottom: '8px' }}>👤 Informations client</h2>
@@ -342,64 +325,36 @@ export default function CreateCardWizard() {
                     </div>
                 )}
 
-                {/* ÉTAPE 2 */}
                 {step === 2 && (
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: '32px' }}>
                         <div style={{ background: 'white', borderRadius: '16px', padding: '24px', border: '1px solid #D4D4C8' }}>
-                            <h2 style={{ fontFamily: 'Inter', fontSize: '20px', marginBottom: '24px' }}>📄 Type de carte</h2>
-
-                            <div className="field">
-                                <label>Type de carte *</label>
-                                <select value={pageType} onChange={e => setPageType(e.target.value)}>
-                                    <option value="profile">📄 Page profil public (client modifie son profil)</option>
-                                    <option value="url">🔗 Redirection URL (client modifie l'URL)</option>
-                                    <option value="wifi">📶 Connexion Wi-Fi (client modifie SSID/mot de passe)</option>
-                                </select>
-                            </div>
-
-                            {pageType === 'url' && (
-                                <div className="field">
-                                    <label>URL de redirection par défaut *</label>
-                                    <input type="url" placeholder="https://exemple.com" value={redirectUrl} onChange={e => setRedirectUrl(e.target.value)} />
-                                </div>
-                            )}
-
-                            {pageType === 'wifi' && (
-                                <>
-                                    <div className="field"><label>SSID (nom du réseau) *</label><input type="text" placeholder="MonWiFi" value={wifiSsid} onChange={e => setWifiSsid(e.target.value)} /></div>
-                                    <div className="field"><label>Mot de passe</label><input type="text" placeholder="••••••••" value={wifiPassword} onChange={e => setWifiPassword(e.target.value)} /></div>
-                                    <div className="field"><label>Sécurité</label><select value={wifiSecurity} onChange={e => setWifiSecurity(e.target.value)}><option>WPA</option><option>WEP</option><option>nopass</option></select></div>
-                                </>
-                            )}
-
-                            {pageType === 'profile' && (
-                                <>
-                                    <ProfileForm form={publicProfile} onChange={setPublicProfile} onUploadAvatar={uploadPublicAvatar} onUploadBanner={uploadPublicBanner} uploadingAvatar={uploadingAvatar} uploadingBanner={uploadingBanner} readOnly={false} />
-                                </>
-                            )}
-
+                            <h2 style={{ fontFamily: 'Inter', fontSize: '20px', marginBottom: '24px' }}>📄 Profil public</h2>
+                            <ProfileForm
+                                form={publicProfile}
+                                onChange={setPublicProfile}
+                                onUploadAvatar={uploadPublicAvatar}
+                                onUploadBanner={uploadPublicBanner}
+                                uploadingAvatar={uploadingAvatar}
+                                uploadingBanner={uploadingBanner}
+                                readOnly={false}
+                            />
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '24px' }}>
                                 <button className="btn-ghost" onClick={() => setStep(1)}>← Retour</button>
                                 <button className="btn-primary" onClick={() => { if (validateStep2()) setStep(3); }}>Suivant →</button>
                             </div>
                         </div>
 
-                        {/* Aperçu téléphone */}
                         <div style={{ position: 'sticky', top: '20px' }}>
                             <div style={{ background: 'white', borderRadius: '16px', padding: '24px', textAlign: 'center', border: '1px solid #D4D4C8' }}>
                                 <h3 style={{ marginBottom: '16px' }}>📱 Aperçu de la page publique</h3>
                                 <div style={{ background: '#1A1A2E', borderRadius: '32px', padding: '12px', width: '260px', margin: '0 auto' }}>
                                     <div style={{ background: '#000', borderRadius: '16px', padding: '8px' }}>
                                         <div style={{ background: '#fff', borderRadius: '24px', minHeight: '420px', padding: '16px' }}>
-                                            {pageType === 'profile' && (
-                                                <div style={{ textAlign: 'center' }}>
-                                                    <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: '#1A1265', margin: '0 auto 12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', color: 'white' }}>👤</div>
-                                                    <p style={{ fontWeight: 'bold' }}>{publicProfile.full_name || 'Nom du client'}</p>
-                                                    <p style={{ fontSize: '11px', color: '#666' }}>{publicProfile.title || 'Titre'}</p>
-                                                </div>
-                                            )}
-                                            {pageType === 'url' && <div style={{ textAlign: 'center', padding: '20px' }}><div style={{ fontSize: '48px' }}>🔗</div><p style={{ fontSize: '12px' }}>{redirectUrl || 'https://exemple.com'}</p></div>}
-                                            {pageType === 'wifi' && <div style={{ textAlign: 'center', padding: '20px' }}><div style={{ fontSize: '48px' }}>📶</div><p style={{ fontWeight: 'bold' }}>{wifiSsid || 'Nom du réseau'}</p></div>}
+                                            <div style={{ textAlign: 'center' }}>
+                                                <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: '#1A1265', margin: '0 auto 12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', color: 'white' }}>👤</div>
+                                                <p style={{ fontWeight: 'bold' }}>{publicProfile.full_name || 'Nom du client'}</p>
+                                                <p style={{ fontSize: '11px', color: '#666' }}>{publicProfile.title || 'Titre'}</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -408,7 +363,6 @@ export default function CreateCardWizard() {
                     </div>
                 )}
 
-                {/* ÉTAPE 3 */}
                 {step === 3 && (
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '32px' }}>
                         <div>
@@ -433,7 +387,12 @@ export default function CreateCardWizard() {
                                 <h3 style={{ fontWeight: '700', marginBottom: '16px' }}>Logo</h3>
                                 <div className="field"><label>Image (PNG, SVG, JPG)</label><input type="file" accept="image/*" onChange={e => e.target.files[0] && uploadLogo(e.target.files[0])} /></div>
                                 {uploadingLogo && <p style={{ fontSize: '12px', marginTop: '8px' }}>Chargement...</p>}
-                                {qrAppearance.logo && <button className="btn-ghost" onClick={removeLogo} style={{ marginTop: '8px' }}>🗑 Supprimer le logo</button>}
+                                {qrAppearance.logo_url && (
+                                    <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                        <img src={qrAppearance.logo_url} alt="Logo" style={{ width: '40px', height: '40px', objectFit: 'contain' }} />
+                                        <button className="btn-ghost" onClick={removeLogo}>🗑 Supprimer le logo</button>
+                                    </div>
+                                )}
                             </div>
 
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '24px' }}>
@@ -444,7 +403,6 @@ export default function CreateCardWizard() {
                             </div>
                         </div>
 
-                        {/* Aperçu QR avec le VRAI lien */}
                         <div style={{ position: 'sticky', top: '20px' }}>
                             <div style={{ background: 'white', borderRadius: '16px', padding: '24px', textAlign: 'center', border: '1px solid #D4D4C8' }}>
                                 <h3 style={{ marginBottom: '16px' }}>🔍 Aperçu du QR</h3>

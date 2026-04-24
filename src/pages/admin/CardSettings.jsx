@@ -41,10 +41,7 @@ const THEME_COLORS = [
 
 const SECTIONS = [
     { id: 'infos', icon: '📋', label: 'Informations' },
-    { id: 'profil', icon: '👤', label: 'Profil' },
-    { id: 'contenu', icon: '📄', label: 'Contenu' },
-    { id: 'design', icon: '🎨', label: 'Design page' },
-    { id: 'qr', icon: '▣', label: 'QR Code' },
+    { id: 'profil', icon: '👤', label: 'Profil public' },
     { id: 'danger', icon: '⚠️', label: 'Danger' },
 ];
 
@@ -61,19 +58,15 @@ export default function CardSettings() {
     const [activeSection, setActiveSection] = useState('infos');
     const [saving, setSaving] = useState(false);
     const [savingQR, setSavingQR] = useState(false);
-    const [showWifiPassword, setShowWifiPassword] = useState(false);
+    const [uploadingLogo, setUploadingLogo] = useState(false);
+    const [uploadingAvatar, setUploadingAvatar] = useState(false);
+    const [uploadingBanner, setUploadingBanner] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const avatarRef = useRef(null);
+    const bannerRef = useRef(null);
 
-    // Profil form
     const [profileForm, setProfileForm] = useState({});
 
-    // Contenu selon le type de carte
-    const [redirectUrl, setRedirectUrl] = useState('');
-    const [wifiSsid, setWifiSsid] = useState('');
-    const [wifiPassword, setWifiPassword] = useState('');
-    const [wifiSecurity, setWifiSecurity] = useState('WPA');
-    const [savingContent, setSavingContent] = useState(false);
-
-    // QR appearance
     const [qrAppearance, setQrAppearance] = useState({
         dotsType: 'rounded',
         dotsColor: '#1A1265',
@@ -82,13 +75,9 @@ export default function CardSettings() {
         cornersDotType: 'dot',
         cornersColor: '#1A1265',
         cornersDotColor: '#1A1265',
+        logo: null,
+        logo_url: null,
     });
-
-    const [uploadingAvatar, setUploadingAvatar] = useState(false);
-    const [uploadingBanner, setUploadingBanner] = useState(false);
-    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-    const avatarRef = useRef(null);
-    const bannerRef = useRef(null);
 
     useEffect(() => {
         loadCard();
@@ -96,13 +85,13 @@ export default function CardSettings() {
     }, [cardId]);
 
     useEffect(() => {
-        if (activeSection === 'qr' && qrRef.current && !qrCode.current) {
+        if (activeSection === 'danger' && qrRef.current && !qrCode.current && card) {
             initQRCode();
         }
-    }, [activeSection]);
+    }, [activeSection, card]);
 
     useEffect(() => {
-        if (qrCode.current && activeSection === 'qr') {
+        if (qrCode.current && activeSection === 'danger') {
             updateQRCode();
         }
     }, [qrAppearance]);
@@ -123,13 +112,14 @@ export default function CardSettings() {
 
         setCard(data);
         setProfileForm(data.admin_profile || {});
-        setRedirectUrl(data.redirect_url || '');
-        setWifiSsid(data.wifi_ssid || '');
-        setWifiPassword(data.wifi_password || '');
-        setWifiSecurity(data.wifi_security || 'WPA');
 
         if (data.qr_appearance) {
-            setQrAppearance({ ...qrAppearance, ...data.qr_appearance });
+            setQrAppearance({
+                ...qrAppearance,
+                ...data.qr_appearance,
+                logo: data.qr_appearance.logo_url || null,
+                logo_url: data.qr_appearance.logo_url || null,
+            });
         }
 
         setLoading(false);
@@ -138,6 +128,56 @@ export default function CardSettings() {
     async function loadFolders() {
         const { data } = await supabase.from('folders').select('*').order('created_at');
         setFolders(data || []);
+    }
+
+    function dataURLToBlob(dataURL) {
+        const arr = dataURL.split(',');
+        const mime = arr[0].match(/:(.*?);/)[1];
+        const bstr = atob(arr[1]);
+        let n = bstr.length;
+        const u8arr = new Uint8Array(n);
+        while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new Blob([u8arr], { type: mime });
+    }
+
+    async function uploadLogo(file) {
+        if (!file) return;
+        setUploadingLogo(true);
+        const reader = new FileReader();
+        reader.onload = async (ev) => {
+            const base64 = ev.target.result;
+            const blob = dataURLToBlob(base64);
+            const fileName = `qr-logo-${cardId}-${Date.now()}.png`;
+            const { error: uploadError } = await supabase.storage
+                .from('qr-logos')
+                .upload(fileName, blob, { upsert: true });
+
+            if (uploadError) {
+                toast('Erreur upload logo', 'error');
+                setUploadingLogo(false);
+                return;
+            }
+
+            const { data: urlData } = supabase.storage
+                .from('qr-logos')
+                .getPublicUrl(fileName);
+
+            setQrAppearance(prev => ({
+                ...prev,
+                logo: urlData.publicUrl,
+                logo_url: urlData.publicUrl
+            }));
+            toast('Logo ajouté !', 'success');
+            setUploadingLogo(false);
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function removeLogo() {
+        setQrAppearance(prev => ({ ...prev, logo: null, logo_url: null }));
+        toast('Logo supprimé', 'info');
     }
 
     function initQRCode() {
@@ -150,8 +190,13 @@ export default function CardSettings() {
             cornersSquareOptions: { color: qrAppearance.cornersColor, type: qrAppearance.cornersType },
             cornersDotOptions: { color: qrAppearance.cornersDotColor, type: qrAppearance.cornersDotType },
         });
-        qrRef.current.innerHTML = '';
-        qrCode.current.append(qrRef.current);
+        if (qrAppearance.logo_url) {
+            qrCode.current.update({ image: qrAppearance.logo_url });
+        }
+        if (qrRef.current) {
+            qrRef.current.innerHTML = '';
+            qrCode.current.append(qrRef.current);
+        }
     }
 
     function updateQRCode() {
@@ -162,6 +207,7 @@ export default function CardSettings() {
             backgroundOptions: { color: qrAppearance.bgColor },
             cornersSquareOptions: { color: qrAppearance.cornersColor, type: qrAppearance.cornersType },
             cornersDotOptions: { color: qrAppearance.cornersDotColor, type: qrAppearance.cornersDotType },
+            image: qrAppearance.logo_url || '',
         });
     }
 
@@ -213,43 +259,22 @@ export default function CardSettings() {
         setSaving(false);
     }
 
-    async function saveContent() {
-        setSavingContent(true);
-        const updateData = {};
-
-        if (card?.page_type === 'url') {
-            if (!redirectUrl.trim()) {
-                toast('L’URL de redirection est obligatoire', 'error');
-                setSavingContent(false);
-                return;
-            }
-            updateData.redirect_url = redirectUrl.trim();
-        } else if (card?.page_type === 'wifi') {
-            if (!wifiSsid.trim()) {
-                toast('Le SSID (nom du réseau) est obligatoire', 'error');
-                setSavingContent(false);
-                return;
-            }
-            updateData.wifi_ssid = wifiSsid.trim();
-            updateData.wifi_password = wifiPassword;
-            updateData.wifi_security = wifiSecurity;
-        }
-
-        const { error } = await supabase
-            .from('cards')
-            .update(updateData)
-            .eq('card_id', cardId);
-
-        if (error) toast('Erreur : ' + error.message, 'error');
-        else toast('Contenu sauvegardé !', 'success');
-        setSavingContent(false);
-    }
-
     async function saveQRAppearance() {
         setSavingQR(true);
         const { error } = await supabase
             .from('cards')
-            .update({ qr_appearance: qrAppearance })
+            .update({
+                qr_appearance: {
+                    dotsType: qrAppearance.dotsType,
+                    dotsColor: qrAppearance.dotsColor,
+                    bgColor: qrAppearance.bgColor,
+                    cornersType: qrAppearance.cornersType,
+                    cornersDotType: qrAppearance.cornersDotType,
+                    cornersColor: qrAppearance.cornersColor,
+                    cornersDotColor: qrAppearance.cornersDotColor,
+                    logo_url: qrAppearance.logo_url,
+                }
+            })
             .eq('card_id', cardId);
 
         if (error) toast('Erreur sauvegarde QR', 'error');
@@ -308,7 +333,6 @@ export default function CardSettings() {
 
     return (
         <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
-            {/* Header */}
             <header style={{
                 background: 'var(--bg-white)', borderBottom: '1px solid var(--border)',
                 padding: '0 24px', position: 'sticky', top: 0, zIndex: 100,
@@ -344,7 +368,6 @@ export default function CardSettings() {
             </header>
 
             <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', gap: '24px', maxWidth: '1100px', margin: '0 auto', padding: '28px 24px', alignItems: 'start' }}>
-                {/* Sidebar sections */}
                 <div className="card" style={{ padding: '8px', position: 'sticky', top: '72px' }}>
                     {SECTIONS.map(s => (
                         <button key={s.id} onClick={() => setActiveSection(s.id)} style={{
@@ -362,7 +385,6 @@ export default function CardSettings() {
                     ))}
                 </div>
 
-                {/* Contenu principal */}
                 <div>
                     {/* SECTION INFOS */}
                     {activeSection === 'infos' && (
@@ -372,7 +394,6 @@ export default function CardSettings() {
                                 <InfoBox label="ID de la carte" value={`#${card?.card_id}`} mono accent />
                                 <InfoBox label="Nom client" value={card?.card_name || '—'} />
                                 <InfoBox label="Statut" value={card?.status === 'active' ? '✅ Active' : '⏳ En attente'} />
-                                <InfoBox label="Type" value={card?.page_type === 'profile' ? '📄 Profil' : card?.page_type === 'url' ? '🔗 URL' : '📶 Wi-Fi'} />
                                 <InfoBox label="Ville / Pays" value={`${card?.city || '—'}, ${card?.country || 'Bénin'}`} />
                                 <InfoBox label="Créée le" value={new Date(card?.created_at).toLocaleDateString('fr-FR')} />
                             </div>
@@ -400,12 +421,29 @@ export default function CardSettings() {
                         </div>
                     )}
 
-                    {/* SECTION PROFIL */}
+                    {/* SECTION PROFIL PUBLIC */}
                     {activeSection === 'profil' && (
                         <div className="card">
                             <h2 style={titleStyle}>👤 Profil public du client</h2>
 
-                            {/* Bannière */}
+                            <div className="field">
+                                <label>Couleur thème</label>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '10px', marginBottom: '12px' }}>
+                                    {THEME_COLORS.map(c => (
+                                        <button key={c.bg} onClick={() => updateProfile('theme_color', c.bg)} style={{
+                                            height: '44px', borderRadius: 'var(--radius-md)', background: c.bg,
+                                            border: profileForm.theme_color === c.bg ? '3px solid #fff' : '2px solid transparent',
+                                            cursor: 'pointer', color: 'white', fontSize: '11px', fontWeight: '600',
+                                            boxShadow: profileForm.theme_color === c.bg ? `0 0 0 3px ${c.bg}` : 'var(--shadow)',
+                                        }}>{c.label}</button>
+                                    ))}
+                                </div>
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                    <input type="color" value={profileForm.theme_color || '#1A1265'} onChange={e => updateProfile('theme_color', e.target.value)} style={{ width: '48px' }} />
+                                    <input type="text" value={profileForm.theme_color || '#1A1265'} onChange={e => updateProfile('theme_color', e.target.value)} style={{ flex: 1, fontFamily: 'monospace' }} />
+                                </div>
+                            </div>
+
                             <div className="field">
                                 <label>Bannière</label>
                                 <div onClick={() => bannerRef.current?.click()} style={{
@@ -424,7 +462,6 @@ export default function CardSettings() {
                                     onChange={e => e.target.files[0] && uploadImage(e.target.files[0], 'banners', 'banner_url')} />
                             </div>
 
-                            {/* Avatar */}
                             <div className="field">
                                 <label>Photo de profil</label>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
@@ -447,20 +484,14 @@ export default function CardSettings() {
                                     onChange={e => e.target.files[0] && uploadImage(e.target.files[0], 'avatars', 'photo_url')} />
                             </div>
 
-                            {/* Champs profil */}
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 20px' }}>
-                                {SOCIAL_FIELDS.map(field => (
+                                {SOCIAL_FIELDS.filter(f => f.key !== 'photo_url' && f.key !== 'banner_url' && f.key !== 'theme_color').map(field => (
                                     <div key={field.key} className="field" style={{ gridColumn: field.type === 'textarea' ? 'span 2' : 'span 1' }}>
                                         <label>{field.label}{field.key === 'full_name' && <span style={{ color: 'var(--error)' }}> *</span>}</label>
                                         {field.type === 'textarea' ? (
                                             <textarea rows={3} placeholder={field.placeholder}
                                                 value={profileForm[field.key] || ''}
                                                 onChange={e => updateProfile(field.key, e.target.value)} />
-                                        ) : field.type === 'color' ? (
-                                            <div style={{ display: 'flex', gap: '8px' }}>
-                                                <input type="color" value={profileForm[field.key] || '#1A1265'} onChange={e => updateProfile(field.key, e.target.value)} style={{ width: '48px' }} />
-                                                <input type="text" value={profileForm[field.key] || '#1A1265'} onChange={e => updateProfile(field.key, e.target.value)} style={{ flex: 1, fontFamily: 'monospace' }} />
-                                            </div>
                                         ) : (
                                             <input type={field.type} placeholder={field.placeholder}
                                                 value={profileForm[field.key] || ''}
@@ -471,232 +502,8 @@ export default function CardSettings() {
                             </div>
 
                             <button className="btn-primary" onClick={saveProfile} disabled={saving} style={{ width: '100%', justifyContent: 'center', padding: '13px', marginTop: '8px' }}>
-                                {saving ? 'Sauvegarde...' : '💾 Sauvegarder le profil'}
+                                {saving ? 'Sauvegarde...' : '💾 Sauvegarder le profil public'}
                             </button>
-                        </div>
-                    )}
-
-                    {/* SECTION CONTENU (selon type de carte) */}
-                    {activeSection === 'contenu' && (
-                        <div className="card">
-                            <h2 style={titleStyle}>
-                                {card?.page_type === 'profile' && '📄 Page profil personnalisable'}
-                                {card?.page_type === 'url' && '🔗 Redirection URL'}
-                                {card?.page_type === 'wifi' && '📶 Configuration Wi-Fi'}
-                            </h2>
-
-                            {card?.page_type === 'profile' && (
-                                <div style={{ padding: '20px', background: 'var(--accent-light)', borderRadius: 'var(--radius-lg)', textAlign: 'center' }}>
-                                    <p style={{ color: 'var(--accent)', marginBottom: '8px' }}>✏️ Le client gère lui-même son profil</p>
-                                    <p style={{ fontSize: '13px', color: 'var(--text-light)' }}>
-                                        Le client peut modifier son nom, bio, liens sociaux, photo, etc. dans son dashboard.
-                                        <br />L'admin ne peut pas modifier ces informations à la place du client.
-                                    </p>
-                                </div>
-                            )}
-
-                            {card?.page_type === 'url' && (
-                                <>
-                                    <div className="field">
-                                        <label>URL de redirection</label>
-                                        <div style={{ display: 'flex', gap: '8px' }}>
-                                            <input
-                                                type="url"
-                                                placeholder="https://exemple.com"
-                                                value={redirectUrl}
-                                                onChange={e => setRedirectUrl(e.target.value)}
-                                                style={{ flex: 1 }}
-                                            />
-                                            <button
-                                                className="btn-secondary"
-                                                onClick={() => window.open(redirectUrl, '_blank')}
-                                                disabled={!redirectUrl}
-                                                style={{ whiteSpace: 'nowrap' }}
-                                            >
-                                                Tester
-                                            </button>
-                                        </div>
-                                        <p style={{ fontSize: '11px', color: 'var(--text-light)', marginTop: '4px' }}>
-                                            Cette URL sera utilisée lorsque quelqu'un scannera la carte. Le client peut la modifier depuis son dashboard.
-                                        </p>
-                                    </div>
-                                    <button className="btn-primary" onClick={saveContent} disabled={savingContent} style={{ width: '100%', justifyContent: 'center' }}>
-                                        {savingContent ? 'Sauvegarde...' : '💾 Sauvegarder l\'URL par défaut'}
-                                    </button>
-                                </>
-                            )}
-
-                            {card?.page_type === 'wifi' && (
-                                <>
-                                    <div className="field">
-                                        <label>SSID (nom du réseau)</label>
-                                        <input type="text" placeholder="MonWiFi" value={wifiSsid} onChange={e => setWifiSsid(e.target.value)} />
-                                    </div>
-                                    <div className="field">
-                                        <label>Mot de passe</label>
-                                        <div style={{ display: 'flex', gap: '8px' }}>
-                                            <input
-                                                type={showWifiPassword ? 'text' : 'password'}
-                                                placeholder="••••••••"
-                                                value={wifiPassword}
-                                                onChange={e => setWifiPassword(e.target.value)}
-                                                style={{ flex: 1 }}
-                                            />
-                                            <button
-                                                type="button"
-                                                className="btn-ghost"
-                                                onClick={() => setShowWifiPassword(!showWifiPassword)}
-                                                style={{ whiteSpace: 'nowrap' }}
-                                            >
-                                                {showWifiPassword ? '🙈 Masquer' : '👁 Afficher'}
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div className="field">
-                                        <label>Sécurité</label>
-                                        <select value={wifiSecurity} onChange={e => setWifiSecurity(e.target.value)}>
-                                            <option value="WPA">WPA/WPA2</option>
-                                            <option value="WEP">WEP</option>
-                                            <option value="nopass">Aucun (réseau ouvert)</option>
-                                        </select>
-                                    </div>
-                                    <p style={{ fontSize: '11px', color: 'var(--text-light)', marginBottom: '16px' }}>
-                                        Ces identifiants seront affichés lorsque quelqu'un scannera la carte. Le client peut les modifier depuis son dashboard.
-                                    </p>
-                                    <button className="btn-primary" onClick={saveContent} disabled={savingContent} style={{ width: '100%', justifyContent: 'center' }}>
-                                        {savingContent ? 'Sauvegarde...' : '💾 Sauvegarder les identifiants par défaut'}
-                                    </button>
-                                </>
-                            )}
-                        </div>
-                    )}
-
-                    {/* SECTION DESIGN PAGE */}
-                    {activeSection === 'design' && (
-                        <div className="card">
-                            <h2 style={titleStyle}>🎨 Design de la page publique</h2>
-
-                            <div className="field">
-                                <label>Couleur principale</label>
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '10px', marginBottom: '12px' }}>
-                                    {THEME_COLORS.map(c => (
-                                        <button key={c.bg} onClick={() => updateProfile('theme_color', c.bg)} style={{
-                                            height: '44px', borderRadius: 'var(--radius-md)', background: c.bg,
-                                            border: profileForm.theme_color === c.bg ? '3px solid #fff' : '2px solid transparent',
-                                            cursor: 'pointer', color: 'white', fontSize: '11px', fontWeight: '600',
-                                            boxShadow: profileForm.theme_color === c.bg ? `0 0 0 3px ${c.bg}` : 'var(--shadow)',
-                                        }}>{c.label}</button>
-                                    ))}
-                                </div>
-                                <div style={{ display: 'flex', gap: '8px' }}>
-                                    <input type="color" value={profileForm.theme_color || '#1A1265'} onChange={e => updateProfile('theme_color', e.target.value)} style={{ width: '48px' }} />
-                                    <input type="text" value={profileForm.theme_color || '#1A1265'} onChange={e => updateProfile('theme_color', e.target.value)} style={{ flex: 1, fontFamily: 'monospace' }} />
-                                </div>
-                            </div>
-
-                            {/* Aperçu */}
-                            <div style={{ marginTop: '24px' }}>
-                                <label>Aperçu de la page publique</label>
-                                <div style={{ borderRadius: 'var(--radius-lg)', overflow: 'hidden', border: '1px solid var(--border)', maxWidth: '300px', boxShadow: 'var(--shadow)' }}>
-                                    <div style={{ height: '70px', background: profileForm.banner_url ? `url(${profileForm.banner_url}) center/cover` : (profileForm.theme_color || '#1A1265') }} />
-                                    <div style={{ background: 'white', padding: '44px 16px 16px', position: 'relative' }}>
-                                        <div style={{
-                                            position: 'absolute', top: '-28px', left: '12px',
-                                            width: '56px', height: '56px', borderRadius: '50%',
-                                            border: '3px solid white',
-                                            background: profileForm.photo_url ? `url(${profileForm.photo_url}) center/cover` : (profileForm.theme_color || '#1A1265'),
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px',
-                                        }}>
-                                            {!profileForm.photo_url && '👤'}
-                                        </div>
-                                        <p style={{ fontWeight: '700', fontSize: '14px', marginBottom: '2px' }}>{profileForm.full_name || 'Nom du client'}</p>
-                                        {profileForm.title && <p style={{ fontSize: '11px', color: profileForm.theme_color || '#1A1265', fontWeight: '600', marginBottom: '4px' }}>{profileForm.title}</p>}
-                                        {profileForm.bio && <p style={{ fontSize: '11px', color: '#666', lineHeight: '1.4' }}>{profileForm.bio.substring(0, 60)}{profileForm.bio.length > 60 ? '...' : ''}</p>}
-                                        <div style={{ marginTop: '10px', height: '28px', borderRadius: '6px', background: profileForm.theme_color || '#1A1265', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                            <span style={{ color: 'white', fontSize: '10px', fontWeight: '600' }}>👤 Enregistrer le contact</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <button className="btn-primary" onClick={saveProfile} disabled={saving} style={{ width: '100%', justifyContent: 'center', padding: '13px', marginTop: '24px' }}>
-                                {saving ? 'Sauvegarde...' : '💾 Sauvegarder le design'}
-                            </button>
-                        </div>
-                    )}
-
-                    {/* SECTION QR CODE */}
-                    {activeSection === 'qr' && (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                            <div className="card">
-                                <h2 style={titleStyle}>▣ Aperçu et export</h2>
-                                <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: '32px', alignItems: 'start' }}>
-                                    <div style={{ textAlign: 'center' }}>
-                                        <div ref={qrRef} style={{ display: 'inline-block', borderRadius: '12px', overflow: 'hidden', marginBottom: '12px', boxShadow: 'var(--shadow-lg)' }} />
-                                        <p style={{ fontSize: '11px', color: 'var(--text-light)', fontFamily: 'monospace', marginBottom: '16px', wordBreak: 'break-all' }}>{publicUrl}</p>
-                                        <div style={{ display: 'flex', gap: '6px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                                            {['png', 'svg', 'jpeg'].map(fmt => (
-                                                <button key={fmt} className="btn-secondary" onClick={() => downloadQR(fmt)} style={{ padding: '7px 14px', fontSize: '12px' }}>
-                                                    ⬇ {fmt}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div style={{ padding: '16px', background: 'var(--accent-light)', borderRadius: 'var(--radius-lg)', marginBottom: '12px' }}>
-                                            <h3 style={{ fontWeight: '700', color: 'var(--accent)', fontSize: '13px', marginBottom: '8px' }}>📡 Encoder sur NFC</h3>
-                                            <div style={{ display: 'flex', gap: '6px' }}>
-                                                <input readOnly value={publicUrl} style={{ flex: 1, fontSize: '11px', fontFamily: 'monospace' }} />
-                                                <button className="btn-primary" onClick={() => copyText(publicUrl, 'Lien NFC')} style={{ padding: '7px 12px', fontSize: '12px' }}>📋</button>
-                                            </div>
-                                        </div>
-                                        <div style={{ padding: '14px', background: 'var(--bg)', borderRadius: 'var(--radius-md)', fontSize: '12px', color: 'var(--text-light)' }}>
-                                            <strong style={{ color: 'var(--text)' }}>💡 Ce QR est permanent.</strong> Le lien reste le même même si le client modifie son contenu.
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="card">
-                                <h2 style={titleStyle}>🎨 Style du QR Code</h2>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 24px' }}>
-                                    <div>
-                                        <StylePicker label="Style des modules" valueKey="dotsType" options={DOT_STYLES} appearance={qrAppearance} update={updateQR} />
-                                        <ColorPicker label="Couleur des modules" valueKey="dotsColor" appearance={qrAppearance} update={updateQR} />
-                                        <ColorPicker label="Couleur fond" valueKey="bgColor" appearance={qrAppearance} update={updateQR} />
-                                    </div>
-                                    <div>
-                                        <StylePicker label="Style des coins" valueKey="cornersType" options={CORNER_STYLES} appearance={qrAppearance} update={updateQR} />
-                                        <ColorPicker label="Couleur des coins" valueKey="cornersColor" appearance={qrAppearance} update={updateQR} />
-                                        <StylePicker label="Style point coins" valueKey="cornersDotType" options={CORNER_DOT_STYLES} appearance={qrAppearance} update={updateQR} />
-                                        <ColorPicker label="Couleur point coins" valueKey="cornersDotColor" appearance={qrAppearance} update={updateQR} />
-                                    </div>
-                                </div>
-
-                                <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--border)' }}>
-                                    <label style={{ fontSize: '13px', fontWeight: '500', marginBottom: '10px', display: 'block' }}>Presets rapides</label>
-                                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                                        {[
-                                            { label: '🎯 Classic', app: { dotsType: 'rounded', dotsColor: '#1A1265', bgColor: '#EBEBDF', cornersType: 'extra-rounded', cornersDotType: 'dot', cornersColor: '#1A1265', cornersDotColor: '#1A1265' } },
-                                            { label: '⬛ Dark', app: { dotsType: 'dots', dotsColor: '#000000', bgColor: '#ffffff', cornersType: 'extra-rounded', cornersDotType: 'dot', cornersColor: '#000000', cornersDotColor: '#000000' } },
-                                            { label: '💜 Purple', app: { dotsType: 'classy-rounded', dotsColor: '#7C3AED', bgColor: '#f5f0ff', cornersType: 'extra-rounded', cornersDotType: 'dot', cornersColor: '#7C3AED', cornersDotColor: '#7C3AED' } },
-                                            { label: '💚 Green', app: { dotsType: 'rounded', dotsColor: '#25D366', bgColor: '#f0fff4', cornersType: 'square', cornersDotType: 'square', cornersColor: '#128C7E', cornersDotColor: '#128C7E' } },
-                                        ].map(preset => (
-                                            <button key={preset.label} onClick={() => setQrAppearance(preset.app)} style={{
-                                                padding: '7px 14px', borderRadius: 'var(--radius-pill)',
-                                                border: '1.5px solid var(--border)', background: 'var(--bg-white)', cursor: 'pointer',
-                                                fontSize: '13px', transition: 'all 0.15s',
-                                            }}>
-                                                {preset.label}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                <button className="btn-primary" onClick={saveQRAppearance} disabled={savingQR} style={{ width: '100%', justifyContent: 'center', padding: '13px', marginTop: '20px' }}>
-                                    {savingQR ? 'Sauvegarde...' : '💾 Sauvegarder le style QR'}
-                                </button>
-                            </div>
                         </div>
                     )}
 
@@ -704,28 +511,96 @@ export default function CardSettings() {
                     {activeSection === 'danger' && (
                         <div className="card" style={{ border: '1.5px solid #ffcdd2' }}>
                             <h2 style={{ ...titleStyle, color: '#e53935' }}>⚠️ Zone de danger</h2>
-                            <p style={{ fontSize: '13px', color: 'var(--text-light)', marginBottom: '24px' }}>
-                                Les actions ci-dessous sont <strong>irréversibles</strong>. Procédez avec précaution.
-                            </p>
 
-                            {/* Lien éjection client */}
-                            <div style={{ padding: '20px', background: '#fff5f5', borderRadius: 'var(--radius-lg)', border: '1px solid #ffcdd2', marginBottom: '20px' }}>
-                                <h3 style={{ color: '#c62828', fontWeight: '700', marginBottom: '6px' }}>🔗 Lien d'activation</h3>
-                                <p style={{ fontSize: '13px', marginBottom: '12px' }}>Envoyez ce lien au client pour qu'il active sa carte :</p>
-                                <div style={{ display: 'flex', gap: '8px' }}>
-                                    <input readOnly value={activationUrl} style={{ flex: 1, fontSize: '11px', fontFamily: 'monospace' }} />
-                                    <button className="btn-primary" onClick={() => copyText(activationUrl, 'Lien activation')}>📋 Copier</button>
+                            <div style={{ padding: '20px', background: '#fff3e0', borderRadius: 'var(--radius-lg)', border: '1px solid #ffe0b2', marginBottom: '20px' }}>
+                                <h3 style={{ color: '#e65100', fontWeight: '700', marginBottom: '16px' }}>🎨 Personnalisation du QR Code</h3>
+
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                                    <div>
+                                        <label style={{ fontSize: '13px', fontWeight: '500' }}>Style des modules</label>
+                                        <select value={qrAppearance.dotsType} onChange={e => updateQR('dotsType', e.target.value)} className="field" style={{ marginTop: '4px' }}>
+                                            {DOT_STYLES.map(s => <option key={s} value={s}>{s}</option>)}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label style={{ fontSize: '13px', fontWeight: '500' }}>Couleur des modules</label>
+                                        <input type="color" value={qrAppearance.dotsColor} onChange={e => updateQR('dotsColor', e.target.value)} style={{ width: '100%', marginTop: '4px', height: '38px' }} />
+                                    </div>
+                                    <div>
+                                        <label style={{ fontSize: '13px', fontWeight: '500' }}>Couleur de fond</label>
+                                        <input type="color" value={qrAppearance.bgColor} onChange={e => updateQR('bgColor', e.target.value)} style={{ width: '100%', marginTop: '4px', height: '38px' }} />
+                                    </div>
+                                    <div>
+                                        <label style={{ fontSize: '13px', fontWeight: '500' }}>Style des coins</label>
+                                        <select value={qrAppearance.cornersType} onChange={e => updateQR('cornersType', e.target.value)} className="field" style={{ marginTop: '4px' }}>
+                                            {CORNER_STYLES.map(s => <option key={s} value={s}>{s}</option>)}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label style={{ fontSize: '13px', fontWeight: '500' }}>Couleur des coins</label>
+                                        <input type="color" value={qrAppearance.cornersColor} onChange={e => updateQR('cornersColor', e.target.value)} style={{ width: '100%', marginTop: '4px', height: '38px' }} />
+                                    </div>
+                                    <div>
+                                        <label style={{ fontSize: '13px', fontWeight: '500' }}>Style points intérieurs</label>
+                                        <select value={qrAppearance.cornersDotType} onChange={e => updateQR('cornersDotType', e.target.value)} className="field" style={{ marginTop: '4px' }}>
+                                            {CORNER_DOT_STYLES.map(s => <option key={s} value={s}>{s}</option>)}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label style={{ fontSize: '13px', fontWeight: '500' }}>Couleur points intérieurs</label>
+                                        <input type="color" value={qrAppearance.cornersDotColor} onChange={e => updateQR('cornersDotColor', e.target.value)} style={{ width: '100%', marginTop: '4px', height: '38px' }} />
+                                    </div>
+                                    <div>
+                                        <label style={{ fontSize: '13px', fontWeight: '500' }}>Logo (PNG, SVG)</label>
+                                        <input type="file" accept="image/*" onChange={e => e.target.files[0] && uploadLogo(e.target.files[0])} style={{ marginTop: '4px' }} />
+                                        {uploadingLogo && <p style={{ fontSize: '11px', marginTop: '4px' }}>Chargement...</p>}
+                                        {qrAppearance.logo_url && (
+                                            <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <img src={qrAppearance.logo_url} alt="Logo" style={{ width: '30px', height: '30px', objectFit: 'contain' }} />
+                                                <button onClick={removeLogo} className="btn-ghost" style={{ fontSize: '12px' }}>🗑 Supprimer</button>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
-                                <p style={{ fontSize: '11px', color: 'var(--text-light)', marginTop: '12px' }}>🔁 Si le client a déjà un compte, utilisez ce lien :</p>
-                                <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-                                    <input readOnly value={activationUrlExisting} style={{ flex: 1, fontSize: '11px', fontFamily: 'monospace' }} />
-                                    <button className="btn-primary" onClick={() => copyText(activationUrlExisting, 'Lien activation existant')}>📋 Copier</button>
+
+                                <div style={{ textAlign: 'center', marginTop: '20px', padding: '16px', background: 'white', borderRadius: 'var(--radius-md)' }}>
+                                    <label>Aperçu</label>
+                                    <div ref={qrRef} style={{ display: 'inline-block', borderRadius: '12px', overflow: 'hidden', marginTop: '12px' }} />
+                                </div>
+
+                                <div style={{ display: 'flex', gap: '12px', marginTop: '16px', flexWrap: 'wrap' }}>
+                                    <button className="btn-primary" onClick={saveQRAppearance} disabled={savingQR} style={{ flex: 1 }}>
+                                        {savingQR ? 'Sauvegarde...' : '💾 Sauvegarder le style QR'}
+                                    </button>
+                                    {['png', 'svg', 'jpeg'].map(fmt => (
+                                        <button key={fmt} className="btn-secondary" onClick={() => downloadQR(fmt)} style={{ flex: 1 }}>
+                                            ⬇ Télécharger {fmt.toUpperCase()}
+                                        </button>
+                                    ))}
                                 </div>
                             </div>
 
-                            {/* Suppression */}
+                            <div style={{ padding: '20px', background: '#fff5f5', borderRadius: 'var(--radius-lg)', border: '1px solid #ffcdd2', marginBottom: '20px' }}>
+                                <h3 style={{ color: '#c62828', fontWeight: '700', marginBottom: '6px' }}>🔗 Liens d'activation</h3>
+                                <p style={{ fontSize: '13px', marginBottom: '12px' }}>Envoyez ces liens au client selon son statut :</p>
+                                <div style={{ marginBottom: '12px' }}>
+                                    <p style={{ fontSize: '12px', fontWeight: '600', marginBottom: '4px' }}>📌 Nouveau client (pas encore inscrit)</p>
+                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                        <input readOnly value={activationUrl} style={{ flex: 1, fontSize: '11px', fontFamily: 'monospace' }} />
+                                        <button className="btn-primary" onClick={() => copyText(activationUrl, 'Lien activation')}>📋 Copier</button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p style={{ fontSize: '12px', fontWeight: '600', marginBottom: '4px' }}>🔄 Client existant (déjà inscrit)</p>
+                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                        <input readOnly value={activationUrlExisting} style={{ flex: 1, fontSize: '11px', fontFamily: 'monospace' }} />
+                                        <button className="btn-primary" onClick={() => copyText(activationUrlExisting, 'Lien activation existant')}>📋 Copier</button>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div style={{ padding: '20px', background: '#fff5f5', borderRadius: 'var(--radius-lg)', border: '1px solid #ffcdd2' }}>
-                                <h3 style={{ color: '#c62828', fontWeight: '700', marginBottom: '6px' }}>Supprimer la carte #{cardId}</h3>
+                                <h3 style={{ color: '#c62828', fontWeight: '700', marginBottom: '6px' }}>🗑 Supprimer la carte #{cardId}</h3>
                                 <p style={{ fontSize: '13px', color: '#e57373', marginBottom: '20px' }}>
                                     La carte est supprimée définitivement. Le lien <code>/u/{cardId}</code> ne fonctionnera plus.
                                 </p>
@@ -757,7 +632,6 @@ export default function CardSettings() {
     );
 }
 
-// Composants utilitaires
 const titleStyle = {
     fontFamily: 'var(--font-display)', fontSize: '17px', fontWeight: '700',
     color: 'var(--accent)', marginBottom: '20px',
@@ -768,39 +642,6 @@ function InfoBox({ label, value, mono, accent }) {
         <div style={{ padding: '14px 16px', background: 'var(--bg)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
             <div style={{ fontSize: '11px', color: 'var(--text-light)', marginBottom: '4px', fontWeight: '600', textTransform: 'uppercase' }}>{label}</div>
             <div style={{ fontSize: '14px', fontWeight: '700', color: accent ? 'var(--accent)' : 'var(--text)', fontFamily: mono ? 'monospace' : 'inherit', wordBreak: 'break-all' }}>{value}</div>
-        </div>
-    );
-}
-
-function ColorPicker({ label, valueKey, appearance, update }) {
-    return (
-        <div className="field">
-            <label>{label}</label>
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <input type="color" value={appearance[valueKey]} onChange={e => update(valueKey, e.target.value)} style={{ width: '44px', height: '38px', borderRadius: '6px', border: '1px solid var(--border)' }} />
-                <input type="text" value={appearance[valueKey]} onChange={e => update(valueKey, e.target.value)} style={{ flex: 1, fontFamily: 'monospace', fontSize: '13px' }} />
-            </div>
-        </div>
-    );
-}
-
-function StylePicker({ label, valueKey, options, appearance, update }) {
-    return (
-        <div className="field">
-            <label>{label}</label>
-            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                {options.map(opt => (
-                    <button key={opt} onClick={() => update(valueKey, opt)} style={{
-                        padding: '5px 12px', borderRadius: 'var(--radius-pill)',
-                        border: appearance[valueKey] === opt ? 'none' : '1.5px solid var(--border)',
-                        background: appearance[valueKey] === opt ? 'var(--accent)' : 'transparent',
-                        color: appearance[valueKey] === opt ? 'white' : 'var(--text-light)',
-                        fontSize: '12px', cursor: 'pointer', transition: 'all 0.15s',
-                    }}>
-                        {opt}
-                    </button>
-                ))}
-            </div>
         </div>
     );
 }

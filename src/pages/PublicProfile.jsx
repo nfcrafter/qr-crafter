@@ -7,6 +7,7 @@ export default function PublicProfile() {
     const { cardId } = useParams();
     const [loading, setLoading] = useState(true);
     const [notFound, setNotFound] = useState(false);
+    const [profile, setProfile] = useState(null);
     const [card, setCard] = useState(null);
 
     useEffect(() => {
@@ -28,13 +29,9 @@ export default function PublicProfile() {
         }
 
         setCard(data);
+        setProfile(data.admin_profile || {});
 
-        // Redirection automatique pour type URL
-        if (data.page_type === 'url' && data.redirect_url) {
-            window.location.href = data.redirect_url;
-            return;
-        }
-
+        await supabase.from('scan_logs').insert({ card_id: cardId, user_agent: navigator.userAgent });
         setLoading(false);
     }
 
@@ -46,42 +43,21 @@ export default function PublicProfile() {
         );
     }
 
-    if (notFound) {
+    if (notFound || card?.status === 'pending') {
         return (
-            <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#EBEBDF' }}>
-                <div style={{ fontSize: '64px', marginBottom: '16px' }}>😕</div>
-                <h2 style={{ color: '#1A1265' }}>Carte introuvable</h2>
-                <p style={{ color: '#666' }}>Cette carte n'existe pas ou n'est pas encore activée.</p>
+            <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#EBEBDF', padding: '24px' }}>
+                <img src="/logo.png" alt="NFCrafter" style={{ height: '64px', marginBottom: '24px' }} />
+                <h2 style={{ color: '#1A1265', marginBottom: '12px', textAlign: 'center' }}>Carte en cours d'activation</h2>
+                <p style={{ color: '#666', textAlign: 'center', maxWidth: '360px', marginBottom: '24px' }}>
+                    Cette carte NFCrafter n'est pas encore activée.
+                </p>
+                <a href="/register" style={{ background: '#1A1265', color: 'white', padding: '12px 32px', borderRadius: '8px', textDecoration: 'none', fontWeight: '600' }}>
+                    Créer mon compte →
+                </a>
             </div>
         );
     }
 
-    // Affichage pour type Wi-Fi
-    if (card.page_type === 'wifi') {
-        return (
-            <div style={{ minHeight: '100vh', background: '#EBEBDF', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-                <div style={{ maxWidth: '400px', width: '100%', background: 'white', borderRadius: '16px', padding: '32px', textAlign: 'center', boxShadow: '0 4px 24px rgba(0,0,0,0.08)' }}>
-                    <div style={{ fontSize: '64px', marginBottom: '16px' }}>📶</div>
-                    <h2 style={{ color: '#1A1265', marginBottom: '8px' }}>{card.wifi_ssid || 'Réseau Wi-Fi'}</h2>
-                    {card.wifi_password && (
-                        <>
-                            <p style={{ marginBottom: '16px', color: '#666' }}>Mot de passe :</p>
-                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', justifyContent: 'center' }}>
-                                <code style={{ background: '#f0f0f0', padding: '8px 16px', borderRadius: '8px', fontSize: '16px' }}>{card.wifi_password}</code>
-                                <button onClick={() => navigator.clipboard.writeText(card.wifi_password)} style={{ background: '#1A1265', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer' }}>
-                                    Copier
-                                </button>
-                            </div>
-                        </>
-                    )}
-                    {!card.wifi_password && <p style={{ color: '#666' }}>Réseau ouvert (sans mot de passe)</p>}
-                </div>
-            </div>
-        );
-    }
-
-    // Affichage pour type Profile
-    const profile = card.admin_profile || {};
     const themeColor = profile.theme_color || '#1A1265';
 
     const SOCIAL_LINKS = [
