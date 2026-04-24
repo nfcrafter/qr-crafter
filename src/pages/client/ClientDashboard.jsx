@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../../components/Toast.jsx';
+import ProfileForm from '../../components/ProfileForm.jsx';
 import QRCodeStyling from 'qr-code-styling';
 
 export default function ClientDashboard() {
@@ -36,6 +37,12 @@ export default function ClientDashboard() {
     const [cardContent, setCardContent] = useState({});
     const [savingContent, setSavingContent] = useState(false);
 
+    // Profil public (pour type profile)
+    const [publicProfile, setPublicProfile] = useState({});
+    const [uploadingAvatar, setUploadingAvatar] = useState(false);
+    const [uploadingBanner, setUploadingBanner] = useState(false);
+    const [savingPublicProfile, setSavingPublicProfile] = useState(false);
+
     // Onglet actif
     const [activeTab, setActiveTab] = useState('profil');
 
@@ -46,6 +53,9 @@ export default function ClientDashboard() {
     useEffect(() => {
         if (selectedCard) {
             loadCardDetails();
+            if (cardDetails?.page_type === 'profile') {
+                loadPublicProfile();
+            }
         }
     }, [selectedCard]);
 
@@ -97,6 +107,19 @@ export default function ClientDashboard() {
             wifi_password: data?.wifi_password || '',
             wifi_security: data?.wifi_security || 'WPA'
         });
+    }
+
+    async function loadPublicProfile() {
+        if (!selectedCard) return;
+        const { data } = await supabase
+            .from('cards')
+            .select('admin_profile')
+            .eq('card_id', selectedCard.card_id)
+            .single();
+
+        if (data?.admin_profile) {
+            setPublicProfile(data.admin_profile);
+        }
     }
 
     async function savePrivateProfile() {
@@ -154,6 +177,48 @@ export default function ClientDashboard() {
         setSavingContent(false);
     }
 
+    async function savePublicProfile() {
+        setSavingPublicProfile(true);
+        const { error } = await supabase
+            .from('cards')
+            .update({ admin_profile: publicProfile })
+            .eq('card_id', selectedCard.card_id);
+
+        if (error) toast('Erreur : ' + error.message, 'error');
+        else toast('Profil public mis à jour !', 'success');
+        setSavingPublicProfile(false);
+    }
+
+    async function uploadPublicAvatar(file) {
+        if (!file) return;
+        setUploadingAvatar(true);
+        const ext = file.name.split('.').pop();
+        const path = `public/${selectedCard.card_id}/avatar_${Date.now()}.${ext}`;
+        const { error } = await supabase.storage.from('avatars').upload(path, file, { upsert: true });
+        if (error) toast('Erreur upload', 'error');
+        else {
+            const { data } = supabase.storage.from('avatars').getPublicUrl(path);
+            setPublicProfile({ ...publicProfile, photo_url: data.publicUrl });
+            toast('Photo mise à jour !', 'success');
+        }
+        setUploadingAvatar(false);
+    }
+
+    async function uploadPublicBanner(file) {
+        if (!file) return;
+        setUploadingBanner(true);
+        const ext = file.name.split('.').pop();
+        const path = `public/${selectedCard.card_id}/banner_${Date.now()}.${ext}`;
+        const { error } = await supabase.storage.from('banners').upload(path, file, { upsert: true });
+        if (error) toast('Erreur upload', 'error');
+        else {
+            const { data } = supabase.storage.from('banners').getPublicUrl(path);
+            setPublicProfile({ ...publicProfile, banner_url: data.publicUrl });
+            toast('Bannière mise à jour !', 'success');
+        }
+        setUploadingBanner(false);
+    }
+
     async function generateQR() {
         if (!selectedCard) return;
         setGeneratingQR(true);
@@ -196,7 +261,7 @@ export default function ClientDashboard() {
             } else if (cardDetails?.page_type === 'wifi') {
                 tabs.push({ id: 'contenu', label: '📶 Wi-Fi' });
             } else if (cardDetails?.page_type === 'profile') {
-                tabs.push({ id: 'contenu', label: '📄 Profil public' });
+                tabs.push({ id: 'contenu', label: '📄 Mon profil public' });
             }
 
             tabs.push({ id: 'qr', label: '▣ QR Code' });
@@ -359,16 +424,20 @@ export default function ClientDashboard() {
                         )}
 
                         {cardDetails.page_type === 'profile' && (
-                            <div style={{ textAlign: 'center', padding: '20px' }}>
-                                <p style={{ color: 'var(--accent)', marginBottom: '8px' }}>📄 Votre page publique</p>
-                                <p style={{ fontSize: '13px', color: 'var(--text-light)' }}>
-                                    Pour modifier votre profil public (nom, bio, photo, liens sociaux),
-                                    <br />contactez l'administrateur.
-                                </p>
-                                <a href={`/u/${selectedCard.card_id}`} target="_blank" className="btn-primary" style={{ display: 'inline-block', marginTop: '16px', textDecoration: 'none' }}>
-                                    Voir ma page publique →
-                                </a>
-                            </div>
+                            <>
+                                <ProfileForm
+                                    form={publicProfile}
+                                    onChange={setPublicProfile}
+                                    onUploadAvatar={uploadPublicAvatar}
+                                    onUploadBanner={uploadPublicBanner}
+                                    uploadingAvatar={uploadingAvatar}
+                                    uploadingBanner={uploadingBanner}
+                                    readOnly={false}
+                                />
+                                <button className="btn-primary" onClick={savePublicProfile} disabled={savingPublicProfile} style={{ width: '100%', marginTop: '16px' }}>
+                                    {savingPublicProfile ? 'Sauvegarde...' : '💾 Sauvegarder mon profil public'}
+                                </button>
+                            </>
                         )}
                     </div>
                 )}
