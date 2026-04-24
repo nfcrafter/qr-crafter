@@ -1,37 +1,14 @@
 // src/pages/admin/AdminDashboard.jsx
-import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, NavLink } from 'react-router-dom';
 import { supabase } from '../../lib/supabase.js';
 import { useToast } from '../../components/Toast.jsx';
 import Modal from '../../components/Modal.jsx';
-import QRCodeStyling from 'qr-code-styling';
-import QRModal from '../../components/admin/QRModal.jsx';
 import { generateUniqueCardId } from '../../lib/utils.js';
-
-const SOCIAL_FIELDS = [
-    { key: 'full_name', label: 'Nom complet', type: 'text', placeholder: 'Jean Dupont' },
-    { key: 'title', label: 'Titre / Poste', type: 'text', placeholder: 'Designer, Entrepreneur...' },
-    { key: 'bio', label: 'Bio', type: 'textarea', placeholder: 'Description...' },
-    { key: 'photo_url', label: 'Photo (URL)', type: 'text', placeholder: 'https://...' },
-    { key: 'banner_url', label: 'Bannière (URL)', type: 'text', placeholder: 'https://...' },
-    { key: 'theme_color', label: 'Couleur thème', type: 'color' },
-    { key: 'whatsapp', label: 'WhatsApp', type: 'text', placeholder: '+229...' },
-    { key: 'phone', label: 'Téléphone', type: 'text', placeholder: '+229...' },
-    { key: 'email', label: 'Email', type: 'email', placeholder: 'jean@example.com' },
-    { key: 'instagram', label: 'Instagram', type: 'text', placeholder: 'https://instagram.com/...' },
-    { key: 'facebook', label: 'Facebook', type: 'text', placeholder: 'https://facebook.com/...' },
-    { key: 'tiktok', label: 'TikTok', type: 'text', placeholder: 'https://tiktok.com/...' },
-    { key: 'twitter', label: 'X / Twitter', type: 'text', placeholder: 'https://x.com/...' },
-    { key: 'linkedin', label: 'LinkedIn', type: 'text', placeholder: 'https://linkedin.com/...' },
-    { key: 'youtube', label: 'YouTube', type: 'text', placeholder: 'https://youtube.com/...' },
-    { key: 'website', label: 'Site web', type: 'text', placeholder: 'https://...' },
-];
 
 export default function AdminDashboard() {
     const navigate = useNavigate();
     const toast = useToast();
-    const qrRef = useRef(null);
-    const qrCode = useRef(null);
 
     const [cards, setCards] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -41,14 +18,8 @@ export default function AdminDashboard() {
     const [page, setPage] = useState(1);
     const [perPage] = useState(10);
 
-    // Modals
+    // Modal création
     const [createModal, setCreateModal] = useState(false);
-    const [profileModal, setProfileModal] = useState(null);
-    const [qrModal, setQrModal] = useState(null);
-    const [linkModal, setLinkModal] = useState(null);
-    const [deleteModal, setDeleteModal] = useState(null);
-
-    // Étape 1 du formulaire de création
     const [createStep, setCreateStep] = useState(1);
     const [clientInfo, setClientInfo] = useState({
         clientName: '',
@@ -62,40 +33,16 @@ export default function AdminDashboard() {
     const [wifiSecurity, setWifiSecurity] = useState('WPA');
     const [generating, setGenerating] = useState(false);
 
-    // Profil modal
-    const [profileForm, setProfileForm] = useState({});
-    const [savingProfile, setSavingProfile] = useState(false);
-    const [userId, setUserId] = useState('');
-    const [linking, setLinking] = useState(false);
-
     // Dossiers
     const [folders, setFolders] = useState([]);
+    const [showFolderManager, setShowFolderManager] = useState(false);
+    const [newFolderName, setNewFolderName] = useState('');
+    const [newFolderColor, setNewFolderColor] = useState('#1A1265');
 
     useEffect(() => {
         loadCards();
         loadFolders();
-    }, []);
-
-    useEffect(() => {
-        if (qrModal && qrRef.current) {
-            const url = `${window.location.origin}/u/${qrModal.card_id}`;
-            if (!qrCode.current) {
-                qrCode.current = new QRCodeStyling({
-                    width: 240, height: 240, type: 'svg',
-                    data: url,
-                    dotsOptions: { color: '#1A1265', type: 'rounded' },
-                    backgroundOptions: { color: '#EBEBDF' },
-                    cornersSquareOptions: { color: '#1A1265', type: 'extra-rounded' },
-                });
-                qrRef.current.innerHTML = '';
-                qrCode.current.append(qrRef.current);
-            } else {
-                qrCode.current.update({ data: url });
-                qrRef.current.innerHTML = '';
-                qrCode.current.append(qrRef.current);
-            }
-        }
-    }, [qrModal]);
+    }, [filterFolder]);
 
     async function loadCards() {
         setLoading(true);
@@ -113,13 +60,34 @@ export default function AdminDashboard() {
         setFolders(data || []);
     }
 
-    async function loadCardsByFolder(folderId) {
-        setFilterFolder(folderId);
-        setPage(1);
-        await loadCards();
+    async function createFolder() {
+        if (!newFolderName.trim()) {
+            toast('Nom du dossier requis', 'error');
+            return;
+        }
+        const { error } = await supabase.from('folders').insert({
+            name: newFolderName.trim(),
+            color: newFolderColor
+        });
+        if (error) {
+            toast('Erreur : ' + error.message, 'error');
+        } else {
+            toast('Dossier créé !', 'success');
+            setNewFolderName('');
+            setNewFolderColor('#1A1265');
+            setShowFolderManager(false);
+            loadFolders();
+        }
     }
 
-    // ÉTAPE 1 : validation
+    async function deleteFolder(id) {
+        if (!confirm('Supprimer ce dossier ? Les cartes ne seront pas supprimées.')) return;
+        await supabase.from('folders').delete().eq('id', id);
+        if (filterFolder === id) setFilterFolder('');
+        loadFolders();
+        loadCards();
+    }
+
     function validateStep1() {
         if (!clientInfo.clientName.trim()) {
             toast('Le nom du client est obligatoire', 'error');
@@ -138,7 +106,6 @@ export default function AdminDashboard() {
         setCreateStep(1);
     }
 
-    // Création finale
     async function finalizeCreateCard() {
         if (pageType === 'url' && !redirectUrl.trim()) {
             toast('L’URL de redirection est obligatoire', 'error');
@@ -177,7 +144,6 @@ export default function AdminDashboard() {
             toast('Erreur : ' + error.message, 'error');
         } else {
             toast(`Carte ${cardId} créée avec succès !`, 'success');
-            // Reset formulaire
             setCreateStep(1);
             setClientInfo({ clientName: '', city: '', country: 'Bénin' });
             setPageType('profile');
@@ -191,79 +157,6 @@ export default function AdminDashboard() {
         setGenerating(false);
     }
 
-    async function saveProfile() {
-        if (!profileModal) return;
-        setSavingProfile(true);
-        const { error } = await supabase.from('cards')
-            .update({ admin_profile: profileForm })
-            .eq('card_id', profileModal.card_id);
-        if (error) toast('Erreur lors de la sauvegarde', 'error');
-        else {
-            toast('Profil sauvegardé !', 'success');
-            loadCards();
-            setProfileModal(null);
-        }
-        setSavingProfile(false);
-    }
-
-    async function linkCard() {
-        if (!userId.trim() || !linkModal) return;
-        setLinking(true);
-        const { data: profile, error } = await supabase
-            .from('profiles').select('id, full_name').eq('id', userId.trim()).single();
-        if (error || !profile) {
-            toast('Aucun utilisateur trouvé avec cet ID', 'error');
-            setLinking(false);
-            return;
-        }
-        await supabase.from('cards')
-            .update({ owner_id: userId.trim(), status: 'active' })
-            .eq('card_id', linkModal.card_id);
-        await supabase.from('profiles')
-            .update({ card_id: linkModal.card_id })
-            .eq('id', userId.trim());
-        await supabase.from('user_cards').upsert({
-            user_id: userId.trim(),
-            card_id: linkModal.card_id,
-            profile_name: profile.full_name,
-        });
-        toast(`Carte liée à ${profile.full_name} !`, 'success');
-        setLinking(false);
-        setLinkModal(null);
-        setUserId('');
-        loadCards();
-    }
-
-    async function deleteCard() {
-        if (!deleteModal) return;
-        const { error } = await supabase.from('cards').delete().eq('card_id', deleteModal.card_id);
-        if (error) toast('Erreur lors de la suppression', 'error');
-        else {
-            toast(`Carte "${deleteModal.card_id}" supprimée`, 'warning');
-            setDeleteModal(null);
-            loadCards();
-        }
-    }
-
-    function downloadQR(card) {
-        const url = `${window.location.origin}/u/${card.card_id}`;
-        const qr = new QRCodeStyling({
-            width: 1024, height: 1024, type: 'svg',
-            data: url,
-            dotsOptions: { color: '#1A1265', type: 'rounded' },
-            backgroundOptions: { color: '#EBEBDF' },
-            cornersSquareOptions: { color: '#1A1265', type: 'extra-rounded' },
-        });
-        qr.download({ name: `QR-NFCrafter-${card.card_id}`, extension: 'png' });
-        toast('QR Code téléchargé !', 'success');
-    }
-
-    function copyText(text, label) {
-        navigator.clipboard.writeText(text);
-        toast(`${label} copié !`, 'info');
-    }
-
-    // Filtrage + pagination
     const filtered = cards.filter(c => {
         const matchSearch = !search ||
             c.card_id?.toLowerCase().includes(search.toLowerCase()) ||
@@ -294,21 +187,123 @@ export default function AdminDashboard() {
     };
 
     return (
-        <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
-            <header style={{ background: 'var(--bg-white)', borderBottom: '1px solid var(--border)', padding: '0 32px', position: 'sticky', top: 0, zIndex: 100 }}>
-                <div style={{ maxWidth: '1200px', margin: '0 auto', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <img src="/logo.png" alt="NFCrafter" style={{ height: '36px' }} />
-                        <span style={{ fontFamily: 'var(--font-display)', fontWeight: '800', fontSize: '18px', color: 'var(--accent)' }}>NFCrafter</span>
-                        <span style={{ background: 'var(--accent)', color: 'white', fontSize: '11px', fontWeight: '700', padding: '2px 8px', borderRadius: 'var(--radius-pill)' }}>ADMIN</span>
-                    </div>
-                    <button className="btn-ghost" onClick={async () => { await supabase.auth.signOut(); navigate('/login'); }} style={{ fontSize: '13px' }}>
-                        Déconnexion
-                    </button>
+        <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg)' }}>
+            {/* ========== SIDEBAR ========== */}
+            <aside style={{
+                width: '260px',
+                background: 'var(--bg-white)',
+                borderRight: '1px solid var(--border)',
+                display: 'flex',
+                flexDirection: 'column',
+                position: 'sticky',
+                top: 0,
+                height: '100vh'
+            }}>
+                <div style={{ padding: '24px 20px', borderBottom: '1px solid var(--border)' }}>
+                    <img src="/logo.png" alt="NFCrafter" style={{ height: '36px', marginBottom: '8px' }} />
+                    <div style={{ fontWeight: '800', color: 'var(--accent)' }}>NFCrafter Admin</div>
                 </div>
-            </header>
 
-            <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 16px' }}>
+                <nav style={{ flex: 1, padding: '20px 12px' }}>
+                    <div style={sidebarLinkStyle(true)}>
+                        <span>📊</span> Tableau de bord
+                    </div>
+
+                    <div style={{ margin: '16px 0 8px 12px', fontSize: '11px', fontWeight: '600', color: 'var(--text-light)', textTransform: 'uppercase' }}>
+                        DOSSIERS
+                    </div>
+
+                    {folders.map(folder => (
+                        <div key={folder.id} style={{ position: 'relative' }}>
+                            <button
+                                onClick={() => setFilterFolder(filterFolder === folder.id ? '' : folder.id)}
+                                style={{
+                                    width: '100%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    padding: '10px 12px',
+                                    borderRadius: 'var(--radius-md)',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    fontSize: '13px',
+                                    background: filterFolder === folder.id ? 'var(--accent-light)' : 'transparent',
+                                    color: filterFolder === folder.id ? 'var(--accent)' : 'var(--text-light)',
+                                    marginBottom: '2px'
+                                }}
+                            >
+                                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: folder.color }}></span>
+                                <span style={{ flex: 1, textAlign: 'left' }}>📁 {folder.name}</span>
+                                {filterFolder === folder.id && <span>✓</span>}
+                            </button>
+                            <button
+                                onClick={() => deleteFolder(folder.id)}
+                                style={{
+                                    position: 'absolute', right: '8px', top: '8px',
+                                    background: 'none', border: 'none', cursor: 'pointer',
+                                    fontSize: '12px', color: '#e53935', opacity: 0.5
+                                }}
+                                onMouseEnter={e => e.currentTarget.style.opacity = 1}
+                                onMouseLeave={e => e.currentTarget.style.opacity = 0.5}
+                            >
+                                ✕
+                            </button>
+                        </div>
+                    ))}
+
+                    {showFolderManager ? (
+                        <div style={{ marginTop: '12px', padding: '12px', background: 'var(--bg)', borderRadius: 'var(--radius-md)' }}>
+                            <input
+                                type="text"
+                                placeholder="Nom du dossier"
+                                value={newFolderName}
+                                onChange={e => setNewFolderName(e.target.value)}
+                                style={{ fontSize: '12px', marginBottom: '8px', width: '100%' }}
+                            />
+                            <input
+                                type="color"
+                                value={newFolderColor}
+                                onChange={e => setNewFolderColor(e.target.value)}
+                                style={{ width: '100%', marginBottom: '8px', height: '32px' }}
+                            />
+                            <button onClick={createFolder} className="btn-primary" style={{ width: '100%', fontSize: '12px', padding: '6px' }}>
+                                Créer
+                            </button>
+                            <button onClick={() => setShowFolderManager(false)} style={{ width: '100%', marginTop: '6px', fontSize: '11px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-light)' }}>
+                                Annuler
+                            </button>
+                        </div>
+                    ) : (
+                        <button
+                            onClick={() => setShowFolderManager(true)}
+                            style={{
+                                width: '100%', textAlign: 'left', padding: '10px 12px',
+                                background: 'transparent', border: 'none', borderRadius: 'var(--radius-md)',
+                                cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px',
+                                color: 'var(--accent)', marginTop: '8px'
+                            }}
+                        >
+                            <span>➕</span> Nouveau dossier
+                        </button>
+                    )}
+
+                    <div style={{ marginTop: '24px', paddingTop: '16px', borderTop: '1px solid var(--border)' }}>
+                        <button
+                            onClick={async () => { await supabase.auth.signOut(); navigate('/login'); }}
+                            style={{
+                                width: '100%', padding: '10px', background: 'transparent', border: 'none',
+                                cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px',
+                                color: 'var(--text-light)'
+                            }}
+                        >
+                            🚪 Déconnexion
+                        </button>
+                    </div>
+                </nav>
+            </aside>
+
+            {/* ========== CONTENU PRINCIPAL ========== */}
+            <main style={{ flex: 1, overflow: 'auto', padding: '32px 24px' }}>
                 {/* Stats */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '16px', marginBottom: '24px' }}>
                     {[
@@ -326,21 +321,23 @@ export default function AdminDashboard() {
 
                 {/* Barre d'outils */}
                 <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap', alignItems: 'center' }}>
-                    <input type="text" placeholder="🔍 Rechercher par nom, ID..."
-                        value={search} onChange={e => { setSearch(e.target.value); setPage(1); }}
+                    <input
+                        type="text"
+                        placeholder="🔍 Rechercher par nom, ID..."
+                        value={search}
+                        onChange={e => { setSearch(e.target.value); setPage(1); }}
                         style={{ flex: 1, minWidth: '200px', maxWidth: '320px' }}
                     />
-                    <select value={filterStatus} onChange={e => { setFilterStatus(e.target.value); setPage(1); }}
-                        style={{ width: '160px' }}>
+                    <select value={filterStatus} onChange={e => { setFilterStatus(e.target.value); setPage(1); }} style={{ width: '160px' }}>
                         <option value="">Tous les statuts</option>
                         <option value="active">✅ Actives</option>
                         <option value="pending">⏳ En attente</option>
                     </select>
-                    <select value={filterFolder} onChange={e => { setFilterFolder(e.target.value); setPage(1); loadCards(); }}
-                        style={{ width: '180px' }}>
-                        <option value="">Tous les dossiers</option>
-                        {folders.map(f => <option key={f.id} value={f.id}>📁 {f.name}</option>)}
-                    </select>
+                    {filterFolder && (
+                        <button onClick={() => setFilterFolder('')} className="btn-ghost" style={{ fontSize: '12px' }}>
+                            ✕ Effacer filtre dossier
+                        </button>
+                    )}
                     <div style={{ marginLeft: 'auto' }}>
                         <button className="btn-primary" onClick={openCreateModal} style={{ whiteSpace: 'nowrap' }}>
                             ➕ Nouvelle carte
@@ -348,11 +345,11 @@ export default function AdminDashboard() {
                     </div>
                 </div>
 
-                {/* Data Table */}
+                {/* Tableau des cartes */}
                 <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
                     <div style={{
                         display: 'grid',
-                        gridTemplateColumns: '100px 1fr 140px 120px 200px',
+                        gridTemplateColumns: '100px 1fr 140px 120px 160px',
                         gap: '0', padding: '12px 20px',
                         background: 'var(--bg)', borderBottom: '1px solid var(--border)',
                         fontSize: '12px', fontWeight: '700', color: 'var(--text-light)',
@@ -361,7 +358,7 @@ export default function AdminDashboard() {
                         <span>ID Carte</span>
                         <span>Client</span>
                         <span>Statut</span>
-                        <span>Scans</span>
+                        <span>Type</span>
                         <span style={{ textAlign: 'right' }}>Actions</span>
                     </div>
 
@@ -373,54 +370,59 @@ export default function AdminDashboard() {
                             <p>Aucune carte trouvée</p>
                         </div>
                     ) : (
-                        paginated.map((card, i) => (
-                            <div key={card.card_id} style={{
-                                display: 'grid',
-                                gridTemplateColumns: '100px 1fr 140px 120px 200px',
-                                gap: '0', padding: '14px 20px',
-                                borderBottom: i < paginated.length - 1 ? '1px solid var(--border)' : 'none',
-                                alignItems: 'center',
-                                transition: 'background 0.15s',
-                            }}
-                                onMouseEnter={e => e.currentTarget.style.background = 'var(--bg)'}
-                                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                            >
-                                <span style={{ fontFamily: 'monospace', fontWeight: '700', fontSize: '13px', color: 'var(--accent)' }}>
-                                    {card.card_id}
-                                </span>
-                                <div>
-                                    <div style={{ fontWeight: '600', fontSize: '14px', color: 'var(--text)' }}>
-                                        {card.admin_profile?.full_name || card.card_name || '—'}
+                        paginated.map((card, i) => {
+                            const typeIcon = card.page_type === 'profile' ? '📄' : card.page_type === 'url' ? '🔗' : '📶';
+                            const typeLabel = card.page_type === 'profile' ? 'Profil' : card.page_type === 'url' ? 'Redirection' : 'Wi-Fi';
+                            return (
+                                <div key={card.card_id} style={{
+                                    display: 'grid',
+                                    gridTemplateColumns: '100px 1fr 140px 120px 160px',
+                                    gap: '0', padding: '14px 20px',
+                                    borderBottom: i < paginated.length - 1 ? '1px solid var(--border)' : 'none',
+                                    alignItems: 'center',
+                                    transition: 'background 0.15s',
+                                }}
+                                    onMouseEnter={e => e.currentTarget.style.background = 'var(--bg)'}
+                                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                                >
+                                    <span style={{ fontFamily: 'monospace', fontWeight: '700', fontSize: '13px', color: 'var(--accent)' }}>
+                                        {card.card_id}
+                                    </span>
+                                    <div>
+                                        <div style={{ fontWeight: '600', fontSize: '14px', color: 'var(--text)' }}>
+                                            {card.admin_profile?.full_name || card.card_name || '—'}
+                                        </div>
+                                        <div style={{ fontSize: '12px', color: 'var(--text-light)' }}>
+                                            {card.city && `${card.city}, ${card.country || 'Bénin'}`}
+                                        </div>
                                     </div>
-                                    <div style={{ fontSize: '12px', color: 'var(--text-light)' }}>
-                                        {card.city && `${card.city}, ${card.country || 'Bénin'}`}
+                                    <span style={{
+                                        display: 'inline-flex', alignItems: 'center', gap: '4px',
+                                        fontSize: '12px', fontWeight: '600', padding: '4px 10px',
+                                        borderRadius: 'var(--radius-pill)',
+                                        background: card.status === 'active' ? '#e8f5e9' : '#fff3e0',
+                                        color: card.status === 'active' ? '#2e7d32' : '#e65100',
+                                        width: 'fit-content',
+                                    }}>
+                                        {card.status === 'active' ? '✅ Active' : '⏳ En attente'}
+                                    </span>
+                                    <span style={{ fontSize: '13px', color: 'var(--text-light)' }}>
+                                        {typeIcon} {typeLabel}
+                                    </span>
+                                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                        <button
+                                            onClick={() => navigate(`/admin/card/${card.card_id}`)}
+                                            className="btn-primary"
+                                            style={{ padding: '8px 16px', fontSize: '13px', whiteSpace: 'nowrap' }}
+                                        >
+                                            ⚙️ Paramètres
+                                        </button>
                                     </div>
                                 </div>
-                                <span style={{
-                                    display: 'inline-flex', alignItems: 'center', gap: '4px',
-                                    fontSize: '12px', fontWeight: '600', padding: '4px 10px',
-                                    borderRadius: 'var(--radius-pill)',
-                                    background: card.status === 'active' ? '#e8f5e9' : '#fff3e0',
-                                    color: card.status === 'active' ? '#2e7d32' : '#e65100',
-                                    width: 'fit-content',
-                                }}>
-                                    {card.status === 'active' ? '✅ Active' : '⏳ En attente'}
-                                </span>
-                                <span style={{ fontSize: '14px', color: 'var(--text-light)', fontWeight: '600' }}>
-                                    — scans
-                                </span>
-                                <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
-                                    <ActionBtn title="Voir la page" icon="👁" onClick={() => window.open(`/u/${card.card_id}`, '_blank')} color="var(--text-light)" />
-                                    <ActionBtn title="QR Code" icon="▣" onClick={() => setQrModal(card)} color="#7C3AED" />
-                                    <ActionBtn title="Modifier profil" icon="✏️" onClick={() => { setProfileForm(card.admin_profile || {}); setProfileModal(card); }} color="#1A1265" />
-                                    <ActionBtn title="Lier client" icon="🔗" onClick={() => setLinkModal(card)} color="#25D366" />
-                                    <ActionBtn title="Supprimer" icon="🗑" onClick={() => setDeleteModal(card)} color="#e53935" />
-                                </div>
-                            </div>
-                        ))
+                            );
+                        })
                     )}
 
-                    {/* Pagination */}
                     {filtered.length > perPage && (
                         <div style={{
                             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -455,7 +457,7 @@ export default function AdminDashboard() {
                 </div>
             </main>
 
-            {/* ===== MODAL CRÉATION 2 ÉTAPES ===== */}
+            {/* ========== MODAL CRÉATION ========== */}
             <Modal isOpen={createModal} onClose={() => setCreateModal(false)} title="➕ Nouvelle carte" size="md">
                 {createStep === 1 ? (
                     <>
@@ -490,12 +492,8 @@ export default function AdminDashboard() {
                             </div>
                         </div>
                         <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
-                            <button className="btn-ghost" onClick={() => setCreateModal(false)} style={{ flex: 1 }}>
-                                Annuler
-                            </button>
-                            <button className="btn-primary" onClick={goToStep2} style={{ flex: 1 }}>
-                                Suivant →
-                            </button>
+                            <button className="btn-ghost" onClick={() => setCreateModal(false)} style={{ flex: 1 }}>Annuler</button>
+                            <button className="btn-primary" onClick={goToStep2} style={{ flex: 1 }}>Suivant →</button>
                         </div>
                     </>
                 ) : (
@@ -503,15 +501,18 @@ export default function AdminDashboard() {
                         <div className="field">
                             <label>Type de page *</label>
                             <select value={pageType} onChange={e => setPageType(e.target.value)}>
-                                <option value="profile">📄 Page profil personnalisable (le client modifie son contenu)</option>
-                                <option value="url">🔗 Redirection vers une URL fixe</option>
-                                <option value="wifi">📶 Page Wi-Fi (affiche SSID + mot de passe)</option>
+                                <option value="profile">📄 Page profil personnalisable</option>
+                                <option value="url">🔗 Redirection vers une URL</option>
+                                <option value="wifi">📶 Page Wi-Fi</option>
                             </select>
+                            <p style={{ fontSize: '11px', color: 'var(--text-light)', marginTop: '4px' }}>
+                                Le client pourra modifier le contenu selon le type choisi.
+                            </p>
                         </div>
 
                         {pageType === 'url' && (
                             <div className="field">
-                                <label>URL de redirection *</label>
+                                <label>URL de redirection par défaut *</label>
                                 <input
                                     type="url"
                                     placeholder="https://exemple.com"
@@ -524,7 +525,7 @@ export default function AdminDashboard() {
                         {pageType === 'wifi' && (
                             <>
                                 <div className="field">
-                                    <label>SSID (nom du réseau) *</label>
+                                    <label>SSID (nom du réseau) par défaut *</label>
                                     <input
                                         type="text"
                                         placeholder="MonWiFi"
@@ -533,7 +534,7 @@ export default function AdminDashboard() {
                                     />
                                 </div>
                                 <div className="field">
-                                    <label>Mot de passe</label>
+                                    <label>Mot de passe par défaut</label>
                                     <input
                                         type="text"
                                         placeholder="••••••••"
@@ -553,150 +554,9 @@ export default function AdminDashboard() {
                         )}
 
                         <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
-                            <button className="btn-ghost" onClick={goToStep1} style={{ flex: 1 }}>
-                                ← Retour
-                            </button>
-                            <button
-                                className="btn-primary"
-                                onClick={finalizeCreateCard}
-                                disabled={generating}
-                                style={{ flex: 1, justifyContent: 'center' }}
-                            >
+                            <button className="btn-ghost" onClick={goToStep1} style={{ flex: 1 }}>← Retour</button>
+                            <button className="btn-primary" onClick={finalizeCreateCard} disabled={generating} style={{ flex: 1, justifyContent: 'center' }}>
                                 {generating ? 'Création...' : '➕ Créer la carte'}
-                            </button>
-                        </div>
-                    </>
-                )}
-            </Modal>
-
-            {/* MODAL PROFIL */}
-            <Modal isOpen={!!profileModal} onClose={() => setProfileModal(null)} title={`✏️ Profil — ${profileModal?.card_name || profileModal?.card_id}`} size="lg">
-                {profileModal && (
-                    <>
-                        <div style={{ padding: '12px', background: 'var(--accent-light)', borderRadius: 'var(--radius-md)', marginBottom: '20px' }}>
-                            <p style={{ fontSize: '12px', fontWeight: '700', color: 'var(--accent)', marginBottom: '8px' }}>
-                                🔗 Lien d'activation à envoyer au client
-                            </p>
-                            <div style={{ display: 'flex', gap: '8px' }}>
-                                <input type="text" readOnly
-                                    value={`${window.location.origin}/register?card=${profileModal.card_id}&token=${profileModal.activation_token}`}
-                                    style={{ flex: 1, fontSize: '11px', fontFamily: 'monospace' }}
-                                />
-                                <button className="btn-primary" style={{ whiteSpace: 'nowrap', padding: '8px 14px', fontSize: '12px' }}
-                                    onClick={() => copyText(`${window.location.origin}/register?card=${profileModal.card_id}&token=${profileModal.activation_token}`, 'Lien d\'activation')}>
-                                    📋 Copier
-                                </button>
-                            </div>
-                        </div>
-
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 16px' }}>
-                            {SOCIAL_FIELDS.map(field => (
-                                <div key={field.key} className="field" style={{ gridColumn: field.type === 'textarea' ? 'span 2' : 'span 1' }}>
-                                    <label>{field.label}</label>
-                                    {field.type === 'textarea' ? (
-                                        <textarea rows={2} placeholder={field.placeholder}
-                                            value={profileForm[field.key] || ''}
-                                            onChange={e => setProfileForm(f => ({ ...f, [field.key]: e.target.value }))}
-                                            style={{ resize: 'none' }}
-                                        />
-                                    ) : field.type === 'color' ? (
-                                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                                            <input type="color" value={profileForm[field.key] || '#1A1265'}
-                                                onChange={e => setProfileForm(f => ({ ...f, [field.key]: e.target.value }))}
-                                                style={{ width: '44px', height: '38px', padding: '2px', cursor: 'pointer' }}
-                                            />
-                                            <input type="text" value={profileForm[field.key] || '#1A1265'}
-                                                onChange={e => setProfileForm(f => ({ ...f, [field.key]: e.target.value }))}
-                                                style={{ flex: 1, fontFamily: 'monospace' }}
-                                            />
-                                        </div>
-                                    ) : (
-                                        <input type={field.type} placeholder={field.placeholder}
-                                            value={profileForm[field.key] || ''}
-                                            onChange={e => setProfileForm(f => ({ ...f, [field.key]: e.target.value }))}
-                                        />
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-
-                        <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
-                            <button className="btn-ghost" onClick={() => setProfileModal(null)} style={{ flex: 1 }}>Annuler</button>
-                            <button className="btn-primary" onClick={saveProfile} disabled={savingProfile} style={{ flex: 1, justifyContent: 'center' }}>
-                                {savingProfile ? 'Sauvegarde...' : '💾 Sauvegarder'}
-                            </button>
-                        </div>
-                    </>
-                )}
-            </Modal>
-
-            {/* MODAL QR */}
-            <Modal isOpen={!!qrModal} onClose={() => setQrModal(null)} title={`▣ QR — ${qrModal?.card_id}`} size="sm">
-                {qrModal && (
-                    <div style={{ textAlign: 'center' }}>
-                        <div ref={qrRef} style={{ display: 'inline-block', borderRadius: '12px', overflow: 'hidden', marginBottom: '12px', boxShadow: 'var(--shadow-lg)' }} />
-                        <p style={{ fontSize: '12px', color: 'var(--text-light)', fontFamily: 'monospace', marginBottom: '16px', wordBreak: 'break-all' }}>
-                            {`${window.location.origin}/u/${qrModal.card_id}`}
-                        </p>
-                        <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                            <button className="btn-secondary" onClick={() => copyText(`${window.location.origin}/u/${qrModal.card_id}`, 'Lien NFC')} style={{ padding: '10px 16px', width: 'auto' }}>
-                                📡 Copier lien
-                            </button>
-                            <button className="btn-primary" onClick={() => downloadQR(qrModal)} style={{ padding: '10px 16px', width: 'auto' }}>
-                                ⬇ PNG
-                            </button>
-                        </div>
-                    </div>
-                )}
-            </Modal>
-
-            {/* MODAL LIER CLIENT */}
-            <Modal isOpen={!!linkModal} onClose={() => { setLinkModal(null); setUserId(''); }} title={`🔗 Lier la carte ${linkModal?.card_id}`} size="sm">
-                {linkModal && (
-                    <>
-                        <p style={{ fontSize: '13px', color: 'var(--text-light)', marginBottom: '16px' }}>
-                            Collez l'ID du client pour activer sa carte.
-                        </p>
-                        <div className="field">
-                            <label>ID du client *</label>
-                            <textarea rows={3} placeholder="Collez l'ID ici..."
-                                value={userId} onChange={e => setUserId(e.target.value)}
-                                style={{ fontFamily: 'monospace', fontSize: '12px' }}
-                                autoFocus
-                            />
-                        </div>
-                        <div style={{ display: 'flex', gap: '12px' }}>
-                            <button className="btn-ghost" onClick={() => { setLinkModal(null); setUserId(''); }} style={{ flex: 1 }}>
-                                Annuler
-                            </button>
-                            <button className="btn-primary" onClick={linkCard} disabled={linking || !userId.trim()} style={{ flex: 1, justifyContent: 'center' }}>
-                                {linking ? 'Liaison...' : '✅ Activer la carte'}
-                            </button>
-                        </div>
-                    </>
-                )}
-            </Modal>
-
-            {/* MODAL SUPPRIMER */}
-            <Modal isOpen={!!deleteModal} onClose={() => setDeleteModal(null)} title="🗑 Supprimer la carte" size="sm">
-                {deleteModal && (
-                    <>
-                        <p style={{ fontSize: '15px', color: 'var(--text)', marginBottom: '8px' }}>
-                            Voulez-vous vraiment supprimer la carte <strong>{deleteModal.card_id}</strong> ?
-                        </p>
-                        <p style={{ fontSize: '13px', color: 'var(--error)', marginBottom: '24px' }}>
-                            ⚠️ Cette action est irréversible. Le lien `/u/{deleteModal.card_id}` ne fonctionnera plus.
-                        </p>
-                        <div style={{ display: 'flex', gap: '12px' }}>
-                            <button className="btn-ghost" onClick={() => setDeleteModal(null)} style={{ flex: 1 }}>
-                                Annuler
-                            </button>
-                            <button onClick={deleteCard} style={{
-                                flex: 1, padding: '11px', background: '#e53935', color: 'white',
-                                border: 'none', borderRadius: 'var(--radius-sm)', cursor: 'pointer',
-                                fontSize: '14px', fontWeight: '600',
-                            }}>
-                                🗑 Supprimer définitivement
                             </button>
                         </div>
                     </>
@@ -706,30 +566,17 @@ export default function AdminDashboard() {
     );
 }
 
-function ActionBtn({ icon, title, onClick, color }) {
-    return (
-        <button
-            title={title}
-            onClick={onClick}
-            style={{
-                width: '32px', height: '32px',
-                border: '1px solid var(--border)',
-                borderRadius: 'var(--radius-sm)',
-                background: 'var(--bg-white)',
-                cursor: 'pointer', fontSize: '15px',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                transition: 'all 0.15s', color,
-            }}
-            onMouseEnter={e => {
-                e.currentTarget.style.background = color + '15';
-                e.currentTarget.style.borderColor = color;
-            }}
-            onMouseLeave={e => {
-                e.currentTarget.style.background = 'var(--bg-white)';
-                e.currentTarget.style.borderColor = 'var(--border)';
-            }}
-        >
-            {icon}
-        </button>
-    );
+function sidebarLinkStyle(isActive) {
+    return {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        padding: '10px 12px',
+        borderRadius: 'var(--radius-md)',
+        textDecoration: 'none',
+        fontSize: '14px',
+        marginBottom: '4px',
+        background: isActive ? 'var(--accent-light)' : 'transparent',
+        color: isActive ? 'var(--accent)' : 'var(--text-light)'
+    };
 }
