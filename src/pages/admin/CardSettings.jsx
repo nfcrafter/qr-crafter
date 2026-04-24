@@ -588,7 +588,7 @@ export default function CardSettings() {
                                 <p style={{ fontSize: '13px', color: card?.status === 'active' ? '#388e3c' : '#e65100' }}>
                                     {card?.status === 'active'
                                         ? `Liée au client (ID: ${card.owner_id?.substring(0, 20)}...)`
-                                        : 'Envoyez un lien d'activation au client pour activer la carte.'}
+                                        : 'Envoyez un lien d\'activation au client pour activer la carte.'}
                                 </p>
                             </div>
 
