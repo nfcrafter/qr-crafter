@@ -1,6 +1,6 @@
 // src/App.jsx
 import { useState, useEffect } from 'react'
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { supabase } from './lib/supabase.js'
 import Login from './pages/Login.jsx'
 import Register from './pages/Register.jsx'
@@ -43,6 +43,8 @@ export default function App() {
     const [session, setSession] = useState(undefined)
     const [isAdmin, setIsAdmin] = useState(false)
     const ADMIN_EMAIL = 'nfcrafter@gmail.com'
+
+    const location = useLocation();
 
     useEffect(() => {
         supabase.auth.getSession().then(({ data: { session } }) => {
@@ -104,7 +106,7 @@ export default function App() {
                 {/* Catch-all */}
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
-            <WhatsAppSupport />
+            {!location.pathname.startsWith('/u/') && <WhatsAppSupport />}
         </>
     )
 }

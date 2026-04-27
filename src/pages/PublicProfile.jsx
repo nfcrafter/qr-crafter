@@ -58,7 +58,7 @@ export default function PublicProfile() {
         .from('custom_links').select('*')
         .eq('profile_id', card.owner_id)
         .order('position', { ascending: true })
-      setCustomLinks(linksData || [])
+      setCustomLinks(linksData?.length > 0 ? linksData : (merged.customLinks || []))
     } else if (card.admin_profile && Object.keys(card.admin_profile).length > 0) {
       // Not yet activated — show admin-filled profile
       merged = card.admin_profile
@@ -111,7 +111,7 @@ export default function PublicProfile() {
   )
 
   const themeColor = profile?.theme_color || profile?.primaryColor || '#1A1265'
-  const activeLinks = SOCIAL_LINKS.filter(s => profile?.[s.key]?.trim())
+  const activeLinks = SOCIAL_LINKS.filter(s => (profile?.[s.key] || profile?.socials?.[s.key])?.trim())
   const activeCustomLinks = customLinks.filter(l => l.url)
 
   return (
@@ -188,9 +188,11 @@ export default function PublicProfile() {
             </div>
           )}
 
-          {activeLinks.map(link => (
+          {activeLinks.map(link => {
+            const linkValue = profile[link.key] || profile?.socials?.[link.key];
+            return (
             <a key={link.key} className="pl"
-              href={link.getUrl(profile[link.key])}
+              href={link.getUrl(linkValue)}
               target="_blank"
               rel="noopener noreferrer"
               style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 18px', background: 'white', borderRadius: 16, textDecoration: 'none', color: '#111', boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.05)' }}>
@@ -199,7 +201,7 @@ export default function PublicProfile() {
               <span style={{ fontWeight: 700, fontSize: 15, flex: 1 }}>{link.label}</span>
               <span style={{ color: '#CBD5E1', fontSize: 18 }}>→</span>
             </a>
-          ))}
+          )})}
 
           {activeCustomLinks.length > 0 && (
             <div style={{ marginTop: 8 }}>
