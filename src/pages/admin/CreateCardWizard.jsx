@@ -6,202 +6,251 @@ import { useToast } from '../../components/Toast.jsx';
 import QRCodeStyling from 'qr-code-styling';
 import { generateUniqueCardId } from '../../lib/utils.js';
 import PhonePreview from '../../components/PhonePreview.jsx';
+import { SOCIAL_NETWORKS, LINK_ICONS } from '../../constants/socials.js';
 
 const QR_TYPES = [
-    { id: 'url', icon: '🌐', label: 'Lien URL', desc: 'Redirigez vers un site existant.' },
-    { id: 'profile', icon: '👤', label: 'Profil Personnel', desc: 'Créez une page de profil digitale complète.' }
+    { id: 'url', icon: '🌐', label: 'Lien URL', desc: 'Redirige vers un site web existant.' },
+    { id: 'profile', icon: '👤', label: 'Profil Personnel', desc: 'Page de contact digitale complète.' }
 ];
 
-const SOCIAL_NETWORKS = [
-    { id: 'whatsapp', icon: 'https://cdn-icons-png.flaticon.com/512/3670/3670051.png', label: 'WhatsApp' },
-    { id: 'instagram', icon: 'https://cdn-icons-png.flaticon.com/512/174/174855.png', label: 'Instagram' },
-    { id: 'facebook', icon: 'https://cdn-icons-png.flaticon.com/512/733/733547.png', label: 'Facebook' },
-    { id: 'tiktok', icon: 'https://cdn-icons-png.flaticon.com/512/3046/3046121.png', label: 'TikTok' },
-    { id: 'linkedin', icon: 'https://cdn-icons-png.flaticon.com/512/174/174857.png', label: 'LinkedIn' },
-    { id: 'twitter', icon: 'https://cdn-icons-png.flaticon.com/512/3256/3256013.png', label: 'X (Twitter)' },
-    { id: 'youtube', icon: 'https://cdn-icons-png.flaticon.com/512/1384/1384060.png', label: 'YouTube' }
-];
+const DOT_STYLES = ['rounded', 'dots', 'classy', 'classy-rounded', 'square', 'extra-rounded'];
 
 export default function CreateCardWizard() {
     const navigate = useNavigate();
     const toast = useToast();
     const qrRef = useRef(null);
     const qrCode = useRef(null);
-    const [generatedCardId, setGeneratedCardId] = useState(null);
-
+    const [cardId, setCardId] = useState(null);
     const [step, setStep] = useState(1);
-    const [selectedType, setSelectedType] = useState('profile');
+    const [selectedType, setSelectedType] = useState(null);
     const [generating, setGenerating] = useState(false);
-    const [expandedAccordion, setExpandedAccordion] = useState('info');
+    const [openSection, setOpenSection] = useState('info');
     const [previewMode, setPreviewMode] = useState('page');
-
-    // Content State
     const [cardName, setCardName] = useState('');
-    const [selectedFolderId, setSelectedFolderId] = useState(null);
     const [folders, setFolders] = useState([]);
-    
-    const [profileData, setProfileData] = useState({
-        banner_url: '',
-        photo_url: '',
-        full_name: '',
-        job_title: '',
-        bio: '',
-        primaryColor: '#1A1265',
-        socials: {}, // { whatsapp: '+229...', instagram: '@user' }
-        customLinks: [] // [{ label: '', url: '', icon: '' }]
+    const [selectedFolderId, setSelectedFolderId] = useState(null);
+    const [activeSocialInput, setActiveSocialInput] = useState(null);
+
+    const [profile, setProfile] = useState({
+        banner_url: '', photo_url: '', full_name: '', job_title: '', bio: '',
+        phone: '', email: '', primaryColor: '#1A1265',
+        socials: {}, customLinks: [], url: ''
     });
 
-    const [qrAppearance, setQrAppearance] = useState({
+    const [qrStyle, setQrStyle] = useState({
         dotsType: 'rounded', dotsColor: '#1A1265', bgColor: '#FFFFFF',
-        cornersType: 'extra-rounded', cornersColor: '#1A1265',
-        logo_url: null
+        cornersType: 'extra-rounded', cornersColor: '#1A1265', logo_url: ''
     });
 
     useEffect(() => {
-        generateUniqueCardId().then(id => setGeneratedCardId(id));
-        loadFolders();
+        generateUniqueCardId().then(setCardId);
+        supabase.from('folders').select('*').order('created_at').then(({ data }) => setFolders(data || []));
     }, []);
 
-    async function loadFolders() {
-        const { data } = await supabase.from('folders').select('*').order('created_at');
-        setFolders(data || []);
-    }
-
     useEffect(() => {
-        if (qrRef.current && generatedCardId) {
-            const data = formatQRData();
-            if (!qrCode.current) initQRCode(data);
-            else updateQRCode(data);
+        if (!qrRef.current || !cardId) return;
+        const url = selectedType === 'url' && profile.url ? profile.url : `${window.location.origin}/u/${cardId}`;
+        if (!qrCode.current) {
+            qrCode.current = new QRCodeStyling({
+                width: 256, height: 256, data: url,
+                dotsOptions: { color: qrStyle.dotsColor, type: qrStyle.dotsType },
+                cornersSquareOptions: { color: qrStyle.cornersColor, type: qrStyle.cornersType },
+                backgroundOptions: { color: qrStyle.bgColor },
+                image: qrStyle.logo_url || '', imageOptions: { crossOrigin: 'anonymous', margin: 8 }
+            });
+            qrRef.current.innerHTML = '';
+            qrCode.current.append(qrRef.current);
+        } else {
+            qrCode.current.update({
+                data: url,
+                dotsOptions: { color: qrStyle.dotsColor, type: qrStyle.dotsType },
+                cornersSquareOptions: { color: qrStyle.cornersColor, type: qrStyle.cornersType },
+                backgroundOptions: { color: qrStyle.bgColor },
+                image: qrStyle.logo_url || ''
+            });
         }
-    }, [qrAppearance, generatedCardId, profileData, selectedType, step]);
+    }, [qrStyle, cardId, selectedType, profile.url, step]);
 
-    function formatQRData() {
-        const profileUrl = `${window.location.origin}/u/${generatedCardId}`;
-        if (selectedType === 'url') return profileData.url || profileUrl;
-        return profileUrl;
+    function toggleSocial(id) {
+        const s = { ...profile.socials };
+        if (s[id] !== undefined) {
+            delete s[id];
+            setActiveSocialInput(null);
+        } else {
+            s[id] = '';
+            setActiveSocialInput(id);
+        }
+        setProfile({ ...profile, socials: s });
     }
 
-    function initQRCode(data) {
-        qrCode.current = new QRCodeStyling({
-            width: 260, height: 260, data: data,
-            dotsOptions: { color: qrAppearance.dotsColor, type: qrAppearance.dotsType },
-            cornersSquareOptions: { color: qrAppearance.cornersColor, type: qrAppearance.cornersType },
-            image: qrAppearance.logo_url || '',
-            imageOptions: { crossOrigin: 'anonymous', margin: 8 }
-        });
-        if (qrRef.current) { qrRef.current.innerHTML = ''; qrCode.current.append(qrRef.current); }
+    function addCustomLink() {
+        setProfile({ ...profile, customLinks: [...profile.customLinks, { label: '', url: '', emoji: '🔗' }] });
     }
 
-    function updateQRCode(data) {
-        if (!qrCode.current) return;
-        qrCode.current.update({
-            data: data,
-            dotsOptions: { color: qrAppearance.dotsColor, type: qrAppearance.dotsType },
-            cornersSquareOptions: { color: qrAppearance.cornersColor, type: qrAppearance.cornersType },
-            image: qrAppearance.logo_url || '',
-        });
+    function updateCustomLink(idx, field, val) {
+        const links = [...profile.customLinks];
+        links[idx] = { ...links[idx], [field]: val };
+        setProfile({ ...profile, customLinks: links });
+    }
+
+    function removeCustomLink(idx) {
+        setProfile({ ...profile, customLinks: profile.customLinks.filter((_, i) => i !== idx) });
     }
 
     async function handleFinalize() {
+        if (!selectedType) return toast('Choisissez un type', 'error');
+        if (selectedType === 'url' && !profile.url) return toast('URL requise', 'error');
+        if (selectedType === 'profile' && !profile.full_name) return toast('Nom requis', 'error');
         setGenerating(true);
         try {
             const { error } = await supabase.from('cards').insert({
-                card_id: generatedCardId,
-                card_name: cardName || profileData.full_name || 'Sans titre',
-                folder_id: selectedFolderId,
-                qr_appearance: qrAppearance,
-                type_data: { ...profileData, qr_type: selectedType },
+                card_id: cardId,
+                card_name: cardName || profile.full_name || 'Sans titre',
+                folder_id: selectedFolderId || null,
+                qr_appearance: qrStyle,
+                type_data: { ...profile, qr_type: selectedType },
                 status: 'active'
             });
             if (error) throw error;
-            toast('Projet créé avec succès !', 'success');
+            toast('QR créé avec succès !', 'success');
             navigate('/admin');
-        } catch (err) { toast(err.message, 'error'); } 
+        } catch (err) { toast(err.message, 'error'); }
         finally { setGenerating(false); }
     }
 
-    const renderAccordion = (id, icon, title, subtitle, children) => (
-        <div className="accordion">
-            <div className="accordion-header" onClick={() => setExpandedAccordion(expandedAccordion === id ? '' : id)}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <div style={{ fontSize: '20px' }}>{icon}</div>
+    const acc = (id, icon, title, sub, content) => (
+        <div className="accordion" key={id}>
+            <div className="accordion-header" onClick={() => setOpenSection(openSection === id ? '' : id)}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <span style={{ fontSize: 20 }}>{icon}</span>
                     <div>
-                        <div style={{ fontWeight: '700', color: '#1A1265' }}>{title}</div>
-                        <div style={{ fontSize: '12px', color: '#94A3B8' }}>{subtitle}</div>
+                        <div style={{ fontWeight: 700, color: '#1A1265' }}>{title}</div>
+                        <div style={{ fontSize: 12, color: '#94A3B8' }}>{sub}</div>
                     </div>
                 </div>
-                <div style={{ transform: expandedAccordion === id ? 'rotate(180deg)' : 'none', transition: '0.3s' }}>▼</div>
+                <span style={{ transform: openSection === id ? 'rotate(180deg)' : 'none', transition: '.3s' }}>▼</span>
             </div>
-            {expandedAccordion === id && <div className="accordion-content animate-fade-in">{children}</div>}
+            {openSection === id && <div className="accordion-content animate-fade-in">{content}</div>}
         </div>
     );
 
     return (
         <div style={{ minHeight: '100vh', background: '#F8FAFC', padding: '40px 20px' }}>
             <div className="max-w-wrapper">
+                {/* Stepper */}
                 <div className="stepper">
-                    <div className={`step ${step >= 1 ? (step > 1 ? 'done' : 'active') : ''}`}><div className="step-number">1</div> Type</div>
-                    <div className="step-line"></div>
-                    <div className={`step ${step >= 2 ? (step > 2 ? 'done' : 'active') : ''}`}><div className="step-number">2</div> Contenu</div>
-                    <div className="step-line"></div>
-                    <div className={`step ${step >= 3 ? (step > 3 ? 'done' : 'active') : ''}`}><div className="step-number">3</div> Design</div>
+                    {['Type', 'Contenu', 'Design QR'].map((label, i) => (
+                        <><div key={label} className={`step ${step >= i+1 ? (step > i+1 ? 'done' : 'active') : ''}`}>
+                            <div className="step-number">{i+1}</div>{label}
+                        </div>{i < 2 && <div className="step-line" />}</>
+                    ))}
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '60px', alignItems: 'start' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 48, alignItems: 'start' }}>
                     <div className="animate-fade-in">
+
+                        {/* Step 1 — Type */}
                         {step === 1 && (
                             <div>
-                                <h2 style={{ fontSize: '24px', marginBottom: '32px', fontWeight: '800' }}>Choisissez le type de QR</h2>
+                                <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 32 }}>Choisissez le type de QR</h2>
                                 <div className="selection-grid">
-                                    {QR_TYPES.map(type => (
-                                        <div key={type.id} className={`selection-card ${selectedType === type.id ? 'active' : ''}`} onClick={() => { setSelectedType(type.id); setStep(2); }}>
-                                            <i>{type.icon}</i>
-                                            <h3>{type.label}</h3>
-                                            <p>{type.desc}</p>
+                                    {QR_TYPES.map(t => (
+                                        <div key={t.id} className={`selection-card ${selectedType === t.id ? 'active' : ''}`}
+                                            onClick={() => { setSelectedType(t.id); setStep(2); }}>
+                                            <i>{t.icon}</i><h3>{t.label}</h3><p>{t.desc}</p>
                                         </div>
                                     ))}
                                 </div>
                             </div>
                         )}
 
+                        {/* Step 2 — Content */}
                         {step === 2 && (
                             <div>
-                                <h2 style={{ fontSize: '24px', marginBottom: '32px', fontWeight: '800' }}>Ajoutez votre contenu</h2>
-                                
-                                {selectedType === 'url' ? (
-                                    renderAccordion('url', '🌐', 'Lien de redirection', 'Saisissez l\'URL de destination.', (
-                                        <div className="field" style={{ marginTop: '20px' }}><label>URL du site *</label><input type="url" value={profileData.url || ''} onChange={e => setProfileData({...profileData, url: e.target.value})} placeholder="https://votresite.com" /></div>
-                                    ))
-                                ) : (
-                                    <>
-                                        {renderAccordion('info', '👤', 'Informations de base', 'Photo, nom et biographie.', (
-                                            <div style={{ marginTop: '20px' }}>
-                                                <div className="field"><label>Nom Complet *</label><input type="text" value={profileData.full_name} onChange={e => setProfileData({...profileData, full_name: e.target.value})} /></div>
-                                                <div className="field"><label>Profession / Titre</label><input type="text" value={profileData.job_title} onChange={e => setProfileData({...profileData, job_title: e.target.value})} /></div>
-                                                <div className="field"><label>Bio</label><textarea value={profileData.bio} onChange={e => setProfileData({...profileData, bio: e.target.value})} /></div>
-                                            </div>
-                                        ))}
+                                <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 32 }}>Contenu</h2>
 
-                                        {renderAccordion('socials', '📱', 'Réseaux Sociaux', 'Cliquez pour ajouter vos liens.', (
-                                            <div style={{ marginTop: '20px' }}>
-                                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(40px, 1fr))', gap: '12px', marginBottom: '24px' }}>
-                                                    {SOCIAL_NETWORKS.map(net => (
-                                                        <img key={net.id} src={net.icon} onClick={() => setProfileData({...profileData, socials: {...profileData.socials, [net.id]: profileData.socials[net.id] === undefined ? '' : profileData.socials[net.id]}})} style={{ width: '40px', height: '40px', cursor: 'pointer', opacity: profileData.socials[net.id] !== undefined ? 1 : 0.3, transition: '0.2s' }} alt={net.label} />
-                                                    ))}
+                                {selectedType === 'url' && acc('url', '🌐', 'URL de destination', 'Lien vers lequel le QR redirige.', (
+                                    <div className="field" style={{ marginTop: 16 }}>
+                                        <label>URL *</label>
+                                        <input type="url" value={profile.url} onChange={e => setProfile({ ...profile, url: e.target.value })} placeholder="https://votresite.com" />
+                                    </div>
+                                ))}
+
+                                {selectedType === 'profile' && <>
+                                    {acc('info', '👤', 'Informations', 'Nom, bio, photo, bannière.', (
+                                        <div style={{ marginTop: 16 }}>
+                                            <div className="field"><label>Nom complet *</label><input type="text" value={profile.full_name} onChange={e => setProfile({ ...profile, full_name: e.target.value })} /></div>
+                                            <div className="field"><label>Profession / Titre</label><input type="text" value={profile.job_title} onChange={e => setProfile({ ...profile, job_title: e.target.value })} /></div>
+                                            <div className="field"><label>Description</label><textarea rows={3} value={profile.bio} onChange={e => setProfile({ ...profile, bio: e.target.value })} /></div>
+                                            <div className="field"><label>Téléphone</label><input type="tel" value={profile.phone} onChange={e => setProfile({ ...profile, phone: e.target.value })} placeholder="+229 XX XX XX XX" /></div>
+                                            <div className="field"><label>Email</label><input type="email" value={profile.email} onChange={e => setProfile({ ...profile, email: e.target.value })} placeholder="vous@email.com" /></div>
+                                            <div className="field"><label>URL Photo de profil</label><input type="url" value={profile.photo_url} onChange={e => setProfile({ ...profile, photo_url: e.target.value })} placeholder="https://..." /></div>
+                                            <div className="field"><label>URL Bannière</label><input type="url" value={profile.banner_url} onChange={e => setProfile({ ...profile, banner_url: e.target.value })} placeholder="https://..." /></div>
+                                            <div className="field"><label>Couleur principale</label><input type="color" value={profile.primaryColor} onChange={e => setProfile({ ...profile, primaryColor: e.target.value })} /></div>
+                                        </div>
+                                    ))}
+
+                                    {acc('socials', '📱', 'Réseaux Sociaux', 'Cliquez sur un logo pour activer.', (
+                                        <div style={{ marginTop: 16 }}>
+                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginBottom: 20 }}>
+                                                {SOCIAL_NETWORKS.map(net => {
+                                                    const active = profile.socials[net.id] !== undefined;
+                                                    return (
+                                                        <div key={net.id} title={net.label}
+                                                            onClick={() => toggleSocial(net.id)}
+                                                            style={{ position: 'relative', cursor: 'pointer', transition: '.2s', transform: active ? 'scale(1.1)' : 'none' }}>
+                                                            <img src={net.icon} alt={net.label} style={{ width: 44, height: 44, borderRadius: 12, padding: 4, border: active ? `2px solid ${net.color}` : '2px solid transparent', background: 'white', boxShadow: active ? `0 4px 12px ${net.color}44` : '0 2px 6px rgba(0,0,0,0.08)', opacity: active ? 1 : 0.45 }} />
+                                                            {active && <div style={{ position: 'absolute', top: -4, right: -4, width: 14, height: 14, background: net.color, borderRadius: '50%', border: '2px solid white' }} />}
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                            {Object.keys(profile.socials).map(key => {
+                                                const net = SOCIAL_NETWORKS.find(n => n.id === key);
+                                                if (!net) return null;
+                                                return (
+                                                    <div key={key} className="field" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                                                        <img src={net.icon} alt={net.label} style={{ width: 32, height: 32, borderRadius: 8 }} />
+                                                        <div style={{ flex: 1 }}>
+                                                            <label>{net.label}</label>
+                                                            <input type="text" value={profile.socials[key]} onChange={e => setProfile({ ...profile, socials: { ...profile.socials, [key]: e.target.value } })} placeholder={net.placeholder} autoFocus={activeSocialInput === key} />
+                                                        </div>
+                                                        <button onClick={() => toggleSocial(key)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#EF4444', fontSize: 20, paddingTop: 20 }}>×</button>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    ))}
+
+                                    {acc('links', '🔗', 'Liens Personnalisés', 'Boutique, portfolio, autres liens.', (
+                                        <div style={{ marginTop: 16 }}>
+                                            {profile.customLinks.map((link, idx) => (
+                                                <div key={idx} style={{ background: '#F8FAFC', borderRadius: 16, padding: '16px', marginBottom: 12, border: '1px solid #E2E8F0' }}>
+                                                    <div style={{ display: 'flex', gap: 8, marginBottom: 10, alignItems: 'center' }}>
+                                                        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', flex: 1 }}>
+                                                            {LINK_ICONS.map(li => (
+                                                                <span key={li.emoji} onClick={() => updateCustomLink(idx, 'emoji', li.emoji)}
+                                                                    title={li.label}
+                                                                    style={{ fontSize: 22, cursor: 'pointer', padding: 4, borderRadius: 8, background: link.emoji === li.emoji ? '#EEF2FF' : 'transparent', border: link.emoji === li.emoji ? '1px solid #6366F1' : '1px solid transparent' }}>
+                                                                    {li.emoji}
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                        <button onClick={() => removeCustomLink(idx)} style={{ background: '#FEE2E2', border: 'none', color: '#EF4444', borderRadius: 8, padding: '6px 10px', cursor: 'pointer', fontWeight: 700 }}>✕</button>
+                                                    </div>
+                                                    <div className="field" style={{ marginBottom: 8 }}><label>Libellé</label><input type="text" value={link.label} onChange={e => updateCustomLink(idx, 'label', e.target.value)} placeholder="Ex: Ma boutique" /></div>
+                                                    <div className="field" style={{ marginBottom: 0 }}><label>URL</label><input type="url" value={link.url} onChange={e => updateCustomLink(idx, 'url', e.target.value)} placeholder="https://..." /></div>
                                                 </div>
-                                                {Object.keys(profileData.socials).map(key => (
-                                                    <div key={key} className="field"><label>{SOCIAL_NETWORKS.find(n => n.id === key)?.label}</label><input type="text" value={profileData.socials[key]} onChange={e => setProfileData({...profileData, socials: {...profileData.socials, [key]: e.target.value}})} placeholder="Identifiant ou lien..." /></div>
-                                                ))}
-                                            </div>
-                                        ))}
-                                    </>
-                                )}
+                                            ))}
+                                            <button onClick={addCustomLink} style={{ width: '100%', padding: '14px', borderRadius: 14, border: '2px dashed #CBD5E1', background: 'white', color: '#475569', fontWeight: 700, cursor: 'pointer', fontSize: 14 }}>+ Ajouter un lien</button>
+                                        </div>
+                                    ))}
+                                </>}
 
-                                {renderAccordion('config', '⚙️', 'Organisation', 'Dossier et nom interne.', (
-                                    <div style={{ marginTop: '20px' }}>
-                                        <div className="field"><label>Nom interne du projet</label><input type="text" value={cardName} onChange={e => setCardName(e.target.value)} /></div>
-                                        <div className="field">
-                                            <label>Dossier</label>
+                                {acc('config', '⚙️', 'Organisation', 'Nom interne et dossier.', (
+                                    <div style={{ marginTop: 16 }}>
+                                        <div className="field"><label>Nom interne</label><input type="text" value={cardName} onChange={e => setCardName(e.target.value)} /></div>
+                                        <div className="field"><label>Dossier</label>
                                             <select value={selectedFolderId || ''} onChange={e => setSelectedFolderId(e.target.value)}>
                                                 <option value="">Aucun dossier</option>
                                                 {folders.map(f => <option key={f.id} value={f.id}>{f.name}</option>)}
@@ -212,66 +261,75 @@ export default function CreateCardWizard() {
                             </div>
                         )}
 
+                        {/* Step 3 — QR Design */}
                         {step === 3 && (
                             <div>
-                                <h2 style={{ fontSize: '24px', marginBottom: '32px', fontWeight: '800' }}>Design du Code QR</h2>
-                                {renderAccordion('qr-motif', '⬛', 'Motif & Couleurs', 'Personnalisez le QR code.', (
-                                    <div style={{ marginTop: '20px' }}>
-                                        <div className="field"><label>Style</label>
-                                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
-                                                {['rounded', 'dots', 'classy', 'square'].map(s => (
-                                                    <div key={s} onClick={() => setQrAppearance({...qrAppearance, dotsType: s})} style={{ padding: '10px', border: qrAppearance.dotsType === s ? '2px solid var(--primary)' : '1px solid var(--border)', borderRadius: '12px', textAlign: 'center', cursor: 'pointer', background: 'white' }}>{s}</div>
-                                                ))}
-                                            </div>
+                                <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 8 }}>Design du Code QR</h2>
+                                <p style={{ color: '#64748B', marginBottom: 32, fontSize: 14 }}>Le lien du QR est <strong>permanent</strong> et ne changera jamais, même si vous modifiez le contenu ultérieurement.</p>
+                                <div style={{ background: 'white', borderRadius: 20, padding: 24, border: '1px solid #E2E8F0' }}>
+                                    <div className="field"><label>Style des points</label>
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+                                            {DOT_STYLES.map(s => <div key={s} onClick={() => setQrStyle({ ...qrStyle, dotsType: s })} style={{ padding: '10px 6px', border: qrStyle.dotsType === s ? '2px solid #1A1265' : '1px solid #E2E8F0', borderRadius: 12, textAlign: 'center', cursor: 'pointer', fontSize: 11, fontWeight: 700, color: qrStyle.dotsType === s ? '#1A1265' : '#64748B', background: qrStyle.dotsType === s ? '#EEF2FF' : 'white' }}>{s}</div>)}
                                         </div>
-                                        <div className="field"><label>Couleur</label><input type="color" value={qrAppearance.dotsColor} onChange={e => setQrAppearance({...qrAppearance, dotsColor: e.target.value})} /></div>
                                     </div>
-                                ))}
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                                        <div className="field"><label>Couleur des points</label><input type="color" value={qrStyle.dotsColor} onChange={e => setQrStyle({ ...qrStyle, dotsColor: e.target.value })} /></div>
+                                        <div className="field"><label>Couleur des coins</label><input type="color" value={qrStyle.cornersColor} onChange={e => setQrStyle({ ...qrStyle, cornersColor: e.target.value })} /></div>
+                                        <div className="field"><label>Fond</label><input type="color" value={qrStyle.bgColor} onChange={e => setQrStyle({ ...qrStyle, bgColor: e.target.value })} /></div>
+                                    </div>
+                                    <div className="field"><label>Logo central (URL image)</label><input type="url" value={qrStyle.logo_url} onChange={e => setQrStyle({ ...qrStyle, logo_url: e.target.value })} placeholder="https://... (png/svg)" /></div>
+                                </div>
                             </div>
                         )}
 
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '60px', padding: '30px 0', borderTop: '1px solid #E2E8F0' }}>
+                        {/* Navigation */}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 48, paddingTop: 24, borderTop: '1px solid #E2E8F0' }}>
                             <button className="btn-nav-prev" onClick={() => step > 1 ? setStep(step - 1) : navigate('/admin')}>← Retour</button>
-                            {step < 3 ? (
-                                <button className="btn-nav-next" onClick={() => setStep(step + 1)}>Suivant →</button>
-                            ) : (
-                                <button className="btn-nav-next" onClick={handleFinalize} disabled={generating}>{generating ? 'Création...' : 'Valider & Créer ✓'}</button>
-                            )}
+                            {step < 3
+                                ? <button className="btn-nav-next" onClick={() => setStep(step + 1)} disabled={step === 1 && !selectedType}>Suivant →</button>
+                                : <button className="btn-nav-next" onClick={handleFinalize} disabled={generating}>{generating ? 'Création...' : '✓ Valider & Créer'}</button>
+                            }
                         </div>
                     </div>
 
+                    {/* Phone Preview */}
                     <div className="phone-preview-container">
-                        <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginBottom: '20px' }}>
-                            <button onClick={() => setPreviewMode('qr')} style={{ flex: 1, padding: '10px', borderRadius: '20px', border: 'none', background: previewMode === 'qr' ? 'var(--primary)' : 'white', color: previewMode === 'qr' ? 'white' : '#64748B', fontWeight: '700', fontSize: '12px' }}>Code QR</button>
-                            <button onClick={() => setPreviewMode('page')} style={{ flex: 1, padding: '10px', borderRadius: '20px', border: 'none', background: previewMode === 'page' ? 'var(--primary)' : 'white', color: previewMode === 'page' ? 'white' : '#64748B', fontWeight: '700', fontSize: '12px' }}>Aperçu Page</button>
+                        <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+                            <button onClick={() => setPreviewMode('qr')} style={{ flex: 1, padding: '10px', borderRadius: 20, border: 'none', background: previewMode === 'qr' ? '#1A1265' : 'white', color: previewMode === 'qr' ? 'white' : '#64748B', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>Code QR</button>
+                            <button onClick={() => setPreviewMode('page')} style={{ flex: 1, padding: '10px', borderRadius: 20, border: 'none', background: previewMode === 'page' ? '#1A1265' : 'white', color: previewMode === 'page' ? 'white' : '#64748B', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>Aperçu Page</button>
                         </div>
-                        
                         <PhonePreview>
-                            <div style={{ padding: '40px 20px', textAlign: 'center' }}>
-                                {previewMode === 'qr' ? (
-                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-                                        <div ref={qrRef} style={{ background: 'white', padding: '10px', borderRadius: '20px', boxShadow: '0 10px 40px rgba(0,0,0,0.08)', marginBottom: '32px' }}></div>
-                                        <h4 style={{ fontWeight: '900', color: '#1A1265' }}>{cardName || profileData.full_name || 'Sans titre'}</h4>
+                            {previewMode === 'qr' ? (
+                                <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+                                    <div ref={qrRef} style={{ background: 'white', padding: 10, borderRadius: 20, boxShadow: '0 10px 40px rgba(0,0,0,0.08)' }} />
+                                    <p style={{ marginTop: 16, fontSize: 11, color: '#94A3B8', textAlign: 'center', fontWeight: 600 }}>Lien permanent — ne change jamais</p>
+                                </div>
+                            ) : (
+                                <div style={{ textAlign: 'left' }}>
+                                    <div style={{ height: 110, background: profile.primaryColor, position: 'relative', overflow: 'hidden' }}>
+                                        {profile.banner_url && <img src={profile.banner_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />}
                                     </div>
-                                ) : (
-                                    <div style={{ textAlign: 'left' }}>
-                                        <div style={{ height: '120px', background: '#1A1265', borderRadius: '20px', margin: '-40px -20px 0' }}></div>
-                                        <div style={{ width: '80px', height: '80px', background: '#F1F5F9', borderRadius: '50%', border: '4px solid white', marginTop: '-40px', marginLeft: '10px' }}></div>
-                                        <div style={{ marginTop: '16px' }}>
-                                            <h3 style={{ fontWeight: '900', color: '#1A1265' }}>{profileData.full_name || 'Votre Nom'}</h3>
-                                            <p style={{ fontSize: '13px', color: '#64748B' }}>{profileData.job_title || 'Profession'}</p>
-                                            
-                                            <button style={{ width: '100%', marginTop: '24px', padding: '14px', borderRadius: '12px', background: '#1A1265', color: 'white', border: 'none', fontWeight: '700', fontSize: '13px' }}>Enregistrer le contact</button>
-                                            
-                                            <div style={{ marginTop: '32px', display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-                                                {Object.keys(profileData.socials).map(key => (
-                                                    <img key={key} src={SOCIAL_NETWORKS.find(n => n.id === key)?.icon} style={{ width: '36px', height: '36px' }} alt="" />
-                                                ))}
-                                            </div>
+                                    <div style={{ padding: '0 16px 20px' }}>
+                                        <div style={{ width: 64, height: 64, borderRadius: 16, border: '3px solid white', background: '#EEF2FF', marginTop: -32, overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+                                            {profile.photo_url && <img src={profile.photo_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />}
                                         </div>
+                                        <h3 style={{ marginTop: 8, fontWeight: 900, color: '#1A1265', fontSize: 15 }}>{profile.full_name || 'Votre Nom'}</h3>
+                                        <p style={{ fontSize: 11, color: '#64748B' }}>{profile.job_title || 'Profession'}</p>
+                                        <button style={{ width: '100%', marginTop: 12, padding: '10px', borderRadius: 12, background: profile.primaryColor, color: 'white', border: 'none', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>Enregistrer le contact</button>
+                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 16 }}>
+                                            {Object.keys(profile.socials).map(key => {
+                                                const net = SOCIAL_NETWORKS.find(n => n.id === key);
+                                                return net ? <img key={key} src={net.icon} alt={net.label} style={{ width: 28, height: 28, borderRadius: 7 }} /> : null;
+                                            })}
+                                        </div>
+                                        {profile.customLinks.filter(l => l.label).map((link, i) => (
+                                            <div key={i} style={{ marginTop: 8, background: '#F8FAFC', borderRadius: 10, padding: '8px 10px', display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, fontWeight: 700, color: '#1A1265' }}>
+                                                <span>{link.emoji}</span>{link.label}
+                                            </div>
+                                        ))}
                                     </div>
-                                )}
-                            </div>
+                                </div>
+                            )}
                         </PhonePreview>
                     </div>
                 </div>
