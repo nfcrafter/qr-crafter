@@ -44,9 +44,14 @@ export default function PublicProfile() {
       const { data: profileData } = await supabase
         .from('profiles').select('*').eq('id', card.owner_id).single()
 
-      // Merge: admin sets base, client overrides
+      // Merge: admin sets base, client overrides but only if truthy
       const adminBase = card.admin_profile || {}
-      merged = { ...adminBase, ...profileData }
+      merged = { ...adminBase }
+      for (const k in profileData) {
+        if (profileData[k] !== null && profileData[k] !== undefined && profileData[k] !== '') {
+          merged[k] = profileData[k]
+        }
+      }
 
       // Load custom links from DB table
       const { data: linksData } = await supabase
@@ -167,36 +172,54 @@ export default function PublicProfile() {
           </div>
         </div>
 
-        {/* Social links */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, animation: 'fadeUp .5s ease' }}>
+          {(profile?.phone || profile?.email) && (
+            <div style={{ display: 'flex', gap: 10 }}>
+              {profile?.phone && (
+                <a className="pl" href={`tel:${profile.phone.replace(/\s+/g, '')}`} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '13px', background: 'white', borderRadius: 16, textDecoration: 'none', color: '#111', boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.05)', fontWeight: 700, fontSize: 14 }}>
+                  <span style={{ fontSize: 16 }}>📞</span> Appeler
+                </a>
+              )}
+              {profile?.email && (
+                <a className="pl" href={`mailto:${profile.email}`} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '13px', background: 'white', borderRadius: 16, textDecoration: 'none', color: '#111', boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.05)', fontWeight: 700, fontSize: 14 }}>
+                  <span style={{ fontSize: 16 }}>✉️</span> Email
+                </a>
+              )}
+            </div>
+          )}
+
           {activeLinks.map(link => (
             <a key={link.key} className="pl"
               href={link.getUrl(profile[link.key])}
-              target={['phone','email'].includes(link.key) ? '_self' : '_blank'}
+              target="_blank"
               rel="noopener noreferrer"
               style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 18px', background: 'white', borderRadius: 16, textDecoration: 'none', color: '#111', boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.05)' }}>
               <div style={{ width: 44, height: 44, borderRadius: 12, flexShrink: 0, background: link.color + '18', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 dangerouslySetInnerHTML={{ __html: `<div style="width:22px;height:22px;color:${link.color}">${link.svg}</div>` }} />
               <span style={{ fontWeight: 700, fontSize: 15, flex: 1 }}>{link.label}</span>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#bbb" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+              <span style={{ color: '#CBD5E1', fontSize: 18 }}>→</span>
             </a>
           ))}
 
-          {/* Custom links */}
-          {activeCustomLinks.map(link => (
-            <a key={link.id} className="pl"
-              href={link.url} target="_blank" rel="noopener noreferrer"
-              style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 18px', background: 'white', borderRadius: 16, textDecoration: 'none', color: '#1a1a1a', boxShadow: '0 2px 8px rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.06)' }}>
-              <div style={{ width: 44, height: 44, borderRadius: 12, background: themeColor + '15', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 22 }}>
-                {link.icon || '🔗'}
+          {activeCustomLinks.length > 0 && (
+            <div style={{ marginTop: 8 }}>
+              <h3 style={{ fontSize: 12, fontWeight: 800, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10, paddingLeft: 8 }}>Autres liens</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {activeCustomLinks.map(link => (
+                  <a key={link.id} className="pl" href={link.url} target="_blank" rel="noopener noreferrer"
+                    style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 18px', background: 'white', borderRadius: 16, textDecoration: 'none', color: '#111', boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.05)' }}>
+                    <div style={{ width: 44, height: 44, borderRadius: 12, flexShrink: 0, background: '#F8FAFC', border: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>
+                      {link.emoji || link.icon || '🔗'}
+                    </div>
+                    <span style={{ fontWeight: 700, fontSize: 15, flex: 1 }}>{link.label || link.title}</span>
+                    <span style={{ color: '#CBD5E1', fontSize: 18 }}>→</span>
+                  </a>
+                ))}
               </div>
-              <span style={{ fontWeight: 600, fontSize: 15, flex: 1 }}>{link.title}</span>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </a>
-          ))}
+            </div>
+          )}
         </div>
 
-        {/* Footer */}
         <div style={{ textAlign: 'center', marginTop: 36 }}>
           <p style={{ fontSize: 11, color: '#bbb', marginBottom: 6 }}>Propulsé par</p>
           <a href="/" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6, opacity: 0.45 }}>
