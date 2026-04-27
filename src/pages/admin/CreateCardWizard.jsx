@@ -295,7 +295,7 @@ export default function CreateCardWizard() {
                                     <ColorField label="Couleur des points" value={qrStyle.dotsColor} onChange={v => setQrStyle({ ...qrStyle, dotsColor: v })} />
                                     <ColorField label="Couleur des coins" value={qrStyle.cornersColor} onChange={v => setQrStyle({ ...qrStyle, cornersColor: v })} />
                                     <ColorField label="Couleur de fond" value={qrStyle.bgColor} onChange={v => setQrStyle({ ...qrStyle, bgColor: v })} />
-                                    <div className="field"><label>Logo central (URL image)</label><input type="url" value={qrStyle.logo_url} onChange={e => setQrStyle({ ...qrStyle, logo_url: e.target.value })} placeholder="https://... (png/svg)" /></div>
+                                    <ImageUpload label="Logo central du QR (Image)" value={qrStyle.logo_url} onChange={v => setQrStyle({ ...qrStyle, logo_url: v })} bucket="qr-logos" shape="circle" />
                                 </div>
                             </div>
                         )}
@@ -342,17 +342,26 @@ export default function CreateCardWizard() {
                                         <h3 style={{ marginTop: 8, fontWeight: 900, color: '#1A1265', fontSize: 15 }}>{profile.full_name || 'Votre Nom'}</h3>
                                         <p style={{ fontSize: 11, color: '#64748B' }}>{profile.job_title || 'Profession'}</p>
                                         <button style={{ width: '100%', marginTop: 12, padding: '10px', borderRadius: 12, background: profile.primaryColor, color: 'white', border: 'none', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>Enregistrer le contact</button>
-                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 16 }}>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 16 }}>
                                             {Object.keys(profile.socials).map(key => {
                                                 const net = SOCIAL_NETWORKS.find(n => n.id === key);
-                                                return net ? <img key={key} src={net.icon} alt={net.label} style={{ width: 28, height: 28, borderRadius: 7 }} /> : null;
+                                                if (!net) return null;
+                                                return (
+                                                    <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: 'white', borderRadius: 12, border: '1px solid #F1F5F9', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                                                        <div style={{ width: 28, height: 28, borderRadius: 8, background: net.color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                            <img src={net.icon} alt={net.label} style={{ width: 16, height: 16 }} />
+                                                        </div>
+                                                        <span style={{ fontWeight: 700, fontSize: 11, flex: 1, color: '#0F172A' }}>{net.label}</span>
+                                                    </div>
+                                                );
                                             })}
+                                            {profile.customLinks.filter(l => l.label).map((link, i) => (
+                                                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: 'white', borderRadius: 12, border: '1px solid #F1F5F9', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                                                    <div style={{ width: 28, height: 28, borderRadius: 8, background: '#F8FAFC', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>{link.emoji || '🔗'}</div>
+                                                    <span style={{ fontWeight: 700, fontSize: 11, flex: 1, color: '#0F172A' }}>{link.label}</span>
+                                                </div>
+                                            ))}
                                         </div>
-                                        {profile.customLinks.filter(l => l.label).map((link, i) => (
-                                            <div key={i} style={{ marginTop: 8, background: '#F8FAFC', borderRadius: 10, padding: '8px 10px', display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, fontWeight: 700, color: '#1A1265' }}>
-                                                <span>{link.emoji}</span>{link.label}
-                                            </div>
-                                        ))}
                                     </div>
                                 </div>
                             )}
