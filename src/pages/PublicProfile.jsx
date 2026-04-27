@@ -129,7 +129,7 @@ export default function PublicProfile() {
       <div style={{ maxWidth: 560, margin: '0 auto', padding: '0 16px 48px' }}>
 
         {/* Profile card */}
-        <div style={{ background: 'white', borderRadius: 20, marginTop: -24, marginBottom: 14, boxShadow: '0 4px 28px rgba(0,0,0,0.09)', animation: 'fadeUp .4s ease', position: 'relative' }}>
+        <div style={{ background: 'white', borderRadius: 20, marginTop: -24, marginBottom: 14, boxShadow: '0 4px 28px rgba(0,0,0,0.09)', animation: 'fadeUp .4s ease', position: 'relative', zIndex: 10 }}>
           {/* Avatar */}
           <div style={{ padding: '0 20px', height: 52, position: 'relative' }}>
             <div style={{
