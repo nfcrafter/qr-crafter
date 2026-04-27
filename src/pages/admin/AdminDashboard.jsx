@@ -18,48 +18,52 @@ export default function AdminDashboard() {
     const [sortBy, setSortBy] = useState('newest');
     const [quantity, setQuantity] = useState(10);
     const [currentPage, setCurrentPage] = useState(1);
+    const [folders, setFolders] = useState([]);
+    const [filterFolder, setFilterFolder] = useState('');
 
     useEffect(() => {
         loadData();
-    }, []);
+        loadFolders();
+    }, [filterFolder]);
 
     async function loadData() {
         setLoading(true);
-        // Load Cards
-        const { data: cardsData, error } = await supabase
-            .from('cards')
-            .select('*')
-            .order('created_at', { ascending: false });
-        
-        if (error) {
-            toast('Erreur de chargement', 'error');
-        } else {
+        let query = supabase.from('cards').select('*').order('created_at', { ascending: false });
+        if (filterFolder) query = query.eq('folder_id', filterFolder);
+        const { data: cardsData, error } = await query;
+        if (error) toast('Erreur de chargement', 'error');
+        else {
             setCards(cardsData || []);
-            
-            // Load Scan Counts
-            const { data: scansData } = await supabase
-                .from('scan_logs')
-                .select('card_id');
-            
+            const { data: scansData } = await supabase.from('scan_logs').select('card_id');
             const counts = {};
-            scansData?.forEach(s => {
-                counts[s.card_id] = (counts[s.card_id] || 0) + 1;
-            });
+            scansData?.forEach(s => { counts[s.card_id] = (counts[s.card_id] || 0) + 1; });
             setScans(counts);
         }
         setLoading(false);
     }
 
+    async function loadFolders() {
+        const { data } = await supabase.from('folders').select('*').order('created_at');
+        setFolders(data || []);
+    }
+
+    async function deleteFolder(id, e) {
+        e.stopPropagation();
+        if (window.confirm('Supprimer ce dossier ? Les cartes ne seront pas supprimées.')) {
+            const { error } = await supabase.from('folders').delete().eq('id', id);
+            if (!error) {
+                toast('Dossier supprimé', 'success');
+                loadFolders();
+                if (filterFolder === id) setFilterFolder('');
+            }
+        }
+    }
+
     const filtered = cards.filter(c => {
-        const matchesSearch = !search || 
-            c.card_name?.toLowerCase().includes(search.toLowerCase()) || 
-            c.card_id?.toLowerCase().includes(search.toLowerCase());
-        
+        const matchesSearch = !search || c.card_name?.toLowerCase().includes(search.toLowerCase()) || c.card_id?.toLowerCase().includes(search.toLowerCase());
         const matchesStatus = statusFilter === 'all' || c.status === statusFilter;
-        
         const qrType = c.type_data?.qr_type || 'url';
         const matchesType = typeFilter === 'all' || qrType === typeFilter;
-        
         return matchesSearch && matchesStatus && matchesType;
     }).sort((a, b) => {
         if (sortBy === 'newest') return new Date(b.created_at) - new Date(a.created_at);
@@ -73,116 +77,76 @@ export default function AdminDashboard() {
     const currentItems = filtered.slice((currentPage - 1) * quantity, currentPage * quantity);
 
     return (
-        <div style={{ minHeight: '100vh', background: '#F4F7FA', color: '#1A1265', fontFamily: "'Inter', sans-serif" }}>
-            {/* Header */}
-            <header style={{ background: 'white', padding: '16px 40px', borderBottom: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 100 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => navigate('/admin')}>
-                    <img src="/logo.png" alt="Logo" style={{ height: '40px' }} />
-                    <span style={{ fontWeight: '800', fontSize: '20px', color: '#1A1265', letterSpacing: '-0.5px' }}>QR CRAFTER</span>
+        <div style={{ display: 'flex', minHeight: '100vh', background: 'linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%)' }}>
+            <aside style={{ width: '280px', background: 'white', borderRight: '1px solid #E2E8F0', padding: '32px 20px', display: 'flex', flexDirection: 'column', position: 'fixed', height: '100vh', zIndex: 100, boxShadow: '10px 0 30px rgba(0,0,0,0.02)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '40px', cursor: 'pointer' }} onClick={() => navigate('/admin')}>
+                    <img src="/logo.png" alt="Logo" style={{ height: '36px' }} />
+                    <span style={{ fontWeight: '900', fontSize: '20px', color: '#1A1265', letterSpacing: '-0.5px' }}>QR CRAFTER</span>
                 </div>
-                <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                    <button className="btn-primary" onClick={() => navigate('/admin/create')} style={{ padding: '10px 24px', borderRadius: '8px', background: '#1A1265', border: 'none', color: 'white', fontWeight: '700', cursor: 'pointer' }}>
-                        + Créer une carte
+                <nav style={{ flex: 1 }}>
+                    <button onClick={() => setFilterFolder('')} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: !filterFolder ? 'linear-gradient(135deg, #1A1265 0%, #4338CA 100%)' : 'transparent', color: !filterFolder ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px', transition: 'all 0.3s', boxShadow: !filterFolder ? '0 10px 15px -3px rgba(26, 18, 101, 0.2)' : 'none' }}>
+                        <span>📊</span> Dashboard
                     </button>
-                    <button onClick={() => { supabase.auth.signOut(); navigate('/login'); }} style={{ background: 'transparent', border: 'none', color: '#64748B', cursor: 'pointer', fontWeight: '600' }}>Déconnexion</button>
-                </div>
-            </header>
+                    <div style={{ margin: '32px 16px 16px', fontSize: '11px', fontWeight: '800', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '1.5px' }}>Dossiers</div>
+                    {folders.map(f => (
+                        <div key={f.id} style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '6px' }}>
+                            <button onClick={() => setFilterFolder(f.id)} style={{ flex: 1, padding: '12px 16px', borderRadius: '14px', border: 'none', background: filterFolder === f.id ? '#F1F5F9' : 'transparent', color: filterFolder === f.id ? '#1A1265' : '#64748B', fontWeight: '600', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px', transition: 'all 0.2s' }}>
+                                <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: f.color }}></span>
+                                {f.name}
+                            </button>
+                            <button onClick={(e) => deleteFolder(f.id, e)} style={{ padding: '8px', border: 'none', background: 'transparent', cursor: 'pointer', opacity: 0.2, transition: 'opacity 0.2s' }} onMouseEnter={e => e.currentTarget.style.opacity = 0.8} onMouseLeave={e => e.currentTarget.style.opacity = 0.2}>🗑️</button>
+                        </div>
+                    ))}
+                </nav>
+                <button onClick={() => { supabase.auth.signOut(); navigate('/login'); }} style={{ padding: '16px', border: 'none', background: '#FEF2F2', borderRadius: '16px', color: '#DC2626', fontWeight: '700', cursor: 'pointer', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', transition: 'all 0.2s' }}>🚪 Se déconnecter</button>
+            </aside>
 
-            <main style={{ maxWidth: '1400px', margin: '0 auto', padding: '40px' }}>
-                {/* 5 Horizontal Filters */}
+            <main style={{ flex: 1, padding: '40px', marginLeft: '280px' }}>
+                <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
+                    <div>
+                        <h1 style={{ fontSize: '32px', fontWeight: '900', color: '#1A1265', marginBottom: '8px', letterSpacing: '-1px' }}>Dashboard <span style={{ fontWeight: '400', color: '#94A3B8' }}>Admin</span></h1>
+                        <p style={{ color: '#64748B', fontSize: '16px' }}>Suivi précis des scans et gestion de vos solutions QR.</p>
+                    </div>
+                    <button onClick={() => navigate('/admin/create')} className="btn-primary" style={{ padding: '16px 32px', borderRadius: '16px', fontSize: '16px' }}>
+                        + Créer un code QR
+                    </button>
+                </header>
+
+                {/* horizontal Filters Bar */}
                 <div style={{ 
                     background: 'white', 
                     padding: '24px 32px', 
-                    borderRadius: '12px', 
+                    borderRadius: '24px', 
                     display: 'flex', 
                     alignItems: 'center', 
-                    gap: '16px', 
-                    marginBottom: '32px',
-                    boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
-                    flexWrap: 'wrap'
+                    gap: '20px', 
+                    marginBottom: '32px', 
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.02)',
+                    border: '1px solid #F1F5F9'
                 }}>
-                    <span style={{ fontWeight: '800', fontSize: '18px', whiteSpace: 'nowrap', marginRight: '8px' }}>Mes codes QR</span>
-                    
-                    {/* Filter 1: Search */}
-                    <div style={{ position: 'relative', flex: 1, minWidth: '200px' }}>
-                        <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', opacity: 0.4 }}>🔍</span>
-                        <input 
-                            type="text" 
-                            placeholder="Rechercher..." 
-                            value={search}
-                            onChange={e => { setSearch(e.target.value); setCurrentPage(1); }}
-                            style={{ width: '100%', padding: '10px 10px 10px 36px', borderRadius: '8px', border: '1px solid #E2E8F0', fontSize: '14px' }}
-                        />
+                    <span style={{ fontWeight: '900', fontSize: '18px', color: '#1A1265', marginRight: '10px' }}>Mes codes QR</span>
+                    <div style={{ position: 'relative', flex: 1 }}>
+                        <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', opacity: 0.3 }}>🔍</span>
+                        <input type="text" placeholder="Rechercher..." value={search} onChange={e => setSearch(e.target.value)} style={{ width: '100%', padding: '14px 16px 14px 44px', borderRadius: '14px', border: '1px solid #E2E8F0', background: '#F8FAFC', outline: 'none' }} />
                     </div>
-
-                    {/* Filter 2: Status */}
-                    <select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setCurrentPage(1); }} style={{ padding: '10px', borderRadius: '8px', border: '1px solid #E2E8F0', fontSize: '14px', background: 'white', minWidth: '150px' }}>
-                        <option value="all">Statut du code QR</option>
-                        <option value="active">Activée</option>
-                        <option value="pending">En attente</option>
-                    </select>
-
-                    {/* Filter 3: Type */}
-                    <select value={typeFilter} onChange={e => { setTypeFilter(e.target.value); setCurrentPage(1); }} style={{ padding: '10px', borderRadius: '8px', border: '1px solid #E2E8F0', fontSize: '14px', background: 'white', minWidth: '150px' }}>
-                        <option value="all">Types de codes QR</option>
-                        <option value="url">URL / Profil</option>
-                        <option value="vcard">VCard</option>
-                        <option value="wifi">WiFi</option>
-                        <option value="text">Texte</option>
-                        <option value="email">Email</option>
-                        <option value="sms">SMS</option>
-                        <option value="phone">Téléphone</option>
-                    </select>
-
-                    {/* Filter 4: Sort */}
-                    <select value={sortBy} onChange={e => { setSortBy(e.target.value); setCurrentPage(1); }} style={{ padding: '10px', borderRadius: '8px', border: '1px solid #E2E8F0', fontSize: '14px', background: 'white', minWidth: '180px' }}>
-                        <option value="newest">Trier par : Le plus récent</option>
-                        <option value="name">Trier par : Nom</option>
-                        <option value="scanned">Trier par : Le plus scanné</option>
-                        <option value="modified">Trier par : Récemment modifié</option>
-                    </select>
-
-                    {/* Filter 5: Quantity */}
-                    <select value={quantity} onChange={e => { setQuantity(Number(e.target.value)); setCurrentPage(1); }} style={{ padding: '10px', borderRadius: '8px', border: '1px solid #E2E8F0', fontSize: '14px', background: 'white', minWidth: '120px' }}>
-                        <option value={10}>Quantité : 10</option>
-                        <option value={20}>Quantité : 20</option>
-                        <option value={50}>Quantité : 50</option>
-                        <option value={100}>Quantité : 100</option>
-                    </select>
+                    <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} style={{ padding: '14px', borderRadius: '14px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '600' }}><option value="all">Statut</option><option value="active">Active</option><option value="pending">En attente</option></select>
+                    <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)} style={{ padding: '14px', borderRadius: '14px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '600' }}><option value="all">Type</option><option value="url">URL</option><option value="vcard">VCard</option><option value="wifi">WiFi</option></select>
+                    <select value={sortBy} onChange={e => setSortBy(e.target.value)} style={{ padding: '14px', borderRadius: '14px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '600' }}><option value="newest">Récent</option><option value="name">Nom</option><option value="scanned">Scans</option></select>
+                    <select value={quantity} onChange={e => setQuantity(Number(e.target.value))} style={{ padding: '14px', borderRadius: '14px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '600' }}><option value={10}>Afficher 10</option><option value={20}>Afficher 20</option></select>
                 </div>
 
-                {/* Cards List */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                     {loading ? (
-                        <div style={{ textAlign: 'center', padding: '40px' }}>Chargement des données...</div>
-                    ) : currentItems.length === 0 ? (
-                        <div style={{ textAlign: 'center', padding: '60px', background: 'white', borderRadius: '12px', border: '1px dashed #E2E8F0' }}>
-                            <div style={{ fontSize: '16px', color: '#64748B' }}>Aucun code QR ne correspond à votre recherche.</div>
-                        </div>
-                    ) : (
-                        currentItems.map(card => (
-                            <CardListItem key={card.card_id} card={card} scanCount={scans[card.card_id] || 0} navigate={navigate} toast={toast} />
-                        ))
-                    )}
+                        <div style={{ textAlign: 'center', padding: '100px' }}>Chargement...</div>
+                    ) : currentItems.map(card => (
+                        <CardListItem key={card.card_id} card={card} scanCount={scans[card.card_id] || 0} navigate={navigate} toast={toast} />
+                    ))}
                 </div>
 
-                {/* Pagination */}
                 {totalPages > 1 && (
-                    <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '40px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px', marginTop: '48px' }}>
                         {[...Array(totalPages)].map((_, i) => (
-                            <button 
-                                key={i}
-                                onClick={() => setCurrentPage(i + 1)}
-                                style={{ 
-                                    width: '40px', height: '40px', borderRadius: '8px', border: 'none',
-                                    background: currentPage === i + 1 ? '#1A1265' : 'white',
-                                    color: currentPage === i + 1 ? 'white' : '#1A1265',
-                                    fontWeight: '800', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-                                    transition: 'all 0.2s'
-                                }}
-                            >
-                                {i + 1}
-                            </button>
+                            <button key={i} onClick={() => setCurrentPage(i + 1)} style={{ width: '44px', height: '44px', borderRadius: '12px', border: 'none', background: currentPage === i + 1 ? '#1A1265' : 'white', color: currentPage === i + 1 ? 'white' : '#1A1265', fontWeight: '800', cursor: 'pointer', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>{i + 1}</button>
                         ))}
                     </div>
                 )}
@@ -193,34 +157,39 @@ export default function AdminDashboard() {
 
 function CardListItem({ card, scanCount, navigate, toast }) {
     const qrRef = useRef(null);
-    const type = card.type_data?.qr_type || 'url';
-    const lastModified = new Date(card.updated_at || card.created_at).toLocaleDateString('fr-FR', {
-        day: '2-digit', month: '2-digit', year: 'numeric'
-    });
+    const lastModified = new Date(card.updated_at || card.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
 
     useEffect(() => {
         if (qrRef.current) {
             const qrCode = new QRCodeStyling({
-                width: 70,
-                height: 70,
-                data: `${window.location.origin}/u/${card.card_id}`,
-                dotsOptions: { color: card.qr_appearance?.dotsColor || "#1A1265", type: card.qr_appearance?.dotsType || "rounded" },
+                width: 80, height: 80, data: `${window.location.origin}/u/${card.card_id}`,
+                dotsOptions: { 
+                    color: card.qr_appearance?.dotsColor || "#1A1265", 
+                    type: card.qr_appearance?.dotsType || "rounded",
+                    gradient: card.qr_appearance?.useGradient ? {
+                        type: 'linear', rotation: 45,
+                        colorStops: [{ offset: 0, color: card.qr_appearance?.dotsColor }, { offset: 1, color: card.qr_appearance?.gradientColor || '#6366F1' }]
+                    } : null
+                },
                 cornersSquareOptions: { color: card.qr_appearance?.cornersColor || "#1A1265", type: card.qr_appearance?.cornersType || "extra-rounded" },
                 backgroundOptions: { color: "#FFFFFF" },
                 image: card.qr_appearance?.logo_url || "",
                 imageOptions: { crossOrigin: 'anonymous', margin: 2 }
             });
-            qrRef.current.innerHTML = '';
-            qrCode.append(qrRef.current);
+            qrRef.current.innerHTML = ''; qrCode.append(qrRef.current);
         }
     }, [card]);
 
     async function downloadQR() {
         const qrCode = new QRCodeStyling({
-            width: 1000,
-            height: 1000,
-            data: `${window.location.origin}/u/${card.card_id}`,
-            dotsOptions: { color: card.qr_appearance?.dotsColor || "#1A1265", type: card.qr_appearance?.dotsType || "rounded" },
+            width: 1000, height: 1000, data: `${window.location.origin}/u/${card.card_id}`,
+            dotsOptions: { 
+                color: card.qr_appearance?.dotsColor || "#1A1265", type: card.qr_appearance?.dotsType || "rounded",
+                gradient: card.qr_appearance?.useGradient ? {
+                    type: 'linear', rotation: 45,
+                    colorStops: [{ offset: 0, color: card.qr_appearance?.dotsColor }, { offset: 1, color: card.qr_appearance?.gradientColor || '#6366F1' }]
+                } : null
+            },
             cornersSquareOptions: { color: card.qr_appearance?.cornersColor || "#1A1265", type: card.qr_appearance?.cornersType || "extra-rounded" },
             backgroundOptions: { color: "#FFFFFF" },
             image: card.qr_appearance?.logo_url || "",
@@ -231,49 +200,26 @@ function CardListItem({ card, scanCount, navigate, toast }) {
     }
 
     return (
-        <div style={{ 
-            background: 'white', 
-            borderRadius: '12px', 
-            padding: '20px 24px', 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '24px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
-            border: '1px solid #F1F5F9'
-        }}>
-            {/* QR Preview Image */}
-            <div ref={qrRef} style={{ width: '70px', height: '70px', background: '#F8FAFC', borderRadius: '8px', overflow: 'hidden', flexShrink: 0, border: '1px solid #E2E8F0' }}></div>
-
-            {/* Content: Type, Name, Modified Date */}
-            <div style={{ flex: 1, minWidth: '200px' }}>
-                <div style={{ color: '#6366F1', fontWeight: '700', fontSize: '12px', textTransform: 'uppercase', marginBottom: '4px', letterSpacing: '0.5px' }}>{type}</div>
-                <div style={{ fontWeight: '800', fontSize: '18px', color: '#1A1265', marginBottom: '8px' }}>{card.card_name || 'Sans nom'}</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#64748B', fontSize: '13px' }}>
-                    <span style={{ fontSize: '14px' }}>📅</span>
-                    <span>Modifié le {lastModified}</span>
+        <div className="premium-card animate-fade-in" style={{ padding: '24px 32px', display: 'flex', alignItems: 'center', gap: '24px', border: '1px solid rgba(255,255,255,0.8)' }}>
+            {/* Aperçu QR juste avant le nom */}
+            <div ref={qrRef} style={{ width: '80px', height: '80px', background: '#F8FAFC', borderRadius: '16px', border: '1px solid #F1F5F9', overflow: 'hidden', flexShrink: 0 }}></div>
+            
+            <div style={{ flex: 1 }}>
+                <div style={{ color: '#6366F1', fontWeight: '800', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px' }}>{card.type_data?.qr_type || 'URL'}</div>
+                <div style={{ fontWeight: '900', fontSize: '20px', color: '#1A1265', marginBottom: '4px' }}>{card.card_name || 'Sans nom'}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#94A3B8', fontSize: '13px', fontWeight: '600' }}>
+                    <span>📅</span> <span>{lastModified}</span>
                 </div>
             </div>
 
-            {/* Scans Count */}
             <div style={{ textAlign: 'center', minWidth: '100px', borderLeft: '1px solid #F1F5F9', borderRight: '1px solid #F1F5F9', padding: '0 24px' }}>
-                <div style={{ fontSize: '24px', fontWeight: '900', color: '#1A1265' }}>{scanCount}</div>
-                <div style={{ fontSize: '11px', color: '#64748B', fontWeight: '700', letterSpacing: '1px' }}>SCANS</div>
+                <div style={{ fontSize: '28px', fontWeight: '1000', color: '#1A1265' }}>{scanCount}</div>
+                <div style={{ fontSize: '11px', color: '#94A3B8', fontWeight: '900' }}>SCANS</div>
             </div>
 
-            {/* Action Buttons */}
             <div style={{ display: 'flex', gap: '12px' }}>
-                <button 
-                    onClick={downloadQR}
-                    style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: '700', color: '#1A1265', fontSize: '14px' }}
-                >
-                    Télécharger
-                </button>
-                <button 
-                    onClick={() => navigate(`/admin/card/${card.card_id}`)}
-                    style={{ background: '#1A1265', border: 'none', padding: '10px 24px', borderRadius: '8px', cursor: 'pointer', fontWeight: '700', color: 'white', fontSize: '14px' }}
-                >
-                    Gérer
-                </button>
+                <button onClick={downloadQR} style={{ background: '#F1F5F9', color: '#1A1265', padding: '12px 20px', borderRadius: '12px', border: 'none', fontWeight: '800', cursor: 'pointer' }}>Télécharger</button>
+                <button onClick={() => navigate(`/admin/card/${card.card_id}`)} className="btn-primary" style={{ padding: '12px 24px', borderRadius: '12px' }}>Gérer</button>
             </div>
         </div>
     );
