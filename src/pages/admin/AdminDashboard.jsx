@@ -104,11 +104,18 @@ export default function AdminDashboard() {
     const isSubFolder = currentFolder?.parent_id != null;
 
     const filtered = cards.filter(c => {
-        const matchesSearch = !search || c.card_name?.toLowerCase().includes(search.toLowerCase());
+        const matchesSearch = !search || c.card_name?.toLowerCase().includes(search.toLowerCase()) || c.card_id?.toLowerCase().includes(search.toLowerCase());
         const matchesStatus = statusFilter === 'all' || c.status === statusFilter;
-        return matchesSearch && matchesStatus;
+        const qrType = c.type_data?.qr_type || 'url';
+        const matchesType = typeFilter === 'all' || qrType === typeFilter;
+        return matchesSearch && matchesStatus && matchesType;
+    }).sort((a, b) => {
+        if (sortBy === 'newest') return new Date(b.created_at) - new Date(a.created_at);
+        if (sortBy === 'scanned') return (scans[b.card_id] || 0) - (scans[a.card_id] || 0);
+        return 0;
     });
 
+    const totalPages = Math.ceil(filtered.length / quantity);
     const currentItems = filtered.slice((currentPage - 1) * quantity, currentPage * quantity);
 
     return (
@@ -166,13 +173,22 @@ export default function AdminDashboard() {
                     <div style={{ background: 'white', padding: '12px 20px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px', boxShadow: '0 4px 15px rgba(0,0,0,0.02)', border: '1px solid #F1F5F9' }}>
                         <div style={{ position: 'relative', flex: 1 }}><span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', opacity: 0.3 }}>🔍</span><input type="text" placeholder="Rechercher..." value={search} onChange={e => setSearch(e.target.value)} style={{ width: '100%', padding: '12px 12px 12px 40px', borderRadius: '12px', border: '1px solid #E2E8F0', background: '#F8FAFC' }} /></div>
                         <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} style={{ padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '600' }}><option value="all">Statut</option><option value="active">Active</option><option value="pending">En attente</option></select>
+                        <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)} style={{ padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '600' }}><option value="all">Type</option><option value="url">URL</option><option value="wifi">WiFi</option><option value="vcard">VCard</option></select>
                         <select value={sortBy} onChange={e => setSortBy(e.target.value)} style={{ padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '600' }}><option value="newest">Récent</option><option value="scanned">Scans</option></select>
+                        <select value={quantity} onChange={e => { setQuantity(Number(e.target.value)); setCurrentPage(1); }} style={{ padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '600' }}><option value={10}>10</option><option value={20}>20</option><option value={50}>50</option></select>
                     </div>
                 </div>
                 <div style={{ flex: 1, overflowY: 'auto', padding: '24px 40px 60px' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxWidth: '1400px', margin: '0 auto' }}>
                         {loading ? <div style={{ textAlign: 'center', padding: '100px' }}>Chargement...</div> : currentItems.map(card => (<CardListItem key={card.card_id} card={card} scanCount={scans[card.card_id] || 0} navigate={navigate} toast={toast} />))}
                     </div>
+                    {totalPages > 1 && (
+                        <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '32px' }}>
+                            {[...Array(totalPages)].map((_, i) => (
+                                <button key={i} onClick={() => setCurrentPage(i + 1)} style={{ width: '38px', height: '38px', borderRadius: '10px', border: 'none', background: currentPage === i + 1 ? '#1A1265' : 'white', color: currentPage === i + 1 ? 'white' : '#1A1265', fontWeight: '800', cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.05)' }}>{i + 1}</button>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </main>
             <Modal isOpen={modalConfig.isOpen} title={modalConfig.title} onClose={() => setModalConfig({ ...modalConfig, isOpen: false })} onConfirm={modalConfig.onConfirm} confirmText={modalConfig.confirmText} type={modalConfig.type}>{modalConfig.children}</Modal>
@@ -187,6 +203,7 @@ export default function AdminDashboard() {
 function CardListItem({ card, scanCount, navigate, toast }) {
     const qrRef = useRef(null);
     const isActive = card.status === 'active';
+    
     useEffect(() => {
         if (qrRef.current) {
             const qrCode = new QRCodeStyling({
@@ -201,6 +218,25 @@ function CardListItem({ card, scanCount, navigate, toast }) {
         }
     }, [card]);
 
+    async function downloadQR() {
+        const qrCode = new QRCodeStyling({
+            width: 1000, height: 1000, data: `${window.location.origin}/u/${card.card_id}`,
+            dotsOptions: { 
+                color: card.qr_appearance?.dotsColor || "#1A1265", type: card.qr_appearance?.dotsType || "rounded",
+                gradient: card.qr_appearance?.useGradient ? {
+                    type: 'linear', rotation: 45,
+                    colorStops: [{ offset: 0, color: card.qr_appearance?.dotsColor }, { offset: 1, color: card.qr_appearance?.gradientColor || '#6366F1' }]
+                } : null
+            },
+            cornersSquareOptions: { color: card.qr_appearance?.cornersColor || "#1A1265", type: card.qr_appearance?.cornersType || "extra-rounded" },
+            backgroundOptions: { color: "#FFFFFF" },
+            image: card.qr_appearance?.logo_url || "",
+            imageOptions: { crossOrigin: 'anonymous', margin: 10 }
+        });
+        await qrCode.download({ name: `QR-${card.card_id}`, extension: 'png' });
+        toast('Téléchargement lancé', 'success');
+    }
+
     return (
         <div style={{ background: 'white', borderRadius: '20px', padding: '24px 30px', display: 'flex', alignItems: 'center', gap: '24px', border: '1px solid #F1F5F9', boxShadow: '0 4px 12px rgba(0,0,0,0.01)' }}>
             <div ref={qrRef} style={{ width: '76px', height: '76px', background: '#F8FAFC', borderRadius: '14px', border: '1px solid #F1F5F9', overflow: 'hidden', flexShrink: 0 }}></div>
@@ -213,7 +249,10 @@ function CardListItem({ card, scanCount, navigate, toast }) {
                 <span style={{ fontSize: '11px', fontWeight: '900', padding: '6px 16px', borderRadius: '12px', background: isActive ? '#DCFCE7' : '#FEE2E2', color: isActive ? '#15803D' : '#B91C1C', textTransform: 'uppercase', border: '1px solid', borderColor: isActive ? '#86EFAC' : '#FECACA' }}>{isActive ? 'Active' : 'En attente'}</span>
             </div>
             <div style={{ textAlign: 'center', minWidth: '100px', borderLeft: '1px solid #F1F5F9', borderRight: '1px solid #F1F5F9', padding: '0 24px' }}><div style={{ fontSize: '26px', fontWeight: '1000', color: '#1A1265' }}>{scanCount}</div><div style={{ fontSize: '10px', color: '#94A3B8', fontWeight: '900' }}>SCANS</div></div>
-            <div style={{ display: 'flex', gap: '10px' }}><button onClick={() => navigate(`/admin/card/${card.card_id}`)} style={{ background: '#1A1265', color: 'white', padding: '12px 24px', borderRadius: '12px', border: 'none', fontWeight: '800', cursor: 'pointer' }}>Gérer</button></div>
+            <div style={{ display: 'flex', gap: '10px' }}>
+                <button onClick={downloadQR} style={{ background: '#F8FAFC', color: '#1A1265', padding: '12px 20px', borderRadius: '12px', border: '1px solid #E2E8F0', fontWeight: '800', cursor: 'pointer', fontSize: '13px' }}>Télécharger</button>
+                <button onClick={() => navigate(`/admin/card/${card.card_id}`)} style={{ background: '#1A1265', color: 'white', padding: '12px 24px', borderRadius: '12px', border: 'none', fontWeight: '800', cursor: 'pointer', fontSize: '13px' }}>Gérer</button>
+            </div>
         </div>
     );
 }
