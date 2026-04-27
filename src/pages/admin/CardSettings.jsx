@@ -4,43 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase.js';
 import { useToast } from '../../components/Toast.jsx';
 import QRCodeStyling from 'qr-code-styling';
-
-const SOCIAL_FIELDS = [
-    { key: 'full_name', label: 'Nom complet', type: 'text', placeholder: 'Jean Dupont' },
-    { key: 'title', label: 'Titre / Poste', type: 'text', placeholder: 'Designer, Entrepreneur...' },
-    { key: 'bio', label: 'Bio', type: 'textarea', placeholder: 'Description...' },
-    { key: 'photo_url', label: 'Photo (URL)', type: 'text', placeholder: 'https://...' },
-    { key: 'banner_url', label: 'Bannière (URL)', type: 'text', placeholder: 'https://...' },
-    { key: 'theme_color', label: 'Couleur thème', type: 'color' },
-    { key: 'whatsapp', label: 'WhatsApp', type: 'text', placeholder: '+229...' },
-    { key: 'phone', label: 'Téléphone', type: 'text', placeholder: '+229...' },
-    { key: 'email', label: 'Email', type: 'email', placeholder: 'jean@example.com' },
-    { key: 'instagram', label: 'Instagram', type: 'text', placeholder: 'https://instagram.com/...' },
-    { key: 'facebook', label: 'Facebook', type: 'text', placeholder: 'https://facebook.com/...' },
-    { key: 'tiktok', label: 'TikTok', type: 'text', placeholder: 'https://tiktok.com/...' },
-    { key: 'twitter', label: 'X / Twitter', type: 'text', placeholder: 'https://x.com/...' },
-    { key: 'linkedin', label: 'LinkedIn', type: 'text', placeholder: 'https://linkedin.com/...' },
-    { key: 'youtube', label: 'YouTube', type: 'text', placeholder: 'https://youtube.com/...' },
-    { key: 'website', label: 'Site web', type: 'text', placeholder: 'https://...' },
-];
-
-const DOT_STYLES = ['rounded', 'dots', 'classy', 'classy-rounded', 'square', 'extra-rounded'];
-const CORNER_STYLES = ['square', 'extra-rounded', 'dot'];
-const CORNER_DOT_STYLES = ['dot', 'square'];
-
-const THEME_COLORS = [
-    { label: 'Primary', bg: '#28C254' },
-    { label: 'Premium', bg: '#707BFF' },
-    { label: 'Dark', bg: '#1E293B' },
-    { label: 'Gold', bg: '#F59E0B' },
-];
-
-const SECTIONS = [
-    { id: 'infos', icon: '📊', label: 'Informations' },
-    { id: 'profil', icon: '👤', label: 'Profil Public' },
-    { id: 'qr', icon: '🎨', label: 'Design QR' },
-    { id: 'danger', icon: '⚠️', label: 'Zone Danger' },
-];
+import PhonePreview from '../../components/PhonePreview.jsx';
 
 export default function CardSettings() {
     const { cardId } = useParams();
@@ -52,25 +16,16 @@ export default function CardSettings() {
     const [card, setCard] = useState(null);
     const [folders, setFolders] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [activeSection, setActiveSection] = useState('infos');
     const [saving, setSaving] = useState(false);
-    const [savingQR, setSavingQR] = useState(false);
-    const [uploadingLogo, setUploadingLogo] = useState(false);
-    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-    const avatarRef = useRef(null);
-    const bannerRef = useRef(null);
+    const [expandedAccordion, setExpandedAccordion] = useState('main');
 
-    const [profileForm, setProfileForm] = useState({});
-
+    const [cardName, setCardName] = useState('');
+    const [selectedFolderId, setSelectedFolderId] = useState(null);
+    const [typeData, setTypeData] = useState({});
     const [qrAppearance, setQrAppearance] = useState({
-        dotsType: 'rounded',
-        dotsColor: '#1E293B',
-        bgColor: '#FFFFFF',
-        cornersType: 'extra-rounded',
-        cornersDotType: 'dot',
-        cornersColor: '#1E293B',
-        cornersDotColor: '#1E293B',
-        logo_url: null,
+        dotsType: 'rounded', dotsColor: '#000000', bgColor: '#FFFFFF',
+        cornersType: 'extra-rounded', cornersColor: '#000000',
+        logo_url: null
     });
 
     useEffect(() => {
@@ -78,40 +33,19 @@ export default function CardSettings() {
         loadFolders();
     }, [cardId]);
 
-    useEffect(() => {
-        if (activeSection === 'qr' && qrRef.current && card) {
-            if (!qrCode.current) {
-                initQRCode();
-            } else {
-                updateQRCode();
-            }
-        }
-    }, [activeSection, card, qrAppearance]);
-
     async function loadCard() {
         setLoading(true);
-        const { data, error } = await supabase
-            .from('cards')
-            .select('*')
-            .eq('card_id', cardId)
-            .single();
-
+        const { data, error } = await supabase.from('cards').select('*').eq('card_id', cardId).single();
         if (error || !data) {
             toast('Carte introuvable', 'error');
             navigate('/admin');
             return;
         }
-
         setCard(data);
-        setProfileForm(data.admin_profile || {});
-
-        if (data.qr_appearance) {
-            setQrAppearance({
-                ...qrAppearance,
-                ...data.qr_appearance,
-            });
-        }
-
+        setCardName(data.card_name || '');
+        setSelectedFolderId(data.folder_id);
+        setTypeData(data.type_data || {});
+        if (data.qr_appearance) setQrAppearance(data.qr_appearance);
         setLoading(false);
     }
 
@@ -120,253 +54,165 @@ export default function CardSettings() {
         setFolders(data || []);
     }
 
-    function initQRCode() {
-        const url = `${window.location.origin}/u/${cardId}`;
+    useEffect(() => {
+        if (qrRef.current && card) {
+            const data = formatQRData();
+            if (!qrCode.current) initQRCode(data);
+            else updateQRCode(data);
+        }
+    }, [qrAppearance, card, typeData]);
+
+    function formatQRData() {
+        const profileUrl = `${window.location.origin}/u/${cardId}`;
+        const selectedType = typeData.qr_type || 'url';
+        switch (selectedType) {
+            case 'wifi': return `WIFI:T:WPA;S:${typeData.ssid || ''};P:${typeData.pass || ''};;`;
+            case 'vcard': return `BEGIN:VCARD\nVERSION:3.0\nFN:${typeData.fn || ''}\nTEL:${typeData.tel || ''}\nEND:VCARD`;
+            default: return typeData.url || profileUrl;
+        }
+    }
+
+    function initQRCode(data) {
         qrCode.current = new QRCodeStyling({
-            width: 280, height: 280, type: 'svg',
-            data: url,
+            width: 260, height: 260, data: data,
             dotsOptions: { color: qrAppearance.dotsColor, type: qrAppearance.dotsType },
-            backgroundOptions: { color: qrAppearance.bgColor },
             cornersSquareOptions: { color: qrAppearance.cornersColor, type: qrAppearance.cornersType },
-            cornersDotOptions: { color: qrAppearance.cornersDotColor, type: qrAppearance.cornersDotType },
+            backgroundOptions: { color: qrAppearance.bgColor },
             image: qrAppearance.logo_url || '',
             imageOptions: { crossOrigin: 'anonymous', margin: 10 }
         });
-
-        if (qrRef.current) {
-            qrRef.current.innerHTML = '';
-            qrCode.current.append(qrRef.current);
-        }
+        if (qrRef.current) { qrRef.current.innerHTML = ''; qrCode.current.append(qrRef.current); }
     }
 
-    function updateQRCode() {
-        const url = `${window.location.origin}/u/${cardId}`;
+    function updateQRCode(data) {
+        if (!qrCode.current) return;
         qrCode.current.update({
-            data: url,
+            data: data,
             dotsOptions: { color: qrAppearance.dotsColor, type: qrAppearance.dotsType },
-            backgroundOptions: { color: qrAppearance.bgColor },
             cornersSquareOptions: { color: qrAppearance.cornersColor, type: qrAppearance.cornersType },
-            cornersDotOptions: { color: qrAppearance.cornersDotColor, type: qrAppearance.cornersDotType },
             image: qrAppearance.logo_url || '',
         });
     }
 
-    async function saveProfile() {
+    async function saveChanges() {
         setSaving(true);
-        const { error } = await supabase
-            .from('cards')
-            .update({ 
-                admin_profile: profileForm,
-                updated_at: new Date().toISOString()
-            })
-            .eq('card_id', cardId);
-
-        if (error) toast('Erreur : ' + error.message, 'error');
-        else {
-            toast('Profil mis à jour !', 'success');
-            loadCard(); // Refresh to get the new updated_at
-        }
-        setSaving(false);
-    }
-
-    async function saveQRAppearance() {
-        setSavingQR(true);
-        const { error } = await supabase
-            .from('cards')
-            .update({ 
+        try {
+            const { error } = await supabase.from('cards').update({
+                card_name: cardName,
+                folder_id: selectedFolderId,
                 qr_appearance: qrAppearance,
+                type_data: typeData,
                 updated_at: new Date().toISOString()
-            })
-            .eq('card_id', cardId);
-
-        if (error) toast('Erreur : ' + error.message, 'error');
-        else {
-            toast('Design QR sauvegardé !', 'success');
-            loadCard(); // Refresh
-        }
-        setSavingQR(false);
+            }).eq('card_id', cardId);
+            if (error) throw error;
+            toast('Modifications enregistrées !', 'success');
+        } catch (err) { toast(err.message, 'error'); } 
+        finally { setSaving(false); }
     }
 
-    async function deleteCard() {
-        const { error } = await supabase.from('cards').delete().eq('card_id', cardId);
-        if (error) toast('Erreur : ' + error.message, 'error');
-        else {
-            toast('Carte supprimée !', 'success');
-            navigate('/admin');
-        }
-    }
+    const renderAccordion = (id, icon, title, subtitle, children) => (
+        <div className="accordion">
+            <div className="accordion-header" onClick={() => setExpandedAccordion(expandedAccordion === id ? '' : id)}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <div style={{ fontSize: '20px' }}>{icon}</div>
+                    <div>
+                        <div style={{ fontWeight: '700', color: '#1A1265' }}>{title}</div>
+                        <div style={{ fontSize: '12px', color: '#94A3B8' }}>{subtitle}</div>
+                    </div>
+                </div>
+                <div style={{ transform: expandedAccordion === id ? 'rotate(180deg)' : 'none', transition: '0.3s' }}>▼</div>
+            </div>
+            {expandedAccordion === id && <div className="accordion-content">{children}</div>}
+        </div>
+    );
 
     if (loading) return <div style={{ padding: '100px', textAlign: 'center' }}>Chargement...</div>;
 
-    const publicUrl = `${window.location.origin}/u/${cardId}`;
-    const activationUrl = `${window.location.origin}/register?card=${cardId}&token=${card?.activation_token}`;
-
     return (
-        <div style={{ display: 'flex', minHeight: '100vh', background: '#F8FAFC' }}>
-            {/* Sidebar Settings */}
-            <aside style={{ width: '300px', background: 'white', borderRight: '1px solid var(--border)', padding: '40px 24px', position: 'sticky', top: 0, height: '100vh' }}>
-                <button onClick={() => navigate('/admin')} style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-500)', background: 'none', border: 'none', cursor: 'pointer', marginBottom: '32px', fontWeight: '600' }}>
-                    ← Retour au dashboard
-                </button>
+        <div style={{ minHeight: '100vh', background: '#F8FAFC', padding: '40px 20px' }}>
+            <div className="max-w-wrapper">
+                <header style={{ marginBottom: '40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                        <button onClick={() => navigate('/admin')} style={{ padding: '10px 20px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '800', cursor: 'pointer', color: '#1A1265' }}>← Retour</button>
+                        <h1 style={{ fontSize: '22px', fontWeight: '900', color: '#1A1265' }}>Modifier le Projet</h1>
+                    </div>
+                    <button className="btn-nav-next" onClick={saveChanges} disabled={saving}>{saving ? 'Enregistrement...' : 'Enregistrer ✓'}</button>
+                </header>
 
-                <div style={{ marginBottom: '40px' }}>
-                    <div style={{ fontSize: '12px', color: 'var(--text-400)', fontWeight: '700', textTransform: 'uppercase', marginBottom: '8px' }}>Carte</div>
-                    <h1 style={{ fontSize: '24px', margin: 0, color: 'var(--primary)', fontFamily: 'monospace' }}>#{cardId}</h1>
-                    <p style={{ color: 'var(--text-500)', fontSize: '14px', marginTop: '4px' }}>{card.card_name}</p>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '60px', alignItems: 'start' }}>
+                    <div className="animate-fade-in">
+                        <h2 style={{ fontSize: '18px', marginBottom: '24px', fontWeight: '800', color: 'var(--accent)' }}>Configuration & Contenu</h2>
+                        
+                        {renderAccordion('main', '🌐', 'Lien / Destination', 'Gérez le contenu de votre QR.', (
+                            <div className="field" style={{ marginTop: '20px' }}>
+                                <label>URL du site internet</label>
+                                <input type="url" value={typeData.url || ''} onChange={e => setTypeData({...typeData, url: e.target.value})} />
+                            </div>
+                        ))}
+
+                        {renderAccordion('name', '🏷️', 'Nom & Dossier', 'Organisation de votre projet.', (
+                            <div style={{ marginTop: '20px' }}>
+                                <div className="field"><label>Nom du projet</label><input type="text" value={cardName} onChange={e => setCardName(e.target.value)} /></div>
+                                <div className="field">
+                                    <label>Dossier</label>
+                                    <select value={selectedFolderId || ''} onChange={e => setSelectedFolderId(e.target.value)}>
+                                        <option value="">Sans dossier</option>
+                                        {folders.map(f => <option key={f.id} value={f.id}>{f.name}</option>)}
+                                    </select>
+                                </div>
+                            </div>
+                        ))}
+
+                        <h2 style={{ fontSize: '18px', marginBottom: '24px', marginTop: '40px', fontWeight: '800', color: 'var(--accent)' }}>Design & Personnalisation</h2>
+
+                        {renderAccordion('pattern', '⬛', 'Motif & Couleurs', 'Personnalisez le visuel.', (
+                            <div style={{ marginTop: '20px' }}>
+                                <div className="field">
+                                    <label>Style de motif</label>
+                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                        {['rounded', 'dots', 'classy', 'square'].map(s => (
+                                            <button key={s} onClick={() => setQrAppearance({...qrAppearance, dotsType: s})} style={{ flex: 1, padding: '10px', borderRadius: '8px', border: qrAppearance.dotsType === s ? '2px solid var(--accent)' : '1px solid var(--border)', background: 'white', cursor: 'pointer' }}>{s}</button>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="field">
+                                    <label>Couleur</label>
+                                    <input type="color" value={qrAppearance.dotsColor} onChange={e => setQrAppearance({...qrAppearance, dotsColor: e.target.value})} />
+                                </div>
+                            </div>
+                        ))}
+
+                        {renderAccordion('corners', '🔳', 'Styles des coins', 'Sélectionnez le style de coins.', (
+                            <div style={{ marginTop: '20px' }}>
+                                <div className="field">
+                                    <label>Style de coins</label>
+                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                        {['square', 'extra-rounded', 'dot'].map(s => (
+                                            <button key={s} onClick={() => setQrAppearance({...qrAppearance, cornersType: s})} style={{ flex: 1, padding: '10px', borderRadius: '8px', border: qrAppearance.cornersType === s ? '2px solid var(--accent)' : '1px solid var(--border)', background: 'white', cursor: 'pointer' }}>{s}</button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="phone-preview-container">
+                        <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '20px' }}>
+                            <button style={{ padding: '8px 16px', borderRadius: '20px', border: 'none', background: 'var(--accent)', color: 'white', fontWeight: '700', fontSize: '13px' }}>Code QR</button>
+                            <button style={{ padding: '8px 16px', borderRadius: '20px', border: '1px solid #E2E8F0', background: 'white', color: '#64748B', fontWeight: '700', fontSize: '13px' }}>Aperçu</button>
+                        </div>
+                        <PhonePreview>
+                            <div style={{ padding: '40px 20px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'center' }}>
+                                <div ref={qrRef} style={{ background: 'white', padding: '10px', borderRadius: '20px', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}></div>
+                                <div style={{ marginTop: '32px', textAlign: 'center' }}>
+                                    <h4 style={{ fontWeight: '900', color: '#1A1265' }}>{cardName || 'Sans titre'}</h4>
+                                    <p style={{ fontSize: '13px', color: '#94A3B8', marginTop: '4px' }}>Modifications en direct</p>
+                                </div>
+                            </div>
+                        </PhonePreview>
+                    </div>
                 </div>
-
-                <nav>
-                    {SECTIONS.map(s => (
-                        <button 
-                            key={s.id} 
-                            onClick={() => setActiveSection(s.id)}
-                            style={{ 
-                                width: '100%', padding: '12px 16px', borderRadius: '12px', border: 'none', 
-                                background: activeSection === s.id ? 'var(--primary-light)' : 'transparent',
-                                color: activeSection === s.id ? 'var(--primary)' : 'var(--text-600)',
-                                fontWeight: '600', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '4px'
-                            }}
-                        >
-                            <span style={{ fontSize: '18px' }}>{s.icon}</span>
-                            {s.label}
-                        </button>
-                    ))}
-                </nav>
-            </aside>
-
-            {/* Content Area */}
-            <main style={{ flex: 1, padding: '60px 40px' }}>
-                <div style={{ maxWidth: '800px' }}>
-                    
-                    {activeSection === 'infos' && (
-                        <div className="animate-fade-in">
-                            <h2 style={{ fontSize: '24px', marginBottom: '32px' }}>Détails de la carte</h2>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '40px' }}>
-                                <div className="premium-card" style={{ padding: '24px' }}>
-                                    <div style={{ fontSize: '12px', color: 'var(--text-400)', fontWeight: '700', textTransform: 'uppercase', marginBottom: '4px' }}>Statut</div>
-                                    <div style={{ fontSize: '18px', fontWeight: '700', color: card.status === 'active' ? '#166534' : '#92400E' }}>
-                                        {card.status === 'active' ? '✅ Active' : '⏳ En attente'}
-                                    </div>
-                                </div>
-                                <div className="premium-card" style={{ padding: '24px' }}>
-                                    <div style={{ fontSize: '12px', color: 'var(--text-400)', fontWeight: '700', textTransform: 'uppercase', marginBottom: '4px' }}>Lien NFC</div>
-                                    <div style={{ fontSize: '14px', fontWeight: '600', color: 'var(--primary)', textDecoration: 'underline', cursor: 'pointer' }} onClick={() => { navigator.clipboard.writeText(publicUrl); toast('Lien copié !', 'success'); }}>
-                                        {publicUrl}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="premium-card" style={{ padding: '32px' }}>
-                                <h3 style={{ marginBottom: '24px' }}>Lien d'activation</h3>
-                                <p style={{ color: 'var(--text-500)', fontSize: '14px', marginBottom: '16px' }}>Envoyez ce lien au client pour qu'il puisse activer sa carte et créer son compte.</p>
-                                <div style={{ display: 'flex', gap: '12px' }}>
-                                    <input readOnly value={activationUrl} style={{ flex: 1 }} />
-                                    <button className="btn-primary" onClick={() => { navigator.clipboard.writeText(activationUrl); toast('Lien copié !', 'success'); }}>Copier</button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {activeSection === 'profil' && (
-                        <div className="animate-fade-in">
-                            <h2 style={{ fontSize: '24px', marginBottom: '32px' }}>Configuration du Profil</h2>
-                            <div className="premium-card" style={{ padding: '32px' }}>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                                    {SOCIAL_FIELDS.map(f => (
-                                        <div key={f.key} className="field" style={{ gridColumn: f.type === 'textarea' ? 'span 2' : 'span 1' }}>
-                                            <label>{f.label}</label>
-                                            {f.type === 'textarea' ? (
-                                                <textarea rows={3} value={profileForm[f.key] || ''} onChange={e => setProfileForm({ ...profileForm, [f.key]: e.target.value })} />
-                                            ) : (
-                                                <input type={f.type} value={profileForm[f.key] || ''} onChange={e => setProfileForm({ ...profileForm, [f.key]: e.target.value })} />
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                                <button className="btn-primary" style={{ width: '100%', marginTop: '32px' }} onClick={saveProfile} disabled={saving}>
-                                    {saving ? 'Sauvegarde...' : '💾 Sauvegarder le profil'}
-                                </button>
-                            </div>
-                        </div>
-                    )}
-
-                    {activeSection === 'qr' && (
-                        <div className="animate-fade-in">
-                            <h2 style={{ fontSize: '24px', marginBottom: '32px' }}>Design du QR Code</h2>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '32px' }}>
-                                <div className="premium-card" style={{ padding: '32px' }}>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                                        <div className="field">
-                                            <label>Style modules</label>
-                                            <select value={qrAppearance.dotsType} onChange={e => setQrAppearance({ ...qrAppearance, dotsType: e.target.value })}>
-                                                {DOT_STYLES.map(s => <option key={s} value={s}>{s}</option>)}
-                                            </select>
-                                        </div>
-                                        <div className="field">
-                                            <label>Couleur modules</label>
-                                            <input type="color" value={qrAppearance.dotsColor} onChange={e => setQrAppearance({ ...qrAppearance, dotsColor: e.target.value })} />
-                                        </div>
-                                        <div className="field">
-                                            <label>Style coins</label>
-                                            <select value={qrAppearance.cornersType} onChange={e => setQrAppearance({ ...qrAppearance, cornersType: e.target.value })}>
-                                                {CORNER_STYLES.map(s => <option key={s} value={s}>{s}</option>)}
-                                            </select>
-                                        </div>
-                                        <div className="field">
-                                            <label>Couleur coins</label>
-                                            <input type="color" value={qrAppearance.cornersColor} onChange={e => setQrAppearance({ ...qrAppearance, cornersColor: e.target.value })} />
-                                        </div>
-                                    </div>
-                                    <button className="btn-primary" style={{ width: '100%', marginTop: '32px' }} onClick={saveQRAppearance} disabled={savingQR}>
-                                        {savingQR ? 'Sauvegarde...' : '💾 Sauvegarder le design'}
-                                    </button>
-                                </div>
-                                
-                                <div style={{ textAlign: 'center' }}>
-                                    <div ref={qrRef} style={{ background: 'white', padding: '10px', borderRadius: '24px', boxShadow: 'var(--shadow-lg)', display: 'inline-block', marginBottom: '16px' }}></div>
-                                    <button className="btn-ghost" style={{ width: '100%' }} onClick={() => qrCode.current?.download({ name: `QR-${cardId}`, extension: 'png' })}>
-                                        ⬇ Télécharger PNG
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {activeSection === 'danger' && (
-                        <div className="animate-fade-in">
-                            <h2 style={{ fontSize: '24px', marginBottom: '32px', color: '#EF4444' }}>Zone de danger</h2>
-                            <div className="premium-card" style={{ padding: '32px', border: '1px solid #FECACA', background: '#FEF2F2' }}>
-                                <h3>Supprimer cette carte</h3>
-                                <p style={{ color: '#991B1B', fontSize: '14px', marginBottom: '24px' }}>Cette action est irréversible. Toutes les données associées à cette carte seront perdues.</p>
-                                {!showDeleteConfirm ? (
-                                    <button className="btn-primary" style={{ background: '#EF4444' }} onClick={() => setShowDeleteConfirm(true)}>Supprimer la carte</button>
-                                ) : (
-                                    <div style={{ display: 'flex', gap: '12px' }}>
-                                        <button className="btn-primary" style={{ background: '#EF4444' }} onClick={deleteCard}>Confirmer la suppression</button>
-                                        <button className="btn-ghost" onClick={() => setShowDeleteConfirm(false)}>Annuler</button>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    )}
-
-                </div>
-            </main>
-        </div>
-    );
-}
-
-
-const titleStyle = {
-    fontFamily: 'var(--font-display)', fontSize: '17px', fontWeight: '700',
-    color: 'var(--accent)', marginBottom: '20px',
-};
-
-function InfoBox({ label, value, mono, accent }) {
-    return (
-        <div style={{ padding: '14px 16px', background: 'var(--bg)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
-            <div style={{ fontSize: '11px', color: 'var(--text-light)', marginBottom: '4px', fontWeight: '600', textTransform: 'uppercase' }}>{label}</div>
-            <div style={{ fontSize: '14px', fontWeight: '700', color: accent ? 'var(--accent)' : 'var(--text)', fontFamily: mono ? 'monospace' : 'inherit', wordBreak: 'break-all' }}>{value}</div>
+            </div>
         </div>
     );
 }
