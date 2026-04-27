@@ -7,6 +7,7 @@ import QRCodeStyling from 'qr-code-styling';
 import { generateUniqueCardId } from '../../lib/utils.js';
 import PhonePreview from '../../components/PhonePreview.jsx';
 import { SOCIAL_NETWORKS, LINK_ICONS } from '../../constants/socials.js';
+import ImageUpload from '../../components/ImageUpload.jsx';
 
 // Reusable color picker: swatch + hex text input
 function ColorField({ label, value, onChange }) {
@@ -203,8 +204,8 @@ export default function CreateCardWizard() {
                                             <div className="field"><label>Description</label><textarea rows={3} value={profile.bio} onChange={e => setProfile({ ...profile, bio: e.target.value })} /></div>
                                             <div className="field"><label>Téléphone</label><input type="tel" value={profile.phone} onChange={e => setProfile({ ...profile, phone: e.target.value })} placeholder="+229 XX XX XX XX" /></div>
                                             <div className="field"><label>Email</label><input type="email" value={profile.email} onChange={e => setProfile({ ...profile, email: e.target.value })} placeholder="vous@email.com" /></div>
-                                            <div className="field"><label>URL Photo de profil</label><input type="url" value={profile.photo_url} onChange={e => setProfile({ ...profile, photo_url: e.target.value })} placeholder="https://..." /></div>
-                                            <div className="field"><label>URL Bannière</label><input type="url" value={profile.banner_url} onChange={e => setProfile({ ...profile, banner_url: e.target.value })} placeholder="https://..." /></div>
+                                            <ImageUpload label="Photo de profil" value={profile.photo_url} onChange={v => setProfile({ ...profile, photo_url: v })} bucket="avatars" shape="circle" />
+                                            <ImageUpload label="Bannière" value={profile.banner_url} onChange={v => setProfile({ ...profile, banner_url: v })} bucket="banners" shape="rect" />
                                             <div className="field"><label>Couleur principale</label><input type="color" value={profile.primaryColor} onChange={e => setProfile({ ...profile, primaryColor: e.target.value })} /></div>
                                         </div>
                                     ))}
