@@ -53,13 +53,7 @@ export default function Activate() {
                 backdropFilter: 'blur(10px)',
                 textAlign: 'center'
             }}>
-                <div style={{ 
-                    width: '48px', height: '48px', background: 'var(--primary)', 
-                    borderRadius: '12px', display: 'flex', alignItems: 'center', 
-                    justifyContent: 'center', color: 'white', fontWeight: 'bold', 
-                    fontSize: '24px', margin: '0 auto 24px',
-                    boxShadow: '0 8px 16px rgba(40, 194, 84, 0.2)'
-                }}>Q</div>
+                <img src="/logo.png" alt="Logo" style={{ height: '48px', marginBottom: '24px' }} />
                 
                 <h1 style={{ fontSize: '28px', fontWeight: '800', letterSpacing: '-1px', color: 'var(--text-900)', margin: '0 0 12px 0' }}>
                     AJOUTER UNE CARTE

@@ -1,12 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap');
 
 :root {
-    --primary: #28C254;
-    --primary-hover: #22a647;
-    --primary-light: #DFF6E6;
-    --secondary: #707BFF;
-    --secondary-light: #EFF0FF;
-    --accent: #388BFF;
+    --primary: #1A1265;
+    --primary-hover: #140e50;
+    --primary-light: #EEF2FF;
+    --secondary: #6366F1;
+    --secondary-light: #F5F3FF;
+    --accent: #F59E0B;
     --bg: #F8FAFC;
     --white: #FFFFFF;
     --text-900: #0F172A;
@@ -21,7 +21,7 @@
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-    --shadow-premium: 0px 20px 60px rgba(0, 0, 0, 0.08);
+    --shadow-premium: 0px 20px 60px rgba(26, 18, 101, 0.08);
 }
 
 * {
@@ -65,13 +65,13 @@ h1, h2, h3, h4, h5, h6 {
     align-items: center;
     justify-content: center;
     gap: 10px;
-    box-shadow: 0 4px 14px 0 rgba(40, 194, 84, 0.3);
+    box-shadow: 0 4px 14px 0 rgba(26, 18, 101, 0.3);
 }
 
 .btn-primary:hover {
     background: var(--primary-hover);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(40, 194, 84, 0.4);
+    box-shadow: 0 6px 20px rgba(26, 18, 101, 0.4);
 }
 
 .btn-primary:active {

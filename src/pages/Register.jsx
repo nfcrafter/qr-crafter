@@ -104,13 +104,7 @@ export default function Register() {
             }}>
                 {/* Logo */}
                 <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-                    <div style={{ 
-                        width: '48px', height: '48px', background: 'var(--primary)', 
-                        borderRadius: '12px', display: 'flex', alignItems: 'center', 
-                        justifyContent: 'center', color: 'white', fontWeight: 'bold', 
-                        fontSize: '24px', margin: '0 auto 16px',
-                        boxShadow: '0 8px 16px rgba(40, 194, 84, 0.2)'
-                    }}>Q</div>
+                    <img src="/logo.png" alt="Logo" style={{ height: '48px', marginBottom: '16px' }} />
                     <h1 style={{ fontSize: '28px', fontWeight: '800', letterSpacing: '-1px', color: 'var(--text-900)', margin: 0 }}>
                         {cardId ? 'ACTIVER MA CARTE' : 'CRÉER MON COMPTE'}
                     </h1>

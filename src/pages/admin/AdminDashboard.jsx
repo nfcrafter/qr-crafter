@@ -76,9 +76,9 @@ export default function AdminDashboard() {
         <div style={{ display: 'flex', minHeight: '100vh', background: '#F8FAFC' }}>
             {/* Sidebar */}
             <aside style={{ width: '280px', background: 'white', borderRight: '1px solid var(--border)', padding: '32px 20px', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '40px' }}>
-                    <div style={{ width: '32px', height: '32px', background: 'var(--primary)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold' }}>Q</div>
-                    <span style={{ fontWeight: '800', fontSize: '20px', letterSpacing: '-0.5px' }}>QR CRAFTER</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '40px', cursor: 'pointer' }} onClick={() => navigate('/admin')}>
+                    <img src="/logo.png" alt="Logo" style={{ height: '32px' }} />
+                    <span style={{ fontWeight: '800', fontSize: '20px', letterSpacing: '-0.5px', color: 'var(--primary)' }}>QR CRAFTER</span>
                 </div>
 
                 <nav style={{ flex: 1 }}>
@@ -143,9 +143,9 @@ export default function AdminDashboard() {
 
                 {/* Stats */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', marginBottom: '40px' }}>
-                    <StatCard label="Total Cartes" value={stats.total} icon="💳" color="#707BFF" />
-                    <StatCard label="Cartes Actives" value={stats.active} icon="✅" color="#28C254" />
-                    <StatCard label="En Attente" value={stats.pending} icon="⏳" color="#F59E0B" />
+                    <StatCard label="Total Cartes" value={stats.total} icon="💳" color="var(--primary)" />
+                    <StatCard label="Cartes Actives" value={stats.active} icon="✅" color="#22C55E" />
+                    <StatCard label="En Attente" value={stats.pending} icon="⏳" color="var(--accent)" />
                 </div>
 
                 {/* Filters & Table */}

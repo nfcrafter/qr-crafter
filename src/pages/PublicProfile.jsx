@@ -14,14 +14,21 @@ const SOCIAL_LINKS = [
     { key: 'website', label: 'Site web', color: '#1A1265', getUrl: v => v, icon: '🌐' },
 ]
 
-export default function PublicProfile() {
+export default function PublicProfile({ previewData }) {
     const { cardId } = useParams()
-    const [profile, setProfile] = useState(null)
+    const [profile, setProfile] = useState(previewData || null)
     const [card, setCard] = useState(null)
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(!previewData)
     const [notFound, setNotFound] = useState(false)
 
-    useEffect(() => { loadProfile() }, [cardId])
+    useEffect(() => { 
+        if (previewData) {
+            setProfile(previewData);
+            setLoading(false);
+        } else if (cardId) {
+            loadProfile();
+        }
+    }, [cardId, previewData])
 
     async function loadProfile() {
         setLoading(true)
@@ -62,7 +69,7 @@ export default function PublicProfile() {
         </div>
     )
 
-    if (notFound) return (
+    if (notFound && !previewData) return (
         <div style={{ minHeight: '100vh', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', padding: '40px', textAlign: 'center' }}>
             <div>
                 <h1 style={{ fontSize: '100px', margin: 0 }}>404</h1>
@@ -71,7 +78,7 @@ export default function PublicProfile() {
         </div>
     )
 
-    const themeColor = profile?.theme_color || '#28C254'
+    const themeColor = profile?.theme_color || '#1A1265'
     const activeLinks = SOCIAL_LINKS.filter(s => profile?.[s.key])
 
     return (
@@ -94,18 +101,18 @@ export default function PublicProfile() {
                         background: 'white', overflow: 'hidden', boxShadow: 'var(--shadow-lg)'
                     }}>
                         <img 
-                            src={profile?.photo_url || `https://ui-avatars.com/api/?name=${profile?.full_name}&background=random`} 
+                            src={profile?.photo_url || `https://ui-avatars.com/api/?name=${profile?.full_name || 'User'}&background=random`} 
                             style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
                             alt="Avatar"
                         />
                     </div>
 
-                    <h1 style={{ fontSize: '28px', marginBottom: '4px' }}>{profile?.full_name}</h1>
+                    <h1 style={{ fontSize: '28px', marginBottom: '4px' }}>{profile?.full_name || 'Nom complet'}</h1>
                     <p style={{ color: themeColor, fontWeight: '700', fontSize: '15px', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '16px' }}>
-                        {profile?.title || 'Membre NFCrafter'}
+                        {profile?.title || 'Titre / Poste'}
                     </p>
                     <p style={{ color: 'var(--text-500)', fontSize: '15px', lineHeight: '1.6', marginBottom: '24px' }}>
-                        {profile?.bio || 'Bienvenue sur mon profil digital.'}
+                        {profile?.bio || 'Définissez votre biographie dans les paramètres.'}
                     </p>
 
                     <button 
@@ -119,7 +126,7 @@ export default function PublicProfile() {
 
                 {/* Social Links Grid */}
                 <div style={{ marginTop: '24px', display: 'grid', gridTemplateColumns: '1fr', gap: '12px' }}>
-                    {activeLinks.map(link => (
+                    {activeLinks.length > 0 ? activeLinks.map(link => (
                         <a 
                             key={link.key} 
                             href={link.getUrl(profile[link.key])} 
@@ -149,18 +156,25 @@ export default function PublicProfile() {
                             </div>
                             <div style={{ color: 'var(--text-400)' }}>→</div>
                         </a>
-                    ))}
+                    )) : (
+                        <div style={{ textAlign: 'center', padding: '24px', color: 'var(--text-400)', fontSize: '14px' }}>
+                            Aucun lien social configuré.
+                        </div>
+                    )}
                 </div>
 
                 {/* Footer */}
                 <div style={{ textAlign: 'center', marginTop: '48px' }}>
                     <p style={{ fontSize: '13px', color: 'var(--text-400)', marginBottom: '12px' }}>Propulsé gratuitement par</p>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', opacity: 0.6 }}>
-                        <div style={{ width: '24px', height: '24px', background: 'var(--primary)', borderRadius: '6px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '12px' }}>Q</div>
-                        <span style={{ fontWeight: '800', fontSize: '14px', color: 'var(--text-900)' }}>QR CRAFTER</span>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px' }}>
+                        <img src="/logo.png" alt="Logo" style={{ height: '24px' }} />
+                        <span style={{ fontWeight: '800', fontSize: '16px', color: 'var(--text-900)', letterSpacing: '-0.5px' }}>
+                            QR <span style={{ color: 'var(--primary)' }}>CRAFTER</span>
+                        </span>
                     </div>
                 </div>
             </div>
         </div>
     )
-}
+}
+

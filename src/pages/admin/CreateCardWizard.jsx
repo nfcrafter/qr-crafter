@@ -6,6 +6,8 @@ import { useToast } from '../../components/Toast.jsx';
 import QRCodeStyling from 'qr-code-styling';
 import { generateUniqueCardId } from '../../lib/utils.js';
 import ProfileForm from '../../components/ProfileForm.jsx';
+import PhonePreview from '../../components/PhonePreview.jsx';
+import PublicProfile from '../PublicProfile.jsx';
 
 const DOT_STYLES = [
     { id: 'rounded', label: 'Arrondi' },
@@ -47,7 +49,7 @@ export default function CreateCardWizard() {
         bio: '',
         photo_url: '',
         banner_url: '',
-        theme_color: '#28C254',
+        theme_color: '#1A1265',
         whatsapp: '',
         instagram: '',
         facebook: '',
@@ -62,12 +64,12 @@ export default function CreateCardWizard() {
 
     const [qrAppearance, setQrAppearance] = useState({
         dotsType: 'rounded',
-        dotsColor: '#28C254',
+        dotsColor: '#1A1265',
         bgColor: '#FFFFFF',
         cornersType: 'extra-rounded',
         cornersDotType: 'dot',
-        cornersColor: '#28C254',
-        cornersDotColor: '#28C254',
+        cornersColor: '#1A1265',
+        cornersDotColor: '#1A1265',
         logo_url: null,
     });
 
@@ -126,27 +128,28 @@ export default function CreateCardWizard() {
         });
     }
 
-    async function uploadLogo(file) {
+    async function uploadFile(file, bucket, setter, loadingSetter) {
         if (!file) return;
-        setUploadingLogo(true);
+        loadingSetter(true);
         try {
-            const fileName = `logo-${Date.now()}-${file.name}`;
+            const fileName = `${Date.now()}-${file.name}`;
             const { data, error } = await supabase.storage
-                .from('qr-logos')
+                .from(bucket)
                 .upload(fileName, file);
 
             if (error) throw error;
 
             const { data: { publicUrl } } = supabase.storage
-                .from('qr-logos')
+                .from(bucket)
                 .getPublicUrl(fileName);
 
-            setQrAppearance(prev => ({ ...prev, logo_url: publicUrl }));
-            toast('Logo ajouté avec succès', 'success');
+            setter(publicUrl);
+            toast('Fichier ajouté avec succès', 'success');
         } catch (err) {
-            toast('Erreur lors de l\'upload du logo', 'error');
+            console.error(err);
+            toast("Erreur lors de l'upload. Assurez-vous que le dossier '" + bucket + "' existe dans Supabase Storage.", 'error');
         } finally {
-            setUploadingLogo(false);
+            loadingSetter(false);
         }
     }
 
@@ -183,11 +186,17 @@ export default function CreateCardWizard() {
             <div className="max-w-wrapper">
                 {/* Header */}
                 <div style={{ marginBottom: '40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                        <button onClick={() => navigate('/admin')} className="btn-ghost" style={{ marginBottom: '16px' }}>
-                            ← Retour
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                        <button onClick={() => navigate('/admin')} className="btn-ghost" style={{ padding: '8px' }}>
+                            ←
                         </button>
-                        <h1 style={{ fontSize: '32px' }}>Nouvelle Carte NFC</h1>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <img src="/logo.png" alt="Logo" style={{ height: '40px' }} />
+                            <div>
+                                <h1 style={{ fontSize: '24px', margin: 0 }}>Nouvelle Carte NFC</h1>
+                                <p style={{ fontSize: '13px', color: 'var(--text-500)', margin: 0 }}>Assistant de création premium</p>
+                            </div>
+                        </div>
                     </div>
                     
                     <div style={{ display: 'flex', gap: '8px' }}>
@@ -204,13 +213,18 @@ export default function CreateCardWizard() {
                 </div>
 
                 {/* Content */}
-                <div style={{ display: 'grid', gridTemplateColumns: step === 1 ? '1fr' : '1fr 400px', gap: '40px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: step === 1 ? '1fr' : '1fr 400px', gap: '40px', alignItems: 'start' }}>
                     
                     {/* Main Form Area */}
-                    <div className="premium-card animate-fade-in" key={step}>
+                    <div className="premium-card animate-fade-in" key={step} style={{ minHeight: '500px' }}>
                         {step === 1 && (
-                            <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-                                <h2 style={{ marginBottom: '24px' }}>1. Informations du Client</h2>
+                            <div style={{ maxWidth: '600px', margin: '40px auto' }}>
+                                <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+                                    <div style={{ fontSize: '40px', marginBottom: '16px' }}>🏢</div>
+                                    <h2 style={{ fontSize: '28px', marginBottom: '8px' }}>Informations du Client</h2>
+                                    <p style={{ color: 'var(--text-500)' }}>Identifiez le client pour lequel vous créez cette carte.</p>
+                                </div>
+
                                 <div className="field">
                                     <label>Nom du client / Entreprise</label>
                                     <input type="text" placeholder="Ex: Jean Dupont ou Restaurant L'Oasis" value={clientInfo.clientName} onChange={e => setClientInfo({ ...clientInfo, clientName: e.target.value })} />
@@ -226,15 +240,15 @@ export default function CreateCardWizard() {
                                     </div>
                                 </div>
                                 <div className="field">
-                                    <label>Dossier</label>
+                                    <label>Dossier de rangement</label>
                                     <select value={selectedFolder} onChange={e => setSelectedFolder(e.target.value)}>
-                                        <option value="">Sélectionner un dossier</option>
+                                        <option value="">Racine (aucun dossier)</option>
                                         {folders.map(f => <option key={f.id} value={f.id}>{f.name}</option>)}
                                     </select>
                                 </div>
                                 <div style={{ marginTop: '40px', textAlign: 'right' }}>
-                                    <button className="btn-primary" onClick={() => setStep(2)} disabled={!clientInfo.clientName}>
-                                        Continuer →
+                                    <button className="btn-primary" onClick={() => setStep(2)} disabled={!clientInfo.clientName} style={{ padding: '16px 40px' }}>
+                                        Configurer le profil →
                                     </button>
                                 </div>
                             </div>
@@ -242,14 +256,20 @@ export default function CreateCardWizard() {
 
                         {step === 2 && (
                             <div>
-                                <h2 style={{ marginBottom: '24px' }}>2. Profil Digital</h2>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+                                    <h2 style={{ margin: 0 }}>Profil Digital</h2>
+                                    <span style={{ fontSize: '13px', background: 'var(--primary-light)', color: 'var(--primary)', padding: '4px 12px', borderRadius: '20px', fontWeight: '600' }}>Étape 2/3</span>
+                                </div>
+                                
                                 <ProfileForm
                                     form={publicProfile}
                                     onChange={setPublicProfile}
-                                    onUploadAvatar={(f) => {}} // Handle avatar upload
-                                    onUploadBanner={(f) => {}} // Handle banner upload
+                                    onUploadAvatar={(f) => uploadFile(f, 'avatars', (url) => setPublicProfile(p => ({...p, photo_url: url})), setUploadingAvatar)}
+                                    onUploadBanner={(f) => uploadFile(f, 'banners', (url) => setPublicProfile(p => ({...p, banner_url: url})), setUploadingBanner)}
+                                    uploadingAvatar={uploadingAvatar}
+                                    uploadingBanner={uploadingBanner}
                                 />
-                                <div style={{ marginTop: '40px', display: 'flex', justifyContent: 'space-between' }}>
+                                <div style={{ marginTop: '40px', display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border)', paddingTop: '24px' }}>
                                     <button className="btn-ghost" onClick={() => setStep(1)}>Précédent</button>
                                     <button className="btn-primary" onClick={() => setStep(3)}>Personnaliser le QR →</button>
                                 </div>
@@ -258,7 +278,10 @@ export default function CreateCardWizard() {
 
                         {step === 3 && (
                             <div>
-                                <h2 style={{ marginBottom: '24px' }}>3. Design du QR Code</h2>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+                                    <h2 style={{ margin: 0 }}>Design du QR Code</h2>
+                                    <span style={{ fontSize: '13px', background: 'var(--primary-light)', color: 'var(--primary)', padding: '4px 12px', borderRadius: '20px', fontWeight: '600' }}>Étape 3/3</span>
+                                </div>
                                 
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
                                     <div>
@@ -277,7 +300,8 @@ export default function CreateCardWizard() {
                                                             background: qrAppearance.dotsType === s.id ? 'var(--primary)' : 'white',
                                                             color: qrAppearance.dotsType === s.id ? 'white' : 'var(--text-700)',
                                                             cursor: 'pointer',
-                                                            fontSize: '13px'
+                                                            fontSize: '13px',
+                                                            transition: 'all 0.2s'
                                                         }}
                                                     >
                                                         {s.label}
@@ -286,8 +310,11 @@ export default function CreateCardWizard() {
                                             </div>
                                         </div>
                                         <div className="field">
-                                            <label>Couleur principale</label>
-                                            <input type="color" value={qrAppearance.dotsColor} onChange={e => setQrAppearance({...qrAppearance, dotsColor: e.target.value, cornersColor: e.target.value, cornersDotColor: e.target.value})} />
+                                            <label>Couleur du QR</label>
+                                            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                                                <input type="color" value={qrAppearance.dotsColor} onChange={e => setQrAppearance({...qrAppearance, dotsColor: e.target.value, cornersColor: e.target.value, cornersDotColor: e.target.value})} style={{ width: '40px', height: '40px', border: 'none', padding: 0, borderRadius: '8px' }} />
+                                                <input type="text" value={qrAppearance.dotsColor} onChange={e => setQrAppearance({...qrAppearance, dotsColor: e.target.value, cornersColor: e.target.value, cornersDotColor: e.target.value})} style={{ flex: 1, fontFamily: 'monospace' }} />
+                                            </div>
                                         </div>
                                     </div>
                                     
@@ -307,7 +334,8 @@ export default function CreateCardWizard() {
                                                             background: qrAppearance.cornersType === s.id ? 'var(--primary)' : 'white',
                                                             color: qrAppearance.cornersType === s.id ? 'white' : 'var(--text-700)',
                                                             cursor: 'pointer',
-                                                            fontSize: '13px'
+                                                            fontSize: '13px',
+                                                            transition: 'all 0.2s'
                                                         }}
                                                     >
                                                         {s.label}
@@ -316,15 +344,16 @@ export default function CreateCardWizard() {
                                             </div>
                                         </div>
                                         <div className="field">
-                                            <label>Logo central</label>
-                                            <input type="file" onChange={e => uploadLogo(e.target.files[0])} />
+                                            <label>Logo au centre {uploadingLogo && '⌛'}</label>
+                                            <input type="file" onChange={e => uploadFile(e.target.files[0], 'qr-logos', (url) => setQrAppearance(prev => ({ ...prev, logo_url: url })), setUploadingLogo)} />
+                                            <p style={{ fontSize: '11px', color: 'var(--text-500)', marginTop: '4px' }}>Utilisez un logo carré avec fond transparent pour un meilleur rendu.</p>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div style={{ marginTop: '40px', display: 'flex', justifyContent: 'space-between' }}>
+                                <div style={{ marginTop: '40px', display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border)', paddingTop: '24px' }}>
                                     <button className="btn-ghost" onClick={() => setStep(2)}>Précédent</button>
-                                    <button className="btn-primary" onClick={finalizeCreate} disabled={generating}>
+                                    <button className="btn-primary" onClick={finalizeCreate} disabled={generating} style={{ padding: '16px 40px' }}>
                                         {generating ? 'Création...' : 'Terminer & Télécharger ✓'}
                                     </button>
                                 </div>
@@ -333,25 +362,43 @@ export default function CreateCardWizard() {
                     </div>
 
                     {/* Preview Sidebar */}
-                    {step > 1 && (
-                        <div className="animate-fade-in">
-                            <div style={{ position: 'sticky', top: '40px' }}>
-                                <div className="premium-card" style={{ textAlign: 'center' }}>
-                                    <h3 style={{ marginBottom: '20px' }}>Aperçu Final</h3>
-                                    <div ref={qrRef} style={{ background: 'white', padding: '20px', borderRadius: '16px', display: 'inline-block', border: '1px solid var(--border)' }}></div>
-                                    <p style={{ marginTop: '16px', color: 'var(--text-500)', fontSize: '14px' }}>
-                                        Lien: <span style={{ color: 'var(--primary)', fontWeight: '600' }}>/u/{generatedCardId}</span>
-                                    </p>
-                                    <div style={{ marginTop: '24px', padding: '16px', background: 'var(--primary-light)', borderRadius: '12px', textAlign: 'left' }}>
-                                        <p style={{ fontSize: '13px', color: 'var(--primary)', fontWeight: '600' }}>Conseil NFC :</p>
-                                        <p style={{ fontSize: '12px', color: 'var(--text-700)' }}>Utilisez un contraste élevé pour une meilleure lecture sur les cartes physiques.</p>
+                    <div className="animate-fade-in" style={{ position: 'sticky', top: '40px' }}>
+                        {step === 2 ? (
+                            <div style={{ textAlign: 'center' }}>
+                                <p style={{ marginBottom: '12px', fontWeight: '600', color: 'var(--text-500)', fontSize: '14px' }}>APERÇU MOBILE</p>
+                                <PhonePreview>
+                                    {/* Mock profile data for preview */}
+                                    <div style={{ transform: 'scale(0.8)', transformOrigin: 'top center' }}>
+                                        <PublicProfile previewData={publicProfile} />
                                     </div>
+                                </PhonePreview>
+                            </div>
+                        ) : step === 3 ? (
+                            <div className="premium-card" style={{ textAlign: 'center' }}>
+                                <h3 style={{ marginBottom: '24px' }}>Aperçu du QR</h3>
+                                <div ref={qrRef} style={{ background: 'white', padding: '20px', borderRadius: '24px', display: 'inline-block', border: '1px solid var(--border)', boxShadow: 'var(--shadow-md)' }}></div>
+                                <div style={{ marginTop: '24px', textAlign: 'left', padding: '16px', background: 'var(--primary-light)', borderRadius: '12px' }}>
+                                    <p style={{ fontSize: '13px', color: 'var(--primary)', fontWeight: '700', marginBottom: '4px' }}>Format optimisé</p>
+                                    <p style={{ fontSize: '12px', color: 'var(--text-700)' }}>Le QR sera téléchargé en haute résolution (PNG) prêt pour l'impression sur vos cartes NFC.</p>
                                 </div>
                             </div>
-                        </div>
-                    )}
+                        ) : (
+                            <div className="premium-card" style={{ background: 'var(--primary)', color: 'white' }}>
+                                <h3 style={{ color: 'white', marginBottom: '16px' }}>Pourquoi un assistant ?</h3>
+                                <p style={{ fontSize: '14px', opacity: 0.9, lineHeight: '1.6' }}>
+                                    Cet outil vous permet de configurer entièrement l'expérience utilisateur avant même que le client ne reçoive sa carte.
+                                </p>
+                                <ul style={{ fontSize: '13px', marginTop: '16px', paddingLeft: '20px', opacity: 0.9 }}>
+                                    <li style={{ marginBottom: '8px' }}>Profil pré-rempli</li>
+                                    <li style={{ marginBottom: '8px' }}>QR Code personnalisé</li>
+                                    <li>Lien d'activation unique</li>
+                                </ul>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
     );
-}
+}
+
