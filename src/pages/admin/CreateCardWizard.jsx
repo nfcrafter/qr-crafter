@@ -41,6 +41,8 @@ export default function CreateCardWizard() {
     const [uploadingBanner, setUploadingBanner] = useState(false);
 
     const [clientInfo, setClientInfo] = useState({ clientName: '', city: '', country: 'Bénin' });
+    const [folders, setFolders] = useState([]);
+    const [selectedFolderId, setSelectedFolderId] = useState(null);
     const [typeData, setTypeData] = useState({});
     const [publicProfile, setPublicProfile] = useState({
         full_name: '', title: '', bio: '', photo_url: '', banner_url: '', theme_color: '#1A1265',
@@ -55,7 +57,13 @@ export default function CreateCardWizard() {
 
     useEffect(() => {
         generateUniqueCardId().then(id => setGeneratedCardId(id));
+        loadFolders();
     }, []);
+
+    async function loadFolders() {
+        const { data } = await supabase.from('folders').select('*').order('created_at');
+        setFolders(data || []);
+    }
 
     useEffect(() => {
         if (step >= 2 && qrRef.current && generatedCardId) {
@@ -117,13 +125,15 @@ export default function CreateCardWizard() {
     async function finalizeCreate() {
         setGenerating(true);
         try {
-            const typeLabel = QR_TYPES.find(t => t.id === selectedType)?.label || selectedType.toUpperCase();
-            let folderId = null;
-            const { data: existingFolders } = await supabase.from('folders').select('id').eq('name', typeLabel).limit(1);
-            if (existingFolders?.length > 0) folderId = existingFolders[0].id;
-            else {
-                const { data: newFolder } = await supabase.from('folders').insert({ name: typeLabel, color: qrAppearance.dotsColor }).select().single();
-                if (newFolder) folderId = newFolder.id;
+            let finalFolderId = selectedFolderId;
+            if (!finalFolderId) {
+                const typeLabel = QR_TYPES.find(t => t.id === selectedType)?.label || selectedType.toUpperCase();
+                const { data: existing } = await supabase.from('folders').select('id').eq('name', typeLabel).limit(1);
+                if (existing?.length > 0) finalFolderId = existing[0].id;
+                else {
+                    const { data: newF } = await supabase.from('folders').insert({ name: typeLabel, color: qrAppearance.dotsColor }).select().single();
+                    if (newF) finalFolderId = newF.id;
+                }
             }
 
             const { error } = await supabase.from('cards').insert({
@@ -133,13 +143,13 @@ export default function CreateCardWizard() {
                 activation_token: Math.random().toString(36).substring(2, 10).toUpperCase(),
                 city: clientInfo.city,
                 country: clientInfo.country,
-                folder_id: folderId,
+                folder_id: finalFolderId,
                 admin_profile: { ...publicProfile, qr_type: selectedType },
                 qr_appearance: qrAppearance,
                 type_data: { ...typeData, qr_type: selectedType }
             });
             if (error) throw error;
-            toast('Succès !', 'success');
+            toast('Code QR créé !', 'success');
             navigate('/admin');
         } catch (err) { toast('Erreur : ' + err.message, 'error'); } 
         finally { setGenerating(false); }
@@ -150,11 +160,11 @@ export default function CreateCardWizard() {
             <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
                 <header style={{ marginBottom: '40px', display: 'flex', alignItems: 'center', gap: '20px' }}>
                     <button onClick={() => step === 0 ? navigate('/admin') : setStep(step - 1)} style={{ padding: '10px 20px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '800', cursor: 'pointer', color: '#1A1265' }}>← Retour</button>
-                    <h1 style={{ fontSize: '22px', fontWeight: '900', color: '#1A1265' }}>Générateur de Code QR</h1>
+                    <h1 style={{ fontSize: '22px', fontWeight: '900', color: '#1A1265' }}>Nouveau Projet QR</h1>
                 </header>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '40px' }}>
-                    <div style={{ background: 'white', padding: '40px', borderRadius: '24px', border: '1px solid #E2E8F0' }}>
+                    <div style={{ background: 'white', padding: '40px', borderRadius: '24px', border: '1px solid #E2E8F0', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
                         {step === 0 && (
                             <div>
                                 <h2 style={{ fontSize: '18px', marginBottom: '24px', fontWeight: '900' }}>1. Type de contenu</h2>
@@ -171,8 +181,17 @@ export default function CreateCardWizard() {
 
                         {step === 1 && (
                             <div>
-                                <h2 style={{ fontSize: '18px', marginBottom: '24px', fontWeight: '900' }}>2. Infos Client</h2>
-                                <div className="field"><label>Nom Client</label><input type="text" value={clientInfo.clientName} onChange={e => setClientInfo({...clientInfo, clientName: e.target.value})} /></div>
+                                <h2 style={{ fontSize: '18px', marginBottom: '24px', fontWeight: '900' }}>2. Infos & Dossier</h2>
+                                <div className="field"><label>Nom du Client / Projet</label><input type="text" value={clientInfo.clientName} onChange={e => setClientInfo({...clientInfo, clientName: e.target.value})} /></div>
+                                <div className="field" style={{ marginTop: '20px' }}>
+                                    <label>Choisir un dossier (Optionnel)</label>
+                                    <select value={selectedFolderId || ''} onChange={e => setSelectedFolderId(e.target.value || null)} style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '600' }}>
+                                        <option value="">Auto-catégorisation par type</option>
+                                        {folders.map(f => (
+                                            <option key={f.id} value={f.id}>{f.parent_id ? `↳ ${f.name}` : f.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
                                 <div style={{ marginTop: '32px', display: 'flex', gap: '12px' }}>
                                     <button onClick={() => setStep(0)} style={{ flex: 1, padding: '16px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '800', cursor: 'pointer' }}>Précédent</button>
                                     <button onClick={() => setStep(2)} style={{ flex: 2, padding: '16px', borderRadius: '12px', border: 'none', background: '#1A1265', color: 'white', fontWeight: '800', cursor: 'pointer' }}>Suivant</button>
@@ -186,25 +205,25 @@ export default function CreateCardWizard() {
                                 {selectedType === 'url' ? (
                                     <ProfileForm form={publicProfile} onChange={setPublicProfile} onUploadAvatar={(f) => uploadFile(f, 'avatars', (url) => setPublicProfile(p => ({...p, photo_url: url})), setUploadingAvatar)} onUploadBanner={(f) => uploadFile(f, 'banners', (url) => setPublicProfile(p => ({...p, banner_url: url})), setUploadingBanner)} uploadingAvatar={uploadingAvatar} uploadingBanner={uploadingBanner} />
                                 ) : (
-                                    <div className="field"><label>URL / Donnée</label><input type="text" onChange={e => setTypeData({...typeData, url: e.target.value})} /></div>
+                                    <div className="field"><label>URL / Contenu</label><input type="text" onChange={e => setTypeData({...typeData, url: e.target.value})} /></div>
                                 )}
                                 <div style={{ marginTop: '32px', display: 'flex', gap: '12px' }}>
                                     <button onClick={() => setStep(1)} style={{ flex: 1, padding: '16px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '800', cursor: 'pointer' }}>Précédent</button>
-                                    <button onClick={() => setStep(3)} style={{ flex: 2, padding: '16px', borderRadius: '12px', border: 'none', background: '#1A1265', color: 'white', fontWeight: '800', cursor: 'pointer' }}>Personnalisation →</button>
+                                    <button onClick={() => setStep(3)} style={{ flex: 2, padding: '16px', borderRadius: '12px', border: 'none', background: '#1A1265', color: 'white', fontWeight: '800', cursor: 'pointer' }}>Design →</button>
                                 </div>
                             </div>
                         )}
 
                         {step === 3 && (
                             <div>
-                                <h2 style={{ fontSize: '18px', marginBottom: '24px', fontWeight: '900' }}>4. Design Final</h2>
+                                <h2 style={{ fontSize: '18px', marginBottom: '24px', fontWeight: '900' }}>4. Style Final</h2>
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                                     <div className="field"><label>Couleur</label><input type="color" value={qrAppearance.dotsColor} onChange={e => setQrAppearance({...qrAppearance, dotsColor: e.target.value})} style={{ height: '54px' }} /></div>
                                     <div className="field"><label>Logo</label><input type="file" onChange={e => uploadFile(e.target.files[0], 'qr-logos', (url) => setQrAppearance({...qrAppearance, logo_url: url}), setUploadingLogo)} /></div>
                                 </div>
                                 <div style={{ marginTop: '32px', display: 'flex', gap: '12px' }}>
                                     <button onClick={() => setStep(2)} style={{ flex: 1, padding: '16px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '800', cursor: 'pointer' }}>Précédent</button>
-                                    <button onClick={finalizeCreate} disabled={generating} style={{ flex: 2, padding: '16px', borderRadius: '12px', border: 'none', background: '#1A1265', color: 'white', fontWeight: '800', cursor: 'pointer' }}>{generating ? 'Enregistrement...' : 'Créer mon code QR ✓'}</button>
+                                    <button onClick={finalizeCreate} disabled={generating} style={{ flex: 2, padding: '16px', borderRadius: '12px', border: 'none', background: '#1A1265', color: 'white', fontWeight: '800', cursor: 'pointer' }}>{generating ? 'Création...' : 'Valider le projet ✓'}</button>
                                 </div>
                             </div>
                         )}
@@ -215,9 +234,9 @@ export default function CreateCardWizard() {
                             <div ref={qrRef} style={{ background: 'white', padding: '20px', borderRadius: '20px', border: '1px solid #F1F5F9', display: 'inline-block' }}>
                                 {step < 2 && <div style={{ width: '280px', height: '280px', border: '2px dashed #E2E8F0', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94A3B8' }}>Aperçu du QR</div>}
                             </div>
-                            <div style={{ marginTop: '24px', textAlign: 'left', background: '#F8FAFC', padding: '20px', borderRadius: '16px' }}>
-                                <div style={{ fontWeight: '900', color: '#1A1265' }}>PROJET : {clientInfo.clientName || 'Nouveau'}</div>
-                                <div style={{ fontSize: '13px', color: '#64748B', marginTop: '4px' }}>TYPE : {selectedType.toUpperCase()}</div>
+                            <div style={{ marginTop: '24px', textAlign: 'left', background: '#F8FAFC', padding: '20px', borderRadius: '16px', border: '1px solid #F1F5F9' }}>
+                                <div style={{ fontWeight: '900', color: '#1A1265' }}>{clientInfo.clientName || 'Sans titre'}</div>
+                                <div style={{ fontSize: '13px', color: '#64748B', marginTop: '4px' }}>Dossier : {selectedFolderId ? folders.find(f => f.id === selectedFolderId)?.name : 'Auto'}</div>
                             </div>
                         </div>
                     </div>

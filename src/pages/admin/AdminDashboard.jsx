@@ -47,8 +47,7 @@ export default function AdminDashboard() {
     }
 
     async function loadFolders() {
-        const { data, error } = await supabase.from('folders').select('*').order('created_at');
-        if (error) console.error("Folders error:", error);
+        const { data } = await supabase.from('folders').select('*').order('created_at');
         setFolders(data || []);
     }
 
@@ -78,21 +77,15 @@ export default function AdminDashboard() {
     async function handleCreateFolder(isSub) {
         const name = document.getElementById('folder-input-id')?.value || folderNameInput;
         if (!name) return toast('Le nom est requis', 'error');
-        
         try {
             const payload = { name, color: isSub ? '#6366F1' : '#1A1265' };
-            // Note: If this fails, it's likely because 'parent_id' column doesn't exist in the DB yet.
             if (isSub && filterFolder) payload.parent_id = filterFolder;
-
             const { error } = await supabase.from('folders').insert(payload);
-            if (error) {
-                console.error("Insert error:", error);
-                throw error;
-            }
+            if (error) throw error;
             toast(isSub ? 'Sous-dossier créé' : 'Dossier créé', 'success');
             loadFolders();
         } catch (err) {
-            toast('Erreur lors de la création : ' + (err.message || 'Problème de base de données'), 'error');
+            toast('Erreur : Assurez-vous d\'avoir ajouté la colonne parent_id via SQL.', 'error');
         }
     }
 
@@ -100,16 +93,16 @@ export default function AdminDashboard() {
         if (e) e.stopPropagation();
         setModalConfig({
             isOpen: true,
-            title: 'Attention !',
+            title: 'Action critique',
             children: (
                 <div>
-                    <p style={{ marginBottom: '12px' }}>Voulez-vous vraiment supprimer le dossier <strong style={{ color: '#1A1265' }}>"{name}"</strong> ?</p>
-                    <p style={{ color: '#EF4444', fontWeight: '700' }}>Cela supprimera aussi tous ses sous-dossiers. Cette action est irréversible.</p>
+                    <p style={{ marginBottom: '12px' }}>Voulez-vous supprimer le dossier <strong style={{ color: '#1A1265' }}>"{name}"</strong> ?</p>
+                    <p style={{ color: '#EF4444', fontWeight: '700', fontSize: '13px' }}>⚠️ Tous les sous-dossiers seront aussi supprimés.</p>
                 </div>
             ),
             onConfirm: () => handleDeleteFolder(id),
             type: 'warning',
-            confirmText: 'Supprimer'
+            confirmText: 'Confirmer la suppression'
         });
     }
 
@@ -122,6 +115,9 @@ export default function AdminDashboard() {
             if (filterFolder === id) setFilterFolder('');
         }
     }
+
+    const currentFolder = folders.find(f => f.id === filterFolder);
+    const isSubFolder = currentFolder?.parent_id != null;
 
     const filtered = cards.filter(c => {
         const matchesSearch = !search || c.card_name?.toLowerCase().includes(search.toLowerCase()) || c.card_id?.toLowerCase().includes(search.toLowerCase());
@@ -149,20 +145,20 @@ export default function AdminDashboard() {
                 <nav style={{ flex: 1, overflowY: 'auto' }}>
                     <button onClick={() => setFilterFolder('')} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: !filterFolder ? '#1A1265' : 'transparent', color: !filterFolder ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>📊 Dashboard</button>
                     
-                    <div style={{ margin: '12px 16px', fontSize: '11px', fontWeight: '800', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '1px' }}>Dossiers</div>
+                    <div style={{ margin: '12px 16px', fontSize: '11px', fontWeight: '800', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '1px' }}>Mes Dossiers</div>
                     
                     {folders.filter(f => !f.parent_id).map(f => (
                         <div key={f.id} style={{ marginBottom: '6px' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                <button onClick={() => setFilterFolder(f.id)} style={{ flex: 1, padding: '10px 16px', borderRadius: '12px', border: 'none', background: filterFolder === f.id ? '#F1F5F9' : 'transparent', color: filterFolder === f.id ? '#1A1265' : '#64748B', fontWeight: '600', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <button onClick={() => setFilterFolder(f.id)} style={{ flex: 1, padding: '10px 16px', borderRadius: '12px', border: 'none', background: filterFolder === f.id ? '#F1F5F9' : 'transparent', color: filterFolder === f.id ? '#1A1265' : '#475569', fontWeight: '600', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}>
                                     <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: f.color }}></span> {f.name}
                                 </button>
-                                <button onClick={(e) => openDeleteFolderModal(f.id, f.name, e)} style={{ padding: '8px', border: 'none', background: 'transparent', cursor: 'pointer', opacity: 0.2 }}>🗑️</button>
+                                <button onClick={(e) => openDeleteFolderModal(f.id, f.name, e)} style={{ padding: '8px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#94A3B8' }} className="trash-btn">🗑️</button>
                             </div>
                             {folders.filter(sub => sub.parent_id === f.id).map(sub => (
                                 <div key={sub.id} style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: '24px' }}>
-                                    <button onClick={() => setFilterFolder(sub.id)} style={{ flex: 1, padding: '8px 16px', borderRadius: '10px', border: 'none', background: filterFolder === sub.id ? '#F1F5F9' : 'transparent', color: filterFolder === sub.id ? '#1A1265' : '#94A3B8', fontWeight: '500', textAlign: 'left', cursor: 'pointer', fontSize: '13px' }}>↳ {sub.name}</button>
-                                    <button onClick={(e) => openDeleteFolderModal(sub.id, sub.name, e)} style={{ padding: '6px', border: 'none', background: 'transparent', cursor: 'pointer', opacity: 0.1 }}>🗑️</button>
+                                    <button onClick={() => setFilterFolder(sub.id)} style={{ flex: 1, padding: '8px 16px', borderRadius: '10px', border: 'none', background: filterFolder === sub.id ? '#F1F5F9' : 'transparent', color: filterFolder === sub.id ? '#1A1265' : '#475569', fontWeight: '600', textAlign: 'left', cursor: 'pointer', fontSize: '13px' }}>↳ {sub.name}</button>
+                                    <button onClick={(e) => openDeleteFolderModal(sub.id, sub.name, e)} style={{ padding: '6px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#CBD5E1' }} className="trash-btn-sub">🗑️</button>
                                 </div>
                             ))}
                         </div>
@@ -179,12 +175,16 @@ export default function AdminDashboard() {
                 <div style={{ padding: '40px 40px 20px', background: 'rgba(248, 250, 252, 0.8)', backdropFilter: 'blur(10px)', borderBottom: '1px solid #E2E8F0', zIndex: 50 }}>
                     <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
                         <div>
-                            <h1 style={{ fontSize: '26px', fontWeight: '900', color: '#1A1265' }}>{filterFolder ? folders.find(f => f.id === filterFolder)?.name : 'Tableau de bord'}</h1>
-                            <p style={{ color: '#64748B' }}>{filterFolder ? 'Contenu du dossier' : 'Gérez l\'ensemble de vos projets QR.'}</p>
+                            <h1 style={{ fontSize: '26px', fontWeight: '900', color: '#1A1265' }}>
+                                {filterFolder ? currentFolder?.name : 'Tableau de bord'}
+                            </h1>
+                            <p style={{ color: '#64748B' }}>
+                                {filterFolder ? (isSubFolder ? 'Contenu de ce sous-dossier' : 'Contenu de ce dossier') : 'Gérez l\'ensemble de vos projets QR.'}
+                            </p>
                         </div>
                         <div style={{ display: 'flex', gap: '12px' }}>
-                            {filterFolder && (
-                                <button onClick={() => openCreateFolderModal(true)} style={{ padding: '14px 24px', borderRadius: '14px', background: 'white', color: '#6366F1', border: '1px solid #6366F1', fontWeight: '700', cursor: 'pointer' }} className="animate-fade-in">+ Créer un sous-dossier</button>
+                            {filterFolder && !isSubFolder && (
+                                <button onClick={() => openCreateFolderModal(true)} style={{ padding: '14px 24px', borderRadius: '14px', background: 'white', color: '#6366F1', border: '1px solid #6366F1', fontWeight: '700', cursor: 'pointer' }}>+ Créer un sous-dossier</button>
                             )}
                             <button onClick={() => navigate('/admin/create')} className="btn-primary" style={{ padding: '14px 28px', borderRadius: '14px' }}>+ Nouveau QR</button>
                         </div>
@@ -193,7 +193,7 @@ export default function AdminDashboard() {
                         <div style={{ position: 'relative', flex: 1 }}><span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', opacity: 0.3 }}>🔍</span><input type="text" placeholder="Rechercher..." value={search} onChange={e => setSearch(e.target.value)} style={{ width: '100%', padding: '12px 12px 12px 40px', borderRadius: '12px', border: '1px solid #E2E8F0', background: '#F8FAFC' }} /></div>
                         <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} style={{ padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '600' }}><option value="all">Statut</option><option value="active">Active</option><option value="pending">En attente</option></select>
                         <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)} style={{ padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '600' }}><option value="all">Type</option><option value="url">URL</option><option value="wifi">WiFi</option></select>
-                        <select value={sortBy} onChange={e => setSortBy(e.target.value)} style={{ padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '600' }}><option value="newest">Plus récent</option><option value="scanned">Plus scanné</option></select>
+                        <select value={sortBy} onChange={e => setSortBy(e.target.value)} style={{ padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '600' }}><option value="newest">Récent</option><option value="scanned">Scans</option></select>
                     </div>
                 </div>
 
@@ -206,16 +206,12 @@ export default function AdminDashboard() {
                 </div>
             </main>
 
-            <Modal 
-                isOpen={modalConfig.isOpen} 
-                title={modalConfig.title} 
-                onClose={() => setModalConfig({ ...modalConfig, isOpen: false })} 
-                onConfirm={modalConfig.onConfirm}
-                confirmText={modalConfig.confirmText}
-                type={modalConfig.type}
-            >
-                {modalConfig.children}
-            </Modal>
+            <Modal isOpen={modalConfig.isOpen} title={modalConfig.title} onClose={() => setModalConfig({ ...modalConfig, isOpen: false })} onConfirm={modalConfig.onConfirm} confirmText={modalConfig.confirmText} type={modalConfig.type}>{modalConfig.children}</Modal>
+            <style>{`
+                .trash-btn:hover { color: #EF4444 !important; opacity: 1 !important; transform: scale(1.1); }
+                .trash-btn-sub:hover { color: #EF4444 !important; opacity: 1 !important; transform: scale(1.1); }
+                .trash-btn, .trash-btn-sub { transition: all 0.2s; }
+            `}</style>
         </div>
     );
 }
