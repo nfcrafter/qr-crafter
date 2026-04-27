@@ -1,3 +1,4 @@
+// src/App.jsx
 import { useState, useEffect } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { supabase } from './lib/supabase.js'
@@ -41,22 +42,25 @@ function ProtectedClient({ session, children }) {
 export default function App() {
     const [session, setSession] = useState(undefined)
     const [isAdmin, setIsAdmin] = useState(false)
+    const ADMIN_EMAIL = 'nfcrafter@gmail.com'
 
     useEffect(() => {
         supabase.auth.getSession().then(({ data: { session } }) => {
-            setSession(session ?? null)
-            if (session) checkAdmin(session.user.email)
+            handleSession(session);
         })
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            setSession(session ?? null)
-            if (session) checkAdmin(session.user.email)
+            handleSession(session);
         })
         return () => subscription.unsubscribe()
     }, [])
 
-    function checkAdmin(email) {
-        const ADMIN_EMAIL = 'nfcrafter@gmail.com'
-        setIsAdmin(email === ADMIN_EMAIL)
+    function handleSession(session) {
+        setSession(session ?? null)
+        if (session) {
+            setIsAdmin(session.user.email === ADMIN_EMAIL)
+        } else {
+            setIsAdmin(false)
+        }
     }
 
     return (
@@ -64,7 +68,11 @@ export default function App() {
             <Routes>
                 {/* Public Routes */}
                 <Route path="/" element={<LandingPage />} />
-                <Route path="/login" element={session ? <Navigate to="/" replace /> : <Login />} />
+                <Route path="/login" element={
+                    session ? (
+                        isAdmin ? <Navigate to="/admin" replace /> : <Navigate to="/dashboard" replace />
+                    ) : <Login />
+                } />
                 <Route path="/register" element={<Register />} />
                 <Route path="/u/:cardId" element={<PublicProfile />} />
                 <Route path="/activate" element={<Activate />} />
@@ -99,4 +107,4 @@ export default function App() {
             <WhatsAppSupport />
         </>
     )
-}
+}
