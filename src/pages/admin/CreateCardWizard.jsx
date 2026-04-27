@@ -155,18 +155,16 @@ export default function CreateCardWizard() {
         </>
     );
 
-    const AppearanceSection = () => (
-        {renderAccordion('theme', '🎨', 'Apparence', 'Choisissez un thème de couleur.', (
-            <div style={{ marginTop: '20px' }}>
-                <div style={{ display: 'flex', gap: '12px', marginBottom: '20px' }}>
-                    {['#1A1265', '#22C55E', '#EF4444', '#F59E0B', '#6366F1'].map(c => (
-                        <div key={c} onClick={() => setTypeData({...typeData, primaryColor: c})} style={{ width: '32px', height: '32px', borderRadius: '8px', background: c, cursor: 'pointer', border: typeData.primaryColor === c ? '3px solid white' : 'none', boxShadow: '0 0 0 1px #E2E8F0' }}></div>
-                    ))}
-                </div>
-                <div className="field"><label>Couleur personnalisée</label><input type="color" value={typeData.primaryColor} onChange={e => setTypeData({...typeData, primaryColor: e.target.value})} /></div>
+    const AppearanceSection = () => renderAccordion('theme', '🎨', 'Apparence', 'Choisissez un thème de couleur.', (
+        <div style={{ marginTop: '20px' }}>
+            <div style={{ display: 'flex', gap: '12px', marginBottom: '20px' }}>
+                {['#1A1265', '#22C55E', '#EF4444', '#F59E0B', '#6366F1'].map(c => (
+                    <div key={c} onClick={() => setTypeData({...typeData, primaryColor: c})} style={{ width: '32px', height: '32px', borderRadius: '8px', background: c, cursor: 'pointer', border: typeData.primaryColor === c ? '3px solid white' : 'none', boxShadow: '0 0 0 1px #E2E8F0' }}></div>
+                ))}
             </div>
-        ))}
-    );
+            <div className="field"><label>Couleur personnalisée</label><input type="color" value={typeData.primaryColor} onChange={e => setTypeData({...typeData, primaryColor: e.target.value})} /></div>
+        </div>
+    ));
 
     return (
         <div style={{ minHeight: '100vh', background: '#F8FAFC', padding: '40px 20px' }}>
