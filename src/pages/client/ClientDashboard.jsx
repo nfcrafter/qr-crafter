@@ -90,7 +90,7 @@ export default function ClientDashboard() {
             toast('Fichier ajouté avec succès', 'success');
         } catch (err) {
             console.error(err);
-            toast("Erreur lors de l'upload. Assurez-vous que le dossier '" + bucket + "' existe dans Supabase Storage.", 'error');
+            toast("Erreur d'upload. Vérifiez le bucket '" + bucket + "'.", 'error');
         } finally {
             loadingSetter(false);
         }
@@ -112,34 +112,34 @@ export default function ClientDashboard() {
     const publicUrl = selectedCard ? `${window.location.origin}/u/${selectedCard.card_id}` : '';
 
     return (
-        <div style={{ minHeight: '100vh', background: '#F8FAFC' }}>
-            {/* Nav */}
-            <header style={{ background: 'white', borderBottom: '1px solid var(--border)', padding: '0 24px', position: 'sticky', top: 0, zIndex: 100 }}>
-                <div style={{ maxWidth: '1200px', margin: '0 auto', height: '72px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <img src="/logo.png" alt="Logo" style={{ height: '32px' }} />
-                        <span style={{ fontWeight: '800', fontSize: '20px', letterSpacing: '-0.5px', color: 'var(--primary)' }}>QR CRAFTER</span>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                        <div style={{ textAlign: 'right', display: 'none', md: 'block' }}>
-                            <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-900)' }}>{user?.email}</div>
-                            <div style={{ fontSize: '11px', color: 'var(--text-500)' }}>Espace Membre</div>
+        <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #F8FAFC 0%, #EEF2FF 100%)' }}>
+            {/* Header with Glassmorphism */}
+            <header style={{ background: 'rgba(255, 255, 255, 0.8)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255, 255, 255, 0.3)', padding: '0 24px', position: 'sticky', top: 0, zIndex: 100 }}>
+                <div style={{ maxWidth: '1400px', margin: '0 auto', height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px', cursor: 'pointer' }} onClick={() => navigate('/')}>
+                        <div style={{ background: 'var(--primary)', padding: '8px', borderRadius: '12px' }}>
+                            <img src="/logo.png" alt="Logo" style={{ height: '24px', filter: 'brightness(0) invert(1)' }} />
                         </div>
-                        <button onClick={logout} className="btn-ghost" style={{ padding: '8px 16px' }}>Déconnexion</button>
+                        <span style={{ fontWeight: '900', fontSize: '22px', letterSpacing: '-1px', color: 'var(--primary)' }}>QR CRAFTER</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+                        <div style={{ textAlign: 'right' }}>
+                            <div style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text-900)' }}>Espace Client</div>
+                            <div style={{ fontSize: '12px', color: 'var(--text-500)', fontWeight: '600' }}>{user?.email}</div>
+                        </div>
+                        <button onClick={logout} className="btn-ghost" style={{ padding: '10px 20px', borderRadius: '12px', color: '#EF4444', borderColor: '#FEE2E2', background: '#FEF2F2' }}>Déconnexion</button>
                     </div>
                 </div>
             </header>
 
-            <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 20px' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: '40px', alignItems: 'start' }}>
+            <main style={{ maxWidth: '1400px', margin: '0 auto', padding: '48px 24px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '48px', alignItems: 'start' }}>
                     
-                    {/* Main Settings */}
-                    <div className="premium-card" style={{ padding: '32px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-                            <div>
-                                <h2 style={{ margin: 0, fontSize: '24px' }}>Modifier mon profil</h2>
-                                <p style={{ color: 'var(--text-500)', fontSize: '14px' }}>Personnalisez votre page de profil numérique.</p>
-                            </div>
+                    {/* Settings Form */}
+                    <div className="premium-card" style={{ padding: '40px', animation: 'fadeInLeft 0.8s ease-out', borderRadius: '32px' }}>
+                        <div style={{ marginBottom: '40px' }}>
+                            <h1 style={{ margin: 0, fontSize: '32px', fontWeight: '900', letterSpacing: '-1.5px', color: 'var(--primary)' }}>Personnaliser mon Profil</h1>
+                            <p style={{ color: 'var(--text-500)', fontSize: '16px', fontWeight: '500', marginTop: '8px' }}>Mettez à jour vos informations en temps réel.</p>
                         </div>
 
                         <ProfileForm
@@ -151,22 +151,22 @@ export default function ClientDashboard() {
                             uploadingBanner={uploadingBanner}
                         />
 
-                        <div style={{ marginTop: '40px', paddingTop: '32px', borderTop: '1px solid var(--border)' }}>
+                        <div style={{ marginTop: '48px', paddingTop: '40px', borderTop: '1px solid #F1F5F9' }}>
                             <button 
                                 onClick={savePublicProfile} 
                                 disabled={saving} 
                                 className="btn-primary" 
-                                style={{ width: '100%', justifyContent: 'center', padding: '16px' }}
+                                style={{ width: '100%', padding: '20px', borderRadius: '20px', fontSize: '18px', fontWeight: '800', boxShadow: '0 15px 30px rgba(26, 18, 101, 0.2)' }}
                             >
-                                {saving ? 'Sauvegarde en cours...' : '💾 Enregistrer les modifications'}
+                                {saving ? 'Enregistrement...' : 'Sauvegarder les modifications ✨'}
                             </button>
                         </div>
                     </div>
 
-                    {/* Sidebar Info & Preview */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+                    {/* Preview & Card Info */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '40px', animation: 'fadeInRight 0.8s ease-out' }}>
                         <div style={{ textAlign: 'center' }}>
-                            <p style={{ marginBottom: '12px', fontWeight: '600', color: 'var(--text-500)', fontSize: '12px', letterSpacing: '1px' }}>APERÇU EN DIRECT</p>
+                            <p style={{ marginBottom: '20px', fontWeight: '800', color: 'var(--primary)', fontSize: '12px', letterSpacing: '2px', textTransform: 'uppercase' }}>Aperçu Mobile Live</p>
                             <PhonePreview>
                                 <div style={{ transform: 'scale(0.85)', transformOrigin: 'top center' }}>
                                     <PublicProfile previewData={publicProfile} />
@@ -174,17 +174,17 @@ export default function ClientDashboard() {
                             </PhonePreview>
                         </div>
 
-                        <div className="premium-card" style={{ padding: '24px' }}>
-                            <h3 style={{ fontSize: '16px', marginBottom: '16px' }}>Ma Carte Actuelle</h3>
-                            <div style={{ background: '#F8FAFC', borderRadius: '12px', padding: '16px', marginBottom: '20px', border: '1px solid var(--border)' }}>
-                                <div style={{ fontSize: '10px', color: 'var(--text-400)', fontWeight: '700', textTransform: 'uppercase', marginBottom: '4px', letterSpacing: '1px' }}>ID CARTE UNIQUE</div>
-                                <code style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--primary)' }}>{selectedCard?.card_id}</code>
+                        <div className="premium-card" style={{ padding: '32px', borderRadius: '28px', background: 'linear-gradient(135deg, #1A1265 0%, #4338CA 100%)', color: 'white', border: 'none' }}>
+                            <h3 style={{ fontSize: '18px', marginBottom: '20px', color: 'white', fontWeight: '800' }}>Votre Carte Digitale</h3>
+                            <div style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', borderRadius: '20px', padding: '24px', marginBottom: '24px', border: '1px solid rgba(255,255,255,0.2)' }}>
+                                <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', fontWeight: '800', textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '1px' }}>ID CARTE</div>
+                                <code style={{ fontSize: '20px', fontWeight: '900', color: 'var(--accent)' }}>{selectedCard?.card_id}</code>
                             </div>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                                 <button 
                                     onClick={() => window.open(publicUrl, '_blank')} 
-                                    className="btn-secondary" 
-                                    style={{ width: '100%', justifyContent: 'center' }}
+                                    className="btn-primary" 
+                                    style={{ width: '100%', background: 'white', color: 'var(--primary)', padding: '16px', borderRadius: '16px' }}
                                 >
                                     🔗 Voir ma page publique
                                 </button>
@@ -193,8 +193,7 @@ export default function ClientDashboard() {
                                         navigator.clipboard.writeText(publicUrl);
                                         toast('Lien copié !', 'success');
                                     }} 
-                                    className="btn-ghost" 
-                                    style={{ width: '100%', justifyContent: 'center', fontSize: '13px' }}
+                                    style={{ width: '100%', background: 'rgba(255,255,255,0.1)', color: 'white', border: '1px solid rgba(255,255,255,0.3)', padding: '14px', borderRadius: '16px', cursor: 'pointer', fontWeight: '700' }}
                                 >
                                     📋 Copier le lien
                                 </button>
@@ -202,23 +201,25 @@ export default function ClientDashboard() {
                         </div>
 
                         {userCards.length > 1 && (
-                            <div className="premium-card" style={{ padding: '24px' }}>
-                                <h3 style={{ fontSize: '16px', marginBottom: '16px' }}>Mes autres cartes</h3>
-                                {userCards.map(c => (
-                                    <button 
-                                        key={c.card_id}
-                                        onClick={() => setSelectedCard(c)}
-                                        style={{ 
-                                            width: '100%', padding: '12px', borderRadius: '12px', textAlign: 'left', 
-                                            border: selectedCard?.card_id === c.card_id ? '2px solid var(--primary)' : '1px solid var(--border)',
-                                            background: selectedCard?.card_id === c.card_id ? 'var(--primary-light)' : 'white',
-                                            marginBottom: '8px', cursor: 'pointer', transition: 'all 0.2s'
-                                        }}
-                                    >
-                                        <div style={{ fontWeight: '700', fontSize: '14px', color: selectedCard?.card_id === c.card_id ? 'var(--primary)' : 'var(--text-900)' }}>{c.profile_name || c.card_id}</div>
-                                        <div style={{ fontSize: '11px', color: 'var(--text-400)' }}>{c.card_id}</div>
-                                    </button>
-                                ))}
+                            <div className="premium-card" style={{ padding: '32px', borderRadius: '28px' }}>
+                                <h3 style={{ fontSize: '18px', marginBottom: '20px', fontWeight: '800' }}>Mes Cartes</h3>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                    {userCards.map(c => (
+                                        <button 
+                                            key={c.card_id}
+                                            onClick={() => setSelectedCard(c)}
+                                            style={{ 
+                                                width: '100%', padding: '16px', borderRadius: '16px', textAlign: 'left', 
+                                                border: selectedCard?.card_id === c.card_id ? '2px solid var(--primary)' : '1px solid #F1F5F9',
+                                                background: selectedCard?.card_id === c.card_id ? 'var(--primary-light)' : 'white',
+                                                cursor: 'pointer', transition: 'all 0.2s'
+                                            }}
+                                        >
+                                            <div style={{ fontWeight: '800', fontSize: '15px', color: selectedCard?.card_id === c.card_id ? 'var(--primary)' : 'var(--text-900)' }}>{c.profile_name || 'Ma Carte'}</div>
+                                            <div style={{ fontSize: '12px', color: 'var(--text-400)', fontWeight: '600' }}>{c.card_id}</div>
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         )}
                     </div>
@@ -228,4 +229,3 @@ export default function ClientDashboard() {
         </div>
     );
 }
-
