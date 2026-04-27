@@ -10,6 +10,24 @@ import ImageUpload from '../../components/ImageUpload.jsx';
 
 const DOT_STYLES = ['rounded', 'dots', 'classy', 'classy-rounded', 'square', 'extra-rounded'];
 
+function ColorField({ label, value, onChange }) {
+    return (
+        <div className="field">
+            <label>{label}</label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'white', border: '1px solid #E2E8F0', borderRadius: 12, padding: '6px 14px' }}>
+                <input type="color" value={value || '#000000'} onChange={e => onChange(e.target.value)}
+                    style={{ width: 36, height: 36, padding: 0, border: 'none', borderRadius: 8, cursor: 'pointer', background: 'none' }} />
+                <div style={{ width: 1, height: 28, background: '#E2E8F0' }} />
+                <input type="text" value={value || ''}
+                    onChange={e => { if (/^#[0-9A-Fa-f]{0,6}$/.test(e.target.value)) onChange(e.target.value); }}
+                    style={{ border: 'none', outline: 'none', fontFamily: 'monospace', fontWeight: 700, fontSize: 15, color: '#1A1265', width: 90, background: 'transparent' }}
+                    maxLength={7} placeholder="#000000" />
+                <div style={{ width: 24, height: 24, borderRadius: 6, background: value || '#000', border: '1px solid #E2E8F0', flexShrink: 0 }} />
+            </div>
+        </div>
+    );
+}
+
 export default function CardSettings() {
     const { cardId } = useParams();
     const navigate = useNavigate();
@@ -270,11 +288,9 @@ export default function CardSettings() {
                                             {DOT_STYLES.map(s => <div key={s} onClick={() => setQrStyle({ ...qrStyle, dotsType: s })} style={{ padding: '10px 6px', border: qrStyle.dotsType === s ? '2px solid #EF4444' : '1px solid #E2E8F0', borderRadius: 12, textAlign: 'center', cursor: 'pointer', fontSize: 11, fontWeight: 700, color: qrStyle.dotsType === s ? '#EF4444' : '#64748B', background: qrStyle.dotsType === s ? '#FFF5F5' : 'white' }}>{s}</div>)}
                                         </div>
                                     </div>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                                        <div className="field"><label>Couleur des points</label><input type="color" value={qrStyle.dotsColor} onChange={e => setQrStyle({ ...qrStyle, dotsColor: e.target.value })} /></div>
-                                        <div className="field"><label>Couleur des coins</label><input type="color" value={qrStyle.cornersColor} onChange={e => setQrStyle({ ...qrStyle, cornersColor: e.target.value })} /></div>
-                                        <div className="field"><label>Fond</label><input type="color" value={qrStyle.bgColor} onChange={e => setQrStyle({ ...qrStyle, bgColor: e.target.value })} /></div>
-                                    </div>
+                                    <ColorField label="Couleur des points" value={qrStyle.dotsColor} onChange={v => setQrStyle({ ...qrStyle, dotsColor: v })} />
+                                    <ColorField label="Couleur des coins" value={qrStyle.cornersColor} onChange={v => setQrStyle({ ...qrStyle, cornersColor: v })} />
+                                    <ColorField label="Couleur de fond" value={qrStyle.bgColor} onChange={v => setQrStyle({ ...qrStyle, bgColor: v })} />
                                     <div className="field"><label>Logo central (URL image)</label><input type="url" value={qrStyle.logo_url || ''} onChange={e => setQrStyle({ ...qrStyle, logo_url: e.target.value })} placeholder="https://... (png/svg)" /></div>
                                 </div>
                             ), true)}
@@ -289,9 +305,11 @@ export default function CardSettings() {
                         </div>
                         <PhonePreview>
                             {previewMode === 'qr' ? (
-                                <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-                                    <div ref={qrRef} style={{ background: 'white', padding: 10, borderRadius: 20, boxShadow: '0 10px 40px rgba(0,0,0,0.08)' }} />
-                                    <p style={{ marginTop: 12, fontSize: 11, color: '#94A3B8', textAlign: 'center', fontWeight: 600 }}>Lien permanent — ne change jamais</p>
+                                <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 20, background: '#F0F2F5' }}>
+                                    <div style={{ background: qrStyle.bgColor || 'white', padding: 16, borderRadius: 20, boxShadow: '0 8px 32px rgba(0,0,0,0.12)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <div ref={qrRef} />
+                                    </div>
+                                    <p style={{ marginTop: 12, fontSize: 10, color: '#94A3B8', textAlign: 'center', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>Lien permanent — ne change jamais</p>
                                 </div>
                             ) : (
                                 <div>

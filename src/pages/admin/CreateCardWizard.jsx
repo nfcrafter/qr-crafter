@@ -324,9 +324,11 @@ export default function CreateCardWizard() {
                         <PhonePreview>
                             {/* Step 3 → always show QR */}
                             {(step === 3 || previewMode === 'qr') ? (
-                                <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 20, background: qrStyle.bgColor || 'white' }}>
-                                    <div ref={qrRef} style={{ background: qrStyle.bgColor || 'white', padding: 10, borderRadius: 20, boxShadow: '0 10px 40px rgba(0,0,0,0.10)' }} />
-                                    <p style={{ marginTop: 16, fontSize: 10, color: '#94A3B8', textAlign: 'center', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>Lien permanent — ne change jamais</p>
+                                <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 20, background: '#F0F2F5' }}>
+                                    <div style={{ background: qrStyle.bgColor || 'white', padding: 16, borderRadius: 20, boxShadow: '0 8px 32px rgba(0,0,0,0.12)', display: 'inline-flex', flexDirection: 'column', alignItems: 'center' }}>
+                                        <div ref={qrRef} />
+                                    </div>
+                                    <p style={{ marginTop: 14, fontSize: 10, color: '#94A3B8', textAlign: 'center', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>Lien permanent — ne change jamais</p>
                                 </div>
                             ) : (
                                 <div style={{ textAlign: 'left' }}>
