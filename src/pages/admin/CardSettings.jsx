@@ -64,8 +64,8 @@ export default function CardSettings() {
         if (error || !card) { navigate('/admin'); return; }
         setCardName(card.card_name || '');
         setSelectedFolderId(card.folder_id);
-        if (card.type_data) {
-            const { qr_type, ...rest } = card.type_data;
+        if (card.admin_profile) {
+            const { qr_type, ...rest } = card.admin_profile;
             setQrType(qr_type || 'profile');
             setProfile({ banner_url: '', photo_url: '', full_name: '', job_title: '', bio: '', phone: '', email: '', primaryColor: '#1A1265', socials: {}, customLinks: [], url: '', ...rest });
         }
@@ -126,7 +126,7 @@ export default function CardSettings() {
                 card_name: cardName,
                 folder_id: selectedFolderId || null,
                 qr_appearance: qrStyle,
-                type_data: { ...profile, qr_type: qrType },
+                admin_profile: { ...profile, qr_type: qrType },
                 updated_at: new Date().toISOString()
             }).eq('card_id', cardId);
             if (error) throw error;

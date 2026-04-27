@@ -128,7 +128,7 @@ export default function CreateCardWizard() {
                 card_name: cardName || profile.full_name || 'Sans titre',
                 folder_id: selectedFolderId || null,
                 qr_appearance: qrStyle,
-                type_data: { ...profile, qr_type: selectedType },
+                admin_profile: { ...profile, qr_type: selectedType },
                 status: 'active'
             });
             if (error) throw error;

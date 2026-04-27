@@ -106,7 +106,7 @@ export default function AdminDashboard() {
     const filtered = cards.filter(c => {
         const matchesSearch = !search || c.card_name?.toLowerCase().includes(search.toLowerCase()) || c.card_id?.toLowerCase().includes(search.toLowerCase());
         const matchesStatus = statusFilter === 'all' || c.status === statusFilter;
-        const qrType = c.type_data?.qr_type || 'url';
+        const qrType = c.admin_profile?.qr_type || 'url';
         const matchesType = typeFilter === 'all' || qrType === typeFilter;
         return matchesSearch && matchesStatus && matchesType;
     }).sort((a, b) => {
@@ -236,7 +236,7 @@ function CardListItem({ card, scanCount, navigate, toast }) {
         <div style={{ background: 'white', borderRadius: '20px', padding: '24px 30px', display: 'flex', alignItems: 'center', gap: '24px', border: '1px solid #F1F5F9', boxShadow: '0 4px 12px rgba(0,0,0,0.01)' }}>
             <div ref={qrRef} style={{ width: '76px', height: '76px', background: '#F8FAFC', borderRadius: '14px', border: '1px solid #F1F5F9', overflow: 'hidden', flexShrink: 0 }}></div>
             <div style={{ flex: 1 }}>
-                <div style={{ color: '#6366F1', fontWeight: '800', fontSize: '11px', textTransform: 'uppercase', marginBottom: '4px' }}>{card.type_data?.qr_type || 'URL'}</div>
+                <div style={{ color: '#6366F1', fontWeight: '800', fontSize: '11px', textTransform: 'uppercase', marginBottom: '4px' }}>{card.admin_profile?.qr_type || 'URL'}</div>
                 <div style={{ fontWeight: '900', fontSize: '20px', color: '#1A1265', marginBottom: '6px' }}>{card.card_name || 'Sans nom'}</div>
                 <div style={{ color: '#94A3B8', fontSize: '13px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <span>📅</span> Modifié le {new Date(card.updated_at || card.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
