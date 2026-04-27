@@ -155,11 +155,17 @@ export default function CardSettings() {
         setSaving(true);
         const { error } = await supabase
             .from('cards')
-            .update({ admin_profile: profileForm })
+            .update({ 
+                admin_profile: profileForm,
+                updated_at: new Date().toISOString()
+            })
             .eq('card_id', cardId);
 
         if (error) toast('Erreur : ' + error.message, 'error');
-        else toast('Profil mis à jour !', 'success');
+        else {
+            toast('Profil mis à jour !', 'success');
+            loadCard(); // Refresh to get the new updated_at
+        }
         setSaving(false);
     }
 
@@ -167,11 +173,17 @@ export default function CardSettings() {
         setSavingQR(true);
         const { error } = await supabase
             .from('cards')
-            .update({ qr_appearance: qrAppearance })
+            .update({ 
+                qr_appearance: qrAppearance,
+                updated_at: new Date().toISOString()
+            })
             .eq('card_id', cardId);
 
         if (error) toast('Erreur : ' + error.message, 'error');
-        else toast('Design QR sauvegardé !', 'success');
+        else {
+            toast('Design QR sauvegardé !', 'success');
+            loadCard(); // Refresh
+        }
         setSavingQR(false);
     }
 

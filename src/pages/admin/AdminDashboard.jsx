@@ -111,6 +111,7 @@ export default function AdminDashboard() {
         return matchesSearch && matchesStatus && matchesType;
     }).sort((a, b) => {
         if (sortBy === 'newest') return new Date(b.created_at) - new Date(a.created_at);
+        if (sortBy === 'modified') return new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at);
         if (sortBy === 'scanned') return (scans[b.card_id] || 0) - (scans[a.card_id] || 0);
         return 0;
     });
@@ -174,7 +175,7 @@ export default function AdminDashboard() {
                         <div style={{ position: 'relative', flex: 1 }}><span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', opacity: 0.3 }}>🔍</span><input type="text" placeholder="Rechercher..." value={search} onChange={e => setSearch(e.target.value)} style={{ width: '100%', padding: '12px 12px 12px 40px', borderRadius: '12px', border: '1px solid #E2E8F0', background: '#F8FAFC' }} /></div>
                         <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} style={{ padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '600' }}><option value="all">Statut</option><option value="active">Active</option><option value="pending">En attente</option></select>
                         <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)} style={{ padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '600' }}><option value="all">Type</option><option value="url">URL</option><option value="wifi">WiFi</option><option value="vcard">VCard</option></select>
-                        <select value={sortBy} onChange={e => setSortBy(e.target.value)} style={{ padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '600' }}><option value="newest">Récent</option><option value="scanned">Scans</option></select>
+                        <select value={sortBy} onChange={e => setSortBy(e.target.value)} style={{ padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '600' }}><option value="newest">Plus récent</option><option value="modified">Modifié</option><option value="scanned">Plus scanné</option></select>
                         <select value={quantity} onChange={e => { setQuantity(Number(e.target.value)); setCurrentPage(1); }} style={{ padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '600' }}><option value={10}>10</option><option value={20}>20</option><option value={50}>50</option></select>
                     </div>
                 </div>
@@ -185,7 +186,7 @@ export default function AdminDashboard() {
                     {totalPages > 1 && (
                         <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '32px' }}>
                             {[...Array(totalPages)].map((_, i) => (
-                                <button key={i} onClick={() => setCurrentPage(i + 1)} style={{ width: '38px', height: '38px', borderRadius: '10px', border: 'none', background: currentPage === i + 1 ? '#1A1265' : 'white', color: currentPage === i + 1 ? 'white' : '#1A1265', fontWeight: '800', cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.05)' }}>{i + 1}</button>
+                                <button key={i} onClick={() => setCurrentPage(i + 1)} style={{ width: '38px', height: '38px', borderRadius: '10px', border: 'none', background: currentPage === i + 1 ? '#1A1265' : 'white', color: currentPage === i + 1 ? 'white' : '#1A1265', fontWeight: '800', cursor: 'pointer' }}>{i + 1}</button>
                             ))}
                         </div>
                     )}
@@ -221,13 +222,7 @@ function CardListItem({ card, scanCount, navigate, toast }) {
     async function downloadQR() {
         const qrCode = new QRCodeStyling({
             width: 1000, height: 1000, data: `${window.location.origin}/u/${card.card_id}`,
-            dotsOptions: { 
-                color: card.qr_appearance?.dotsColor || "#1A1265", type: card.qr_appearance?.dotsType || "rounded",
-                gradient: card.qr_appearance?.useGradient ? {
-                    type: 'linear', rotation: 45,
-                    colorStops: [{ offset: 0, color: card.qr_appearance?.dotsColor }, { offset: 1, color: card.qr_appearance?.gradientColor || '#6366F1' }]
-                } : null
-            },
+            dotsOptions: { color: card.qr_appearance?.dotsColor || "#1A1265", type: card.qr_appearance?.dotsType || "rounded" },
             cornersSquareOptions: { color: card.qr_appearance?.cornersColor || "#1A1265", type: card.qr_appearance?.cornersType || "extra-rounded" },
             backgroundOptions: { color: "#FFFFFF" },
             image: card.qr_appearance?.logo_url || "",
@@ -243,7 +238,9 @@ function CardListItem({ card, scanCount, navigate, toast }) {
             <div style={{ flex: 1 }}>
                 <div style={{ color: '#6366F1', fontWeight: '800', fontSize: '11px', textTransform: 'uppercase', marginBottom: '4px' }}>{card.type_data?.qr_type || 'URL'}</div>
                 <div style={{ fontWeight: '900', fontSize: '20px', color: '#1A1265', marginBottom: '6px' }}>{card.card_name || 'Sans nom'}</div>
-                <div style={{ color: '#94A3B8', fontSize: '13px', fontWeight: '600' }}>📅 Modifié le {new Date(card.updated_at || card.created_at).toLocaleDateString('fr-FR')}</div>
+                <div style={{ color: '#94A3B8', fontSize: '13px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span>📅</span> Modifié le {new Date(card.updated_at || card.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                </div>
             </div>
             <div style={{ minWidth: '100px', textAlign: 'center' }}>
                 <span style={{ fontSize: '11px', fontWeight: '900', padding: '6px 16px', borderRadius: '12px', background: isActive ? '#DCFCE7' : '#FEE2E2', color: isActive ? '#15803D' : '#B91C1C', textTransform: 'uppercase', border: '1px solid', borderColor: isActive ? '#86EFAC' : '#FECACA' }}>{isActive ? 'Active' : 'En attente'}</span>
