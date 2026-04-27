@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabase.js'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 
 export default function Login() {
     const navigate = useNavigate()
@@ -26,34 +26,41 @@ export default function Login() {
         <div style={{
             minHeight: '100vh', display: 'flex',
             alignItems: 'center', justifyContent: 'center',
-            background: 'var(--bg)',
+            background: 'linear-gradient(135deg, #F8FAFC 0%, #EFF6FF 100%)',
+            padding: '20px'
         }}>
-            <div style={{
-                background: 'var(--bg-white)', borderRadius: 'var(--radius-lg)',
-                padding: '48px 40px', width: '100%', maxWidth: '420px',
-                boxShadow: 'var(--shadow-lg)', border: '1px solid var(--border)',
+            <div className="premium-card" style={{
+                padding: '48px 40px', width: '100%', maxWidth: '440px',
+                background: 'rgba(255, 255, 255, 0.8)',
+                backdropFilter: 'blur(10px)'
             }}>
                 {/* Logo */}
-                <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-                    <img src="/logo.png" alt="NFCrafter" style={{ height: '64px', width: 'auto', marginBottom: '12px' }} />
-                    <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontWeight: '800', color: 'var(--accent)' }}>
-                        NFCrafter
+                <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+                    <div style={{ 
+                        width: '48px', height: '48px', background: 'var(--primary)', 
+                        borderRadius: '12px', display: 'flex', alignItems: 'center', 
+                        justifyContent: 'center', color: 'white', fontWeight: 'bold', 
+                        fontSize: '24px', margin: '0 auto 16px',
+                        boxShadow: '0 8px 16px rgba(40, 194, 84, 0.2)'
+                    }}>Q</div>
+                    <h1 style={{ fontSize: '28px', fontWeight: '800', letterSpacing: '-1px', color: 'var(--text-900)', margin: 0 }}>
+                        QR CRAFTER
                     </h1>
-                    <p style={{ color: 'var(--text-light)', fontSize: '14px', marginTop: '4px' }}>
-                        Connectez-vous pour accéder à votre espace
+                    <p style={{ color: 'var(--text-500)', fontSize: '15px', marginTop: '8px' }}>
+                        Connectez-vous à votre espace personnel
                     </p>
                 </div>
 
                 <form onSubmit={handleLogin}>
                     <div className="field">
-                        <label>Email</label>
+                        <label style={{ fontWeight: '600', color: 'var(--text-700)' }}>Email</label>
                         <input type="email" placeholder="votre@email.com"
                             value={email} onChange={e => setEmail(e.target.value)}
                             required autoFocus
                         />
                     </div>
                     <div className="field">
-                        <label>Mot de passe</label>
+                        <label style={{ fontWeight: '600', color: 'var(--text-700)' }}>Mot de passe</label>
                         <input type="password" placeholder="••••••••"
                             value={password} onChange={e => setPassword(e.target.value)}
                             required
@@ -62,21 +69,28 @@ export default function Login() {
 
                     {error && (
                         <div style={{
-                            background: '#fff5f5', border: '1px solid #fed7d7',
-                            color: 'var(--error)', borderRadius: 'var(--radius-sm)',
-                            padding: '10px 14px', fontSize: '13px', marginBottom: '16px',
+                            background: '#FEF2F2', border: '1px solid #FECACA',
+                            color: '#DC2626', borderRadius: '12px',
+                            padding: '12px 16px', fontSize: '14px', marginBottom: '24px',
+                            display: 'flex', alignItems: 'center', gap: '8px'
                         }}>
-                            ⚠️ {error}
+                            <span>⚠️</span> {error}
                         </div>
                     )}
 
                     <button type="submit" className="btn-primary"
-                        style={{ width: '100%', justifyContent: 'center', padding: '13px' }}
+                        style={{ width: '100%', justifyContent: 'center', padding: '14px', fontSize: '16px' }}
                         disabled={loading}>
                         {loading ? 'Connexion...' : 'Se connecter'}
                     </button>
                 </form>
+
+                <div style={{ marginTop: '32px', textAlign: 'center', borderTop: '1px solid var(--border)', paddingTop: '24px' }}>
+                    <p style={{ color: 'var(--text-500)', fontSize: '14px' }}>
+                        Pas encore de compte ? <Link to="/register" style={{ color: 'var(--primary)', fontWeight: '700', textDecoration: 'none' }}>Activez votre carte</Link>
+                    </p>
+                </div>
             </div>
         </div>
     )
-}
+}

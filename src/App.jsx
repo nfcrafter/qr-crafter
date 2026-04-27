@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { supabase } from './lib/supabase.js'
 import Login from './pages/Login.jsx'
 import Register from './pages/Register.jsx'
+import LandingPage from './pages/LandingPage.jsx'
 import AdminDashboard from './pages/admin/AdminDashboard.jsx'
 import ClientDashboard from './pages/client/ClientDashboard.jsx'
 import PublicProfile from './pages/PublicProfile.jsx'
@@ -12,11 +13,14 @@ import Activate from './pages/Activate.jsx'
 import CardSettings from './pages/admin/CardSettings.jsx'
 import CreateCardWizard from './pages/admin/CreateCardWizard.jsx';
 
-
 function LoadingScreen() {
     return (
         <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}>
-            <p style={{ color: 'var(--text-light)' }}>Chargement...</p>
+            <div className="animate-fade-in" style={{ textAlign: 'center' }}>
+                <div style={{ width: '40px', height: '40px', border: '3px solid var(--primary-light)', borderTopColor: 'var(--primary)', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 16px' }}></div>
+                <p style={{ color: 'var(--text-500)', fontWeight: '500' }}>Chargement...</p>
+            </div>
+            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
         </div>
     )
 }
@@ -51,7 +55,6 @@ export default function App() {
     }, [])
 
     function checkAdmin(email) {
-        // Ton email admin — change ici
         const ADMIN_EMAIL = 'nfcrafter@gmail.com'
         setIsAdmin(email === ADMIN_EMAIL)
     }
@@ -59,24 +62,25 @@ export default function App() {
     return (
         <>
             <Routes>
-                <Route path="/u/:cardId" element={<PublicProfile />} />
+                {/* Public Routes */}
+                <Route path="/" element={<LandingPage />} />
                 <Route path="/login" element={session ? <Navigate to="/" replace /> : <Login />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="/admin" element={
-                    <ProtectedAdmin session={session} isAdmin={isAdmin}>
-                        <AdminDashboard />
-                    </ProtectedAdmin>
-                } />
+                <Route path="/u/:cardId" element={<PublicProfile />} />
+                <Route path="/activate" element={<Activate />} />
+
+                {/* Client Routes */}
                 <Route path="/dashboard" element={
                     <ProtectedClient session={session}>
                         <ClientDashboard />
                     </ProtectedClient>
                 } />
-                <Route path="/" element={
-                    session === undefined ? <LoadingScreen /> :
-                        !session ? <Navigate to="/login" replace /> :
-                            isAdmin ? <Navigate to="/admin" replace /> :
-                                <Navigate to="/dashboard" replace />
+
+                {/* Admin Routes */}
+                <Route path="/admin" element={
+                    <ProtectedAdmin session={session} isAdmin={isAdmin}>
+                        <AdminDashboard />
+                    </ProtectedAdmin>
                 } />
                 <Route path="/admin/card/:cardId" element={
                     <ProtectedAdmin session={session} isAdmin={isAdmin}>
@@ -88,18 +92,11 @@ export default function App() {
                         <CreateCardWizard />
                     </ProtectedAdmin>
                 } />
-                import CreateCardWizard from './pages/admin/CreateCardWizard.jsx'
 
-                // Dans les Routes admin :
-                <Route path="/admin/create" element={
-                    <ProtectedAdmin session={session} isAdmin={isAdmin}>
-                        <CreateCardWizard />
-                    </ProtectedAdmin>
-                } />
+                {/* Catch-all */}
                 <Route path="*" element={<Navigate to="/" replace />} />
-                <Route path="/activate" element={<Activate />} />
             </Routes>
             <WhatsAppSupport />
         </>
     )
-}
+}

@@ -1,0 +1,274 @@
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+
+export default function LandingPage() {
+    const navigate = useNavigate();
+
+    return (
+        <div className="landing-page" style={{ background: '#FFFFFF', minHeight: '100vh' }}>
+            {/* Navigation */}
+            <nav style={{ 
+                height: '80px', 
+                borderBottom: '1px solid #F1F5F9',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '0 40px'
+            }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ 
+                        width: '40px', 
+                        height: '40px', 
+                        background: 'var(--primary)', 
+                        borderRadius: '10px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: 'white',
+                        fontWeight: 'bold',
+                        fontSize: '20px'
+                    }}>Q</div>
+                    <span style={{ fontSize: '22px', fontWeight: '800', color: '#0F172A', letterSpacing: '-0.5px' }}>
+                        QR<span style={{ color: 'var(--primary)' }}>CRAFTER</span>
+                    </span>
+                </div>
+                <div style={{ display: 'flex', gap: '12px' }}>
+                    <button className="btn-ghost" onClick={() => navigate('/login')}>Se connecter</button>
+                    <button className="btn-primary" onClick={() => navigate('/register')}>S'inscrire</button>
+                </div>
+            </nav>
+
+            {/* Hero Section */}
+            <section style={{ 
+                padding: '100px 20px 60px', 
+                background: 'linear-gradient(180deg, #DFF6E6 0%, #FFFFFF 100%)',
+                textAlign: 'center',
+                position: 'relative',
+                overflow: 'hidden'
+            }}>
+                <div className="max-w-wrapper">
+                    <h1 style={{ 
+                        fontSize: 'clamp(40px, 8vw, 64px)', 
+                        lineHeight: '1.1', 
+                        fontWeight: '800', 
+                        marginBottom: '24px',
+                        color: '#0F172A'
+                    }}>
+                        Nous simplifions les <span style={{ color: 'var(--primary)' }}>codes QR</span>
+                    </h1>
+                    <div style={{ 
+                        display: 'flex', 
+                        justifyContent: 'center', 
+                        gap: '40px', 
+                        marginBottom: '48px',
+                        flexWrap: 'wrap'
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <CheckIcon /> <span>Générez des codes QR dynamiques</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <CheckIcon /> <span>Suivez les performances</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <CheckIcon /> <span>Concevez avec logo et couleurs</span>
+                        </div>
+                    </div>
+                    <button className="btn-primary" style={{ padding: '20px 40px', fontSize: '20px', borderRadius: '40px' }} onClick={() => navigate('/register')}>
+                        Créer un code QR
+                    </button>
+
+                    {/* Preview Mockup */}
+                    <div style={{ marginTop: '80px', position: 'relative', zIndex: 2 }}>
+                        <div className="premium-card" style={{ 
+                            padding: '10px', 
+                            borderRadius: '24px', 
+                            maxWidth: '1000px', 
+                            margin: '0 auto',
+                            background: 'white'
+                        }}>
+                            <img 
+                                src="https://images.unsplash.com/photo-1551288049-bbbda5366392?auto=format&fit=crop&q=80&w=2000" 
+                                alt="Dashboard Preview" 
+                                style={{ width: '100%', borderRadius: '16px', display: 'block' }}
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Decorative blobs */}
+                <div style={{ 
+                    position: 'absolute', 
+                    top: '10%', 
+                    left: '-5%', 
+                    width: '300px', 
+                    height: '300px', 
+                    background: 'var(--primary)', 
+                    filter: 'blur(150px)', 
+                    opacity: 0.1 
+                }}></div>
+                <div style={{ 
+                    position: 'absolute', 
+                    bottom: '10%', 
+                    right: '-5%', 
+                    width: '300px', 
+                    height: '300px', 
+                    background: 'var(--secondary)', 
+                    filter: 'blur(150px)', 
+                    opacity: 0.1 
+                }}></div>
+            </section>
+
+            {/* Steps Section */}
+            <section style={{ padding: '100px 20px', background: 'white' }}>
+                <div className="max-w-wrapper">
+                    <h2 style={{ 
+                        textAlign: 'center', 
+                        fontSize: '48px', 
+                        marginBottom: '60px',
+                        fontWeight: '700'
+                    }}>
+                        Créez votre code QR gratuitement en trois <span style={{ color: 'var(--primary)' }}>étapes simples</span>
+                    </h2>
+                    
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '40px' }}>
+                        <StepCard 
+                            number="1" 
+                            title="Lien Administrateur" 
+                            description="L'administrateur génère votre lien unique et prépare votre carte NFC personnalisée."
+                            color="#28C254"
+                        />
+                        <StepCard 
+                            number="2" 
+                            title="Activez votre carte" 
+                            description="Recevez votre carte, scannez-la et connectez-vous pour configurer votre profil digital."
+                            color="#707BFF"
+                        />
+                        <StepCard 
+                            number="3" 
+                            title="Profil illimité & Gratuit" 
+                            description="Mettez à jour vos informations à tout moment, sans aucun frais caché, pour toujours."
+                            color="#388BFF"
+                        />
+                    </div>
+                </div>
+            </section>
+
+            {/* Features Grid */}
+            <section style={{ padding: '100px 20px', background: '#F8FAFC' }}>
+                <div className="max-w-wrapper">
+                    <div style={{ textAlign: 'center', marginBottom: '80px' }}>
+                        <h2 style={{ fontSize: '48px', marginBottom: '20px' }}>
+                            Le plus <span style={{ color: 'var(--primary)' }}>perfectionné</span> des générateurs
+                        </h2>
+                        <p style={{ color: 'var(--text-500)', fontSize: '18px', maxWidth: '800px', margin: '0 auto' }}>
+                            Notre logiciel est extrêmement fonctionnel et personnalisable, tout en restant facile à utiliser pour tous.
+                        </p>
+                    </div>
+
+                    <div style={{ 
+                        display: 'grid', 
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', 
+                        gap: '24px' 
+                    }}>
+                        <FeatureCard 
+                            title="Des codes QR high-tech"
+                            desc="Accédez à des fonctionnalités avancées grâce à notre générateur de code QR dynamique."
+                            icon="⚡"
+                        />
+                        <FeatureCard 
+                            title="Des taux de conversion élevés"
+                            desc="Créez des codes QR performants qui représentent fidèlement votre marque."
+                            icon="📈"
+                        />
+                        <FeatureCard 
+                            title="Analyses en temps réel"
+                            desc="Sachez quand, où et combien de fois vos codes QR ont été scannés."
+                            icon="📊"
+                        />
+                        <FeatureCard 
+                            title="Personnalisation totale"
+                            desc="Rendez vos codes QR plus attrayants grâce à notre gamme infinie d'options."
+                            icon="🎨"
+                        />
+                    </div>
+                </div>
+            </section>
+
+            {/* Footer */}
+            <footer style={{ padding: '80px 20px', background: '#0F172A', color: 'white' }}>
+                <div className="max-w-wrapper" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '40px' }}>
+                    <div>
+                        <div style={{ fontSize: '24px', fontWeight: '800', marginBottom: '10px' }}>
+                            QR<span style={{ color: 'var(--primary)' }}>CRAFTER</span>
+                        </div>
+                        <p style={{ color: '#94A3B8' }}>© 2024 QR Crafter. Tous droits réservés.</p>
+                    </div>
+                    <div style={{ display: 'flex', gap: '40px' }}>
+                        <a href="#" style={{ color: '#94A3B8', textDecoration: 'none' }}>Fonctionnalités</a>
+                        <a href="#" style={{ color: '#94A3B8', textDecoration: 'none' }}>Aide</a>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    );
+}
+
+function CheckIcon() {
+    return (
+        <div style={{ 
+            width: '24px', 
+            height: '24px', 
+            background: 'var(--primary)', 
+            borderRadius: '50%', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            color: 'white',
+            fontSize: '12px'
+        }}>✓</div>
+    );
+}
+
+function StepCard({ number, title, description, color }) {
+    return (
+        <div className="premium-card" style={{ textAlign: 'center', borderTop: `6px solid ${color}` }}>
+            <div style={{ 
+                width: '60px', 
+                height: '60px', 
+                background: color, 
+                borderRadius: '20px', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                color: 'white',
+                fontSize: '24px',
+                fontWeight: 'bold',
+                margin: '0 auto 24px'
+            }}>{number}</div>
+            <h3 style={{ marginBottom: '16px', fontSize: '24px' }}>{title}</h3>
+            <p style={{ color: 'var(--text-500)' }}>{description}</p>
+        </div>
+    );
+}
+
+function FeatureCard({ title, desc, icon }) {
+    return (
+        <div className="premium-card" style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
+            <div style={{ 
+                fontSize: '32px', 
+                background: '#F1F5F9', 
+                width: '64px', 
+                height: '64px', 
+                borderRadius: '16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0
+            }}>{icon}</div>
+            <div>
+                <h3 style={{ marginBottom: '8px', fontSize: '20px' }}>{title}</h3>
+                <p style={{ color: 'var(--text-500)', fontSize: '15px' }}>{desc}</p>
+            </div>
+        </div>
+    );
+}

@@ -4,7 +4,6 @@ import { supabase } from '../../lib/supabase.js';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../../components/Toast.jsx';
 import ProfileForm from '../../components/ProfileForm.jsx';
-import CustomLinks from '../../components/client/CustomLinks.jsx'
 
 export default function ClientDashboard() {
     const navigate = useNavigate();
@@ -14,7 +13,6 @@ export default function ClientDashboard() {
     const [loading, setLoading] = useState(true);
     const [userCards, setUserCards] = useState([]);
     const [selectedCard, setSelectedCard] = useState(null);
-    const [cardDetails, setCardDetails] = useState(null);
     const [publicProfile, setPublicProfile] = useState({});
     const [uploadingAvatar, setUploadingAvatar] = useState(false);
     const [uploadingBanner, setUploadingBanner] = useState(false);
@@ -55,7 +53,6 @@ export default function ClientDashboard() {
             .eq('card_id', selectedCard.card_id)
             .single();
 
-        setCardDetails(data);
         setPublicProfile(data?.admin_profile || {});
     }
 
@@ -68,7 +65,7 @@ export default function ClientDashboard() {
             .eq('card_id', selectedCard.card_id);
 
         if (error) toast('Erreur : ' + error.message, 'error');
-        else toast('Profil public mis à jour !', 'success');
+        else toast('Profil mis à jour avec succès !', 'success');
         setSaving(false);
     }
 
@@ -78,7 +75,6 @@ export default function ClientDashboard() {
         const reader = new FileReader();
         reader.onload = (ev) => {
             setPublicProfile({ ...publicProfile, photo_url: ev.target.result });
-            toast('Photo mise à jour', 'success');
             setUploadingAvatar(false);
         };
         reader.readAsDataURL(file);
@@ -90,7 +86,6 @@ export default function ClientDashboard() {
         const reader = new FileReader();
         reader.onload = (ev) => {
             setPublicProfile({ ...publicProfile, banner_url: ev.target.result });
-            toast('Bannière mise à jour', 'success');
             setUploadingBanner(false);
         };
         reader.readAsDataURL(file);
@@ -103,103 +98,114 @@ export default function ClientDashboard() {
 
     if (loading) {
         return (
-            <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#EBEBDF' }}>
-                <p>Chargement...</p>
+            <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F8FAFC' }}>
+                <div style={{ width: '40px', height: '40px', border: '3px solid var(--primary-light)', borderTopColor: 'var(--primary)', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
             </div>
         );
     }
 
     const publicUrl = selectedCard ? `${window.location.origin}/u/${selectedCard.card_id}` : '';
 
-    if (!selectedCard) {
-        return (
-            <div style={{ minHeight: '100vh', background: '#EBEBDF', padding: '24px' }}>
-                <div style={{ maxWidth: '500px', margin: '0 auto', background: 'white', borderRadius: '16px', padding: '32px', textAlign: 'center' }}>
-                    <img src="/logo.png" alt="NFCrafter" style={{ height: '60px', marginBottom: '16px' }} />
-                    <h2>Bienvenue sur NFCrafter</h2>
-                    <p style={{ color: '#666', marginBottom: '24px' }}>Vous n'avez pas encore de carte active.</p>
-                    <button onClick={logout} className="btn-primary">Se déconnecter</button>
-                </div>
-            </div>
-        );
-    }
-
     return (
-        <div style={{ minHeight: '100vh', background: '#EBEBDF' }}>
-            <header style={{
-                background: 'white', borderBottom: '1px solid #D4D4C8', padding: '0 24px',
-                position: 'sticky', top: 0, zIndex: 100,
-            }}>
-                <div style={{ maxWidth: '800px', margin: '0 auto', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ minHeight: '100vh', background: '#F8FAFC' }}>
+            {/* Nav */}
+            <header style={{ background: 'white', borderBottom: '1px solid var(--border)', padding: '0 24px', position: 'sticky', top: 0, zIndex: 100 }}>
+                <div style={{ maxWidth: '1000px', margin: '0 auto', height: '72px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <img src="/logo.png" alt="NFCrafter" style={{ height: '32px' }} />
-                        <span style={{ fontWeight: '800', fontSize: '18px', color: '#1A1265' }}>NFCrafter</span>
+                        <div style={{ width: '32px', height: '32px', background: 'var(--primary)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold' }}>Q</div>
+                        <span style={{ fontWeight: '800', fontSize: '20px', letterSpacing: '-0.5px' }}>QR CRAFTER</span>
                     </div>
-                    <button onClick={logout} className="btn-ghost">Déconnexion</button>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                        <span style={{ fontSize: '14px', color: 'var(--text-500)', fontWeight: '600' }}>{user?.email}</span>
+                        <button onClick={logout} className="btn-ghost" style={{ padding: '8px 16px' }}>Déconnexion</button>
+                    </div>
                 </div>
             </header>
 
-            <main style={{ maxWidth: '800px', margin: '0 auto', padding: '24px 16px' }}>
+            <main style={{ maxWidth: '1000px', margin: '0 auto', padding: '40px 20px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 350px', gap: '32px', alignItems: 'start' }}>
+                    
+                    {/* Main Settings */}
+                    <div className="premium-card" style={{ padding: '32px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+                            <div>
+                                <h2 style={{ margin: 0, fontSize: '24px' }}>Modifier mon profil</h2>
+                                <p style={{ color: 'var(--text-500)', fontSize: '14px' }}>Ces informations sont visibles lors du scan de votre carte.</p>
+                            </div>
+                        </div>
 
-                {userCards.length > 1 && (
-                    <div style={{ background: 'white', borderRadius: '16px', padding: '20px', marginBottom: '20px', border: '1px solid #D4D4C8' }}>
-                        <label style={{ fontWeight: '600', display: 'block', marginBottom: '8px' }}>📱 Mes cartes</label>
-                        <select
-                            value={selectedCard?.card_id || ''}
-                            onChange={e => setSelectedCard(userCards.find(c => c.card_id === e.target.value))}
-                            style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #D4D4C8' }}
-                        >
-                            {userCards.map(c => (
-                                <option key={c.card_id} value={c.card_id}>
-                                    {c.profile_name || c.card_id}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                )}
+                        <ProfileForm
+                            form={publicProfile}
+                            onChange={setPublicProfile}
+                            onUploadAvatar={uploadPublicAvatar}
+                            onUploadBanner={uploadPublicBanner}
+                            uploadingAvatar={uploadingAvatar}
+                            uploadingBanner={uploadingBanner}
+                        />
 
-                <div style={{ background: 'white', borderRadius: '16px', padding: '24px', border: '1px solid #D4D4C8' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                        <h2 style={{ margin: 0, color: '#1A1265' }}>📄 Mon profil public</h2>
-                        <button onClick={() => window.open(publicUrl, '_blank')} className="btn-secondary" style={{ padding: '6px 12px', fontSize: '12px' }}>
-                            🔗 Voir ma page
-                        </button>
-                    </div>
-                    <p style={{ fontSize: '13px', color: '#666', marginBottom: '24px' }}>
-                        Ces informations seront visibles par toute personne qui scanne votre carte.
-                    </p>
-
-                    <ProfileForm
-                        form={publicProfile}
-                        onChange={setPublicProfile}
-                        onUploadAvatar={uploadPublicAvatar}
-                        onUploadBanner={uploadPublicBanner}
-                        uploadingAvatar={uploadingAvatar}
-                        uploadingBanner={uploadingBanner}
-                        readOnly={false}
-                    />
-
-                    <div className="field">
-                        <label>Lien de votre carte (à partager)</label>
-                        <div style={{ display: 'flex', gap: '8px' }}>
-                            <input readOnly value={publicUrl} style={{ flex: 1, fontFamily: 'monospace', fontSize: '12px' }} />
-                            <button onClick={() => navigator.clipboard.writeText(publicUrl)} className="btn-secondary" style={{ whiteSpace: 'nowrap' }}>
-                                📋 Copier
+                        <div style={{ marginTop: '40px', paddingTop: '32px', borderTop: '1px solid var(--border)' }}>
+                            <button 
+                                onClick={savePublicProfile} 
+                                disabled={saving} 
+                                className="btn-primary" 
+                                style={{ width: '100%', justifyContent: 'center' }}
+                            >
+                                {saving ? 'Sauvegarde en cours...' : '💾 Enregistrer les modifications'}
                             </button>
                         </div>
                     </div>
 
-                    <button
-                        onClick={savePublicProfile}
-                        disabled={saving}
-                        className="btn-primary"
-                        style={{ width: '100%', justifyContent: 'center', marginTop: '16px' }}
-                    >
-                        {saving ? 'Sauvegarde...' : '💾 Sauvegarder mon profil public'}
-                    </button>
-                </div>
+                    {/* Sidebar Info */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                        <div className="premium-card" style={{ padding: '24px' }}>
+                            <h3 style={{ fontSize: '16px', marginBottom: '16px' }}>Ma Carte Actuelle</h3>
+                            <div style={{ background: 'var(--bg)', borderRadius: '12px', padding: '16px', marginBottom: '20px' }}>
+                                <div style={{ fontSize: '12px', color: 'var(--text-400)', fontWeight: '700', textTransform: 'uppercase', marginBottom: '4px' }}>ID CARTE</div>
+                                <code style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--primary)' }}>{selectedCard?.card_id}</code>
+                            </div>
+                            <button 
+                                onClick={() => window.open(publicUrl, '_blank')} 
+                                className="btn-secondary" 
+                                style={{ width: '100%', justifyContent: 'center', marginBottom: '12px' }}
+                            >
+                                🔗 Voir ma page publique
+                            </button>
+                            <button 
+                                onClick={() => {
+                                    navigator.clipboard.writeText(publicUrl);
+                                    toast('Lien copié !', 'success');
+                                }} 
+                                className="btn-ghost" 
+                                style={{ width: '100%', justifyContent: 'center' }}
+                            >
+                                📋 Copier le lien
+                            </button>
+                        </div>
 
+                        {userCards.length > 1 && (
+                            <div className="premium-card" style={{ padding: '24px' }}>
+                                <h3 style={{ fontSize: '16px', marginBottom: '16px' }}>Mes autres cartes</h3>
+                                {userCards.map(c => (
+                                    <button 
+                                        key={c.card_id}
+                                        onClick={() => setSelectedCard(c)}
+                                        style={{ 
+                                            width: '100%', padding: '12px', borderRadius: '10px', textAlign: 'left', 
+                                            border: selectedCard?.card_id === c.card_id ? '2px solid var(--primary)' : '1px solid var(--border)',
+                                            background: selectedCard?.card_id === c.card_id ? 'var(--primary-light)' : 'transparent',
+                                            marginBottom: '8px', cursor: 'pointer'
+                                        }}
+                                    >
+                                        <div style={{ fontWeight: '700', fontSize: '14px' }}>{c.profile_name || c.card_id}</div>
+                                        <div style={{ fontSize: '12px', color: 'var(--text-400)' }}>{c.card_id}</div>
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                </div>
             </main>
         </div>
     );
-}
+}

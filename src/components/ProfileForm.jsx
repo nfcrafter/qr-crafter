@@ -1,5 +1,4 @@
 // src/components/ProfileForm.jsx
-// Ce formulaire est pour la PAGE PUBLIQUE (type profile uniquement)
 import { useRef } from 'react';
 
 const SOCIAL_FIELDS = [
@@ -32,30 +31,37 @@ export default function ProfileForm({
     }
 
     return (
-        <>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             {/* Bannière */}
-            <div style={{ position: 'relative', marginBottom: '60px' }}>
+            <div style={{ position: 'relative', marginBottom: '40px' }}>
                 <div
                     onClick={() => !readOnly && bannerRef.current?.click()}
                     style={{
-                        height: '140px',
-                        borderRadius: 'var(--radius-md)',
+                        height: '160px',
+                        borderRadius: '16px',
                         background: form.banner_url
                             ? `url(${form.banner_url}) center/cover no-repeat`
-                            : (form.theme_color || 'var(--accent)'),
+                            : (form.theme_color || 'var(--primary)'),
                         cursor: readOnly ? 'default' : 'pointer',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        border: '2px dashed rgba(255,255,255,0.3)',
+                        border: '1px solid var(--border)',
                         position: 'relative',
                         overflow: 'hidden',
+                        transition: 'all 0.3s ease'
                     }}
                 >
-                    {!form.banner_url && !readOnly && (
-                        <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '13px' }}>
-                            {uploadingBanner ? '⏳ Upload...' : '📷 Ajouter une bannière'}
-                        </span>
+                    {!readOnly && (
+                        <div style={{ 
+                            position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.2)', 
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            opacity: uploadingBanner ? 1 : 0, transition: 'opacity 0.2s'
+                        }} className="hover-show">
+                            <span style={{ color: 'white', fontSize: '14px', fontWeight: '600', background: 'rgba(0,0,0,0.5)', padding: '8px 16px', borderRadius: '20px' }}>
+                                {uploadingBanner ? 'Chargement...' : 'Changer la bannière'}
+                            </span>
+                        </div>
                     )}
                 </div>
                 <input
@@ -67,25 +73,27 @@ export default function ProfileForm({
                 />
 
                 {/* Avatar */}
-                <div style={{ position: 'absolute', bottom: '-48px', left: '20px' }}>
+                <div style={{ position: 'absolute', bottom: '-30px', left: '24px' }}>
                     <div
                         onClick={() => !readOnly && avatarRef.current?.click()}
                         style={{
-                            width: '96px', height: '96px', borderRadius: '50%',
+                            width: '80px', height: '80px', borderRadius: '50%',
                             border: '4px solid white',
                             cursor: readOnly ? 'default' : 'pointer',
                             overflow: 'hidden',
                             background: form.photo_url
                                 ? `url(${form.photo_url}) center/cover`
-                                : 'var(--accent-light)',
+                                : '#E2E8F0',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                             fontSize: '32px',
-                            boxShadow: 'var(--shadow)',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                            position: 'relative'
                         }}
                     >
-                        {!form.photo_url && (uploadingAvatar ? '⏳' : '👤')}
+                        {!form.photo_url && !uploadingAvatar && <span style={{ fontSize: '32px' }}>👤</span>}
+                        {uploadingAvatar && <div style={{ width: '20px', height: '20px', border: '2px solid white', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>}
                     </div>
                     <input
                         ref={avatarRef}
@@ -97,70 +105,80 @@ export default function ProfileForm({
                 </div>
             </div>
 
-            {/* Champs du profil public */}
-            <div className="field">
-                <label>Nom complet *</label>
-                <input
-                    type="text"
-                    placeholder="Jean Dupont"
-                    value={form.full_name || ''}
-                    onChange={e => update('full_name', e.target.value)}
-                    readOnly={readOnly}
-                />
-            </div>
-
-            <div className="field">
-                <label>Titre / Poste</label>
-                <input
-                    type="text"
-                    placeholder="Ex: Designer Graphique, Entrepreneur..."
-                    value={form.title || ''}
-                    onChange={e => update('title', e.target.value)}
-                    readOnly={readOnly}
-                />
-            </div>
-
-            <div className="field">
-                <label>Bio</label>
-                <textarea
-                    rows={3}
-                    placeholder="Décrivez-vous en quelques mots..."
-                    value={form.bio || ''}
-                    onChange={e => update('bio', e.target.value)}
-                    readOnly={readOnly}
-                    style={{ resize: 'vertical' }}
-                />
-            </div>
-
-            {/* Liens sociaux */}
-            <h3 style={{ fontWeight: '700', marginTop: '24px', marginBottom: '16px', color: 'var(--accent)' }}>
-                🔗 Liens sociaux
-            </h3>
-            <p style={{ fontSize: '13px', color: 'var(--text-light)', marginBottom: '16px' }}>
-                Remplissez uniquement les liens que vous souhaitez afficher sur votre page publique.
-            </p>
-
-            {SOCIAL_FIELDS.map(field => (
-                <div key={field.key} className="field">
-                    <label>{field.icon} {field.label}</label>
+            {/* Champs du profil */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                <div className="field">
+                    <label>Nom complet</label>
                     <input
-                        type={field.type}
-                        placeholder={field.placeholder}
-                        value={form[field.key] || ''}
-                        onChange={e => update(field.key, e.target.value)}
+                        type="text"
+                        placeholder="Jean Dupont"
+                        value={form.full_name || ''}
+                        onChange={e => update('full_name', e.target.value)}
                         readOnly={readOnly}
                     />
                 </div>
-            ))}
 
-            {/* Couleur thème */}
-            <div className="field">
-                <label>Couleur thème</label>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                    <input type="color" value={form.theme_color || '#1A1265'} onChange={e => update('theme_color', e.target.value)} style={{ width: '48px' }} />
-                    <input type="text" value={form.theme_color || '#1A1265'} onChange={e => update('theme_color', e.target.value)} style={{ flex: 1, fontFamily: 'monospace' }} />
+                <div className="field">
+                    <label>Titre / Poste</label>
+                    <input
+                        type="text"
+                        placeholder="Ex: Designer, Entrepreneur..."
+                        value={form.title || ''}
+                        onChange={e => update('title', e.target.value)}
+                        readOnly={readOnly}
+                    />
+                </div>
+
+                <div className="field" style={{ gridColumn: 'span 2' }}>
+                    <label>Biographie</label>
+                    <textarea
+                        rows={3}
+                        placeholder="Parlez-nous de vous..."
+                        value={form.bio || ''}
+                        onChange={e => update('bio', e.target.value)}
+                        readOnly={readOnly}
+                    />
                 </div>
             </div>
-        </>
+
+            <div style={{ marginTop: '12px' }}>
+                <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px' }}>Réseaux Sociaux</h3>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                    {SOCIAL_FIELDS.map(field => (
+                        <div key={field.key} className="field">
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <span>{field.icon}</span> {field.label}
+                            </label>
+                            <input
+                                type={field.type}
+                                placeholder={field.placeholder}
+                                value={form[field.key] || ''}
+                                onChange={e => update(field.key, e.target.value)}
+                                readOnly={readOnly}
+                            />
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <div className="field">
+                <label>Couleur d'accentuation</label>
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                    <input 
+                        type="color" 
+                        value={form.theme_color || '#28C254'} 
+                        onChange={e => update('theme_color', e.target.value)} 
+                        style={{ width: '50px', height: '50px', padding: '0', border: 'none', borderRadius: '8px', cursor: 'pointer' }} 
+                    />
+                    <input 
+                        type="text" 
+                        value={form.theme_color || '#28C254'} 
+                        onChange={e => update('theme_color', e.target.value)} 
+                        style={{ flex: 1, fontFamily: 'monospace' }} 
+                        placeholder="#HEXCODE"
+                    />
+                </div>
+            </div>
+        </div>
     );
-}
+}

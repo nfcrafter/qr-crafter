@@ -94,47 +94,59 @@ export default function Register() {
         <div style={{
             minHeight: '100vh', display: 'flex',
             alignItems: 'center', justifyContent: 'center',
-            background: 'var(--bg)', padding: '24px',
+            background: 'linear-gradient(135deg, #F8FAFC 0%, #EFF6FF 100%)',
+            padding: '40px 20px'
         }}>
-            <div style={{
-                background: 'var(--bg-white)', borderRadius: 'var(--radius-lg)',
-                padding: '48px 40px', width: '100%', maxWidth: '440px',
-                boxShadow: 'var(--shadow-lg)', border: '1px solid var(--border)',
+            <div className="premium-card" style={{
+                padding: '48px 40px', width: '100%', maxWidth: '500px',
+                background: 'rgba(255, 255, 255, 0.8)',
+                backdropFilter: 'blur(10px)'
             }}>
                 {/* Logo */}
-                <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-                    <img src="/logo.png" alt="NFCrafter" style={{ height: '56px', width: 'auto', marginBottom: '12px' }} />
-                    <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: '800', color: 'var(--accent)' }}>
-                        {cardId ? 'Activer ma carte' : 'Créer mon compte'}
+                <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+                    <div style={{ 
+                        width: '48px', height: '48px', background: 'var(--primary)', 
+                        borderRadius: '12px', display: 'flex', alignItems: 'center', 
+                        justifyContent: 'center', color: 'white', fontWeight: 'bold', 
+                        fontSize: '24px', margin: '0 auto 16px',
+                        boxShadow: '0 8px 16px rgba(40, 194, 84, 0.2)'
+                    }}>Q</div>
+                    <h1 style={{ fontSize: '28px', fontWeight: '800', letterSpacing: '-1px', color: 'var(--text-900)', margin: 0 }}>
+                        {cardId ? 'ACTIVER MA CARTE' : 'CRÉER MON COMPTE'}
                     </h1>
+                    
                     {cardId && cardInfo && (
                         <div style={{
-                            marginTop: '8px', padding: '8px 16px',
-                            background: 'var(--accent-light)', borderRadius: 'var(--radius-md)',
-                            fontSize: '13px', color: 'var(--accent)', fontWeight: '600',
+                            marginTop: '16px', padding: '12px 16px',
+                            background: 'var(--primary-light)', borderRadius: '12px',
+                            fontSize: '14px', color: '#166534', fontWeight: '600',
+                            border: '1px solid #BBF7D0', display: 'inline-flex', alignItems: 'center', gap: '8px'
                         }}>
-                            ✅ Carte {cardId} détectée — {cardInfo.card_name}
+                            <span>✅</span> Carte #{cardId} reconnue ({cardInfo.card_name})
                         </div>
                     )}
+                    
                     {cardId && !cardInfo && (
                         <div style={{
-                            marginTop: '8px', padding: '8px 16px',
-                            background: '#fff3e0', borderRadius: 'var(--radius-md)',
-                            fontSize: '13px', color: '#e65100',
+                            marginTop: '16px', padding: '12px 16px',
+                            background: '#FEF2F2', borderRadius: '12px',
+                            fontSize: '14px', color: '#991B1B', fontWeight: '600',
+                            border: '1px solid #FECACA', display: 'inline-flex', alignItems: 'center', gap: '8px'
                         }}>
-                            ⚠️ Lien d'activation invalide ou expiré
+                            <span>⚠️</span> Lien d'activation invalide ou expiré
                         </div>
                     )}
+
                     {!cardId && (
-                        <p style={{ color: 'var(--text-light)', fontSize: '14px', marginTop: '4px' }}>
-                            Gérez votre carte NFCrafter
+                        <p style={{ color: 'var(--text-500)', fontSize: '15px', marginTop: '8px' }}>
+                            Rejoignez la révolution des cartes de visite numériques
                         </p>
                     )}
                 </div>
 
                 <form onSubmit={handleRegister}>
                     <div className="field">
-                        <label>Nom complet *</label>
+                        <label style={{ fontWeight: '600', color: 'var(--text-700)' }}>Nom complet</label>
                         <input type="text" placeholder="Jean Dupont"
                             value={form.fullName}
                             onChange={e => update('fullName', e.target.value)}
@@ -142,55 +154,60 @@ export default function Register() {
                         />
                     </div>
                     <div className="field">
-                        <label>Email *</label>
+                        <label style={{ fontWeight: '600', color: 'var(--text-700)' }}>Email</label>
                         <input type="email" placeholder="jean@example.com"
                             value={form.email}
                             onChange={e => update('email', e.target.value)}
                             required
                         />
                     </div>
-                    <div className="field">
-                        <label>Mot de passe *</label>
-                        <input type="password" placeholder="Minimum 6 caractères"
-                            value={form.password}
-                            onChange={e => update('password', e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className="field">
-                        <label>Confirmer le mot de passe *</label>
-                        <input type="password" placeholder="Répétez le mot de passe"
-                            value={form.confirm}
-                            onChange={e => update('confirm', e.target.value)}
-                            required
-                        />
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                        <div className="field">
+                            <label style={{ fontWeight: '600', color: 'var(--text-700)' }}>Mot de passe</label>
+                            <input type="password" placeholder="••••••••"
+                                value={form.password}
+                                onChange={e => update('password', e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="field">
+                            <label style={{ fontWeight: '600', color: 'var(--text-700)' }}>Confirmer</label>
+                            <input type="password" placeholder="••••••••"
+                                value={form.confirm}
+                                onChange={e => update('confirm', e.target.value)}
+                                required
+                            />
+                        </div>
                     </div>
 
                     {error && (
                         <div style={{
-                            background: '#fff5f5', border: '1px solid #fed7d7',
-                            color: 'var(--error)', borderRadius: 'var(--radius-sm)',
-                            padding: '10px 14px', fontSize: '13px', marginBottom: '16px',
+                            background: '#FEF2F2', border: '1px solid #FECACA',
+                            color: '#DC2626', borderRadius: '12px',
+                            padding: '12px 16px', fontSize: '14px', marginBottom: '24px',
+                            display: 'flex', alignItems: 'center', gap: '8px'
                         }}>
-                            ⚠️ {error}
+                            <span>⚠️</span> {error}
                         </div>
                     )}
 
                     <button type="submit" className="btn-primary"
-                        style={{ width: '100%', justifyContent: 'center', padding: '13px' }}
+                        style={{ width: '100%', justifyContent: 'center', padding: '14px', fontSize: '16px', marginTop: '8px' }}
                         disabled={loading}>
                         {loading ? 'Création...' : cardId ? '🚀 Activer ma carte' : 'Créer mon compte'}
                     </button>
                 </form>
 
-                <p style={{ textAlign: 'center', marginTop: '20px', fontSize: '13px', color: 'var(--text-light)' }}>
-                    Déjà un compte ?{' '}
-                    <Link to={cardId ? `/activate?card=${cardId}&token=${token}` : '/login'}
-                        style={{ color: 'var(--accent)', fontWeight: '600', textDecoration: 'none' }}>
-                        Se connecter
-                    </Link>
-                </p>
+                <div style={{ marginTop: '32px', textAlign: 'center', borderTop: '1px solid var(--border)', paddingTop: '24px' }}>
+                    <p style={{ color: 'var(--text-500)', fontSize: '14px' }}>
+                        Déjà un compte ?{' '}
+                        <Link to={cardId ? `/activate?card=${cardId}&token=${token}` : '/login'}
+                            style={{ color: 'var(--primary)', fontWeight: '700', textDecoration: 'none' }}>
+                            Se connecter
+                        </Link>
+                    </p>
+                </div>
             </div>
         </div>
     )
-}
+}

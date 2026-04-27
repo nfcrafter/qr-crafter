@@ -41,26 +41,66 @@ export default function Activate() {
     }
 
     return (
-        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)', padding: '24px' }}>
-            <div style={{ background: 'var(--bg-white)', borderRadius: 'var(--radius-lg)', padding: '48px 40px', width: '100%', maxWidth: '440px', boxShadow: 'var(--shadow-lg)', textAlign: 'center' }}>
-                <img src="/logo.png" alt="NFCrafter" style={{ height: '56px', marginBottom: '16px' }} />
-                <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: '800', color: 'var(--accent)', marginBottom: '8px' }}>
-                    Ajouter une carte
+        <div style={{
+            minHeight: '100vh', display: 'flex',
+            alignItems: 'center', justifyContent: 'center',
+            background: 'linear-gradient(135deg, #F8FAFC 0%, #EFF6FF 100%)',
+            padding: '24px'
+        }}>
+            <div className="premium-card" style={{
+                padding: '48px 40px', width: '100%', maxWidth: '440px',
+                background: 'rgba(255, 255, 255, 0.8)',
+                backdropFilter: 'blur(10px)',
+                textAlign: 'center'
+            }}>
+                <div style={{ 
+                    width: '48px', height: '48px', background: 'var(--primary)', 
+                    borderRadius: '12px', display: 'flex', alignItems: 'center', 
+                    justifyContent: 'center', color: 'white', fontWeight: 'bold', 
+                    fontSize: '24px', margin: '0 auto 24px',
+                    boxShadow: '0 8px 16px rgba(40, 194, 84, 0.2)'
+                }}>Q</div>
+                
+                <h1 style={{ fontSize: '28px', fontWeight: '800', letterSpacing: '-1px', color: 'var(--text-900)', margin: '0 0 12px 0' }}>
+                    AJOUTER UNE CARTE
                 </h1>
+
                 {cardInfo ? (
                     <>
-                        <p style={{ color: 'var(--text-light)', marginBottom: '24px' }}>
-                            Carte <strong>{cardId}</strong> — {cardInfo.card_name}
+                        <div style={{
+                            margin: '24px 0', padding: '16px',
+                            background: 'var(--primary-light)', borderRadius: '12px',
+                            fontSize: '15px', color: '#166534', fontWeight: '600',
+                            border: '1px solid #BBF7D0'
+                        }}>
+                            Carte reconnue : <strong>#{cardId}</strong><br/>
+                            <span style={{ fontSize: '13px', opacity: 0.8 }}>({cardInfo.card_name})</span>
+                        </div>
+                        <p style={{ color: 'var(--text-500)', fontSize: '15px', marginBottom: '32px' }}>
+                            Souhaitez-vous lier cette nouvelle carte à votre compte actuel ?
                         </p>
                         <button className="btn-primary" onClick={activateCard} disabled={loading}
-                            style={{ width: '100%', justifyContent: 'center', padding: '13px' }}>
+                            style={{ width: '100%', justifyContent: 'center', padding: '14px', fontSize: '16px' }}>
                             {loading ? 'Activation...' : '✅ Ajouter à mon compte'}
                         </button>
                     </>
                 ) : (
-                    <p style={{ color: 'var(--error)' }}>⚠️ Lien invalide ou expiré</p>
+                    <div style={{
+                        marginTop: '16px', padding: '16px',
+                        background: '#FEF2F2', borderRadius: '12px',
+                        fontSize: '15px', color: '#DC2626', fontWeight: '600',
+                        border: '1px solid #FECACA'
+                    }}>
+                        ⚠️ Lien d'activation invalide ou expiré
+                    </div>
                 )}
+                
+                <div style={{ marginTop: '32px', textAlign: 'center', borderTop: '1px solid var(--border)', paddingTop: '24px' }}>
+                    <button onClick={() => navigate('/dashboard')} className="btn-ghost" style={{ fontSize: '14px' }}>
+                        Retour au dashboard
+                    </button>
+                </div>
             </div>
         </div>
     )
-}
+}
