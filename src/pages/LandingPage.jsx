@@ -5,7 +5,7 @@ export default function LandingPage() {
     const navigate = useNavigate();
 
     return (
-        <div className="landing-page" style={{ background: '#FFFFFF', minHeight: '100vh' }}>
+        <div className="landing-page" style={{ background: '#FFFFFF', minHeight: '100vh', overflowX: 'hidden' }}>
             {/* Navigation */}
             <nav style={{ 
                 height: '80px', 
@@ -13,23 +13,28 @@ export default function LandingPage() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                padding: '0 40px'
+                padding: '0 min(40px, 5%)',
+                position: 'sticky',
+                top: 0,
+                background: 'rgba(255, 255, 255, 0.8)',
+                backdropFilter: 'blur(10px)',
+                zIndex: 1000
             }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => navigate('/')}>
-                    <img src="/logo.png" alt="QR Crafter" style={{ height: '40px' }} />
-                    <span style={{ fontSize: '22px', fontWeight: '800', color: '#1A1265', letterSpacing: '-0.5px' }}>
+                    <img src="/logo.png" alt="QR Crafter" style={{ height: '32px' }} />
+                    <span style={{ fontSize: 'clamp(18px, 4vw, 22px)', fontWeight: '800', color: '#1A1265', letterSpacing: '-0.5px' }}>
                         QR<span style={{ color: 'var(--primary)' }}>CRAFTER</span>
                     </span>
                 </div>
-                <div style={{ display: 'flex', gap: '12px' }}>
-                    <button className="btn-ghost" onClick={() => navigate('/login')}>Se connecter</button>
-                    <button className="btn-primary" onClick={() => navigate('/register')}>S'inscrire</button>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                    <button className="btn-ghost" style={{ padding: '8px 12px', fontSize: '14px' }} onClick={() => navigate('/login')}>Connexion</button>
+                    <button className="btn-primary" style={{ padding: '8px 16px', fontSize: '14px' }} onClick={() => navigate('/register')}>Débuter</button>
                 </div>
             </nav>
 
             {/* Hero Section */}
             <section style={{ 
-                padding: '100px 20px 60px', 
+                padding: 'clamp(60px, 10vw, 120px) 20px 60px', 
                 background: 'linear-gradient(180deg, #EEF2FF 0%, #FFFFFF 100%)',
                 textAlign: 'center',
                 position: 'relative',
@@ -37,91 +42,74 @@ export default function LandingPage() {
             }}>
                 <div className="max-w-wrapper">
                     <h1 style={{ 
-                        fontSize: 'clamp(40px, 8vw, 64px)', 
+                        fontSize: 'clamp(36px, 8vw, 72px)', 
                         lineHeight: '1.1', 
                         fontWeight: '800', 
                         marginBottom: '24px',
-                        color: '#0F172A'
+                        color: '#0F172A',
+                        letterSpacing: '-1.5px'
                     }}>
                         Nous simplifions les <span style={{ color: 'var(--primary)' }}>codes QR</span>
                     </h1>
+                    <p style={{ fontSize: 'clamp(16px, 4vw, 20px)', color: 'var(--text-500)', maxWidth: '700px', margin: '0 auto 40px', lineHeight: '1.6' }}>
+                        Gérez vos cartes NFC, créez des profils digitaux premium et suivez vos performances avec notre générateur universel.
+                    </p>
                     <div style={{ 
                         display: 'flex', 
                         justifyContent: 'center', 
-                        gap: '40px', 
+                        gap: 'clamp(16px, 5vw, 40px)', 
                         marginBottom: '48px',
                         flexWrap: 'wrap'
                     }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <CheckIcon /> <span>Générez des codes QR dynamiques</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px', fontWeight: '600' }}>
+                            <CheckIcon /> <span>Codes QR dynamiques</span>
                         </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <CheckIcon /> <span>Suivez les performances</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px', fontWeight: '600' }}>
+                            <CheckIcon /> <span>Suivi & Statistiques</span>
                         </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <CheckIcon /> <span>Concevez avec logo et couleurs</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px', fontWeight: '600' }}>
+                            <CheckIcon /> <span>Design Personnalisé</span>
                         </div>
                     </div>
-                    <button className="btn-primary" style={{ padding: '20px 40px', fontSize: '20px', borderRadius: '40px' }} onClick={() => navigate('/register')}>
-                        Créer un code QR
+                    <button className="btn-primary" style={{ padding: '20px 48px', fontSize: '20px', borderRadius: '40px', boxShadow: '0 20px 40px rgba(26, 18, 101, 0.2)' }} onClick={() => navigate('/register')}>
+                        Créer un code QR gratuitement
                     </button>
 
                     {/* Preview Mockup */}
                     <div style={{ marginTop: '80px', position: 'relative', zIndex: 2 }}>
                         <div className="premium-card" style={{ 
-                            padding: '10px', 
-                            borderRadius: '24px', 
+                            padding: 'clamp(4px, 1vw, 10px)', 
+                            borderRadius: 'clamp(16px, 3vw, 24px)', 
                             maxWidth: '1000px', 
                             margin: '0 auto',
-                            background: 'white'
+                            background: 'white',
+                            boxShadow: '0 40px 100px rgba(15, 23, 42, 0.1)'
                         }}>
                             <img 
                                 src="https://images.unsplash.com/photo-1551288049-bbbda5366392?auto=format&fit=crop&q=80&w=2000" 
                                 alt="Dashboard Preview" 
-                                style={{ width: '100%', borderRadius: '16px', display: 'block' }}
+                                style={{ width: '100%', borderRadius: 'inherit', display: 'block' }}
                             />
                         </div>
                     </div>
                 </div>
-
-                {/* Decorative blobs */}
-                <div style={{ 
-                    position: 'absolute', 
-                    top: '10%', 
-                    left: '-5%', 
-                    width: '300px', 
-                    height: '300px', 
-                    background: 'var(--primary)', 
-                    filter: 'blur(150px)', 
-                    opacity: 0.1 
-                }}></div>
-                <div style={{ 
-                    position: 'absolute', 
-                    bottom: '10%', 
-                    right: '-5%', 
-                    width: '300px', 
-                    height: '300px', 
-                    background: 'var(--secondary)', 
-                    filter: 'blur(150px)', 
-                    opacity: 0.1 
-                }}></div>
             </section>
 
             {/* QR Types Section */}
             <section style={{ padding: '80px 20px', background: '#FFFFFF' }}>
                 <div className="max-w-wrapper">
                     <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-                        <h2 style={{ fontSize: '40px', fontWeight: '800', marginBottom: '16px' }}>
+                        <h2 style={{ fontSize: 'clamp(32px, 6vw, 48px)', fontWeight: '800', marginBottom: '16px' }}>
                             Un seul outil pour tous vos <span style={{ color: 'var(--primary)' }}>besoins</span>
                         </h2>
                         <p style={{ color: 'var(--text-500)', fontSize: '18px' }}>
-                            Découvrez la multitude de types de codes QR que vous pouvez générer gratuitement.
+                            16 types de codes QR intelligents à votre disposition.
                         </p>
                     </div>
 
                     <div style={{ 
                         display: 'grid', 
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', 
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(clamp(140px, 40vw, 180px), 1fr))', 
                         gap: '20px' 
                     }}>
                         {[
@@ -149,10 +137,8 @@ export default function LandingPage() {
                                 flexDirection: 'column',
                                 alignItems: 'center',
                                 gap: '12px',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s ease'
-                            }} onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-5px)'}
-                               onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}>
+                                cursor: 'pointer'
+                            }}>
                                 <span style={{ fontSize: '32px' }}>{type.icon}</span>
                                 <span style={{ fontWeight: '700', fontSize: '14px', color: 'var(--text-900)' }}>{type.label}</span>
                             </div>
@@ -166,30 +152,30 @@ export default function LandingPage() {
                 <div className="max-w-wrapper">
                     <h2 style={{ 
                         textAlign: 'center', 
-                        fontSize: '48px', 
+                        fontSize: 'clamp(32px, 6vw, 48px)', 
                         marginBottom: '60px',
-                        fontWeight: '700'
+                        fontWeight: '800'
                     }}>
-                        Créez votre code QR gratuitement en trois <span style={{ color: 'var(--primary)' }}>étapes simples</span>
+                        Créez votre code QR en <span style={{ color: 'var(--primary)' }}>3 étapes</span>
                     </h2>
                     
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '40px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '30px' }}>
                         <StepCard 
                             number="1" 
-                            title="Lien Administrateur" 
-                            description="L'administrateur génère votre lien unique et prépare votre carte NFC personnalisée."
+                            title="Générez" 
+                            description="Choisissez votre type de QR et remplissez les informations nécessaires."
                             color="var(--primary)"
                         />
                         <StepCard 
                             number="2" 
-                            title="Activez votre carte" 
-                            description="Recevez votre carte, scannez-la et connectez-vous pour configurer votre profil digital."
+                            title="Personnalisez" 
+                            description="Ajoutez votre logo, vos couleurs et choisissez un style de points unique."
                             color="var(--secondary)"
                         />
                         <StepCard 
                             number="3" 
-                            title="Profil illimité & Gratuit" 
-                            description="Mettez à jour vos informations à tout moment, sans aucun frais caché, pour toujours."
+                            title="Diffusez" 
+                            description="Téléchargez votre QR haute résolution ou commandez votre carte NFC."
                             color="var(--accent)"
                         />
                     </div>
@@ -200,37 +186,34 @@ export default function LandingPage() {
             <section style={{ padding: '100px 20px', background: '#FFFFFF' }}>
                 <div className="max-w-wrapper">
                     <div style={{ textAlign: 'center', marginBottom: '80px' }}>
-                        <h2 style={{ fontSize: '48px', marginBottom: '20px' }}>
-                            Le plus <span style={{ color: 'var(--primary)' }}>perfectionné</span> des générateurs
+                        <h2 style={{ fontSize: 'clamp(32px, 6vw, 48px)', marginBottom: '20px', fontWeight: '800' }}>
+                            Le plus <span style={{ color: 'var(--primary)' }}>perfectionné</span>
                         </h2>
-                        <p style={{ color: 'var(--text-500)', fontSize: '18px', maxWidth: '800px', margin: '0 auto' }}>
-                            Notre logiciel est extrêmement fonctionnel et personnalisable, tout en restant facile à utiliser pour tous.
-                        </p>
                     </div>
 
                     <div style={{ 
                         display: 'grid', 
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', 
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(min(350px, 100%), 1fr))', 
                         gap: '24px' 
                     }}>
                         <FeatureCard 
-                            title="Des codes QR high-tech"
-                            desc="Accédez à des fonctionnalités avancées grâce à notre générateur de code QR dynamique."
+                            title="Codes QR Dynamiques"
+                            desc="Modifiez le contenu de votre QR même après l'avoir imprimé sur vos cartes."
                             icon="⚡"
                         />
                         <FeatureCard 
-                            title="Des taux de conversion élevés"
-                            desc="Créez des codes QR performants qui représentent fidèlement votre marque."
+                            title="Conversion Optimisée"
+                            desc="Des designs qui attirent l'œil et encouragent le scan immédiat."
                             icon="📈"
                         />
                         <FeatureCard 
-                            title="Analyses en temps réel"
-                            desc="Sachez quand, où et combien de fois vos codes QR ont été scannés."
+                            title="Statistiques en Direct"
+                            desc="Suivez chaque interaction pour comprendre l'impact de vos codes."
                             icon="📊"
                         />
                         <FeatureCard 
-                            title="Personnalisation totale"
-                            desc="Rendez vos codes QR plus attrayants grâce à notre gamme infinie d'options."
+                            title="Branding complet"
+                            desc="Intégrez votre logo et vos couleurs de marque parfaitement."
                             icon="🎨"
                         />
                     </div>
@@ -238,7 +221,7 @@ export default function LandingPage() {
             </section>
 
             {/* Footer */}
-            <footer style={{ padding: '80px 20px', background: '#1A1265', color: 'white' }}>
+            <footer style={{ padding: '60px 20px', background: '#0F172A', color: 'white' }}>
                 <div className="max-w-wrapper" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '40px' }}>
                     <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
@@ -247,11 +230,11 @@ export default function LandingPage() {
                                 QR<span style={{ color: '#6366F1' }}>CRAFTER</span>
                             </span>
                         </div>
-                        <p style={{ color: '#94A3B8' }}>© 2024 QR Crafter. Tous droits réservés.</p>
+                        <p style={{ color: '#94A3B8', fontSize: '14px' }}>© 2024 QR Crafter. La plateforme NFC premium.</p>
                     </div>
-                    <div style={{ display: 'flex', gap: '40px' }}>
-                        <a href="#" style={{ color: '#94A3B8', textDecoration: 'none' }}>Fonctionnalités</a>
-                        <a href="#" style={{ color: '#94A3B8', textDecoration: 'none' }}>Aide</a>
+                    <div style={{ display: 'flex', gap: '24px' }}>
+                        <a href="#" style={{ color: '#94A3B8', textDecoration: 'none', fontSize: '14px' }}>Fonctionnalités</a>
+                        <a href="#" style={{ color: '#94A3B8', textDecoration: 'none', fontSize: '14px' }}>Aide</a>
                     </div>
                 </div>
             </footer>

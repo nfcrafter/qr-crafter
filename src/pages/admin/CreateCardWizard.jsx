@@ -540,8 +540,5 @@ export default function CreateCardWizard() {
                 </div>
             </div>
         </div>
-        </div>
     );
 }
-
-

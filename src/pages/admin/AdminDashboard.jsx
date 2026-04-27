@@ -156,7 +156,9 @@ export default function AdminDashboard() {
                     <StatCard label="Total Cartes" value={stats.total} icon="💳" color="var(--primary)" />
                     <StatCard label="Cartes Actives" value={stats.active} icon="✅" color="#22C55E" />
                     <StatCard label="En Attente" value={stats.pending} icon="⏳" color="var(--accent)" />
-                        {/* Filters & Table */}
+                </div>
+
+                {/* Filters & Table */}
                 <div className="premium-card" style={{ padding: '0', overflow: 'hidden' }}>
                     <div style={{ padding: '24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
                         <div style={{ position: 'relative', flex: 1, minWidth: '200px' }}>
