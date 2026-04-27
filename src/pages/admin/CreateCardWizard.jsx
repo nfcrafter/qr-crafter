@@ -6,26 +6,24 @@ import { useToast } from '../../components/Toast.jsx';
 import QRCodeStyling from 'qr-code-styling';
 import { generateUniqueCardId } from '../../lib/utils.js';
 import ProfileForm from '../../components/ProfileForm.jsx';
-import PhonePreview from '../../components/PhonePreview.jsx';
-import PublicProfile from '../PublicProfile.jsx';
 
 const QR_TYPES = [
-    { id: 'url', icon: '🔗', label: 'URL / Profil', description: 'Lien vers un profil ou site' },
-    { id: 'vcard', icon: '👤', label: 'VCard', description: 'Coordonnées de contact' },
-    { id: 'text', icon: '📝', label: 'Texte', description: 'Message ou note simple' },
-    { id: 'wifi', icon: '📶', label: 'WiFi', description: 'Partage de connexion' },
-    { id: 'email', icon: '📧', label: 'Email', description: 'Envoi de mail pré-rempli' },
-    { id: 'sms', icon: '💬', label: 'SMS', description: 'Envoi de SMS pré-rempli' },
-    { id: 'phone', icon: '📞', label: 'Téléphone', description: 'Appel direct' },
-    { id: 'geo', icon: '📍', label: 'Localisation', description: 'Coordonnées GPS' },
-    { id: 'event', icon: '📅', label: 'Événement', description: 'Calendrier iCal' },
-    { id: 'crypto', icon: '₿', label: 'Crypto', description: 'Adresse de wallet' },
-    { id: 'instagram', icon: '📸', label: 'Instagram', description: 'Profil ou lien post' },
-    { id: 'facebook', icon: '👥', label: 'Facebook', description: 'Page ou profil' },
-    { id: 'pdf', icon: '📄', label: 'PDF', description: 'Document téléchargeable' },
-    { id: 'music', icon: '🎵', label: 'Musique', description: 'Lien audio ou playlist' },
-    { id: 'video', icon: '🎞️', label: 'Vidéo', description: 'Lien YouTube ou autre' },
-    { id: 'image', icon: '🖼️', label: 'Image', description: 'Galerie ou image seule' }
+    { id: 'url', icon: '🔗', label: 'URL / Profil' },
+    { id: 'vcard', icon: '👤', label: 'VCard' },
+    { id: 'text', icon: '📝', label: 'Texte' },
+    { id: 'wifi', icon: '📶', label: 'WiFi' },
+    { id: 'email', icon: '📧', label: 'Email' },
+    { id: 'sms', icon: '💬', label: 'SMS' },
+    { id: 'phone', icon: '📞', label: 'Téléphone' },
+    { id: 'geo', icon: '📍', label: 'Localisation' },
+    { id: 'event', icon: '📅', label: 'Événement' },
+    { id: 'crypto', icon: '₿', label: 'Crypto' },
+    { id: 'instagram', icon: '📸', label: 'Instagram' },
+    { id: 'facebook', icon: '👥', label: 'Facebook' },
+    { id: 'pdf', icon: '📄', label: 'PDF' },
+    { id: 'music', icon: '🎵', label: 'Musique' },
+    { id: 'video', icon: '🎞️', label: 'Vidéo' },
+    { id: 'image', icon: '🖼️', label: 'Image' }
 ];
 
 const DOT_STYLES = [
@@ -86,38 +84,26 @@ export default function CreateCardWizard() {
     function formatQRData() {
         const profileUrl = `${window.location.origin}/u/${generatedCardId}`;
         switch (selectedType) {
-            case 'url': return typeData.url || profileUrl;
-            case 'vcard': return `BEGIN:VCARD\nVERSION:3.0\nFN:${typeData.fn || ''}\nTEL:${typeData.tel || ''}\nEMAIL:${typeData.email || ''}\nORG:${typeData.org || ''}\nEND:VCARD`;
-            case 'text': return typeData.text || '';
+            case 'vcard': return `BEGIN:VCARD\nVERSION:3.0\nFN:${typeData.fn || ''}\nTEL:${typeData.tel || ''}\nEMAIL:${typeData.email || ''}\nEND:VCARD`;
             case 'wifi': return `WIFI:T:${typeData.encryption || 'WPA'};S:${typeData.ssid || ''};P:${typeData.pass || ''};;`;
-            case 'email': return `mailto:${typeData.to || ''}?subject=${encodeURIComponent(typeData.sub || '')}&body=${encodeURIComponent(typeData.body || '')}`;
-            case 'sms': return `SMSTO:${typeData.num || ''}:${typeData.msg || ''}`;
-            case 'phone': return `tel:${typeData.num || ''}`;
-            case 'geo': return `geo:${typeData.lat || ''},${typeData.lng || ''}`;
-            case 'event': return `BEGIN:VEVENT\nSUMMARY:${typeData.summary || ''}\nDTSTART:${typeData.start?.replace(/[-:]/g, '') || ''}\nDTEND:${typeData.end?.replace(/[-:]/g, '') || ''}\nLOCATION:${typeData.location || ''}\nEND:VEVENT`;
-            case 'crypto': return `${typeData.coin || 'bitcoin'}:${typeData.addr || ''}`;
+            case 'text': return typeData.text || '';
             default: return typeData.url || profileUrl;
         }
     }
 
     function initQRCode(data) {
-        const options = {
+        qrCode.current = new QRCodeStyling({
             width: 280, height: 280, type: 'svg', data: data,
             dotsOptions: { 
-                color: qrAppearance.dotsColor, 
-                type: qrAppearance.dotsType,
-                gradient: qrAppearance.useGradient ? {
-                    type: 'linear', rotation: 45,
-                    colorStops: [{ offset: 0, color: qrAppearance.dotsColor }, { offset: 1, color: qrAppearance.gradientColor }]
-                } : null
+                color: qrAppearance.dotsColor, type: qrAppearance.dotsType,
+                gradient: qrAppearance.useGradient ? { type: 'linear', rotation: 45, colorStops: [{ offset: 0, color: qrAppearance.dotsColor }, { offset: 1, color: qrAppearance.gradientColor }] } : null
             },
             backgroundOptions: { color: qrAppearance.bgColor },
             cornersSquareOptions: { color: qrAppearance.cornersColor, type: qrAppearance.cornersType },
             cornersDotOptions: { color: qrAppearance.cornersDotColor, type: qrAppearance.cornersDotType },
             image: qrAppearance.logo_url || '',
             imageOptions: { crossOrigin: 'anonymous', margin: 10 }
-        };
-        qrCode.current = new QRCodeStyling(options);
+        });
         if (qrRef.current) { qrRef.current.innerHTML = ''; qrCode.current.append(qrRef.current); }
     }
 
@@ -126,12 +112,8 @@ export default function CreateCardWizard() {
         qrCode.current.update({
             data: data,
             dotsOptions: { 
-                color: qrAppearance.dotsColor, 
-                type: qrAppearance.dotsType,
-                gradient: qrAppearance.useGradient ? {
-                    type: 'linear', rotation: 45,
-                    colorStops: [{ offset: 0, color: qrAppearance.dotsColor }, { offset: 1, color: qrAppearance.gradientColor }]
-                } : null
+                color: qrAppearance.dotsColor, type: qrAppearance.dotsType,
+                gradient: qrAppearance.useGradient ? { type: 'linear', rotation: 45, colorStops: [{ offset: 0, color: qrAppearance.dotsColor }, { offset: 1, color: qrAppearance.gradientColor }] } : null
             },
             backgroundOptions: { color: qrAppearance.bgColor },
             cornersSquareOptions: { color: qrAppearance.cornersColor, type: qrAppearance.cornersType },
@@ -149,8 +131,8 @@ export default function CreateCardWizard() {
             if (error) throw error;
             const { data: { publicUrl } } = supabase.storage.from(bucket).getPublicUrl(fileName);
             setter(publicUrl);
-            toast('Succès : Image chargée', 'success');
-        } catch (err) { toast("Erreur lors de l'upload. Vérifiez que le bucket est public.", 'error'); } 
+            toast('Fichier chargé', 'success');
+        } catch (err) { toast("Erreur d'upload", 'error'); } 
         finally { loadingSetter(false); }
     }
 
@@ -166,12 +148,11 @@ export default function CreateCardWizard() {
                 if (newFolder) folderId = newFolder.id;
             }
 
-            const token = Math.random().toString(36).substring(2, 10).toUpperCase();
             const { error } = await supabase.from('cards').insert({
                 card_id: generatedCardId,
                 card_name: clientInfo.clientName,
                 status: 'pending',
-                activation_token: token,
+                activation_token: Math.random().toString(36).substring(2, 10).toUpperCase(),
                 city: clientInfo.city,
                 country: clientInfo.country,
                 folder_id: folderId,
@@ -180,32 +161,43 @@ export default function CreateCardWizard() {
                 type_data: { ...typeData, qr_type: selectedType }
             });
             if (error) throw error;
-            toast('Félicitations ! Code QR créé.', 'success');
+            toast('Code QR créé avec succès !', 'success');
             navigate('/admin');
         } catch (err) { toast('Erreur : ' + err.message, 'error'); } 
         finally { setGenerating(false); }
     }
 
     return (
-        <div style={{ minHeight: '100vh', background: '#F8FAFC', padding: '40px 20px', fontFamily: "'Inter', sans-serif" }}>
+        <div style={{ minHeight: '100vh', background: '#F8FAFC', padding: '40px 20px' }}>
             <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
                 <header style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '40px' }}>
                     <div onClick={() => navigate('/admin')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <img src="/logo.png" alt="Logo" style={{ height: '42px' }} />
-                        <h1 style={{ fontSize: '24px', fontWeight: '900', color: '#1A1265', margin: 0 }}>QR CRAFTER <span style={{ fontWeight: '400', color: '#94A3B8' }}>| STUDIO</span></h1>
+                        <img src="/logo.png" alt="Logo" style={{ height: '36px' }} />
+                        <h1 style={{ fontSize: '20px', fontWeight: '900', color: '#1A1265', margin: 0 }}>GÉNÉRATEUR STUDIO</h1>
                     </div>
                 </header>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 450px', gap: '40px' }}>
-                    <div style={{ background: 'white', padding: '40px', borderRadius: '32px', boxShadow: '0 10px 40px rgba(0,0,0,0.03)', border: '1px solid #E2E8F0' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '40px' }}>
+                    <div style={{ background: 'white', padding: '40px', borderRadius: '24px', border: '1px solid #E2E8F0', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
                         {step === 0 && (
-                            <div className="animate-fade-in">
-                                <h2 style={{ fontSize: '24px', marginBottom: '32px', fontWeight: '900', color: '#1A1265' }}>Sélectionnez le type de QR</h2>
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '16px' }}>
+                            <div>
+                                <h2 style={{ fontSize: '20px', marginBottom: '32px', fontWeight: '900', color: '#1A1265' }}>Étape 1 : Type de QR</h2>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '12px' }}>
                                     {QR_TYPES.map(type => (
-                                        <div key={type.id} onClick={() => { setSelectedType(type.id); setStep(1); }} style={{ padding: '32px 20px', border: '2px solid #F1F5F9', borderRadius: '24px', cursor: 'pointer', textAlign: 'center', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', background: selectedType === type.id ? '#EEF2FF' : 'white' }} onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-8px)'; e.currentTarget.style.borderColor = '#1A1265'; e.currentTarget.style.boxShadow = '0 15px 30px rgba(26, 18, 101, 0.1)'; }}>
-                                            <div style={{ fontSize: '42px', marginBottom: '16px' }}>{type.icon}</div>
-                                            <div style={{ fontWeight: '800', color: '#1A1265', fontSize: '15px' }}>{type.label}</div>
+                                        <div 
+                                            key={type.id}
+                                            onClick={() => { setSelectedType(type.id); setStep(1); }}
+                                            style={{ 
+                                                padding: '20px 10px', border: '1px solid #F1F5F9', borderRadius: '16px', cursor: 'pointer',
+                                                background: selectedType === type.id ? '#EEF2FF' : 'white',
+                                                borderColor: selectedType === type.id ? '#1A1265' : '#F1F5F9',
+                                                textAlign: 'center', transition: 'all 0.2s'
+                                            }}
+                                            onMouseEnter={e => e.currentTarget.style.borderColor = '#1A1265'}
+                                            onMouseLeave={e => { if(selectedType !== type.id) e.currentTarget.style.borderColor = '#F1F5F9'; }}
+                                        >
+                                            <div style={{ fontSize: '28px', marginBottom: '10px' }}>{type.icon}</div>
+                                            <div style={{ fontWeight: '800', color: '#1A1265', fontSize: '13px' }}>{type.label}</div>
                                         </div>
                                     ))}
                                 </div>
@@ -213,23 +205,23 @@ export default function CreateCardWizard() {
                         )}
 
                         {step === 1 && (
-                            <div className="animate-fade-in">
-                                <h2 style={{ fontSize: '24px', marginBottom: '32px', fontWeight: '900', color: '#1A1265' }}>Informations Client</h2>
-                                <div className="field"><label>Nom ou Entreprise</label><input type="text" value={clientInfo.clientName} onChange={e => setClientInfo({ ...clientInfo, clientName: e.target.value })} placeholder="Ex: Jean Dupont" /></div>
+                            <div>
+                                <h2 style={{ fontSize: '20px', marginBottom: '32px', fontWeight: '900', color: '#1A1265' }}>Étape 2 : Infos Client</h2>
+                                <div className="field"><label>Nom Client</label><input type="text" value={clientInfo.clientName} onChange={e => setClientInfo({ ...clientInfo, clientName: e.target.value })} /></div>
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                                    <div className="field"><label>Ville</label><input type="text" value={clientInfo.city} onChange={e => setClientInfo({ ...clientInfo, city: e.target.value })} placeholder="Cotonou" /></div>
+                                    <div className="field"><label>Ville</label><input type="text" value={clientInfo.city} onChange={e => setClientInfo({ ...clientInfo, city: e.target.value })} /></div>
                                     <div className="field"><label>Pays</label><input type="text" value={clientInfo.country} onChange={e => setClientInfo({ ...clientInfo, country: e.target.value })} /></div>
                                 </div>
                                 <div style={{ marginTop: '40px', display: 'flex', gap: '16px' }}>
                                     <button className="btn-ghost" style={{ flex: 1 }} onClick={() => setStep(0)}>Retour</button>
-                                    <button className="btn-primary" style={{ flex: 2, background: '#1A1265', color: 'white', border: 'none', padding: '18px', borderRadius: '16px', fontWeight: '800', cursor: 'pointer' }} onClick={() => setStep(2)}>Suivant</button>
+                                    <button className="btn-primary" style={{ flex: 2, background: '#1A1265', color: 'white', border: 'none', padding: '16px', borderRadius: '12px', fontWeight: '800', cursor: 'pointer' }} onClick={() => setStep(2)}>Continuer</button>
                                 </div>
                             </div>
                         )}
 
                         {step === 2 && (
-                            <div className="animate-fade-in">
-                                <h2 style={{ fontSize: '24px', marginBottom: '32px', fontWeight: '900', color: '#1A1265' }}>Données du QR : {selectedType.toUpperCase()}</h2>
+                            <div>
+                                <h2 style={{ fontSize: '20px', marginBottom: '32px', fontWeight: '900', color: '#1A1265' }}>Étape 3 : Contenu</h2>
                                 {selectedType === 'url' ? (
                                     <ProfileForm 
                                         form={publicProfile} onChange={setPublicProfile}
@@ -241,87 +233,54 @@ export default function CreateCardWizard() {
                                     <div style={{ display: 'grid', gap: '20px' }}>
                                         {selectedType === 'wifi' && (
                                             <>
-                                                <div className="field"><label>Nom du Réseau</label><input type="text" value={typeData.ssid || ''} onChange={e => setTypeData({...typeData, ssid: e.target.value})} /></div>
-                                                <div className="field"><label>Mot de passe</label><input type="text" value={typeData.pass || ''} onChange={e => setTypeData({...typeData, pass: e.target.value})} /></div>
-                                                <div className="field"><label>Sécurité</label><select value={typeData.encryption || 'WPA'} onChange={e => setTypeData({...typeData, encryption: e.target.value})}><option value="WPA">WPA/WPA2</option><option value="WEP">WEP</option><option value="nopass">Aucun</option></select></div>
+                                                <div className="field"><label>SSID</label><input type="text" onChange={e => setTypeData({...typeData, ssid: e.target.value})} /></div>
+                                                <div className="field"><label>Mot de passe</label><input type="text" onChange={e => setTypeData({...typeData, pass: e.target.value})} /></div>
                                             </>
                                         )}
-                                        {selectedType === 'vcard' && (
-                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                                                <div className="field" style={{ gridColumn: 'span 2' }}><label>Nom Complet</label><input type="text" value={typeData.fn || ''} onChange={e => setTypeData({...typeData, fn: e.target.value})} /></div>
-                                                <div className="field"><label>Tel</label><input type="text" value={typeData.tel || ''} onChange={e => setTypeData({...typeData, tel: e.target.value})} /></div>
-                                                <div className="field"><label>Email</label><input type="text" value={typeData.email || ''} onChange={e => setTypeData({...typeData, email: e.target.value})} /></div>
-                                            </div>
-                                        )}
-                                        {selectedType === 'sms' && (
-                                            <>
-                                                <div className="field"><label>Numéro</label><input type="text" value={typeData.num || ''} onChange={e => setTypeData({...typeData, num: e.target.value})} /></div>
-                                                <div className="field"><label>Message</label><textarea value={typeData.msg || ''} onChange={e => setTypeData({...typeData, msg: e.target.value})} /></div>
-                                            </>
-                                        )}
-                                        {selectedType === 'event' && (
-                                            <>
-                                                <div className="field"><label>Titre</label><input type="text" value={typeData.summary || ''} onChange={e => setTypeData({...typeData, summary: e.target.value})} /></div>
-                                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                                                    <div className="field"><label>Début</label><input type="datetime-local" onChange={e => setTypeData({...typeData, start: e.target.value})} /></div>
-                                                    <div className="field"><label>Fin</label><input type="datetime-local" onChange={e => setTypeData({...typeData, end: e.target.value})} /></div>
-                                                </div>
-                                            </>
-                                        )}
-                                        {['pdf', 'music', 'video', 'image'].includes(selectedType) && (
-                                            <div className="field">
-                                                <label>Uploader le fichier {uploadingMedia && '⌛'}</label>
-                                                <input type="file" onChange={e => uploadFile(e.target.files[0], 'media', (url) => setTypeData({...typeData, url: url}), setUploadingMedia)} />
-                                                {typeData.url && <p style={{ fontSize: '12px', color: '#10B981', marginTop: '8px' }}>✓ Fichier prêt : {typeData.url.split('/').pop()}</p>}
-                                            </div>
-                                        )}
-                                        {!['url', 'wifi', 'vcard', 'sms', 'event', 'pdf', 'music', 'video', 'image'].includes(selectedType) && (
-                                            <div className="field"><label>URL ou Donnée</label><input type="text" value={typeData.url || ''} onChange={e => setTypeData({...typeData, url: e.target.value})} placeholder="https://..." /></div>
-                                        )}
+                                        <div className="field"><label>Lien ou Donnée</label><input type="text" value={typeData.url || ''} onChange={e => setTypeData({...typeData, url: e.target.value})} placeholder="https://..." /></div>
                                     </div>
                                 )}
                                 <div style={{ marginTop: '40px', display: 'flex', gap: '16px' }}>
                                     <button className="btn-ghost" style={{ flex: 1 }} onClick={() => setStep(1)}>Retour</button>
-                                    <button className="btn-primary" style={{ flex: 2, background: '#1A1265', color: 'white', border: 'none', padding: '18px', borderRadius: '16px', fontWeight: '800', cursor: 'pointer' }} onClick={() => setStep(3)}>Personnalisation →</button>
+                                    <button className="btn-primary" style={{ flex: 2, background: '#1A1265', color: 'white', border: 'none', padding: '16px', borderRadius: '12px', fontWeight: '800', cursor: 'pointer' }} onClick={() => setStep(3)}>Design</button>
                                 </div>
                             </div>
                         )}
 
                         {step === 3 && (
-                            <div className="animate-fade-in">
-                                <h2 style={{ fontSize: '24px', marginBottom: '32px', fontWeight: '900', color: '#1A1265' }}>Design & Esthétique</h2>
+                            <div>
+                                <h2 style={{ fontSize: '20px', marginBottom: '32px', fontWeight: '900', color: '#1A1265' }}>Étape 4 : Personnalisation</h2>
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-                                    <div className="field"><label>Couleur Points</label><input type="color" value={qrAppearance.dotsColor} onChange={e => setQrAppearance({...qrAppearance, dotsColor: e.target.value})} style={{ height: '54px' }} /></div>
+                                    <div className="field"><label>Couleur</label><input type="color" value={qrAppearance.dotsColor} onChange={e => setQrAppearance({...qrAppearance, dotsColor: e.target.value})} style={{ height: '54px' }} /></div>
                                     <div className="field"><label>Forme Points</label><select value={qrAppearance.dotsType} onChange={e => setQrAppearance({...qrAppearance, dotsType: e.target.value})}>{DOT_STYLES.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}</select></div>
                                     <div className="field" style={{ gridColumn: 'span 2' }}>
-                                        <label style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', fontWeight: '700' }}>
                                             <input type="checkbox" checked={qrAppearance.useGradient} onChange={e => setQrAppearance({...qrAppearance, useGradient: e.target.checked})} />
-                                            Activer Dégradé (Gradient)
+                                            Utiliser un dégradé
                                         </label>
-                                        {qrAppearance.useGradient && <input type="color" value={qrAppearance.gradientColor} onChange={e => setQrAppearance({...qrAppearance, gradientColor: e.target.value})} style={{ marginTop: '12px', height: '54px' }} />}
+                                        {qrAppearance.useGradient && <input type="color" value={qrAppearance.gradientColor} onChange={e => setQrAppearance({...qrAppearance, gradientColor: e.target.value})} style={{ marginTop: '10px', height: '54px' }} />}
                                     </div>
-                                    <div className="field"><label>Coins (Square)</label><select value={qrAppearance.cornersType} onChange={e => setQrAppearance({...qrAppearance, cornersType: e.target.value})}>{CORNER_STYLES.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}</select></div>
-                                    <div className="field"><label>Logo central {uploadingLogo && '⏳'}</label><input type="file" onChange={e => uploadFile(e.target.files[0], 'qr-logos', (url) => setQrAppearance({...qrAppearance, logo_url: url}), setUploadingLogo)} /></div>
+                                    <div className="field"><label>Logo central</label><input type="file" onChange={e => uploadFile(e.target.files[0], 'qr-logos', (url) => setQrAppearance({...qrAppearance, logo_url: url}), setUploadingLogo)} /></div>
                                 </div>
                                 <div style={{ marginTop: '40px', display: 'flex', gap: '16px' }}>
                                     <button className="btn-ghost" style={{ flex: 1 }} onClick={() => setStep(2)}>Retour</button>
-                                    <button className="btn-primary" style={{ flex: 2, background: '#1A1265', color: 'white', border: 'none', padding: '18px', borderRadius: '16px', fontWeight: '800', cursor: 'pointer' }} onClick={finalizeCreate} disabled={generating}>{generating ? 'Création...' : 'Finaliser le QR'}</button>
+                                    <button className="btn-primary" style={{ flex: 2, background: '#1A1265', color: 'white', border: 'none', padding: '16px', borderRadius: '12px', fontWeight: '800', cursor: 'pointer' }} onClick={finalizeCreate} disabled={generating}>{generating ? 'Enregistrement...' : 'Finaliser le QR ✓'}</button>
                                 </div>
                             </div>
                         )}
                     </div>
 
                     <div style={{ position: 'sticky', top: '40px' }}>
-                        <div style={{ background: 'white', padding: '32px', borderRadius: '40px', border: '1px solid #E2E8F0', textAlign: 'center', boxShadow: '0 20px 60px rgba(0,0,0,0.05)' }}>
-                            <div ref={qrRef} style={{ background: 'white', padding: '24px', borderRadius: '32px', display: 'inline-block', border: '1px solid #F1F5F9' }}>
-                                {step < 2 && <div style={{ width: '280px', height: '280px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#CBD5E1', border: '3px dashed #F1F5F9', borderRadius: '32px', fontSize: '14px' }}>Configurez le contenu pour l'aperçu</div>}
+                        <div style={{ background: 'white', padding: '32px', borderRadius: '32px', border: '1px solid #E2E8F0', textAlign: 'center', boxShadow: '0 10px 30px rgba(0,0,0,0.03)' }}>
+                            <div ref={qrRef} style={{ background: 'white', padding: '20px', borderRadius: '24px', display: 'inline-block', border: '1px solid #F1F5F9' }}>
+                                {step < 2 && <div style={{ width: '280px', height: '280px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#CBD5E1', border: '2px dashed #F1F5F9', borderRadius: '24px' }}>Aperçu</div>}
                             </div>
-                            <div style={{ marginTop: '32px', textAlign: 'left', background: '#F8FAFC', padding: '32px', borderRadius: '24px', border: '1px solid #F1F5F9' }}>
-                                <div style={{ fontSize: '10px', color: '#94A3B8', fontWeight: '900', letterSpacing: '2px', marginBottom: '8px' }}>RÉSUMÉ DU PROJET</div>
-                                <div style={{ fontSize: '22px', fontWeight: '900', color: '#1A1265', marginBottom: '12px' }}>{QR_TYPES.find(t => t.id === selectedType)?.label}</div>
-                                <div style={{ fontSize: '14px', color: '#64748B', lineHeight: '1.6' }}>
-                                    Ce code QR sera automatiquement classé dans le dossier <strong>{QR_TYPES.find(t => t.id === selectedType)?.label}</strong>. Vous pourrez le personnaliser davantage après sa création.
+                            <div style={{ marginTop: '24px', textAlign: 'left', background: '#F8FAFC', padding: '20px', borderRadius: '20px', border: '1px solid #F1F5F9' }}>
+                                <div style={{ fontWeight: '900', color: '#1A1265', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <span>{QR_TYPES.find(t => t.id === selectedType)?.icon}</span>
+                                    <span>{QR_TYPES.find(t => t.id === selectedType)?.label}</span>
                                 </div>
+                                <div style={{ fontSize: '13px', color: '#64748B', marginTop: '8px' }}>Génère automatiquement un code QR de haute qualité.</div>
                             </div>
                         </div>
                     </div>
