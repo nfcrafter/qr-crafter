@@ -441,7 +441,8 @@ export default function CardSettings() {
                                         </div>
                                         <h3 style={{ marginTop: 8, fontWeight: 900, color: '#1A1265', fontSize: 15 }}>{profile.full_name || 'Votre Nom'}</h3>
                                         <p style={{ fontSize: 11, color: '#64748B' }}>{profile.job_title || 'Profession'}</p>
-                                        <button style={{ width: '100%', marginTop: 12, padding: 10, borderRadius: 12, background: profile.primaryColor || '#1A1265', color: 'white                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 16 }}>
+                                        <button style={{ width: '100%', marginTop: 12, padding: 10, borderRadius: 12, background: profile.primaryColor || '#1A1265', color: 'white', border: 'none', fontWeight: 700, fontSize: 12 }}>Enregistrer le contact</button>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 16 }}>
                                             {(profile.phone || profile.email) && (
                                                 <div style={{ display: 'flex', gap: 6 }}>
                                                     {profile.phone && (

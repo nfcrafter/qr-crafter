@@ -225,6 +225,4 @@ export default function ClientDashboard() {
             `}</style>
         </div>
     );
-}
-    );
-}
+}
