@@ -93,15 +93,12 @@ export default function Login() {
                 </form>
 
                 <div style={{ marginTop: '32px', textAlign: 'center', borderTop: '1px solid var(--border)', paddingTop: '24px' }}>
-                    <p style={{ color: 'var(--text-500)', fontSize: '14px' }}>
-                        Accès réservé. Si vous êtes client, 
-                        <Link 
-                            to={`/register${window.location.search}`} 
-                            style={{ color: 'var(--primary)', fontWeight: '700', marginLeft: 5 }}
-                        >
-                            activez votre carte ici
-                        </Link>
-                    </p>
+                    <button 
+                        onClick={() => toast('Fonctionnalité bientôt disponible. Contactez le support.', 'info')}
+                        style={{ background: 'none', border: 'none', color: 'var(--text-500)', fontSize: '14px', cursor: 'pointer', fontWeight: '600', textDecoration: 'underline' }}
+                    >
+                        Mot de passe oublié ?
+                    </button>
                 </div>
             </div>
         </div>

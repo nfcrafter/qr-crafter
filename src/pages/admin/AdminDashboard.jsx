@@ -101,8 +101,12 @@ export default function AdminDashboard() {
     async function loadUsers() {
         setLoading(true);
         const { data, error } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
-        if (error) toast('Erreur chargement utilisateurs', 'error');
-        else setUsers(data || []);
+        if (error) {
+            console.error('Error loading users:', error);
+            toast('Erreur chargement utilisateurs : ' + error.message, 'error');
+        } else {
+            setUsers(data || []);
+        }
         setLoading(false);
     }
 
