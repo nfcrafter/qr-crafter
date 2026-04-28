@@ -58,6 +58,29 @@ export default function CardSettings() {
 
     useEffect(() => { loadData(); }, [cardId]);
 
+    const handleDelete = async () => {
+        if (!window.confirm('Êtes-vous sûr de vouloir supprimer ce QR code définitivement ? Cette action est irréversible.')) return;
+        setSaving(true);
+        try {
+            const { error } = await supabase.from('cards').delete().eq('id', cardId);
+            if (error) throw error;
+            toast.success('QR Code supprimé avec succès');
+            navigate('/admin');
+        } catch (e) {
+            console.error(e);
+            toast.error('Erreur lors de la suppression');
+            setSaving(false);
+        }
+    };
+
+    const getSocialValue = (key) => typeof profile.socials[key] === 'object' ? profile.socials[key].value || '' : profile.socials[key] || '';
+    const getSocialSubtitle = (key) => typeof profile.socials[key] === 'object' ? profile.socials[key].subtitle || '' : '';
+    const updateSocial = (key, field, val) => {
+        const curr = profile.socials[key];
+        const obj = typeof curr === 'object' ? curr : { value: curr || '', subtitle: '' };
+        setProfile({ ...profile, socials: { ...profile.socials, [key]: { ...obj, [field]: val } } });
+    };
+
     async function loadData() {
         setLoading(true);
         const { data: card, error } = await supabase.from('cards').select('*').eq('card_id', cardId).single();
@@ -98,12 +121,17 @@ export default function CardSettings() {
         }
     }, [qrStyle, loading]);
 
-    function toggleSocial(id) {
-        const s = { ...profile.socials };
-        if (s[id] !== undefined) { delete s[id]; setActiveSocialInput(null); }
-        else { s[id] = ''; setActiveSocialInput(id); }
-        setProfile({ ...profile, socials: s });
-    }
+    const toggleSocial = (id) => {
+        const newSocials = { ...profile.socials };
+        if (newSocials[id] !== undefined) {
+            delete newSocials[id];
+        } else {
+            newSocials[id] = { value: '', subtitle: '' };
+            setActiveSocialInput(id);
+            setTimeout(() => setOpenSection('socials'), 100);
+        }
+        setProfile({ ...profile, socials: newSocials });
+    };
 
     function addCustomLink() {
         setProfile({ ...profile, customLinks: [...(profile.customLinks || []), { label: '', url: '', emoji: '🔗' }] });
@@ -232,7 +260,8 @@ export default function CardSettings() {
                                                 </div>
                                                 <div style={{ flex: 1 }}>
                                                     <label>{net.label}</label>
-                                                    <input type="text" value={profile.socials[key]} onChange={e => setProfile({ ...profile, socials: { ...profile.socials, [key]: e.target.value } })} placeholder={net.placeholder} autoFocus={activeSocialInput === key} />
+                                                    <input type="text" value={getSocialValue(key)} onChange={e => updateSocial(key, 'value', e.target.value)} placeholder={net.placeholder} autoFocus={activeSocialInput === key} style={{ marginBottom: 4 }} />
+                                                    <input type="text" value={getSocialSubtitle(key)} onChange={e => updateSocial(key, 'subtitle', e.target.value)} placeholder="Texte personnalisé (ex: Rejoignez mon canal)" style={{ fontSize: 12, padding: 6 }} />
                                                 </div>
                                                 <button onClick={() => toggleSocial(key)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#EF4444', fontSize: 20, paddingTop: 20 }}>×</button>
                                             </div>
@@ -284,6 +313,17 @@ export default function CardSettings() {
                                 <span style={{ fontSize: 11, fontWeight: 900, color: '#EF4444', letterSpacing: 2 }}>⚠️ ZONE DE DANGER</span>
                                 <div style={{ flex: 1, height: 1, background: '#FECACA' }} />
                             </div>
+                            <div style={{ background: '#FEF2F2', border: '1px solid #FCA5A5', borderRadius: 16, padding: 20 }}>
+                                <h4 style={{ color: '#991B1B', margin: '0 0 8px 0', fontSize: 16, fontWeight: 800 }}>Supprimer ce QR Code</h4>
+                                <p style={{ color: '#B91C1C', fontSize: 13, margin: '0 0 16px 0' }}>Une fois supprimé, ce QR code et sa page associée ne seront plus accessibles. Cette action est irréversible.</p>
+                                <button onClick={handleDelete} disabled={saving} style={{ background: '#DC2626', color: 'white', border: 'none', padding: '10px 16px', borderRadius: 8, fontWeight: 700, cursor: 'pointer', opacity: saving ? 0.7 : 1 }}>
+                                    {saving ? 'Suppression...' : 'Supprimer définitivement'}
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* DESIGN QR CODE */}
+                        <div style={{ marginTop: 40 }}>
                             {acc('qr-design', '🎨', 'Design du Code QR', 'Modifier le visuel uniquement — le lien reste permanent.', (
                                 <div style={{ marginTop: 16 }}>
                                     <div className="field"><label>Style des points</label>
@@ -344,11 +384,16 @@ export default function CardSettings() {
                                             {Object.keys(profile.socials || {}).filter(k => k !== 'phone' && k !== 'email').map(key => {
                                                 const net = SOCIAL_NETWORKS.find(n => n.id === key);
                                                 if (!net) return null;
+                                                const valObj = profile.socials[key];
+                                                const subText = typeof valObj === 'object' ? valObj.subtitle : '';
                                                 return (
                                                     <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: 'white', borderRadius: 12, border: '1px solid #F1F5F9', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-                                                        <div style={{ width: 28, height: 28, borderRadius: 8, background: net.color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                                        <div style={{ width: 28, height: 28, borderRadius: 8, background: net.color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
                                                             dangerouslySetInnerHTML={{ __html: `<div style="width:14px;height:14px;color:${net.iconColor || net.color}">${net.svg}</div>` }} />
-                                                        <span style={{ fontWeight: 700, fontSize: 11, flex: 1, color: '#0F172A' }}>{net.label}</span>
+                                                        <div style={{ flex: 1, overflow: 'hidden' }}>
+                                                            <div style={{ fontWeight: 700, fontSize: 11, color: '#0F172A' }}>{net.label}</div>
+                                                            {subText && <div style={{ fontSize: 9, color: '#64748B', marginTop: 1 }}>{subText}</div>}
+                                                        </div>
                                                         <span style={{ color: '#CBD5E1', fontSize: 12 }}>→</span>
                                                     </div>
                                                 );

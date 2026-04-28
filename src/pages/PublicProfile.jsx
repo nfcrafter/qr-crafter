@@ -197,18 +197,24 @@ export default function PublicProfile() {
 
           {activeLinks.map(link => {
             const linkValue = profile[link.id] || profile?.socials?.[link.id];
+            const valObj = profile.socials?.[link.id];
+            const subText = typeof valObj === 'object' ? valObj.subtitle : '';
             return (
-            <a key={link.id} className="pl"
-              href={link.getUrl(linkValue)}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 18px', background: 'white', borderRadius: 16, textDecoration: 'none', color: '#111', boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.05)' }}>
-              <div style={{ width: 44, height: 44, borderRadius: 12, flexShrink: 0, background: link.color + '18', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                dangerouslySetInnerHTML={{ __html: `<div style="width:22px;height:22px;color:${link.iconColor || link.color}">${link.svg}</div>` }} />
-              <span style={{ fontWeight: 700, fontSize: 15, flex: 1 }}>{link.label}</span>
-              <span style={{ color: '#CBD5E1', fontSize: 18 }}>→</span>
-            </a>
-          )})}
+              <a key={link.id} className="pl"
+                href={link.getUrl(typeof linkValue === 'object' ? linkValue.value : linkValue)}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 18px', background: 'white', borderRadius: 16, textDecoration: 'none', color: '#111', boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.05)' }}>
+                <div style={{ width: 44, height: 44, borderRadius: 12, flexShrink: 0, background: link.color + '18', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                  dangerouslySetInnerHTML={{ __html: `<div style="width:22px;height:22px;color:${link.iconColor || link.color}">${link.svg}</div>` }} />
+                <div style={{ flex: 1, overflow: 'hidden' }}>
+                  <div style={{ fontWeight: 700, fontSize: 15 }}>{link.label}</div>
+                  {subText && <div style={{ fontSize: 12, color: '#64748B', marginTop: 2 }}>{subText}</div>}
+                </div>
+                <span style={{ color: '#CBD5E1', fontSize: 18 }}>→</span>
+              </a>
+            )
+          })}
 
           {activeCustomLinks.length > 0 && (
             <div style={{ marginTop: 8 }}>

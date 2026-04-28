@@ -62,6 +62,14 @@ export default function CreateCardWizard() {
         cornersType: 'extra-rounded', cornersColor: '#1A1265', logo_url: ''
     });
 
+    const getSocialValue = (key) => typeof profile.socials[key] === 'object' ? profile.socials[key].value || '' : profile.socials[key] || '';
+    const getSocialSubtitle = (key) => typeof profile.socials[key] === 'object' ? profile.socials[key].subtitle || '' : '';
+    const updateSocial = (key, field, val) => {
+        const curr = profile.socials[key];
+        const obj = typeof curr === 'object' ? curr : { value: curr || '', subtitle: '' };
+        setProfile({ ...profile, socials: { ...profile.socials, [key]: { ...obj, [field]: val } } });
+    };
+
     useEffect(() => {
         generateUniqueCardId().then(setCardId);
         supabase.from('folders').select('*').order('created_at').then(({ data }) => setFolders(data || []));
@@ -237,7 +245,8 @@ export default function CreateCardWizard() {
                                                             </div>
                                                         <div style={{ flex: 1 }}>
                                                             <label>{net.label}</label>
-                                                            <input type="text" value={profile.socials[key]} onChange={e => setProfile({ ...profile, socials: { ...profile.socials, [key]: e.target.value } })} placeholder={net.placeholder} autoFocus={activeSocialInput === key} />
+                                                            <input type="text" value={getSocialValue(key)} onChange={e => updateSocial(key, 'value', e.target.value)} placeholder={net.placeholder} autoFocus={activeSocialInput === key} style={{ marginBottom: 4 }} />
+                                                            <input type="text" value={getSocialSubtitle(key)} onChange={e => updateSocial(key, 'subtitle', e.target.value)} placeholder="Texte personnalisé (ex: Rejoignez mon canal)" style={{ fontSize: 12, padding: 6 }} />
                                                         </div>
                                                         <button onClick={() => toggleSocial(key)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#EF4444', fontSize: 20, paddingTop: 20 }}>×</button>
                                                     </div>
@@ -364,11 +373,16 @@ export default function CreateCardWizard() {
                                             {Object.keys(profile.socials || {}).filter(k => k !== 'phone' && k !== 'email').map(key => {
                                                 const net = SOCIAL_NETWORKS.find(n => n.id === key);
                                                 if (!net) return null;
+                                                const valObj = profile.socials[key];
+                                                const subText = typeof valObj === 'object' ? valObj.subtitle : '';
                                                 return (
                                                     <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: 'white', borderRadius: 12, border: '1px solid #F1F5F9', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-                                                        <div style={{ width: 28, height: 28, borderRadius: 8, background: net.color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                                        <div style={{ width: 28, height: 28, borderRadius: 8, background: net.color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
                                                             dangerouslySetInnerHTML={{ __html: `<div style="width:14px;height:14px;color:${net.iconColor || net.color}">${net.svg}</div>` }} />
-                                                        <span style={{ fontWeight: 700, fontSize: 11, flex: 1, color: '#0F172A' }}>{net.label}</span>
+                                                        <div style={{ flex: 1, overflow: 'hidden' }}>
+                                                            <div style={{ fontWeight: 700, fontSize: 11, color: '#0F172A' }}>{net.label}</div>
+                                                            {subText && <div style={{ fontSize: 9, color: '#64748B', marginTop: 1 }}>{subText}</div>}
+                                                        </div>
                                                         <span style={{ color: '#CBD5E1', fontSize: 12 }}>→</span>
                                                     </div>
                                                 );
