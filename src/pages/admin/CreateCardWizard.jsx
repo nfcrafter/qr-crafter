@@ -175,8 +175,6 @@ export default function CreateCardWizard() {
         </div>
     );
 
-    const publicUrl = `${window.location.origin}/u/${cardId}`;
-    const activationUrl = `${window.location.origin}/activate?cardId=${cardId}&token=${activationToken}`;
 
     return (
         <div style={{ minHeight: '100vh', background: '#F8FAFC', padding: '40px 20px' }}>
