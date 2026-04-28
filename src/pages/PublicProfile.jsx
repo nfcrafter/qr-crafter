@@ -216,8 +216,12 @@ export default function PublicProfile() {
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 18px', background: 'white', borderRadius: 16, textDecoration: 'none', color: '#111', boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.05)' }}>
-                <div style={{ width: 44, height: 44, borderRadius: 12, flexShrink: 0, background: link.color + '18', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                  dangerouslySetInnerHTML={{ __html: `<div style="width:22px;height:22px;color:${link.iconColor || link.color}">${link.svg}</div>` }} />
+                <div style={{ 
+                  width: 44, height: 44, borderRadius: 12, flexShrink: 0, 
+                  background: link.id === 'snapchat' ? link.color : link.color + '18', 
+                  display: 'flex', alignItems: 'center', justifyContent: 'center' 
+                }}
+                  dangerouslySetInnerHTML={{ __html: `<div style="width:22px;height:22px;color:${link.id === 'snapchat' ? '#000000' : (link.iconColor || link.color)}">${link.svg}</div>` }} />
                 <div style={{ flex: 1, overflow: 'hidden' }}>
                   <div style={{ fontWeight: 700, fontSize: 15 }}>{link.label}</div>
                   {subText && <div style={{ fontSize: 12, color: '#64748B', marginTop: 2 }}>{subText}</div>}
@@ -229,7 +233,9 @@ export default function PublicProfile() {
 
           {activeCustomLinks.length > 0 && (
             <div style={{ marginTop: 8 }}>
-              <h3 style={{ fontSize: 12, fontWeight: 800, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10, paddingLeft: 8 }}>Autres liens</h3>
+              <h3 style={{ fontSize: 13, fontWeight: 800, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12, paddingLeft: 4, display: 'block', width: '100%' }}>
+                Autres liens
+              </h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {activeCustomLinks.map(link => (
                   <a key={link.id} className="pl" href={link.url} target="_blank" rel="noopener noreferrer"
