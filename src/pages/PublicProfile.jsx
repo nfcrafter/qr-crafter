@@ -69,16 +69,23 @@ export default function PublicProfile() {
     if (profile.email) vc += `EMAIL:${profile.email}\r\n`
     if (profile.photo_url) vc += `PHOTO;VALUE=URI:${profile.photo_url}\r\n`
     SOCIAL_NETWORKS.forEach(s => {
-      const val = profile[s.id] || profile?.socials?.[s.id]
+      const rawVal = profile[s.id] || profile?.socials?.[s.id]
+      const val = (typeof rawVal === 'object' && rawVal !== null) ? rawVal.value : rawVal
+      
       if (val && !['phone','email'].includes(s.id)) {
-        if (s.id === 'website') {
-          vc += `URL:${s.getUrl(val)}\r\n`
-        } else {
-          vc += `${s.vcardField(s.getUrl(val))}\r\n`
+        try {
+          const url = s.getUrl(val)
+          if (s.id === 'website') {
+            vc += `URL:${url}\r\n`
+          } else if (s.vcardField) {
+            vc += `${s.vcardField(url)}\r\n`
+          }
+        } catch (e) {
+          console.error(`Error adding ${s.id} to vcard:`, e)
         }
       }
     })
-    customLinks.forEach(l => { if (l.url) vc += `URL;TYPE=${l.title || 'Lien'}:${l.url}\r\n` })
+    customLinks.forEach(l => { if (l.url) vc += `URL;TYPE=${l.label || l.title || 'Lien'}:${l.url}\r\n` })
     vc += `END:VCARD`
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     if (isIOS) {
