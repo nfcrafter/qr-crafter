@@ -21,7 +21,7 @@ export default function LandingPage() {
                 zIndex: 1000
             }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => navigate('/')}>
-                    <img src="/logo.png" alt="QR Crafter" style={{ height: '36px' }} />
+                    <img src="/logo.png" alt="NFCrafter" style={{ height: '36px' }} />
                     <span style={{ fontSize: '22px', fontWeight: '800', color: '#1A1265', letterSpacing: '-0.5px' }}>
                         NFCrafter
                     </span>

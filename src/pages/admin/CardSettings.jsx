@@ -441,8 +441,7 @@ export default function CardSettings() {
                                         </div>
                                         <h3 style={{ marginTop: 8, fontWeight: 900, color: '#1A1265', fontSize: 15 }}>{profile.full_name || 'Votre Nom'}</h3>
                                         <p style={{ fontSize: 11, color: '#64748B' }}>{profile.job_title || 'Profession'}</p>
-                                        <button style={{ width: '100%', marginTop: 12, padding: 10, borderRadius: 12, background: profile.primaryColor || '#1A1265', color: 'white', border: 'none', fontWeight: 700, fontSize: 12 }}>Enregistrer le contact</button>
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 16 }}>
+                                        <button style={{ width: '100%', marginTop: 12, padding: 10, borderRadius: 12, background: profile.primaryColor || '#1A1265', color: 'white                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 16 }}>
                                             {(profile.phone || profile.email) && (
                                                 <div style={{ display: 'flex', gap: 6 }}>
                                                     {profile.phone && (
@@ -457,35 +456,18 @@ export default function CardSettings() {
                                                     )}
                                                 </div>
                                             )}
-                                            {Object.keys(profile.socials || {}).filter(k => k !== 'phone' && k !== 'email').map(key => {
-                                                const net = SOCIAL_NETWORKS.find(n => n.id === key);
-                                                if (!net) return null;
-                                                const valObj = profile.socials[key];
-                                                const subText = typeof valObj === 'object' ? valObj.subtitle : '';
-                                                return (
-                                                    <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: 'white', borderRadius: 12, border: '1px solid #F1F5F9', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-                                                        <div style={{ width: 28, height: 28, borderRadius: 8, background: net.color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
-                                                            dangerouslySetInnerHTML={{ __html: `<div style="width:14px;height:14px;color:${net.iconColor || net.color}">${net.svg}</div>` }} />
-                                                        <div style={{ flex: 1, overflow: 'hidden' }}>
-                                                            <div style={{ fontWeight: 700, fontSize: 11, color: '#0F172A' }}>{net.label}</div>
-                                                            {subText && <div style={{ fontSize: 9, color: '#64748B', marginTop: 1 }}>{subText}</div>}
-                                                        </div>
-                                                        <span style={{ color: '#CBD5E1', fontSize: 12 }}>→</span>
-                                                    </div>
-                                                );
-                                            })}
-                                            {(profile.customLinks || []).filter(l => l.label).map((link, i) => (
-                                                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: 'white', borderRadius: 12, border: '1px solid #F1F5F9', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-                                                    <div style={{ width: 28, height: 28, borderRadius: 8, background: '#F8FAFC', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>{link.emoji || '🔗'}</div>
-                                                    <span style={{ fontWeight: 700, fontSize: 11, flex: 1, color: '#0F172A' }}>{link.label}</span>
-                                                    <span style={{ color: '#CBD5E1', fontSize: 12 }}>→</span>
-                                                </div>
+                                            {Object.keys(profile.socials || {}).filter(k => k !== 'phone' && k !== 'email').map(key => (
+                                                <PreviewLink key={key} id={key} isSocial />
+                                            ))}
+                                            {(profile.customLinks || []).map((link, i) => (
+                                                <PreviewLink key={i} data={link} />
                                             ))}
                                         </div>
                                     </div>
                                 </div>
                             )}
                         </PhonePreview>
+
                     </div>
                 </div>
             </div>
@@ -513,4 +495,33 @@ export default function CardSettings() {
             </Modal>
         </div>
     );
+
+    function PreviewLink({ id, isSocial, data }) {
+        const net = isSocial ? SOCIAL_NETWORKS.find(n => n.id === id) : null;
+        if (isSocial && !net) return null;
+        if (!isSocial && !data?.label) return null;
+
+        const label = isSocial ? net.label : data.label;
+        const sub = isSocial ? (typeof profile.socials[id] === 'object' ? profile.socials[id].subtitle : '') : '';
+        const color = isSocial ? net.color : '#1A1265';
+        const icon = isSocial ? net.svg : null;
+        const emoji = !isSocial ? data.emoji : null;
+
+        return (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: 'white', borderRadius: 12, border: '1px solid #F1F5F9', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                <div style={{ width: 28, height: 28, borderRadius: 8, background: isSocial ? color + '15' : '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    {isSocial ? (
+                        <div style={{ width: 14, height: 14, color: net.iconColor || color }} dangerouslySetInnerHTML={{ __html: icon }} />
+                    ) : (
+                        <span style={{ fontSize: 14 }}>{emoji || '🔗'}</span>
+                    )}
+                </div>
+                <div style={{ flex: 1, overflow: 'hidden' }}>
+                    <div style={{ fontWeight: 700, fontSize: 11, color: '#0F172A' }}>{label}</div>
+                    {sub && <div style={{ fontSize: 9, color: '#64748B', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{sub}</div>}
+                </div>
+                <span style={{ color: '#CBD5E1', fontSize: 12 }}>→</span>
+            </div>
+        );
+    }
 }

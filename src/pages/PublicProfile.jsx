@@ -262,7 +262,7 @@ export default function PublicProfile() {
         <div style={{ textAlign: 'center', marginTop: 36 }}>
           <p style={{ fontSize: 11, color: '#bbb', marginBottom: 6 }}>Propulsé par</p>
           <a href="/" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6, opacity: 0.45 }}>
-            <img src="/logo.png" alt="QR Crafter" style={{ height: 26 }} />
+            <img src="/logo.png" alt="NFCrafter" style={{ height: 26 }} />
             <span style={{ fontWeight: 900, color: '#1A1265', fontSize: 13 }}>NFCrafter</span>
           </a>
         </div>
