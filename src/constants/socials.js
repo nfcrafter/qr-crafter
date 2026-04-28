@@ -1,3 +1,4 @@
+export const SOCIAL_NETWORKS = [
     {
         id: 'whatsapp',
         label: 'WhatsApp',
