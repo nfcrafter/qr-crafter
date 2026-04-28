@@ -39,7 +39,37 @@ export default function CreateCardWizard() {
     const navigate = useNavigate();
     const toast = useToast();
     const qrRef = useRef(null);
-    const qrCode = useRef(    const [activationToken, setActivationToken] = useState(null);
+    const qrCode = useRef(null);
+    const [activationToken, setActivationToken] = useState(null);
+    const [cardId, setCardId] = useState(null);
+    const [step, setStep] = useState(1);
+    const [selectedType, setSelectedType] = useState(null);
+    const [generating, setGenerating] = useState(false);
+    const [openSection, setOpenSection] = useState('info');
+    const [previewMode, setPreviewMode] = useState('page');
+    const [cardName, setCardName] = useState('');
+    const [folders, setFolders] = useState([]);
+    const [selectedFolderId, setSelectedFolderId] = useState(null);
+    const [activeSocialInput, setActiveSocialInput] = useState(null);
+
+    const [profile, setProfile] = useState({
+        banner_url: '', photo_url: '', full_name: '', job_title: '', bio: '',
+        phone: '', email: '', primaryColor: '#1A1265',
+        socials: {}, customLinks: [], url: ''
+    });
+
+    const [qrStyle, setQrStyle] = useState({
+        dotsType: 'rounded', dotsColor: '#1A1265', bgColor: '#FFFFFF',
+        cornersType: 'extra-rounded', cornersColor: '#1A1265', logo_url: ''
+    });
+
+    const getSocialValue = (key) => typeof profile.socials[key] === 'object' ? profile.socials[key].value || '' : profile.socials[key] || '';
+    const getSocialSubtitle = (key) => typeof profile.socials[key] === 'object' ? profile.socials[key].subtitle || '' : '';
+    const updateSocial = (key, field, val) => {
+        const curr = profile.socials[key];
+        const obj = typeof curr === 'object' ? curr : { value: curr || '', subtitle: '' };
+        setProfile({ ...profile, socials: { ...profile.socials, [key]: { ...obj, [field]: val } } });
+    };
 
     useEffect(() => {
         generateUniqueCardId().then(setCardId);
