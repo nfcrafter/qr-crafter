@@ -6,6 +6,7 @@ import { useToast } from '../../components/Toast.jsx';
 import ProfileForm from '../../components/ProfileForm.jsx';
 import PhonePreview from '../../components/PhonePreview.jsx';
 import PublicProfile from '../PublicProfile.jsx';
+import QRCodeStyling from 'qr-code-styling';
 
 export default function ClientDashboard() {
     const navigate = useNavigate();
@@ -71,6 +72,11 @@ export default function ClientDashboard() {
         setSaving(false);
     }
 
+    async function logout() {
+        await supabase.auth.signOut();
+        navigate('/login');
+    }
+
     async function uploadFile(file, bucket, setter, loadingSetter) {
         if (!file) return;
         loadingSetter(true);
@@ -94,11 +100,54 @@ export default function ClientDashboard() {
         } finally {
             loadingSetter(false);
         }
+      async function requestDesignChange() {
+        if (!selectedCard) return;
+        
+        const message = `Bonjour, je souhaite modifier le design de ma carte QR (ID: ${selectedCard.card_id}). Client: ${user.email}`;
+        const whatsappUrl = `https://wa.me/22991566846?text=${encodeURIComponent(message)}`;
+
+        setSaving(true);
+        // On marque la demande en base de données
+        const { error } = await supabase
+            .from('cards')
+            .update({ design_request: 'pending' })
+            .eq('card_id', selectedCard.card_id);
+
+        if (!error) {
+            toast('Demande envoyée ! Redirection vers WhatsApp...', 'success');
+            setTimeout(() => window.open(whatsappUrl, '_blank'), 1500);
+        } else {
+            toast('Erreur lors de la demande : ' + error.message, 'error');
+        }
+        setSaving(false);
     }
 
-    async function logout() {
-        await supabase.auth.signOut();
-        navigate('/login');
+    async function downloadQRCode() {
+        if (!selectedCard) return;
+        
+        // On récupère les styles du QR
+        const { data: card } = await supabase
+            .from('cards')
+            .select('qr_appearance, card_name')
+            .eq('card_id', selectedCard.card_id)
+            .single();
+
+        if (!card) return;
+
+        const app = card.qr_appearance || {};
+        const qrCode = new QRCodeStyling({
+            width: 512,
+            height: 512,
+            data: selectedCard ? `${window.location.origin}/u/${selectedCard.card_id}` : '',
+            dotsOptions: { color: app.dotsColor || '#1A1265', type: app.dotsType || 'rounded' },
+            backgroundOptions: { color: app.bgColor || '#FFFFFF' },
+            cornersSquareOptions: { color: app.cornersColor || '#1A1265', type: app.cornersType || 'extra-rounded' },
+            image: app.logo_url || '',
+            imageOptions: { crossOrigin: 'anonymous', margin: 8 }
+        });
+
+        qrCode.download({ name: card.card_name || 'qr-code', extension: 'png' });
+        toast('Téléchargement lancé !', 'success');
     }
 
     if (loading) {
@@ -137,9 +186,14 @@ export default function ClientDashboard() {
                     
                     {/* Settings Form */}
                     <div className="premium-card" style={{ padding: '40px', animation: 'fadeInLeft 0.8s ease-out', borderRadius: '32px' }}>
-                        <div style={{ marginBottom: '40px' }}>
-                            <h1 style={{ margin: 0, fontSize: '32px', fontWeight: '900', letterSpacing: '-1.5px', color: 'var(--primary)' }}>Personnaliser mon Profil</h1>
-                            <p style={{ color: 'var(--text-500)', fontSize: '16px', fontWeight: '500', marginTop: '8px' }}>Mettez à jour vos informations en temps réel.</p>
+                        <div style={{ marginBottom: '40px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                            <div>
+                                <h1 style={{ margin: 0, fontSize: '32px', fontWeight: '900', letterSpacing: '-1.5px', color: 'var(--primary)' }}>Personnaliser mon Profil</h1>
+                                <p style={{ color: 'var(--text-500)', fontSize: '16px', fontWeight: '500', marginTop: '8px' }}>Mettez à jour vos informations en temps réel.</p>
+                            </div>
+                            <div style={{ padding: '8px 16px', background: '#F1F5F9', borderRadius: '12px', fontSize: '12px', fontWeight: '700', color: '#64748B', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                🔒 Design bloqué
+                            </div>
                         </div>
 
                         <ProfileForm
@@ -151,14 +205,21 @@ export default function ClientDashboard() {
                             uploadingBanner={uploadingBanner}
                         />
 
-                        <div style={{ marginTop: '48px', paddingTop: '40px', borderTop: '1px solid #F1F5F9' }}>
+                        <div style={{ marginTop: '48px', paddingTop: '40px', borderTop: '1px solid #F1F5F9', display: 'flex', gap: '16px' }}>
                             <button 
                                 onClick={savePublicProfile} 
                                 disabled={saving} 
                                 className="btn-primary" 
-                                style={{ width: '100%', padding: '20px', borderRadius: '20px', fontSize: '18px', fontWeight: '800', boxShadow: '0 15px 30px rgba(26, 18, 101, 0.2)' }}
+                                style={{ flex: 2, padding: '20px', borderRadius: '20px', fontSize: '18px', fontWeight: '800', boxShadow: '0 15px 30px rgba(26, 18, 101, 0.2)' }}
                             >
-                                {saving ? 'Enregistrement...' : 'Sauvegarder les modifications ✨'}
+                                {saving ? 'Enregistrement...' : 'Sauvegarder ✨'}
+                            </button>
+                            <button 
+                                onClick={downloadQRCode}
+                                className="btn-ghost"
+                                style={{ flex: 1, borderRadius: '20px', fontWeight: '700' }}
+                            >
+                                ⬇️ Télécharger QR
                             </button>
                         </div>
                     </div>
@@ -176,10 +237,7 @@ export default function ClientDashboard() {
 
                         <div className="premium-card" style={{ padding: '32px', borderRadius: '28px', background: 'linear-gradient(135deg, #1A1265 0%, #4338CA 100%)', color: 'white', border: 'none' }}>
                             <h3 style={{ fontSize: '18px', marginBottom: '20px', color: 'white', fontWeight: '800' }}>Votre Carte Digitale</h3>
-                            <div style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', borderRadius: '20px', padding: '24px', marginBottom: '24px', border: '1px solid rgba(255,255,255,0.2)' }}>
-                                <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', fontWeight: '800', textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '1px' }}>ID CARTE</div>
-                                <code style={{ fontSize: '20px', fontWeight: '900', color: 'var(--accent)' }}>{selectedCard?.card_id}</code>
-                            </div>
+                            
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                                 <button 
                                     onClick={() => window.open(publicUrl, '_blank')} 
@@ -197,6 +255,18 @@ export default function ClientDashboard() {
                                 >
                                     📋 Copier le lien
                                 </button>
+                                
+                                <div style={{ height: '1px', background: 'rgba(255,255,255,0.1)', margin: '10px 0' }}></div>
+                                
+                                <button 
+                                    onClick={requestDesignChange}
+                                    style={{ width: '100%', background: 'transparent', color: 'var(--accent)', border: '1px solid var(--accent)', padding: '14px', borderRadius: '16px', cursor: 'pointer', fontWeight: '800', fontSize: '13px' }}
+                                >
+                                    🎨 Demander un changement de design
+                                </button>
+                                <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', textAlign: 'center', margin: 0 }}>
+                                    L'admin recevra votre demande sur son dashboard et WhatsApp.
+                                </p>
                             </div>
                         </div>
 
@@ -227,5 +297,8 @@ export default function ClientDashboard() {
                 </div>
             </main>
         </div>
+    );
+}
+   </div>
     );
 }

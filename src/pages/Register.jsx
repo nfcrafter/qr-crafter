@@ -33,6 +33,11 @@ export default function Register() {
         e.preventDefault()
         setError('')
 
+        if (!cardId || !token || !cardInfo) {
+            setError("Vous devez posséder un lien d'activation valide pour créer un compte.")
+            return
+        }
+
         if (form.password !== form.confirm) {
             setError('Les mots de passe ne correspondent pas')
             return
@@ -48,14 +53,14 @@ export default function Register() {
 
         setLoading(true)
 
-        const { data, error } = await supabase.auth.signUp({
+        const { data, error: signUpError } = await supabase.auth.signUp({
             email: form.email,
             password: form.password,
             options: { data: { full_name: form.fullName } }
         })
 
-        if (error) {
-            setError(error.message)
+        if (signUpError) {
+            setError(signUpError.message)
             setLoading(false)
             return
         }
@@ -71,19 +76,21 @@ export default function Register() {
                 ...adminProfile,
             })
 
-            // Lier la carte si token valide
-            if (cardId && token && cardInfo) {
-                await supabase.from('cards')
-                    .update({ owner_id: data.user.id, status: 'active' })
-                    .eq('card_id', cardId)
-                    .eq('activation_token', token)
-
-                await supabase.from('user_cards').upsert({
-                    user_id: data.user.id,
-                    card_id: cardId,
-                    profile_name: form.fullName,
+            // Lier la carte et CLEAR le token
+            await supabase.from('cards')
+                .update({ 
+                    owner_id: data.user.id, 
+                    status: 'active',
+                    activation_token: null // Une seule utilisation
                 })
-            }
+                .eq('card_id', cardId)
+                .eq('activation_token', token)
+
+            await supabase.from('user_cards').upsert({
+                user_id: data.user.id,
+                card_id: cardId,
+                profile_name: form.fullName,
+            })
         }
 
         setLoading(false)

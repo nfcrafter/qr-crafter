@@ -28,13 +28,18 @@ export default function AdminDashboard() {
     const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', children: null, onConfirm: null, type: 'info' });
     const [folderNameInput, setFolderNameInput] = useState('');
 
+    const [requestsCount, setRequestsCount] = useState(0);
+
     useEffect(() => {
         if (view === 'dashboard') {
             loadData();
             loadFolders();
-        } else {
+        } else if (view === 'users') {
             loadUsers();
+        } else if (view === 'requests') {
+            loadRequests();
         }
+        updateRequestsCount();
     }, [filterFolder, view]);
 
     async function loadData() {
@@ -51,6 +56,40 @@ export default function AdminDashboard() {
             setScans(counts);
         }
         setLoading(false);
+    }
+
+    async function updateRequestsCount() {
+        const { count } = await supabase
+            .from('cards')
+            .select('*', { count: 'exact', head: true })
+            .eq('design_request', 'pending');
+        setRequestsCount(count || 0);
+    }
+
+    async function loadRequests() {
+        setLoading(true);
+        const { data, error } = await supabase
+            .from('cards')
+            .select('*')
+            .eq('design_request', 'pending')
+            .order('updated_at', { ascending: false });
+        if (error) toast('Erreur chargement demandes', 'error');
+        else setCards(data || []);
+        setLoading(false);
+    }
+
+    async function resolveRequest(cardId) {
+        const { error } = await supabase
+            .from('cards')
+            .update({ design_request: 'completed' })
+            .eq('card_id', cardId);
+        if (error) toast('Erreur : ' + error.message, 'error');
+        else {
+            toast('Demande marquée comme traitée', 'success');
+            if (view === 'requests') loadRequests();
+            else loadData();
+            updateRequestsCount();
+        }
     }
 
     async function loadFolders() {
@@ -173,7 +212,10 @@ export default function AdminDashboard() {
 
                 <nav style={{ flex: 1, overflowY: 'auto' }}>
                     <button onClick={() => { setView('dashboard'); setFilterFolder(''); }} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'dashboard' && !filterFolder ? '#1A1265' : 'transparent', color: view === 'dashboard' && !filterFolder ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>📊 Dashboard</button>
-                    <button onClick={() => setView('users')} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'users' ? '#1A1265' : 'transparent', color: view === 'users' ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>👥 Utilisateurs</button>
+                    <button onClick={() => setView('users')} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'users' ? '#1A1265' : 'transparent', color: view === 'users' ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>👥 Utilisateurs</button>
+                    <button onClick={() => setView('requests')} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'requests' ? '#1A1265' : 'transparent', color: view === 'requests' ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+                        🎨 Demandes {requestsCount > 0 && <span style={{ background: '#EF4444', color: 'white', fontSize: '10px', padding: '2px 8px', borderRadius: '10px', marginLeft: 'auto' }}>{requestsCount}</span>}
+                    </button>
                     
                     <div style={{ margin: '12px 16px', fontSize: '11px', fontWeight: '800', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '1px' }}>Dossiers</div>
                     
@@ -211,13 +253,20 @@ export default function AdminDashboard() {
             <main style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
                 <div style={{ padding: '40px 40px 20px', background: 'rgba(248, 250, 252, 0.8)', backdropFilter: 'blur(10px)', borderBottom: '1px solid #E2E8F0', zIndex: 50 }}>
                     <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-                        <div><h1 style={{ fontSize: '26px', fontWeight: '900', color: '#1A1265' }}>{view === 'users' ? 'Gestion des Utilisateurs' : (filterFolder ? currentFolder?.name : 'Tableau de bord')}</h1><p style={{ color: '#64748B' }}>{view === 'users' ? 'Gérez les comptes et les profils de vos clients.' : (filterFolder ? (isSubFolder ? 'Contenu de ce sous-dossier' : 'Contenu de ce dossier') : 'Gérez l\'ensemble de vos projets QR.')}</p></div>
+                        <div>
+                            <h1 style={{ fontSize: '26px', fontWeight: '900', color: '#1A1265' }}>
+                                {view === 'users' ? 'Gestion des Utilisateurs' : (view === 'requests' ? 'Demandes de Design' : (filterFolder ? currentFolder?.name : 'Tableau de bord'))}
+                            </h1>
+                            <p style={{ color: '#64748B' }}>
+                                {view === 'users' ? 'Gérez les comptes et les profils de vos clients.' : (view === 'requests' ? 'Clients souhaitant modifier le design de leur QR.' : (filterFolder ? (isSubFolder ? 'Contenu de ce sous-dossier' : 'Contenu de ce dossier') : 'Gérez l\'ensemble de vos projets QR.'))}
+                            </p>
+                        </div>
                         <div style={{ display: 'flex', gap: '12px' }}>
                             {view === 'dashboard' && filterFolder && !isSubFolder && (<button onClick={() => openCreateFolderModal(true)} style={{ padding: '14px 24px', borderRadius: '14px', background: 'white', color: '#6366F1', border: '1px solid #6366F1', fontWeight: '700', cursor: 'pointer' }}>+ Créer un sous-dossier</button>)}
                             <button onClick={() => navigate('/admin/create')} className="btn-primary" style={{ padding: '14px 28px', borderRadius: '14px' }}>+ Nouveau QR</button>
                         </div>
                     </header>
-                    {view === 'dashboard' && (
+                    {(view === 'dashboard' || view === 'requests') && (
                         <div style={{ background: 'white', padding: '12px 20px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px', boxShadow: '0 4px 15px rgba(0,0,0,0.02)', border: '1px solid #F1F5F9' }}>
                             <div style={{ position: 'relative', flex: 1 }}><span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', opacity: 0.3 }}>🔍</span><input type="text" placeholder="Rechercher..." value={search} onChange={e => setSearch(e.target.value)} style={{ width: '100%', padding: '12px 12px 12px 40px', borderRadius: '12px', border: '1px solid #E2E8F0', background: '#F8FAFC' }} /></div>
                             <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} style={{ padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '600' }}><option value="all">Statut</option><option value="active">Active</option><option value="pending">En attente</option></select>
@@ -257,10 +306,25 @@ export default function AdminDashboard() {
                                 </div>
                             ))
                         ) : (
-                            currentItems.map(card => (<CardListItem key={card.card_id} card={card} scanCount={scans[card.card_id] || 0} navigate={navigate} toast={toast} />))
+                            currentItems.length > 0 ? (
+                                currentItems.map(card => (
+                                    <CardListItem 
+                                        key={card.card_id} 
+                                        card={card} 
+                                        scanCount={scans[card.card_id] || 0} 
+                                        navigate={navigate} 
+                                        toast={toast} 
+                                        onResolve={() => resolveRequest(card.card_id)}
+                                    />
+                                ))
+                            ) : (
+                                <div style={{ textAlign: 'center', padding: '60px', background: 'white', borderRadius: '24px', border: '1px dashed #E2E8F0', color: '#94A3B8', fontWeight: '600' }}>
+                                    {view === 'requests' ? 'Aucune demande de design en attente ✨' : 'Aucun QR trouvé'}
+                                </div>
+                            )
                         )}
                     </div>
-                    {view === 'dashboard' && totalPages > 1 && (
+                    {(view === 'dashboard' || view === 'requests') && totalPages > 1 && (
                         <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '32px' }}>
                             {[...Array(totalPages)].map((_, i) => (
                                 <button key={i} onClick={() => setCurrentPage(i + 1)} style={{ width: '38px', height: '38px', borderRadius: '10px', border: 'none', background: currentPage === i + 1 ? '#1A1265' : 'white', color: currentPage === i + 1 ? 'white' : '#1A1265', fontWeight: '800', cursor: 'pointer' }}>{i + 1}</button>
@@ -273,14 +337,17 @@ export default function AdminDashboard() {
             <style>{`
                 .trash-btn:hover, .trash-btn-sub:hover { color: #EF4444 !important; opacity: 1 !important; transform: scale(1.1); }
                 .trash-btn, .trash-btn-sub { transition: all 0.2s; }
+                .badge-pending { animation: pulse 2s infinite; }
+                @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
             `}</style>
         </div>
     );
 }
 
-function CardListItem({ card, scanCount, navigate, toast }) {
+function CardListItem({ card, scanCount, navigate, toast, onResolve }) {
     const qrRef = useRef(null);
     const isActive = card.status === 'active';
+    const isPendingRequest = card.design_request === 'pending';
     
     useEffect(() => {
         if (qrRef.current) {
@@ -306,11 +373,14 @@ function CardListItem({ card, scanCount, navigate, toast }) {
             imageOptions: { crossOrigin: 'anonymous', margin: 10 }
         });
         await qrCode.download({ name: `QR-${card.card_id}`, extension: 'png' });
-        toast('Téléchargement lancé', 'success');
-    }
-
     return (
-        <div style={{ background: 'white', borderRadius: '20px', padding: '24px 30px', display: 'flex', alignItems: 'center', gap: '24px', border: '1px solid #F1F5F9', boxShadow: '0 4px 12px rgba(0,0,0,0.01)' }}>
+        <div style={{ background: 'white', borderRadius: '20px', padding: '24px 30px', display: 'flex', alignItems: 'center', gap: '24px', border: isPendingRequest ? '2px solid #6366F1' : '1px solid #F1F5F9', boxShadow: '0 4px 12px rgba(0,0,0,0.01)', position: 'relative' }}>
+            {isPendingRequest && (
+                <div className="badge-pending" style={{ position: 'absolute', top: '-10px', left: '20px', background: '#6366F1', color: 'white', fontSize: '10px', fontWeight: '900', padding: '4px 12px', borderRadius: '20px', boxShadow: '0 4px 10px rgba(99, 102, 241, 0.3)' }}>
+                    DEMANDE DE DESIGN 🎨
+                </div>
+            )}
+            
             <div ref={qrRef} style={{ width: '76px', height: '76px', background: '#F8FAFC', borderRadius: '14px', border: '1px solid #F1F5F9', overflow: 'hidden', flexShrink: 0 }}></div>
             <div style={{ flex: 1 }}>
                 <div style={{ color: '#6366F1', fontWeight: '800', fontSize: '11px', textTransform: 'uppercase', marginBottom: '4px' }}>{card.admin_profile?.qr_type || 'URL'}</div>
@@ -324,7 +394,11 @@ function CardListItem({ card, scanCount, navigate, toast }) {
             </div>
             <div style={{ textAlign: 'center', minWidth: '100px', borderLeft: '1px solid #F1F5F9', borderRight: '1px solid #F1F5F9', padding: '0 24px' }}><div style={{ fontSize: '26px', fontWeight: '1000', color: '#1A1265' }}>{scanCount}</div><div style={{ fontSize: '10px', color: '#94A3B8', fontWeight: '900' }}>SCANS</div></div>
             <div style={{ display: 'flex', gap: '10px' }}>
-                <button onClick={downloadQR} style={{ background: '#F8FAFC', color: '#1A1265', padding: '12px 20px', borderRadius: '12px', border: '1px solid #E2E8F0', fontWeight: '800', cursor: 'pointer', fontSize: '13px' }}>Télécharger</button>
+                {isPendingRequest ? (
+                    <button onClick={onResolve} style={{ background: '#10B981', color: 'white', padding: '12px 20px', borderRadius: '12px', border: 'none', fontWeight: '800', cursor: 'pointer', fontSize: '13px' }}>Marquer comme fait</button>
+                ) : (
+                    <button onClick={downloadQR} style={{ background: '#F8FAFC', color: '#1A1265', padding: '12px 20px', borderRadius: '12px', border: '1px solid #E2E8F0', fontWeight: '800', cursor: 'pointer', fontSize: '13px' }}>Télécharger</button>
+                )}
                 <button onClick={() => navigate(`/admin/card/${card.card_id}`)} style={{ background: '#1A1265', color: 'white', padding: '12px 24px', borderRadius: '12px', border: 'none', fontWeight: '800', cursor: 'pointer', fontSize: '13px' }}>Gérer</button>
             </div>
         </div>

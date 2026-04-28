@@ -22,18 +22,36 @@ export default function Activate() {
     async function activateCard() {
         setLoading(true)
         const { data: { user } } = await supabase.auth.getUser()
-        if (!user) { navigate(`/login?redirect=/activate?card=${cardId}&token=${token}`); return }
+        
+        if (!user) { 
+            navigate(`/login?redirect=/activate?card=${cardId}&token=${token}`); 
+            return;
+        }
 
-        await supabase.from('cards')
-            .update({ owner_id: user.id, status: 'active' })
+        // Lier la carte et CLEAR le token pour qu'il ne soit plus utilisable
+        const { error } = await supabase.from('cards')
+            .update({ 
+                owner_id: user.id, 
+                status: 'active',
+                activation_token: null // Une seule utilisation !
+            })
             .eq('card_id', cardId).eq('activation_token', token)
 
+        if (error) {
+            setError("Erreur lors de l'activation : " + error.message);
+            setLoading(false);
+            return;
+        }
+
+        // Mettre à jour le profil
         await supabase.from('profiles')
             .update({ card_id: cardId })
             .eq('id', user.id)
 
+        // Ajouter à la liste des cartes de l'utilisateur
         await supabase.from('user_cards').upsert({
-            user_id: user.id, card_id: cardId,
+            user_id: user.id, 
+            card_id: cardId,
         })
 
         setLoading(false)
