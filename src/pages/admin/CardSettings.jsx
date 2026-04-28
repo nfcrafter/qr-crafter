@@ -7,6 +7,7 @@ import QRCodeStyling from 'qr-code-styling';
 import PhonePreview from '../../components/PhonePreview.jsx';
 import { SOCIAL_NETWORKS, LINK_ICONS } from '../../constants/socials.js';
 import ImageUpload from '../../components/ImageUpload.jsx';
+import Modal from '../../components/Modal.jsx';
 
 const DOT_STYLES = ['rounded', 'dots', 'classy', 'classy-rounded', 'square', 'extra-rounded'];
 
@@ -44,6 +45,7 @@ export default function CardSettings() {
     const [selectedFolderId, setSelectedFolderId] = useState(null);
     const [activeSocialInput, setActiveSocialInput] = useState(null);
     const [qrType, setQrType] = useState('profile');
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
     const [profile, setProfile] = useState({
         banner_url: '', photo_url: '', full_name: '', job_title: '', bio: '',
@@ -59,16 +61,15 @@ export default function CardSettings() {
     useEffect(() => { loadData(); }, [cardId]);
 
     const handleDelete = async () => {
-        if (!window.confirm('Êtes-vous sûr de vouloir supprimer ce QR code définitivement ? Cette action est irréversible.')) return;
         setSaving(true);
         try {
-            const { error } = await supabase.from('cards').delete().eq('id', cardId);
+            const { error } = await supabase.from('cards').delete().eq('card_id', cardId);
             if (error) throw error;
-            toast.success('QR Code supprimé avec succès');
+            toast('QR Code supprimé définitivement', 'success');
             navigate('/admin');
         } catch (e) {
             console.error(e);
-            toast.error('Erreur lors de la suppression');
+            toast('Erreur lors de la suppression', 'error');
             setSaving(false);
         }
     };
@@ -307,17 +308,48 @@ export default function CardSettings() {
                         ))}
 
                         {/* DANGER ZONE */}
-                        <div style={{ marginTop: 40 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-                                <div style={{ flex: 1, height: 1, background: '#FECACA' }} />
-                                <span style={{ fontSize: 11, fontWeight: 900, color: '#EF4444', letterSpacing: 2 }}>⚠️ ZONE DE DANGER</span>
-                                <div style={{ flex: 1, height: 1, background: '#FECACA' }} />
+                        <div style={{ marginTop: 60, marginBottom: 40 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 15, marginBottom: 20 }}>
+                                <div style={{ flex: 1, height: 1, background: 'linear-gradient(to right, transparent, #FECACA, transparent)' }} />
+                                <span style={{ fontSize: 12, fontWeight: 900, color: '#EF4444', letterSpacing: 3, textTransform: 'uppercase' }}>⚠️ Zone de Danger</span>
+                                <div style={{ flex: 1, height: 1, background: 'linear-gradient(to right, transparent, #FECACA, transparent)' }} />
                             </div>
-                            <div style={{ background: '#FEF2F2', border: '1px solid #FCA5A5', borderRadius: 16, padding: 20 }}>
-                                <h4 style={{ color: '#991B1B', margin: '0 0 8px 0', fontSize: 16, fontWeight: 800 }}>Supprimer ce QR Code</h4>
-                                <p style={{ color: '#B91C1C', fontSize: 13, margin: '0 0 16px 0' }}>Une fois supprimé, ce QR code et sa page associée ne seront plus accessibles. Cette action est irréversible.</p>
-                                <button onClick={handleDelete} disabled={saving} style={{ background: '#DC2626', color: 'white', border: 'none', padding: '10px 16px', borderRadius: 8, fontWeight: 700, cursor: 'pointer', opacity: saving ? 0.7 : 1 }}>
-                                    {saving ? 'Suppression...' : 'Supprimer définitivement'}
+                            <div style={{ 
+                                background: 'white', 
+                                border: '1px solid #FECACA', 
+                                borderRadius: 24, 
+                                padding: '32px',
+                                boxShadow: '0 10px 30px rgba(239, 68, 68, 0.05)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                gap: 24,
+                                flexWrap: 'wrap'
+                            }}>
+                                <div style={{ flex: 1, minWidth: 280 }}>
+                                    <h4 style={{ color: '#1A1265', margin: '0 0 8px 0', fontSize: 18, fontWeight: 900 }}>Supprimer ce QR Code</h4>
+                                    <p style={{ color: '#64748B', fontSize: 14, margin: 0, lineHeight: 1.5 }}>
+                                        L'ID <code style={{ color: '#EF4444', fontWeight: 700 }}>{cardId}</code> sera définitivement libéré. Toutes les données associées seront perdues.
+                                    </p>
+                                </div>
+                                <button 
+                                    onClick={() => setIsDeleteModalOpen(true)} 
+                                    disabled={saving} 
+                                    style={{ 
+                                        background: '#FEF2F2', 
+                                        color: '#DC2626', 
+                                        border: '1px solid #FCA5A5', 
+                                        padding: '14px 28px', 
+                                        borderRadius: 16, 
+                                        fontWeight: 800, 
+                                        cursor: 'pointer', 
+                                        transition: '0.2s',
+                                        fontSize: 14
+                                    }}
+                                    onMouseEnter={e => { e.target.style.background = '#DC2626'; e.target.style.color = 'white'; }}
+                                    onMouseLeave={e => { e.target.style.background = '#FEF2F2'; e.target.style.color = '#DC2626'; }}
+                                >
+                                    {saving ? 'Action en cours...' : 'Supprimer le projet'}
                                 </button>
                             </div>
                         </div>
@@ -413,6 +445,28 @@ export default function CardSettings() {
                     </div>
                 </div>
             </div>
+
+            <Modal 
+                isOpen={isDeleteModalOpen} 
+                title="Suppression définitive" 
+                type="warning"
+                confirmText="Oui, supprimer"
+                confirmColor="#DC2626"
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleDelete}
+            >
+                <div style={{ textAlign: 'center', padding: '10px 0' }}>
+                    <div style={{ 
+                        width: 64, height: 64, background: '#FEF2F2', borderRadius: '50%', 
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                        fontSize: 32, margin: '0 auto 20px' 
+                    }}>🗑️</div>
+                    <p style={{ margin: 0, fontSize: 16, color: '#1A1265', fontWeight: 700 }}>Êtes-vous absolument sûr ?</p>
+                    <p style={{ marginTop: 8, fontSize: 14, color: '#64748B' }}>
+                        Cette action supprimera définitivement le QR Code <strong>{cardName || cardId}</strong> et toutes ses statistiques.
+                    </p>
+                </div>
+            </Modal>
         </div>
     );
 }
