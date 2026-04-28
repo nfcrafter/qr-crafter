@@ -24,6 +24,7 @@ export default function AdminDashboard() {
     const [expandedFolders, setExpandedFolders] = useState({});
 
     const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', children: null, onConfirm: null, type: 'info' });
+    const [isMaintenanceOpen, setIsMaintenanceOpen] = useState(false);
     const [folderNameInput, setFolderNameInput] = useState('');
 
     useEffect(() => {
@@ -99,6 +100,30 @@ export default function AdminDashboard() {
         const { error } = await supabase.from('folders').delete().eq('id', id);
         if (!error) { toast('Dossier supprimé', 'success'); loadFolders(); if (filterFolder === id) setFilterFolder(''); }
     }
+    
+    async function handleGlobalWipe() {
+        if (!window.confirm("ÊTES-VOUS ABSOLUMENT SÛR ? Cette action va supprimer TOUTES les données (Cartes, Dossiers, Statistiques) et tous les profils utilisateurs sauf l'admin.")) return;
+        
+        setLoading(true);
+        try {
+            // Sequence of deletions to avoid constraint issues
+            await supabase.from('scan_logs').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+            await supabase.from('user_cards').delete().neq('id', 0);
+            await supabase.from('profiles').delete().neq('email', 'nfcrafter@gmail.com');
+            await supabase.from('cards').delete().neq('card_id', 'NONE');
+            await supabase.from('folders').delete().neq('id', 0);
+            
+            toast('Système réinitialisé avec succès', 'success');
+            setIsMaintenanceOpen(false);
+            loadData();
+            loadFolders();
+        } catch (err) {
+            console.error(err);
+            toast('Erreur lors de la réinitialisation', 'error');
+        } finally {
+            setLoading(false);
+        }
+    }
 
     const currentFolder = folders.find(f => f.id === filterFolder);
     const isSubFolder = currentFolder?.parent_id != null;
@@ -157,7 +182,8 @@ export default function AdminDashboard() {
                 </nav>
 
                 <div style={{ padding: '16px 0', borderTop: '1px solid #F1F5F9' }}>
-                    <button onClick={() => openCreateFolderModal(false)} style={{ width: '100%', padding: '12px', borderRadius: '14px', border: '1px dashed #CBD5E1', background: 'white', color: '#1A1265', fontWeight: '700', fontSize: '13px', cursor: 'pointer' }}>+ Nouveau dossier</button>
+                    <button onClick={() => openCreateFolderModal(false)} style={{ width: '100%', padding: '12px', borderRadius: '14px', border: '1px dashed #CBD5E1', background: 'white', color: '#1A1265', fontWeight: '700', fontSize: '13px', cursor: 'pointer', marginBottom: '10px' }}>+ Nouveau dossier</button>
+                    <button onClick={() => setIsMaintenanceOpen(true)} style={{ width: '100%', padding: '12px', borderRadius: '14px', border: '1px solid #F1F5F9', background: '#F8FAFC', color: '#64748B', fontWeight: '700', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>⚙️ Maintenance</button>
                     <button onClick={() => { supabase.auth.signOut(); navigate('/login'); }} style={{ width: '100%', padding: '14px', border: 'none', background: '#FEF2F2', borderRadius: '14px', color: '#DC2626', fontWeight: '700', cursor: 'pointer', marginTop: '16px' }}>Déconnexion</button>
                 </div>
             </aside>
@@ -193,6 +219,30 @@ export default function AdminDashboard() {
                 </div>
             </main>
             <Modal isOpen={modalConfig.isOpen} title={modalConfig.title} onClose={() => setModalConfig({ ...modalConfig, isOpen: false })} onConfirm={modalConfig.onConfirm} confirmText={modalConfig.confirmText} type={modalConfig.type}>{modalConfig.children}</Modal>
+            
+            <Modal 
+                isOpen={isMaintenanceOpen} 
+                title="Maintenance Système" 
+                onClose={() => setIsMaintenanceOpen(false)}
+            >
+                <div style={{ marginTop: '10px' }}>
+                    <p style={{ fontSize: '14px', color: '#64748B', marginBottom: '20px' }}>Outils d'administration pour la gestion globale de la plateforme.</p>
+                    
+                    <div style={{ background: '#FEF2F2', border: '1px solid #FCA5A5', borderRadius: '16px', padding: '20px' }}>
+                        <h4 style={{ color: '#991B1B', fontSize: '15px', fontWeight: '800', margin: '0 0 8px 0' }}>Réinitialisation Totale</h4>
+                        <p style={{ color: '#B91C1C', fontSize: '12px', margin: '0 0 16px 0', lineHeight: '1.5' }}>
+                            Cela supprimera toutes les cartes, tous les dossiers et tous les profils (sauf nfcrafter@gmail.com). 
+                            <strong>Note :</strong> Les comptes d'authentification doivent être supprimés manuellement via le Dashboard Supabase.
+                        </p>
+                        <button 
+                            onClick={handleGlobalWipe}
+                            style={{ background: '#DC2626', color: 'white', border: 'none', padding: '10px 16px', borderRadius: '10px', fontWeight: '700', cursor: 'pointer', width: '100%' }}
+                        >
+                            Tout supprimer et recommencer
+                        </button>
+                    </div>
+                </div>
+            </Modal>
             <style>{`
                 .trash-btn:hover, .trash-btn-sub:hover { color: #EF4444 !important; opacity: 1 !important; transform: scale(1.1); }
                 .trash-btn, .trash-btn-sub { transition: all 0.2s; }
