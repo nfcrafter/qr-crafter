@@ -409,8 +409,6 @@ export default function CreateCardWizard() {
                                         </>
                                     )}
                                 </div>
-                                  </div>
-                                </div>
                             )}
                         </PhonePreview>
                     </div>
