@@ -204,7 +204,7 @@ export default function PublicProfile() {
               rel="noopener noreferrer"
               style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 18px', background: 'white', borderRadius: 16, textDecoration: 'none', color: '#111', boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.05)' }}>
               <div style={{ width: 44, height: 44, borderRadius: 12, flexShrink: 0, background: link.color + '18', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                dangerouslySetInnerHTML={{ __html: `<div style="width:22px;height:22px;color:${link.color}">${link.svg}</div>` }} />
+                dangerouslySetInnerHTML={{ __html: `<div style="width:22px;height:22px;color:${link.iconColor || link.color}">${link.svg}</div>` }} />
               <span style={{ fontWeight: 700, fontSize: 15, flex: 1 }}>{link.label}</span>
               <span style={{ color: '#CBD5E1', fontSize: 18 }}>→</span>
             </a>

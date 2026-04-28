@@ -219,7 +219,9 @@ export default function CreateCardWizard() {
                                                         <div key={net.id} title={net.label}
                                                             onClick={() => toggleSocial(net.id)}
                                                             style={{ position: 'relative', cursor: 'pointer', transition: '.2s', transform: active ? 'scale(1.1)' : 'none' }}>
-                                                            <img src={net.icon} alt={net.label} style={{ width: 44, height: 44, borderRadius: 12, padding: 4, border: active ? `2px solid ${net.color}` : '2px solid transparent', background: 'white', boxShadow: active ? `0 4px 12px ${net.color}44` : '0 2px 6px rgba(0,0,0,0.08)', opacity: active ? 1 : 0.45 }} />
+                                                            <div style={{ width: 44, height: 44, borderRadius: 12, padding: 4, border: active ? `2px solid ${net.color}` : '2px solid transparent', background: 'white', boxShadow: active ? `0 4px 12px ${net.color}44` : '0 2px 6px rgba(0,0,0,0.08)', opacity: active ? 1 : 0.45, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                                <div style={{ width: 24, height: 24, color: net.iconColor || net.color }} dangerouslySetInnerHTML={{ __html: net.svg }} />
+                                                            </div>
                                                             {active && <div style={{ position: 'absolute', top: -4, right: -4, width: 14, height: 14, background: net.color, borderRadius: '50%', border: '2px solid white' }} />}
                                                         </div>
                                                     );
@@ -229,8 +231,10 @@ export default function CreateCardWizard() {
                                                 const net = SOCIAL_NETWORKS.find(n => n.id === key);
                                                 if (!net) return null;
                                                 return (
-                                                    <div key={key} className="field" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                                                        <img src={net.icon} alt={net.label} style={{ width: 32, height: 32, borderRadius: 8 }} />
+                                                        <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 10 }} className="field">
+                                                            <div style={{ width: 32, height: 32, borderRadius: 8, background: net.color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                                                <div style={{ width: 18, height: 18, color: net.iconColor || net.color }} dangerouslySetInnerHTML={{ __html: net.svg }} />
+                                                            </div>
                                                         <div style={{ flex: 1 }}>
                                                             <label>{net.label}</label>
                                                             <input type="text" value={profile.socials[key]} onChange={e => setProfile({ ...profile, socials: { ...profile.socials, [key]: e.target.value } })} placeholder={net.placeholder} autoFocus={activeSocialInput === key} />
@@ -363,7 +367,7 @@ export default function CreateCardWizard() {
                                                 return (
                                                     <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: 'white', borderRadius: 12, border: '1px solid #F1F5F9', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
                                                         <div style={{ width: 28, height: 28, borderRadius: 8, background: net.color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                                            dangerouslySetInnerHTML={{ __html: `<div style="width:14px;height:14px;color:${net.color}">${net.svg}</div>` }} />
+                                                            dangerouslySetInnerHTML={{ __html: `<div style="width:14px;height:14px;color:${net.iconColor || net.color}">${net.svg}</div>` }} />
                                                         <span style={{ fontWeight: 700, fontSize: 11, flex: 1, color: '#0F172A' }}>{net.label}</span>
                                                         <span style={{ color: '#CBD5E1', fontSize: 12 }}>→</span>
                                                     </div>
