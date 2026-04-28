@@ -18,6 +18,7 @@ export default function ClientDashboard() {
     const [userCards, setUserCards] = useState([]);
     const [selectedCard, setSelectedCard] = useState(null);
     const [publicProfile, setPublicProfile] = useState({});
+    const [qrType, setQrType] = useState('profile');
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [uploadingAvatar, setUploadingAvatar] = useState(false);
@@ -81,6 +82,8 @@ export default function ClientDashboard() {
         const { data } = await supabase.from('cards').select('admin_profile').eq('card_id', selectedCard.card_id).single();
         let profile = data?.admin_profile || {};
         
+        setQrType(profile.qr_type || 'profile');
+
         // Migrate old flat socials to new socials object if needed for pre-filling
         if (!profile.socials) {
             const socials = {};
@@ -193,26 +196,42 @@ export default function ClientDashboard() {
                     {/* Profile Section */}
                     <div style={{ background: 'white', padding: '32px', borderRadius: '24px', border: '1px solid #E2E8F0', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-                            <h2 style={{ fontSize: '20px', fontWeight: '900', color: '#1A1265', margin: 0 }}>Votre Profil</h2>
+                            <h2 style={{ fontSize: '20px', fontWeight: '900', color: '#1A1265', margin: 0 }}>
+                                {qrType === 'url' ? 'Lien de Redirection' : 'Votre Profil'}
+                            </h2>
                             <button 
                                 onClick={() => setViewMode(viewMode === 'view' ? 'edit' : 'view')}
                                 style={{ padding: '10px 20px', borderRadius: '12px', background: viewMode === 'edit' ? '#F1F5F9' : '#1A1265', color: viewMode === 'edit' ? '#1A1265' : 'white', border: 'none', fontWeight: '800', cursor: 'pointer' }}
                             >
-                                {viewMode === 'edit' ? 'Annuler' : 'Modifier le profil'}
+                                {viewMode === 'edit' ? 'Annuler' : 'Modifier'}
                             </button>
                         </div>
 
                         {viewMode === 'edit' ? (
                             <>
-                                <ProfileForm
-                                    profile={publicProfile}
-                                    setProfile={setPublicProfile}
-                                    onUploadAvatar={(f) => uploadFile(f, 'avatars', (url) => setPublicProfile(p => ({...p, photo_url: url})), setUploadingAvatar)}
-                                    onUploadBanner={(f) => uploadFile(f, 'banners', (url) => setPublicProfile(p => ({...p, banner_url: url})), setUploadingBanner)}
-                                    uploadingAvatar={uploadingAvatar}
-                                    uploadingBanner={uploadingBanner}
-                                    toast={toast}
-                                />
+                                {qrType === 'url' ? (
+                                    <div className="field">
+                                        <label>URL de destination</label>
+                                        <input 
+                                            type="url" 
+                                            value={publicProfile.url || ''} 
+                                            onChange={e => setPublicProfile({...publicProfile, url: e.target.value})} 
+                                            placeholder="https://votre-site.com" 
+                                            autoFocus
+                                        />
+                                        <p style={{ fontSize: 12, color: '#64748B', marginTop: 8 }}>Votre code QR redirigera directement vers cette adresse.</p>
+                                    </div>
+                                ) : (
+                                    <ProfileForm
+                                        profile={publicProfile}
+                                        setProfile={setPublicProfile}
+                                        onUploadAvatar={(f) => uploadFile(f, 'avatars', (url) => setPublicProfile(p => ({...p, photo_url: url})), setUploadingAvatar)}
+                                        onUploadBanner={(f) => uploadFile(f, 'banners', (url) => setPublicProfile(p => ({...p, banner_url: url})), setUploadingBanner)}
+                                        uploadingAvatar={uploadingAvatar}
+                                        uploadingBanner={uploadingBanner}
+                                        toast={toast}
+                                    />
+                                )}
                                 <div style={{ marginTop: '32px', borderTop: '1px solid #F1F5F9', paddingTop: '32px' }}>
                                     <button onClick={savePublicProfile} disabled={saving} className="btn-primary" style={{ width: '100%', padding: '16px', borderRadius: '16px' }}>
                                         {saving ? 'Enregistrement...' : 'Enregistrer les modifications'}
@@ -221,7 +240,11 @@ export default function ClientDashboard() {
                             </>
                         ) : (
                             <div style={{ background: '#F8FAFC', padding: '24px', borderRadius: '20px', border: '1px solid #E2E8F0', textAlign: 'center' }}>
-                                <p style={{ color: '#64748B', margin: 0 }}>Cliquez sur le bouton pour modifier vos informations.</p>
+                                <p style={{ color: '#64748B', margin: 0 }}>
+                                    {qrType === 'url' 
+                                        ? `Redirection active vers : ${publicProfile.url || 'aucune URL'}`
+                                        : 'Cliquez sur le bouton pour modifier vos informations.'}
+                                </p>
                             </div>
                         )}
                     </div>
@@ -230,7 +253,7 @@ export default function ClientDashboard() {
                     <div style={{ background: '#FFF5F5', padding: '24px', borderRadius: '20px', border: '1px solid #FCA5A5' }}>
                         <h3 style={{ color: '#DC2626', fontWeight: '900', fontSize: '15px', margin: '0 0 8px 0' }}>Modification du design physique 🎨</h3>
                         <p style={{ color: '#991B1B', fontSize: '13px', margin: '0 0 16px 0', lineHeight: '1.5' }}>
-                            Votre code QR a été imprimé ou encodé avec un design spécifique (couleurs, logo). Vous pouvez modifier le contenu (votre profil) à tout moment, mais pour changer le design du code lui-même, vous devez nous contacter.
+                            Votre code QR a été imprimé ou encodé avec un design spécifique (couleurs, logo). Vous pouvez modifier le contenu à tout moment, mais pour changer le design du code lui-même, vous devez nous contacter.
                         </p>
                         <button onClick={requestDesignChange} style={{ background: 'white', color: '#DC2626', border: '1px solid #FCA5A5', padding: '12px 20px', borderRadius: '12px', fontWeight: '800', cursor: 'pointer' }}>
                             Demander une modification via WhatsApp
