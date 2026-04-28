@@ -22,15 +22,20 @@ export default function AdminDashboard() {
     const [folders, setFolders] = useState([]);
     const [filterFolder, setFilterFolder] = useState('');
     const [expandedFolders, setExpandedFolders] = useState({});
+    const [view, setView] = useState('dashboard'); // 'dashboard' or 'users'
+    const [users, setUsers] = useState([]);
 
     const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', children: null, onConfirm: null, type: 'info' });
-    const [isMaintenanceOpen, setIsMaintenanceOpen] = useState(false);
     const [folderNameInput, setFolderNameInput] = useState('');
 
     useEffect(() => {
-        loadData();
-        loadFolders();
-    }, [filterFolder]);
+        if (view === 'dashboard') {
+            loadData();
+            loadFolders();
+        } else {
+            loadUsers();
+        }
+    }, [filterFolder, view]);
 
     async function loadData() {
         setLoading(true);
@@ -51,6 +56,44 @@ export default function AdminDashboard() {
     async function loadFolders() {
         const { data } = await supabase.from('folders').select('*').order('created_at');
         setFolders(data || []);
+    }
+
+    async function loadUsers() {
+        setLoading(true);
+        const { data, error } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
+        if (error) toast('Erreur chargement utilisateurs', 'error');
+        else setUsers(data || []);
+        setLoading(false);
+    }
+
+    async function handleDeleteUser(userId) {
+        if (!window.confirm("Supprimer cet utilisateur et TOUTES ses cartes ?")) return;
+        setLoading(true);
+        try {
+            // 1. Trouver les cartes de l'utilisateur
+            const { data: userCards } = await supabase.from('cards').select('card_id').eq('owner_id', userId);
+            
+            // 2. Supprimer les données pour chaque carte
+            for (const card of (userCards || [])) {
+                await supabase.from('scan_logs').delete().eq('card_id', card.card_id);
+                await supabase.from('user_cards').delete().eq('card_id', card.card_id);
+            }
+            
+            // 3. Supprimer les cartes
+            await supabase.from('cards').delete().eq('owner_id', userId);
+            
+            // 4. Supprimer le profil
+            const { error } = await supabase.from('profiles').delete().eq('id', userId);
+            
+            if (error) throw error;
+            toast('Utilisateur supprimé', 'success');
+            loadUsers();
+        } catch (err) {
+            console.error(err);
+            toast('Erreur lors de la suppression', 'error');
+        } finally {
+            setLoading(false);
+        }
     }
 
     function toggleFolder(id, e) {
@@ -100,30 +143,6 @@ export default function AdminDashboard() {
         const { error } = await supabase.from('folders').delete().eq('id', id);
         if (!error) { toast('Dossier supprimé', 'success'); loadFolders(); if (filterFolder === id) setFilterFolder(''); }
     }
-    
-    async function handleGlobalWipe() {
-        if (!window.confirm("ÊTES-VOUS ABSOLUMENT SÛR ? Cette action va supprimer TOUTES les données (Cartes, Dossiers, Statistiques) et tous les profils utilisateurs sauf l'admin.")) return;
-        
-        setLoading(true);
-        try {
-            // Sequence of deletions to avoid constraint issues
-            await supabase.from('scan_logs').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-            await supabase.from('user_cards').delete().neq('id', 0);
-            await supabase.from('profiles').delete().neq('email', 'nfcrafter@gmail.com');
-            await supabase.from('cards').delete().neq('card_id', 'NONE');
-            await supabase.from('folders').delete().neq('id', 0);
-            
-            toast('Système réinitialisé avec succès', 'success');
-            setIsMaintenanceOpen(false);
-            loadData();
-            loadFolders();
-        } catch (err) {
-            console.error(err);
-            toast('Erreur lors de la réinitialisation', 'error');
-        } finally {
-            setLoading(false);
-        }
-    }
 
     const currentFolder = folders.find(f => f.id === filterFolder);
     const isSubFolder = currentFolder?.parent_id != null;
@@ -153,7 +172,9 @@ export default function AdminDashboard() {
                 </div>
 
                 <nav style={{ flex: 1, overflowY: 'auto' }}>
-                    <button onClick={() => setFilterFolder('')} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: !filterFolder ? '#1A1265' : 'transparent', color: !filterFolder ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>📊 Dashboard</button>
+                    <button onClick={() => { setView('dashboard'); setFilterFolder(''); }} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'dashboard' && !filterFolder ? '#1A1265' : 'transparent', color: view === 'dashboard' && !filterFolder ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>📊 Dashboard</button>
+                    <button onClick={() => setView('users')} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'users' ? '#1A1265' : 'transparent', color: view === 'users' ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>👥 Utilisateurs</button>
+                    
                     <div style={{ margin: '12px 16px', fontSize: '11px', fontWeight: '800', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '1px' }}>Dossiers</div>
                     
                     {folders.filter(f => !f.parent_id).map(f => {
@@ -165,14 +186,14 @@ export default function AdminDashboard() {
                                     {subFolders.length > 0 && (
                                         <button onClick={(e) => toggleFolder(f.id, e)} style={{ padding: '4px', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: '10px', color: '#94A3B8' }}>{isExpanded ? '▼' : '▶'}</button>
                                     )}
-                                    <button onClick={() => setFilterFolder(f.id)} style={{ flex: 1, padding: '10px 12px', borderRadius: '12px', border: 'none', background: filterFolder === f.id ? '#F1F5F9' : 'transparent', color: filterFolder === f.id ? '#1A1265' : '#475569', fontWeight: '600', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <button onClick={() => { setView('dashboard'); setFilterFolder(f.id); }} style={{ flex: 1, padding: '10px 12px', borderRadius: '12px', border: 'none', background: filterFolder === f.id ? '#F1F5F9' : 'transparent', color: filterFolder === f.id ? '#1A1265' : '#475569', fontWeight: '600', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}>
                                         <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: f.color }}></span> {f.name}
                                     </button>
                                     <button onClick={(e) => openDeleteFolderModal(f.id, f.name, e)} style={{ padding: '8px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#94A3B8' }} className="trash-btn">🗑️</button>
                                 </div>
                                 {isExpanded && subFolders.map(sub => (
                                     <div key={sub.id} style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: '32px' }}>
-                                        <button onClick={() => setFilterFolder(sub.id)} style={{ flex: 1, padding: '8px 12px', borderRadius: '10px', border: 'none', background: filterFolder === sub.id ? '#F1F5F9' : 'transparent', color: filterFolder === sub.id ? '#1A1265' : '#475569', fontWeight: '600', textAlign: 'left', cursor: 'pointer', fontSize: '13px' }}>↳ {sub.name}</button>
+                                    <button onClick={() => { setView('dashboard'); setFilterFolder(sub.id); }} style={{ flex: 1, padding: '8px 12px', borderRadius: '10px', border: 'none', background: filterFolder === sub.id ? '#F1F5F9' : 'transparent', color: filterFolder === sub.id ? '#1A1265' : '#475569', fontWeight: '600', textAlign: 'left', cursor: 'pointer', fontSize: '13px' }}>↳ {sub.name}</button>
                                         <button onClick={(e) => openDeleteFolderModal(sub.id, sub.name, e)} style={{ padding: '6px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#CBD5E1' }} className="trash-btn-sub">🗑️</button>
                                     </div>
                                 ))}
@@ -182,8 +203,7 @@ export default function AdminDashboard() {
                 </nav>
 
                 <div style={{ padding: '16px 0', borderTop: '1px solid #F1F5F9' }}>
-                    <button onClick={() => openCreateFolderModal(false)} style={{ width: '100%', padding: '12px', borderRadius: '14px', border: '1px dashed #CBD5E1', background: 'white', color: '#1A1265', fontWeight: '700', fontSize: '13px', cursor: 'pointer', marginBottom: '10px' }}>+ Nouveau dossier</button>
-                    <button onClick={() => setIsMaintenanceOpen(true)} style={{ width: '100%', padding: '12px', borderRadius: '14px', border: '1px solid #F1F5F9', background: '#F8FAFC', color: '#64748B', fontWeight: '700', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>⚙️ Maintenance</button>
+                    <button onClick={() => openCreateFolderModal(false)} style={{ width: '100%', padding: '12px', borderRadius: '14px', border: '1px dashed #CBD5E1', background: 'white', color: '#1A1265', fontWeight: '700', fontSize: '13px', cursor: 'pointer' }}>+ Nouveau dossier</button>
                     <button onClick={() => { supabase.auth.signOut(); navigate('/login'); }} style={{ width: '100%', padding: '14px', border: 'none', background: '#FEF2F2', borderRadius: '14px', color: '#DC2626', fontWeight: '700', cursor: 'pointer', marginTop: '16px' }}>Déconnexion</button>
                 </div>
             </aside>
@@ -191,25 +211,56 @@ export default function AdminDashboard() {
             <main style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
                 <div style={{ padding: '40px 40px 20px', background: 'rgba(248, 250, 252, 0.8)', backdropFilter: 'blur(10px)', borderBottom: '1px solid #E2E8F0', zIndex: 50 }}>
                     <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-                        <div><h1 style={{ fontSize: '26px', fontWeight: '900', color: '#1A1265' }}>{filterFolder ? currentFolder?.name : 'Tableau de bord'}</h1><p style={{ color: '#64748B' }}>{filterFolder ? (isSubFolder ? 'Contenu de ce sous-dossier' : 'Contenu de ce dossier') : 'Gérez l\'ensemble de vos projets QR.'}</p></div>
+                        <div><h1 style={{ fontSize: '26px', fontWeight: '900', color: '#1A1265' }}>{view === 'users' ? 'Gestion des Utilisateurs' : (filterFolder ? currentFolder?.name : 'Tableau de bord')}</h1><p style={{ color: '#64748B' }}>{view === 'users' ? 'Gérez les comptes et les profils de vos clients.' : (filterFolder ? (isSubFolder ? 'Contenu de ce sous-dossier' : 'Contenu de ce dossier') : 'Gérez l\'ensemble de vos projets QR.')}</p></div>
                         <div style={{ display: 'flex', gap: '12px' }}>
-                            {filterFolder && !isSubFolder && (<button onClick={() => openCreateFolderModal(true)} style={{ padding: '14px 24px', borderRadius: '14px', background: 'white', color: '#6366F1', border: '1px solid #6366F1', fontWeight: '700', cursor: 'pointer' }}>+ Créer un sous-dossier</button>)}
+                            {view === 'dashboard' && filterFolder && !isSubFolder && (<button onClick={() => openCreateFolderModal(true)} style={{ padding: '14px 24px', borderRadius: '14px', background: 'white', color: '#6366F1', border: '1px solid #6366F1', fontWeight: '700', cursor: 'pointer' }}>+ Créer un sous-dossier</button>)}
                             <button onClick={() => navigate('/admin/create')} className="btn-primary" style={{ padding: '14px 28px', borderRadius: '14px' }}>+ Nouveau QR</button>
                         </div>
                     </header>
-                    <div style={{ background: 'white', padding: '12px 20px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px', boxShadow: '0 4px 15px rgba(0,0,0,0.02)', border: '1px solid #F1F5F9' }}>
-                        <div style={{ position: 'relative', flex: 1 }}><span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', opacity: 0.3 }}>🔍</span><input type="text" placeholder="Rechercher..." value={search} onChange={e => setSearch(e.target.value)} style={{ width: '100%', padding: '12px 12px 12px 40px', borderRadius: '12px', border: '1px solid #E2E8F0', background: '#F8FAFC' }} /></div>
-                        <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} style={{ padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '600' }}><option value="all">Statut</option><option value="active">Active</option><option value="pending">En attente</option></select>
-                        <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)} style={{ padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '600' }}><option value="all">Type</option><option value="url">URL</option><option value="wifi">WiFi</option><option value="vcard">VCard</option></select>
-                        <select value={sortBy} onChange={e => setSortBy(e.target.value)} style={{ padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '600' }}><option value="newest">Plus récent</option><option value="modified">Modifié</option><option value="scanned">Plus scanné</option></select>
-                        <select value={quantity} onChange={e => { setQuantity(Number(e.target.value)); setCurrentPage(1); }} style={{ padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '600' }}><option value={10}>10</option><option value={20}>20</option><option value={50}>50</option></select>
-                    </div>
+                    {view === 'dashboard' && (
+                        <div style={{ background: 'white', padding: '12px 20px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px', boxShadow: '0 4px 15px rgba(0,0,0,0.02)', border: '1px solid #F1F5F9' }}>
+                            <div style={{ position: 'relative', flex: 1 }}><span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', opacity: 0.3 }}>🔍</span><input type="text" placeholder="Rechercher..." value={search} onChange={e => setSearch(e.target.value)} style={{ width: '100%', padding: '12px 12px 12px 40px', borderRadius: '12px', border: '1px solid #E2E8F0', background: '#F8FAFC' }} /></div>
+                            <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} style={{ padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '600' }}><option value="all">Statut</option><option value="active">Active</option><option value="pending">En attente</option></select>
+                            <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)} style={{ padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '600' }}><option value="all">Type</option><option value="url">URL</option><option value="wifi">WiFi</option><option value="vcard">VCard</option></select>
+                            <select value={sortBy} onChange={e => setSortBy(e.target.value)} style={{ padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '600' }}><option value="newest">Plus récent</option><option value="modified">Modifié</option><option value="scanned">Plus scanné</option></select>
+                            <select value={quantity} onChange={e => { setQuantity(Number(e.target.value)); setCurrentPage(1); }} style={{ padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '600' }}><option value={10}>10</option><option value={20}>20</option><option value={50}>50</option></select>
+                        </div>
+                    )}
                 </div>
                 <div style={{ flex: 1, overflowY: 'auto', padding: '24px 40px 60px' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxWidth: '1400px', margin: '0 auto' }}>
-                        {loading ? <div style={{ textAlign: 'center', padding: '100px' }}>Chargement...</div> : currentItems.map(card => (<CardListItem key={card.card_id} card={card} scanCount={scans[card.card_id] || 0} navigate={navigate} toast={toast} />))}
+                        {loading ? (
+                            <div style={{ textAlign: 'center', padding: '100px' }}>Chargement...</div>
+                        ) : view === 'users' ? (
+                            users.map(user => (
+                                <div key={user.id} style={{ background: 'white', borderRadius: '20px', padding: '20px 30px', display: 'flex', alignItems: 'center', gap: '20px', border: '1px solid #F1F5F9', boxShadow: '0 4px 12px rgba(0,0,0,0.01)' }}>
+                                    <div style={{ width: '50px', height: '50px', borderRadius: '14px', background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', flexShrink: 0 }}>
+                                        {user.photo_url ? <img src={user.photo_url} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '14px' }} /> : '👤'}
+                                    </div>
+                                    <div style={{ flex: 1 }}>
+                                        <div style={{ fontWeight: '900', fontSize: '18px', color: '#1A1265' }}>{user.full_name || 'Utilisateur sans nom'}</div>
+                                        <div style={{ color: '#94A3B8', fontSize: '13px' }}>{user.email}</div>
+                                    </div>
+                                    <div style={{ textAlign: 'right' }}>
+                                        <div style={{ fontSize: '11px', fontWeight: '800', color: '#94A3B8', textTransform: 'uppercase', marginBottom: '4px' }}>Inscrit le</div>
+                                        <div style={{ fontWeight: '700', fontSize: '14px', color: '#1A1265' }}>{new Date(user.created_at).toLocaleDateString('fr-FR')}</div>
+                                    </div>
+                                    <div style={{ marginLeft: '20px' }}>
+                                        <button 
+                                            onClick={() => handleDeleteUser(user.id)}
+                                            disabled={user.email === 'nfcrafter@gmail.com'}
+                                            style={{ background: '#FEF2F2', color: '#DC2626', border: '1px solid #FECACA', padding: '10px 16px', borderRadius: '12px', fontWeight: '800', cursor: user.email === 'nfcrafter@gmail.com' ? 'not-allowed' : 'pointer', fontSize: '13px', opacity: user.email === 'nfcrafter@gmail.com' ? 0.5 : 1 }}
+                                        >
+                                            Supprimer
+                                        </button>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            currentItems.map(card => (<CardListItem key={card.card_id} card={card} scanCount={scans[card.card_id] || 0} navigate={navigate} toast={toast} />))
+                        )}
                     </div>
-                    {totalPages > 1 && (
+                    {view === 'dashboard' && totalPages > 1 && (
                         <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '32px' }}>
                             {[...Array(totalPages)].map((_, i) => (
                                 <button key={i} onClick={() => setCurrentPage(i + 1)} style={{ width: '38px', height: '38px', borderRadius: '10px', border: 'none', background: currentPage === i + 1 ? '#1A1265' : 'white', color: currentPage === i + 1 ? 'white' : '#1A1265', fontWeight: '800', cursor: 'pointer' }}>{i + 1}</button>
@@ -219,30 +270,6 @@ export default function AdminDashboard() {
                 </div>
             </main>
             <Modal isOpen={modalConfig.isOpen} title={modalConfig.title} onClose={() => setModalConfig({ ...modalConfig, isOpen: false })} onConfirm={modalConfig.onConfirm} confirmText={modalConfig.confirmText} type={modalConfig.type}>{modalConfig.children}</Modal>
-            
-            <Modal 
-                isOpen={isMaintenanceOpen} 
-                title="Maintenance Système" 
-                onClose={() => setIsMaintenanceOpen(false)}
-            >
-                <div style={{ marginTop: '10px' }}>
-                    <p style={{ fontSize: '14px', color: '#64748B', marginBottom: '20px' }}>Outils d'administration pour la gestion globale de la plateforme.</p>
-                    
-                    <div style={{ background: '#FEF2F2', border: '1px solid #FCA5A5', borderRadius: '16px', padding: '20px' }}>
-                        <h4 style={{ color: '#991B1B', fontSize: '15px', fontWeight: '800', margin: '0 0 8px 0' }}>Réinitialisation Totale</h4>
-                        <p style={{ color: '#B91C1C', fontSize: '12px', margin: '0 0 16px 0', lineHeight: '1.5' }}>
-                            Cela supprimera toutes les cartes, tous les dossiers et tous les profils (sauf nfcrafter@gmail.com). 
-                            <strong>Note :</strong> Les comptes d'authentification doivent être supprimés manuellement via le Dashboard Supabase.
-                        </p>
-                        <button 
-                            onClick={handleGlobalWipe}
-                            style={{ background: '#DC2626', color: 'white', border: 'none', padding: '10px 16px', borderRadius: '10px', fontWeight: '700', cursor: 'pointer', width: '100%' }}
-                        >
-                            Tout supprimer et recommencer
-                        </button>
-                    </div>
-                </div>
-            </Modal>
             <style>{`
                 .trash-btn:hover, .trash-btn-sub:hover { color: #EF4444 !important; opacity: 1 !important; transform: scale(1.1); }
                 .trash-btn, .trash-btn-sub { transition: all 0.2s; }

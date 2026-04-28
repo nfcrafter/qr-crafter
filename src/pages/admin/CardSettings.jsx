@@ -63,12 +63,20 @@ export default function CardSettings() {
     const handleDelete = async () => {
         setSaving(true);
         try {
-            // Supprimer d'abord les logs de scan associés
+            // 1. Supprimer les logs de scan associés
             await supabase.from('scan_logs').delete().eq('card_id', cardId);
             
-            // Puis supprimer la carte
+            // 2. Supprimer les liens dans user_cards
+            await supabase.from('user_cards').delete().eq('card_id', cardId);
+            
+            // 3. Détacher la carte des profils qui l'utilisent
+            await supabase.from('profiles').update({ card_id: null }).eq('card_id', cardId);
+            
+            // 4. Puis supprimer la carte elle-même
             const { error } = await supabase.from('cards').delete().eq('card_id', cardId);
+            
             if (error) throw error;
+            
             toast('QR Code supprimé définitivement', 'success');
             navigate('/admin');
         } catch (e) {
