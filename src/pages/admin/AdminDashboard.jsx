@@ -389,26 +389,22 @@ function CardListItem({ card, scanCount, navigate, toast, onResolve }) {
                 </div>
             )}
             
-            <div className="card-info-group">
+            <div className="card-info-group" style={{ flex: 1 }}>
                 <div ref={qrRef} style={{ width: '76px', height: '76px', background: '#F8FAFC', borderRadius: '14px', border: '1px solid #F1F5F9', overflow: 'hidden', flexShrink: 0 }}></div>
-                <div>
-                    <div style={{ color: '#6366F1', fontWeight: '800', fontSize: '11px', textTransform: 'uppercase' }}>{card.admin_profile?.qr_type || 'URL'}</div>
-                    <div style={{ fontWeight: '900', fontSize: '18px', color: '#1A1265', margin: '2px 0' }}>{card.card_name || 'Sans nom'}</div>
-                    <div style={{ color: '#94A3B8', fontSize: '12px' }}>ID: {card.card_id}</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                    <div style={{ color: '#6366F1', fontWeight: '800', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{card.admin_profile?.qr_type || 'URL'}</div>
+                    <div style={{ fontWeight: '900', fontSize: '18px', color: '#1A1265', margin: '1px 0' }}>{card.card_name || 'Sans nom'}</div>
+                    <div style={{ color: '#94A3B8', fontSize: '12px', fontWeight: '500' }}>
+                        Modifié le {new Date(card.updated_at || card.created_at).toLocaleDateString('fr-FR')} à {new Date(card.updated_at || card.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                    </div>
                 </div>
             </div>
 
-            <div style={{ flex: 1 }} className="desktop-only">
-                <div style={{ color: '#94A3B8', fontSize: '12px', fontWeight: '600' }}>
-                    📅 {new Date(card.updated_at || card.created_at).toLocaleDateString('fr-FR')}
-                </div>
-            </div>
-
-            <div style={{ minWidth: '100px', textAlign: 'center' }}>
+            <div style={{ minWidth: '100px', textAlign: 'center' }} className="desktop-only">
                 <span style={{ fontSize: '10px', fontWeight: '900', padding: '4px 12px', borderRadius: '10px', background: isActive ? '#DCFCE7' : '#FEE2E2', color: isActive ? '#15803D' : '#B91C1C', textTransform: 'uppercase' }}>{isActive ? 'Active' : 'Attente'}</span>
             </div>
 
-            <div style={{ textAlign: 'center', minWidth: '80px' }}>
+            <div style={{ textAlign: 'center', minWidth: '80px' }} className="desktop-only">
                 <div style={{ fontSize: '20px', fontWeight: '1000', color: '#1A1265' }}>{scanCount}</div>
                 <div style={{ fontSize: '9px', color: '#94A3B8', fontWeight: '900' }}>SCANS</div>
             </div>
