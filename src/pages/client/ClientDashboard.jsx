@@ -10,7 +10,6 @@ export default function ClientDashboard() {
     const navigate = useNavigate();
     const toast = useToast();
 
-    const [scansCount, setScansCount] = useState(0);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [viewMode, setViewMode] = useState('view'); // 'view' or 'edit'
     
@@ -55,7 +54,6 @@ export default function ClientDashboard() {
     useEffect(() => {
         if (selectedCard) {
             loadCardDetails();
-            loadScanStats();
         }
     }, [selectedCard]);
 
@@ -79,39 +77,71 @@ export default function ClientDashboard() {
 
     async function loadCardDetails() {
         if (!selectedCard) return;
-        const { data } = await supabase.from('cards').select('admin_profile').eq('card_id', selectedCard.card_id).single();
-        let profile = data?.admin_profile || {};
         
-        setQrType(profile.qr_type || 'profile');
+        // Fetch card data including admin_profile and owner_id
+        const { data: cardData } = await supabase
+            .from('cards')
+            .select('admin_profile, owner_id')
+            .eq('card_id', selectedCard.card_id)
+            .single();
 
-        // Migrate old flat socials to new socials object if needed for pre-filling
-        if (!profile.socials) {
+        if (!cardData) return;
+
+        // Fetch profile data from 'profiles' table for the owner
+        const { data: profileData } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', cardData.owner_id)
+            .single();
+
+        let adminBase = cardData.admin_profile || {};
+        
+        // Merge logic exactly as in PublicProfile.jsx to get "true" content
+        let merged = {
+            banner_url: '', photo_url: '', full_name: '', job_title: '', bio: '',
+            phone: '', email: '', primaryColor: '#1A1265',
+            socials: {}, customLinks: [], url: '',
+            ...adminBase
+        };
+
+        if (profileData) {
+            for (const k in profileData) {
+                if (profileData[k] !== null && profileData[k] !== undefined && profileData[k] !== '') {
+                    merged[k] = profileData[k];
+                }
+            }
+        }
+
+        // Migrate old flat socials to new socials object if needed
+        if (!merged.socials || Object.keys(merged.socials).length === 0) {
             const socials = {};
             SOCIAL_NETWORKS.forEach(net => {
-                if (profile[net.id]) {
-                    socials[net.id] = { value: profile[net.id], subtitle: '' };
+                if (merged[net.id]) {
+                    socials[net.id] = { value: merged[net.id], subtitle: '' };
                 }
             });
             if (Object.keys(socials).length > 0) {
-                profile = { ...profile, socials };
+                merged.socials = socials;
             }
         }
         
-        setPublicProfile(profile);
-    }
-
-    async function loadScanStats() {
-        if (!selectedCard) return;
-        const { count } = await supabase.from('scan_logs').select('*', { count: 'exact', head: true }).eq('card_id', selectedCard.card_id);
-        setScansCount(count || 0);
+        setQrType(merged.qr_type || 'profile');
+        setPublicProfile(merged);
     }
 
     async function savePublicProfile() {
         if (!selectedCard) return;
         setSaving(true);
-        const { error } = await supabase.from('cards').update({ admin_profile: publicProfile }).eq('card_id', selectedCard.card_id);
-        if (error) toast('Erreur : ' + error.message, 'error');
-        else {
+        
+        // Update the card's admin_profile with the current state
+        const { error } = await supabase
+            .from('cards')
+            .update({ admin_profile: publicProfile })
+            .eq('card_id', selectedCard.card_id);
+
+        if (error) {
+            toast('Erreur : ' + error.message, 'error');
+        } else {
             toast('Modifications enregistrées !', 'success');
             setViewMode('view');
         }
@@ -169,16 +199,10 @@ export default function ClientDashboard() {
 
             <main style={{ maxWidth: '1000px', margin: '0 auto', padding: '40px 24px' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-                    {/* Stats & Title */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
-                        <div>
-                            <h1 style={{ fontSize: '32px', fontWeight: '900', color: '#1A1265', margin: 0 }}>Tableau de Bord</h1>
-                            <p style={{ color: '#64748B', marginTop: '4px' }}>Gérez votre profil digital et suivez vos performances.</p>
-                        </div>
-                        <div style={{ background: '#EEF2FF', padding: '16px 24px', borderRadius: '20px', border: '1px solid #C7D2FE', textAlign: 'center' }}>
-                            <div style={{ fontSize: '24px', fontWeight: '1000', color: '#1A1265' }}>{scansCount}</div>
-                            <div style={{ fontSize: '10px', fontWeight: '800', color: '#6366F1', textTransform: 'uppercase', letterSpacing: '1px' }}>Total Scans</div>
-                        </div>
+                    {/* Title */}
+                    <div>
+                        <h1 style={{ fontSize: '32px', fontWeight: '900', color: '#1A1265', margin: 0 }}>Tableau de Bord</h1>
+                        <p style={{ color: '#64748B', marginTop: '4px' }}>Gérez votre profil digital et personnalisez votre expérience.</p>
                     </div>
 
                     {/* Public Link Box - Always visible */}
