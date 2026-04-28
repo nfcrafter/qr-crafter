@@ -324,15 +324,29 @@ export default function CardSettings() {
                                         <p style={{ fontSize: 11, color: '#64748B' }}>{profile.job_title || 'Profession'}</p>
                                         <button style={{ width: '100%', marginTop: 12, padding: 10, borderRadius: 12, background: profile.primaryColor || '#1A1265', color: 'white', border: 'none', fontWeight: 700, fontSize: 12 }}>Enregistrer le contact</button>
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 16 }}>
-                                            {Object.keys(profile.socials || {}).map(key => {
+                                            {(profile.phone || profile.email) && (
+                                                <div style={{ display: 'flex', gap: 6 }}>
+                                                    {profile.phone && (
+                                                        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, padding: '8px', background: 'white', borderRadius: 10, border: '1px solid #F1F5F9', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', fontWeight: 700, fontSize: 10 }}>
+                                                            <span>📞</span> Appeler
+                                                        </div>
+                                                    )}
+                                                    {profile.email && (
+                                                        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, padding: '8px', background: 'white', borderRadius: 10, border: '1px solid #F1F5F9', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', fontWeight: 700, fontSize: 10 }}>
+                                                            <span>✉️</span> Email
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
+                                            {Object.keys(profile.socials || {}).filter(k => k !== 'phone' && k !== 'email').map(key => {
                                                 const net = SOCIAL_NETWORKS.find(n => n.id === key);
                                                 if (!net) return null;
                                                 return (
                                                     <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: 'white', borderRadius: 12, border: '1px solid #F1F5F9', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-                                                        <div style={{ width: 28, height: 28, borderRadius: 8, background: net.color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                            <img src={net.icon} alt={net.label} style={{ width: 16, height: 16 }} />
-                                                        </div>
+                                                        <div style={{ width: 28, height: 28, borderRadius: 8, background: net.color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                                            dangerouslySetInnerHTML={{ __html: `<div style="width:14px;height:14px;color:${net.color}">${net.svg}</div>` }} />
                                                         <span style={{ fontWeight: 700, fontSize: 11, flex: 1, color: '#0F172A' }}>{net.label}</span>
+                                                        <span style={{ color: '#CBD5E1', fontSize: 12 }}>→</span>
                                                     </div>
                                                 );
                                             })}
@@ -340,6 +354,7 @@ export default function CardSettings() {
                                                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: 'white', borderRadius: 12, border: '1px solid #F1F5F9', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
                                                     <div style={{ width: 28, height: 28, borderRadius: 8, background: '#F8FAFC', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>{link.emoji || '🔗'}</div>
                                                     <span style={{ fontWeight: 700, fontSize: 11, flex: 1, color: '#0F172A' }}>{link.label}</span>
+                                                    <span style={{ color: '#CBD5E1', fontSize: 12 }}>→</span>
                                                 </div>
                                             ))}
                                         </div>
