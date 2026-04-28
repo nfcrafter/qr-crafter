@@ -2,9 +2,11 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabase.js'
 import { useNavigate, Link } from 'react-router-dom'
+import { useToast } from '../components/Toast.jsx'
 
 export default function Login() {
     const navigate = useNavigate()
+    const toast = useToast()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [loading, setLoading] = useState(false)

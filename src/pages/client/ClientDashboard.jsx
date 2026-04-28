@@ -15,6 +15,41 @@ export default function ClientDashboard() {
     const [scansCount, setScansCount] = useState(0);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [viewMode, setViewMode] = useState('view'); // 'view' or 'edit'
+    
+    const [user, setUser] = useState(null);
+    const [userCards, setUserCards] = useState([]);
+    const [selectedCard, setSelectedCard] = useState(null);
+    const [publicProfile, setPublicProfile] = useState({});
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [uploadingAvatar, setUploadingAvatar] = useState(false);
+    const [uploadingBanner, setUploadingBanner] = useState(false);
+
+    async function uploadFile(file, bucket, onUrl, setUploading) {
+        setUploading(true);
+        try {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Math.random()}.${fileExt}`;
+            const filePath = `${fileName}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from(bucket)
+                .upload(filePath, file);
+
+            if (uploadError) throw uploadError;
+
+            const { data: { publicUrl } } = supabase.storage
+                .from(bucket)
+                .getPublicUrl(filePath);
+
+            onUrl(publicUrl);
+            toast('Image mise à jour !', 'success');
+        } catch (error) {
+            toast('Erreur upload : ' + error.message, 'error');
+        } finally {
+            setUploading(false);
+        }
+    }
 
     useEffect(() => { loadUserData(); }, []);
 
