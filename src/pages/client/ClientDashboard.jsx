@@ -32,6 +32,7 @@ export default function ClientDashboard() {
     async function loadUserData() {
         setLoading(true);
         const { data: { user } } = await supabase.auth.getUser();
+        if (!user) { navigate('/login'); return; }
         setUser(user);
 
         const { data: cards } = await supabase
@@ -100,7 +101,9 @@ export default function ClientDashboard() {
         } finally {
             loadingSetter(false);
         }
-      async function requestDesignChange() {
+    }
+
+    async function requestDesignChange() {
         if (!selectedCard) return;
         
         const message = `Bonjour, je souhaite modifier le design de ma carte QR (ID: ${selectedCard.card_id}). Client: ${user.email}`;
@@ -298,5 +301,4 @@ export default function ClientDashboard() {
             </main>
         </div>
     );
-}
 }
