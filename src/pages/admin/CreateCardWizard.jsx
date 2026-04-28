@@ -342,60 +342,74 @@ export default function CreateCardWizard() {
                                         <div ref={qrRef} />
                                     </div>
                                     <p style={{ marginTop: 14, fontSize: 10, color: '#94A3B8', textAlign: 'center', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>Lien permanent — ne change jamais</p>
+                                        <div style={{ textAlign: 'left', height: '100%' }}>
+                                    {selectedType === 'url' ? (
+                                        <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 24px', background: 'linear-gradient(135deg, #F8FAFC 0%, #EEF2FF 100%)', textAlign: 'center' }}>
+                                            <div style={{ width: 80, height: 80, borderRadius: 24, background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 40, boxShadow: '0 10px 25px rgba(0,0,0,0.05)', marginBottom: 24 }}>🌐</div>
+                                            <h3 style={{ fontWeight: 900, color: '#1A1265', fontSize: 20, marginBottom: 12 }}>Redirection URL</h3>
+                                            <p style={{ fontSize: 13, color: '#64748B', lineHeight: 1.5, marginBottom: 24 }}>Ce QR code redirigera directement vers le lien ci-dessous :</p>
+                                            <div style={{ width: '100%', padding: '16px', background: 'white', borderRadius: 16, border: '1px solid #E2E8F0', fontSize: 12, color: '#6366F1', fontWeight: 700, wordBreak: 'break-all', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
+                                                {profile.url || 'https://votre-lien.com'}
+                                            </div>
+                                            <div style={{ marginTop: 'auto', fontSize: 11, color: '#94A3B8', fontWeight: 600 }}>Propulsé par QR Crafter</div>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <div style={{ height: 110, background: profile.primaryColor, position: 'relative', overflow: 'hidden' }}>
+                                                {profile.banner_url && <img src={profile.banner_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />}
+                                            </div>
+                                            <div style={{ padding: '0 16px 20px' }}>
+                                                <div style={{ width: 64, height: 64, borderRadius: 16, border: '3px solid white', background: '#EEF2FF', marginTop: -32, overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', position: 'relative', zIndex: 10 }}>
+                                                    {profile.photo_url && <img src={profile.photo_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />}
+                                                </div>
+                                                <h3 style={{ marginTop: 8, fontWeight: 900, color: '#1A1265', fontSize: 15 }}>{profile.full_name || 'Votre Nom'}</h3>
+                                                <p style={{ fontSize: 11, color: '#64748B' }}>{profile.job_title || 'Profession'}</p>
+                                                <button style={{ width: '100%', marginTop: 12, padding: '10px', borderRadius: 12, background: profile.primaryColor, color: 'white', border: 'none', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>Enregistrer le contact</button>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 16 }}>
+                                                    {(profile.phone || profile.email) && (
+                                                        <div style={{ display: 'flex', gap: 6 }}>
+                                                            {profile.phone && (
+                                                                <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, padding: '8px', background: 'white', borderRadius: 10, border: '1px solid #F1F5F9', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', fontWeight: 700, fontSize: 10 }}>
+                                                                    <span>📞</span> Appeler
+                                                                </div>
+                                                            )}
+                                                            {profile.email && (
+                                                                <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, padding: '8px', background: 'white', borderRadius: 10, border: '1px solid #F1F5F9', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', fontWeight: 700, fontSize: 10 }}>
+                                                                    <span>✉️</span> Email
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                    {Object.keys(profile.socials || {}).filter(k => k !== 'phone' && k !== 'email').map(key => {
+                                                        const net = SOCIAL_NETWORKS.find(n => n.id === key);
+                                                        if (!net) return null;
+                                                        const valObj = profile.socials[key];
+                                                        const subText = typeof valObj === 'object' ? valObj.subtitle : '';
+                                                        return (
+                                                            <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: 'white', borderRadius: 12, border: '1px solid #F1F5F9', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                                                                <div style={{ width: 28, height: 28, borderRadius: 8, background: net.color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+                                                                    dangerouslySetInnerHTML={{ __html: `<div style="width:14px;height:14px;color:${net.iconColor || net.color}">${net.svg}</div>` }} />
+                                                                <div style={{ flex: 1, overflow: 'hidden' }}>
+                                                                    <div style={{ fontWeight: 700, fontSize: 11, color: '#0F172A' }}>{net.label}</div>
+                                                                    {subText && <div style={{ fontSize: 9, color: '#64748B', marginTop: 1 }}>{subText}</div>}
+                                                                </div>
+                                                                <span style={{ color: '#CBD5E1', fontSize: 12 }}>→</span>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                    {(profile.customLinks || []).filter(l => l.label).map((link, i) => (
+                                                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: 'white', borderRadius: 12, border: '1px solid #F1F5F9', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                                                            <div style={{ width: 28, height: 28, borderRadius: 8, background: '#F8FAFC', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>{link.emoji || '🔗'}</div>
+                                                            <span style={{ fontWeight: 700, fontSize: 11, flex: 1, color: '#0F172A' }}>{link.label}</span>
+                                                            <span style={{ color: '#CBD5E1', fontSize: 12 }}>→</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
-                            ) : (
-                                <div style={{ textAlign: 'left' }}>
-                                    <div style={{ height: 110, background: profile.primaryColor, position: 'relative', overflow: 'hidden' }}>
-                                        {profile.banner_url && <img src={profile.banner_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />}
-                                    </div>
-                                    <div style={{ padding: '0 16px 20px' }}>
-                                        <div style={{ width: 64, height: 64, borderRadius: 16, border: '3px solid white', background: '#EEF2FF', marginTop: -32, overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', position: 'relative', zIndex: 10 }}>
-                                            {profile.photo_url && <img src={profile.photo_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />}
-                                        </div>
-                                        <h3 style={{ marginTop: 8, fontWeight: 900, color: '#1A1265', fontSize: 15 }}>{profile.full_name || 'Votre Nom'}</h3>
-                                        <p style={{ fontSize: 11, color: '#64748B' }}>{profile.job_title || 'Profession'}</p>
-                                        <button style={{ width: '100%', marginTop: 12, padding: '10px', borderRadius: 12, background: profile.primaryColor, color: 'white', border: 'none', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>Enregistrer le contact</button>
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 16 }}>
-                                            {(profile.phone || profile.email) && (
-                                                <div style={{ display: 'flex', gap: 6 }}>
-                                                    {profile.phone && (
-                                                        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, padding: '8px', background: 'white', borderRadius: 10, border: '1px solid #F1F5F9', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', fontWeight: 700, fontSize: 10 }}>
-                                                            <span>📞</span> Appeler
-                                                        </div>
-                                                    )}
-                                                    {profile.email && (
-                                                        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, padding: '8px', background: 'white', borderRadius: 10, border: '1px solid #F1F5F9', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', fontWeight: 700, fontSize: 10 }}>
-                                                            <span>✉️</span> Email
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            )}
-                                            {Object.keys(profile.socials || {}).filter(k => k !== 'phone' && k !== 'email').map(key => {
-                                                const net = SOCIAL_NETWORKS.find(n => n.id === key);
-                                                if (!net) return null;
-                                                const valObj = profile.socials[key];
-                                                const subText = typeof valObj === 'object' ? valObj.subtitle : '';
-                                                return (
-                                                    <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: 'white', borderRadius: 12, border: '1px solid #F1F5F9', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-                                                        <div style={{ width: 28, height: 28, borderRadius: 8, background: net.color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
-                                                            dangerouslySetInnerHTML={{ __html: `<div style="width:14px;height:14px;color:${net.iconColor || net.color}">${net.svg}</div>` }} />
-                                                        <div style={{ flex: 1, overflow: 'hidden' }}>
-                                                            <div style={{ fontWeight: 700, fontSize: 11, color: '#0F172A' }}>{net.label}</div>
-                                                            {subText && <div style={{ fontSize: 9, color: '#64748B', marginTop: 1 }}>{subText}</div>}
-                                                        </div>
-                                                        <span style={{ color: '#CBD5E1', fontSize: 12 }}>→</span>
-                                                    </div>
-                                                );
-                                            })}
-                                            {(profile.customLinks || []).filter(l => l.label).map((link, i) => (
-                                                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: 'white', borderRadius: 12, border: '1px solid #F1F5F9', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-                                                    <div style={{ width: 28, height: 28, borderRadius: 8, background: '#F8FAFC', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>{link.emoji || '🔗'}</div>
-                                                    <span style={{ fontWeight: 700, fontSize: 11, flex: 1, color: '#0F172A' }}>{link.label}</span>
-                                                    <span style={{ color: '#CBD5E1', fontSize: 12 }}>→</span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
+                                  </div>
                                 </div>
                             )}
                         </PhonePreview>
