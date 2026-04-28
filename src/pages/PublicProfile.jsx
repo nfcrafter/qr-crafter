@@ -80,8 +80,14 @@ export default function PublicProfile() {
     if (profile.email) vc += `EMAIL:${profile.email}\r\n`
     if (profile.photo_url) vc += `PHOTO;VALUE=URI:${profile.photo_url}\r\n`
     SOCIAL_LINKS.forEach(s => {
-      const val = profile[s.key]
-      if (val && !['phone','email'].includes(s.key)) vc += `URL;TYPE=${s.label}:${s.getUrl(val)}\r\n`
+      const val = profile[s.key] || profile?.socials?.[s.key]
+      if (val && !['phone','email'].includes(s.key)) {
+        if (s.key === 'website') {
+          vc += `URL:${s.getUrl(val)}\r\n`
+        } else {
+          vc += `X-SOCIALPROFILE;TYPE=${s.key}:${s.getUrl(val)}\r\n`
+        }
+      }
     })
     customLinks.forEach(l => { if (l.url) vc += `URL;TYPE=${l.title || 'Lien'}:${l.url}\r\n` })
     vc += `END:VCARD`
@@ -111,7 +117,7 @@ export default function PublicProfile() {
   )
 
   const themeColor = profile?.theme_color || profile?.primaryColor || '#1A1265'
-  const activeLinks = SOCIAL_LINKS.filter(s => (profile?.[s.key] || profile?.socials?.[s.key])?.trim())
+  const activeLinks = SOCIAL_LINKS.filter(s => s.key !== 'phone' && s.key !== 'email' && (profile?.[s.key] || profile?.socials?.[s.key])?.trim())
   const activeCustomLinks = customLinks.filter(l => l.url)
 
   return (
