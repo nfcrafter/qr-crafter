@@ -223,5 +223,37 @@ h1, h2, h3, h4, h5, h6 {
 .field input, .field select, .field textarea { width: 100%; padding: 14px; border-radius: var(--radius-md); border: 1px solid var(--border); background: var(--white); font-size: 15px; }
 .field input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26, 18, 101, 0.1); }
 
+.premium-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+}
+.premium-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+.btn-primary {
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+.btn-ghost {
+    background: var(--white);
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    border-radius: var(--radius-md);
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.btn-ghost:hover { background: var(--primary-light); }
+
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }

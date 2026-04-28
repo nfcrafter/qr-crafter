@@ -39,45 +39,21 @@ export default function CreateCardWizard() {
     const navigate = useNavigate();
     const toast = useToast();
     const qrRef = useRef(null);
-    const qrCode = useRef(null);
-    const [cardId, setCardId] = useState(null);
-    const [step, setStep] = useState(1);
-    const [selectedType, setSelectedType] = useState(null);
-    const [generating, setGenerating] = useState(false);
-    const [openSection, setOpenSection] = useState('info');
-    const [previewMode, setPreviewMode] = useState('page');
-    const [cardName, setCardName] = useState('');
-    const [folders, setFolders] = useState([]);
-    const [selectedFolderId, setSelectedFolderId] = useState(null);
-    const [activeSocialInput, setActiveSocialInput] = useState(null);
-
-    const [profile, setProfile] = useState({
-        banner_url: '', photo_url: '', full_name: '', job_title: '', bio: '',
-        phone: '', email: '', primaryColor: '#1A1265',
-        socials: {}, customLinks: [], url: ''
-    });
-
-    const [qrStyle, setQrStyle] = useState({
-        dotsType: 'rounded', dotsColor: '#1A1265', bgColor: '#FFFFFF',
-        cornersType: 'extra-rounded', cornersColor: '#1A1265', logo_url: ''
-    });
-
-    const getSocialValue = (key) => typeof profile.socials[key] === 'object' ? profile.socials[key].value || '' : profile.socials[key] || '';
-    const getSocialSubtitle = (key) => typeof profile.socials[key] === 'object' ? profile.socials[key].subtitle || '' : '';
-    const updateSocial = (key, field, val) => {
-        const curr = profile.socials[key];
-        const obj = typeof curr === 'object' ? curr : { value: curr || '', subtitle: '' };
-        setProfile({ ...profile, socials: { ...profile.socials, [key]: { ...obj, [field]: val } } });
-    };
+    const qrCode = useRef(    const [activationToken, setActivationToken] = useState(null);
 
     useEffect(() => {
         generateUniqueCardId().then(setCardId);
         supabase.from('folders').select('*').order('created_at').then(({ data }) => setFolders(data || []));
+        // Generate a random token for activation
+        const token = Array.from({ length: 16 }, () => 'abcdefghijklmnopqrstuvwxyz0123456789'[Math.floor(Math.random() * 36)]).join('');
+        setActivationToken(token);
     }, []);
 
     useEffect(() => {
         if (!qrRef.current || !cardId) return;
-        const url = selectedType === 'url' && profile.url ? profile.url : `${window.location.origin}/u/${cardId}`;
+        // The QR always points to the public URL
+        const url = `${window.location.origin}/u/${cardId}`;
+        
         if (!qrCode.current) {
             qrCode.current = new QRCodeStyling({
                 width: 256, height: 256, data: url,
@@ -97,7 +73,7 @@ export default function CreateCardWizard() {
                 image: qrStyle.logo_url || ''
             });
         }
-    }, [qrStyle, cardId, selectedType, profile.url, step]);
+    }, [qrStyle, cardId, step]);
 
     function toggleSocial(id) {
         const s = { ...profile.socials };
@@ -137,11 +113,12 @@ export default function CreateCardWizard() {
                 folder_id: selectedFolderId || null,
                 qr_appearance: qrStyle,
                 admin_profile: { ...profile, qr_type: selectedType },
-                status: 'active'
+                status: 'active',
+                activation_token: activationToken // CRITICAL: Save the token!
             });
             if (error) throw error;
             toast('QR créé avec succès !', 'success');
-            navigate('/admin');
+            setStep(4); // Move to success step
         } catch (err) { toast(err.message, 'error'); }
         finally { setGenerating(false); }
     }
@@ -162,19 +139,22 @@ export default function CreateCardWizard() {
         </div>
     );
 
+    const publicUrl = `${window.location.origin}/u/${cardId}`;
+    const activationUrl = `${window.location.origin}/activate?cardId=${cardId}&token=${activationToken}`;
+
     return (
         <div style={{ minHeight: '100vh', background: '#F8FAFC', padding: '40px 20px' }}>
             <div className="max-w-wrapper">
                 {/* Stepper */}
                 <div className="stepper">
-                    {['Type', 'Contenu', 'Design QR'].map((label, i) => (
+                    {['Type', 'Contenu', 'Design QR', 'Terminé'].map((label, i) => (
                         <><div key={label} className={`step ${step >= i+1 ? (step > i+1 ? 'done' : 'active') : ''}`}>
                             <div className="step-number">{i+1}</div>{label}
-                        </div>{i < 2 && <div className="step-line" />}</>
+                        </div>{i < 3 && <div className="step-line" />}</>
                     ))}
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 48, alignItems: 'start' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: step === 4 ? '1fr' : '1fr 360px', gap: 48, alignItems: 'start' }}>
                     <div className="animate-fade-in">
 
                         {/* Step 1 — Type */}
@@ -313,107 +293,145 @@ export default function CreateCardWizard() {
                             </div>
                         )}
 
+                        {/* Step 4 — Success */}
+                        {step === 4 && (
+                            <div style={{ textAlign: 'center', padding: '20px 0' }}>
+                                <div style={{ fontSize: 64, marginBottom: 16 }}>🎉</div>
+                                <h2 style={{ fontSize: 28, fontWeight: 900, color: '#1A1265', marginBottom: 12 }}>QR Code Créé !</h2>
+                                <p style={{ color: '#64748B', marginBottom: 40 }}>Votre carte est prête. Voici les liens à transmettre à votre client.</p>
+
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 40 }}>
+                                    <div className="premium-card" style={{ padding: 24, textAlign: 'left', background: 'white' }}>
+                                        <h3 style={{ fontSize: 14, fontWeight: 800, color: '#1A1265', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>🔗 Lien Public</h3>
+                                        <p style={{ fontSize: 12, color: '#94A3B8', marginBottom: 16 }}>Lien direct pour voir le profil ou l'URL.</p>
+                                        <div style={{ background: '#F8FAFC', padding: 12, borderRadius: 12, fontSize: 11, fontWeight: 700, color: '#6366F1', wordBreak: 'break-all', border: '1px solid #E2E8F0', marginBottom: 12 }}>
+                                            {publicUrl}
+                                        </div>
+                                        <button onClick={() => { navigator.clipboard.writeText(publicUrl); toast('Lien copié !', 'success'); }} className="btn-ghost" style={{ width: '100%', fontSize: 12 }}>Copier le lien</button>
+                                    </div>
+
+                                    <div className="premium-card" style={{ padding: 24, textAlign: 'left', background: '#EEF2FF', border: '1px solid #C7D2FE' }}>
+                                        <h3 style={{ fontSize: 14, fontWeight: 800, color: '#1A1265', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>🔑 Lien d'Activation</h3>
+                                        <p style={{ fontSize: 12, color: '#64748B', marginBottom: 16 }}>À envoyer au client pour qu'il crée son compte.</p>
+                                        <div style={{ background: 'white', padding: 12, borderRadius: 12, fontSize: 11, fontWeight: 700, color: '#1A1265', wordBreak: 'break-all', border: '1px solid #C7D2FE', marginBottom: 12 }}>
+                                            {activationUrl}
+                                        </div>
+                                        <button onClick={() => { navigator.clipboard.writeText(activationUrl); toast('Lien d\'activation copié !', 'success'); }} className="btn-primary" style={{ width: '100%', fontSize: 12 }}>Copier pour le client</button>
+                                    </div>
+                                </div>
+
+                                <div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}>
+                                    <button onClick={() => navigate('/admin')} className="btn-ghost" style={{ padding: '14px 32px' }}>Retour au Dashboard</button>
+                                    <button onClick={() => window.location.reload()} className="btn-primary" style={{ padding: '14px 32px' }}>Créer un autre QR</button>
+                                </div>
+                            </div>
+                        )}
+
                         {/* Navigation */}
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 48, paddingTop: 24, borderTop: '1px solid #E2E8F0' }}>
-                            <button className="btn-nav-prev" onClick={() => step > 1 ? setStep(step - 1) : navigate('/admin')}>← Retour</button>
-                            {step < 3
-                                ? <button className="btn-nav-next" onClick={() => setStep(step + 1)} disabled={step === 1 && !selectedType}>Suivant →</button>
-                                : <button className="btn-nav-next" onClick={handleFinalize} disabled={generating}>{generating ? 'Création...' : '✓ Valider & Créer'}</button>
-                            }
-                        </div>
+                        {step < 4 && (
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 48, paddingTop: 24, borderTop: '1px solid #E2E8F0' }}>
+                                <button className="btn-nav-prev" onClick={() => step > 1 ? setStep(step - 1) : navigate('/admin')}>← Retour</button>
+                                {step < 3
+                                    ? <button className="btn-nav-next" onClick={() => setStep(step + 1)} disabled={step === 1 && !selectedType}>Suivant →</button>
+                                    : <button className="btn-nav-next" onClick={handleFinalize} disabled={generating}>{generating ? 'Création...' : '✓ Valider & Créer'}</button>
+                                }
+                            </div>
+                        )}
                     </div>
 
                     {/* Right panel: QR-only on step 3, page preview on steps 1&2 */}
-                    <div className="phone-preview-container">
-                        {step < 3 && (
-                            <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-                                <button onClick={() => setPreviewMode('qr')} style={{ flex: 1, padding: '10px', borderRadius: 20, border: 'none', background: previewMode === 'qr' ? '#1A1265' : 'white', color: previewMode === 'qr' ? 'white' : '#64748B', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>Code QR</button>
-                                <button onClick={() => setPreviewMode('page')} style={{ flex: 1, padding: '10px', borderRadius: 20, border: 'none', background: previewMode === 'page' ? '#1A1265' : 'white', color: previewMode === 'page' ? 'white' : '#64748B', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>Aperçu Page</button>
-                            </div>
-                        )}
-                        {step === 3 && (
-                            <p style={{ textAlign: 'center', fontSize: 11, fontWeight: 700, color: '#94A3B8', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 1 }}>Aperçu du QR Code</p>
-                        )}
-                        <PhonePreview>
-                            {/* Step 3 → always show QR */}
-                            {(step === 3 || previewMode === 'qr') ? (
-                                <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 20, background: '#F0F2F5' }}>
-                                    <div style={{ background: qrStyle.bgColor || 'white', padding: 16, borderRadius: 20, boxShadow: '0 8px 32px rgba(0,0,0,0.12)', display: 'inline-flex', flexDirection: 'column', alignItems: 'center' }}>
-                                        <div ref={qrRef} />
-                                    </div>
-                                    <p style={{ marginTop: 14, fontSize: 10, color: '#94A3B8', textAlign: 'center', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>Lien permanent — ne change jamais</p>
-                                </div>
-                            ) : (
-                                <div style={{ textAlign: 'left', height: '100%' }}>
-                                    {selectedType === 'url' ? (
-                                        <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 24px', background: 'linear-gradient(135deg, #F8FAFC 0%, #EEF2FF 100%)', textAlign: 'center' }}>
-                                            <div style={{ width: 80, height: 80, borderRadius: 24, background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 40, boxShadow: '0 10px 25px rgba(0,0,0,0.05)', marginBottom: 24 }}>🌐</div>
-                                            <h3 style={{ fontWeight: 900, color: '#1A1265', fontSize: 20, marginBottom: 12 }}>Redirection URL</h3>
-                                            <p style={{ fontSize: 13, color: '#64748B', lineHeight: 1.5, marginBottom: 24 }}>Ce QR code redirigera directement vers le lien ci-dessous :</p>
-                                            <div style={{ width: '100%', padding: '16px', background: 'white', borderRadius: 16, border: '1px solid #E2E8F0', fontSize: 12, color: '#6366F1', fontWeight: 700, wordBreak: 'break-all', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
-                                                {profile.url || 'https://votre-lien.com'}
-                                            </div>
-                                            <div style={{ marginTop: 'auto', fontSize: 11, color: '#94A3B8', fontWeight: 600 }}>Propulsé par QR Crafter</div>
-                                        </div>
-                                    ) : (
-                                        <>
-                                            <div style={{ height: 110, background: profile.primaryColor, position: 'relative', overflow: 'hidden' }}>
-                                                {profile.banner_url && <img src={profile.banner_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />}
-                                            </div>
-                                            <div style={{ padding: '0 16px 20px' }}>
-                                                <div style={{ width: 64, height: 64, borderRadius: 16, border: '3px solid white', background: '#EEF2FF', marginTop: -32, overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', position: 'relative', zIndex: 10 }}>
-                                                    {profile.photo_url && <img src={profile.photo_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />}
-                                                </div>
-                                                <h3 style={{ marginTop: 8, fontWeight: 900, color: '#1A1265', fontSize: 15 }}>{profile.full_name || 'Votre Nom'}</h3>
-                                                <p style={{ fontSize: 11, color: '#64748B' }}>{profile.job_title || 'Profession'}</p>
-                                                <button style={{ width: '100%', marginTop: 12, padding: '10px', borderRadius: 12, background: profile.primaryColor, color: 'white', border: 'none', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>Enregistrer le contact</button>
-                                                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 16 }}>
-                                                    {(profile.phone || profile.email) && (
-                                                        <div style={{ display: 'flex', gap: 6 }}>
-                                                            {profile.phone && (
-                                                                <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, padding: '8px', background: 'white', borderRadius: 10, border: '1px solid #F1F5F9', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', fontWeight: 700, fontSize: 10 }}>
-                                                                    <span>📞</span> Appeler
-                                                                </div>
-                                                            )}
-                                                            {profile.email && (
-                                                                <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, padding: '8px', background: 'white', borderRadius: 10, border: '1px solid #F1F5F9', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', fontWeight: 700, fontSize: 10 }}>
-                                                                    <span>✉️</span> Email
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    )}
-                                                    {Object.keys(profile.socials || {}).filter(k => k !== 'phone' && k !== 'email').map(key => {
-                                                        const net = SOCIAL_NETWORKS.find(n => n.id === key);
-                                                        if (!net) return null;
-                                                        const valObj = profile.socials[key];
-                                                        const subText = typeof valObj === 'object' ? valObj.subtitle : '';
-                                                        return (
-                                                            <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: 'white', borderRadius: 12, border: '1px solid #F1F5F9', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-                                                                <div style={{ width: 28, height: 28, borderRadius: 8, background: net.color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
-                                                                    dangerouslySetInnerHTML={{ __html: `<div style="width:14px;height:14px;color:${net.iconColor || net.color}">${net.svg}</div>` }} />
-                                                                <div style={{ flex: 1, overflow: 'hidden' }}>
-                                                                    <div style={{ fontWeight: 700, fontSize: 11, color: '#0F172A' }}>{net.label}</div>
-                                                                    {subText && <div style={{ fontSize: 9, color: '#64748B', marginTop: 1 }}>{subText}</div>}
-                                                                </div>
-                                                                <span style={{ color: '#CBD5E1', fontSize: 12 }}>→</span>
-                                                            </div>
-                                                        );
-                                                    })}
-                                                    {(profile.customLinks || []).filter(l => l.label).map((link, i) => (
-                                                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: 'white', borderRadius: 12, border: '1px solid #F1F5F9', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-                                                            <div style={{ width: 28, height: 28, borderRadius: 8, background: '#F8FAFC', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>{link.emoji || '🔗'}</div>
-                                                            <span style={{ fontWeight: 700, fontSize: 11, flex: 1, color: '#0F172A' }}>{link.label}</span>
-                                                            <span style={{ color: '#CBD5E1', fontSize: 12 }}>→</span>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        </>
-                                    )}
+                    {step < 4 && (
+                        <div className="phone-preview-container">
+                            {step < 3 && (
+                                <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+                                    <button onClick={() => setPreviewMode('qr')} style={{ flex: 1, padding: '10px', borderRadius: 20, border: 'none', background: previewMode === 'qr' ? '#1A1265' : 'white', color: previewMode === 'qr' ? 'white' : '#64748B', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>Code QR</button>
+                                    <button onClick={() => setPreviewMode('page')} style={{ flex: 1, padding: '10px', borderRadius: 20, border: 'none', background: previewMode === 'page' ? '#1A1265' : 'white', color: previewMode === 'page' ? 'white' : '#64748B', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>Aperçu Page</button>
                                 </div>
                             )}
-                        </PhonePreview>
-                    </div>
+                            {step === 3 && (
+                                <p style={{ textAlign: 'center', fontSize: 11, fontWeight: 700, color: '#94A3B8', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 1 }}>Aperçu du QR Code</p>
+                            )}
+                            <PhonePreview>
+                                {/* Step 3 → always show QR */}
+                                {(step === 3 || previewMode === 'qr') ? (
+                                    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 20, background: '#F0F2F5' }}>
+                                        <div style={{ background: qrStyle.bgColor || 'white', padding: 16, borderRadius: 20, boxShadow: '0 8px 32px rgba(0,0,0,0.12)', display: 'inline-flex', flexDirection: 'column', alignItems: 'center' }}>
+                                            <div ref={qrRef} />
+                                        </div>
+                                        <p style={{ marginTop: 14, fontSize: 10, color: '#94A3B8', textAlign: 'center', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>Lien permanent — ne change jamais</p>
+                                    </div>
+                                ) : (
+                                    <div style={{ textAlign: 'left', height: '100%' }}>
+                                        {selectedType === 'url' ? (
+                                            <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 24px', background: 'linear-gradient(135deg, #F8FAFC 0%, #EEF2FF 100%)', textAlign: 'center' }}>
+                                                <div style={{ width: 80, height: 80, borderRadius: 24, background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 40, boxShadow: '0 10px 25px rgba(0,0,0,0.05)', marginBottom: 24 }}>🌐</div>
+                                                <h3 style={{ fontWeight: 900, color: '#1A1265', fontSize: 20, marginBottom: 12 }}>Redirection URL</h3>
+                                                <p style={{ fontSize: 13, color: '#64748B', lineHeight: 1.5, marginBottom: 24 }}>Ce QR code redirigera directement vers le lien ci-dessous :</p>
+                                                <div style={{ width: '100%', padding: '16px', background: 'white', borderRadius: 16, border: '1px solid #E2E8F0', fontSize: 12, color: '#6366F1', fontWeight: 700, wordBreak: 'break-all', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
+                                                    {profile.url || 'https://votre-lien.com'}
+                                                </div>
+                                                <div style={{ marginTop: 'auto', fontSize: 11, color: '#94A3B8', fontWeight: 600 }}>Propulsé par QR Crafter</div>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <div style={{ height: 110, background: profile.primaryColor, position: 'relative', overflow: 'hidden' }}>
+                                                    {profile.banner_url && <img src={profile.banner_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />}
+                                                </div>
+                                                <div style={{ padding: '0 16px 20px' }}>
+                                                    <div style={{ width: 64, height: 64, borderRadius: 16, border: '3px solid white', background: '#EEF2FF', marginTop: -32, overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', position: 'relative', zIndex: 10 }}>
+                                                        {profile.photo_url && <img src={profile.photo_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />}
+                                                    </div>
+                                                    <h3 style={{ marginTop: 8, fontWeight: 900, color: '#1A1265', fontSize: 15 }}>{profile.full_name || 'Votre Nom'}</h3>
+                                                    <p style={{ fontSize: 11, color: '#64748B' }}>{profile.job_title || 'Profession'}</p>
+                                                    <button style={{ width: '100%', marginTop: 12, padding: '10px', borderRadius: 12, background: profile.primaryColor, color: 'white', border: 'none', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>Enregistrer le contact</button>
+                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 16 }}>
+                                                        {(profile.phone || profile.email) && (
+                                                            <div style={{ display: 'flex', gap: 6 }}>
+                                                                {profile.phone && (
+                                                                    <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, padding: '8px', background: 'white', borderRadius: 10, border: '1px solid #F1F5F9', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', fontWeight: 700, fontSize: 10 }}>
+                                                                        <span>📞</span> Appeler
+                                                                    </div>
+                                                                )}
+                                                                {profile.email && (
+                                                                    <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, padding: '8px', background: 'white', borderRadius: 10, border: '1px solid #F1F5F9', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', fontWeight: 700, fontSize: 10 }}>
+                                                                        <span>✉️</span> Email
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                        {Object.keys(profile.socials || {}).filter(k => k !== 'phone' && k !== 'email').map(key => {
+                                                            const net = SOCIAL_NETWORKS.find(n => n.id === key);
+                                                            if (!net) return null;
+                                                            const valObj = profile.socials[key];
+                                                            const subText = typeof valObj === 'object' ? valObj.subtitle : '';
+                                                            return (
+                                                                <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: 'white', borderRadius: 12, border: '1px solid #F1F5F9', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                                                                    <div style={{ width: 28, height: 28, borderRadius: 8, background: net.color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+                                                                        dangerouslySetInnerHTML={{ __html: `<div style="width:14px;height:14px;color:${net.iconColor || net.color}">${net.svg}</div>` }} />
+                                                                    <div style={{ flex: 1, overflow: 'hidden' }}>
+                                                                        <div style={{ fontWeight: 700, fontSize: 11, color: '#0F172A' }}>{net.label}</div>
+                                                                        {subText && <div style={{ fontSize: 9, color: '#64748B', marginTop: 1 }}>{subText}</div>}
+                                                                    </div>
+                                                                    <span style={{ color: '#CBD5E1', fontSize: 12 }}>→</span>
+                                                                </div>
+                                                            );
+                                                        })}
+                                                        {(profile.customLinks || []).filter(l => l.label).map((link, i) => (
+                                                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: 'white', borderRadius: 12, border: '1px solid #F1F5F9', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                                                                <div style={{ width: 28, height: 28, borderRadius: 8, background: '#F8FAFC', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>{link.emoji || '🔗'}</div>
+                                                                <span style={{ fontWeight: 700, fontSize: 11, flex: 1, color: '#0F172A' }}>{link.label}</span>
+                                                                <span style={{ color: '#CBD5E1', fontSize: 12 }}>→</span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </>
+                                        )}
+                                    </div>
+                                )}
+                            </PhonePreview>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
