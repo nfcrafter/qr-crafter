@@ -171,7 +171,7 @@ export default function ProfileForm({
                                         background: 'white', boxShadow: active ? `0 4px 12px ${net.color}44` : '0 2px 6px rgba(0,0,0,0.08)', 
                                         opacity: active ? 1 : 0.45, display: 'flex', alignItems: 'center', justifyContent: 'center' 
                                     }}>
-                                        <div style={{ width: 22, height: 22, color: net.iconColor || net.color }} dangerouslySetInnerHTML={{ __html: net.svg }} />
+        <div style={{ width: 22, height: 22, color: net.id === 'snapchat' ? '#000000' : (net.iconColor || net.color) }} dangerouslySetInnerHTML={{ __html: net.svg }} />
                                     </div>
                                     {active && <div style={{ position: 'absolute', top: -3, right: -3, width: 12, height: 12, background: net.color, borderRadius: '50%', border: '2px solid white' }} />}
                                 </div>
@@ -186,7 +186,7 @@ export default function ProfileForm({
                             return (
                                 <div key={key} className="field" style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: 12, background: '#F8FAFC', borderRadius: 16, border: '1px solid #E2E8F0' }}>
                                     <div style={{ width: 36, height: 36, borderRadius: 10, background: net.color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 4 }}>
-                                        <div style={{ width: 20, height: 20, color: net.iconColor || net.color }} dangerouslySetInnerHTML={{ __html: net.svg }} />
+                                        <div style={{ width: 20, height: 20, color: net.id === 'snapchat' ? '#000000' : (net.iconColor || net.color) }} dangerouslySetInnerHTML={{ __html: net.svg }} />
                                     </div>
                                     <div style={{ flex: 1 }}>
                                         <label style={{ marginBottom: 4 }}>{net.label}</label>
