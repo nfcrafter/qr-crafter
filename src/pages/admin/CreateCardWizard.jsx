@@ -342,7 +342,9 @@ export default function CreateCardWizard() {
                                         <div ref={qrRef} />
                                     </div>
                                     <p style={{ marginTop: 14, fontSize: 10, color: '#94A3B8', textAlign: 'center', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>Lien permanent — ne change jamais</p>
-                                        <div style={{ textAlign: 'left', height: '100%' }}>
+                                </div>
+                            ) : (
+                                <div style={{ textAlign: 'left', height: '100%' }}>
                                     {selectedType === 'url' ? (
                                         <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 24px', background: 'linear-gradient(135deg, #F8FAFC 0%, #EEF2FF 100%)', textAlign: 'center' }}>
                                             <div style={{ width: 80, height: 80, borderRadius: 24, background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 40, boxShadow: '0 10px 25px rgba(0,0,0,0.05)', marginBottom: 24 }}>🌐</div>
