@@ -5,7 +5,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 export default function Activate() {
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()
-    const cardId = searchParams.get('card')
+    const cardId = searchParams.get('card') || searchParams.get('cardId')
     const token = searchParams.get('token')
     const [cardInfo, setCardInfo] = useState(null)
     const [loading, setLoading] = useState(false)

@@ -103,7 +103,13 @@ export default function CardSettings() {
         if (card.admin_profile) {
             const { qr_type, ...rest } = card.admin_profile;
             setQrType(qr_type || 'profile');
-            setProfile({ banner_url: '', photo_url: '', full_name: '', job_title: '', bio: '', phone: '', email: '', primaryColor: '#1A1265', socials: {}, customLinks: [], url: '', ...rest });
+            setProfile({ 
+                banner_url: '', photo_url: '', full_name: '', job_title: '', bio: '', 
+                phone: '', email: '', primaryColor: '#1A1265', 
+                socials: {}, customLinks: [], url: '', 
+                activation_token: card.activation_token, // Add this!
+                ...rest 
+            });
         }
         if (card.qr_appearance) setQrStyle({ dotsType: 'rounded', dotsColor: '#1A1265', bgColor: '#FFFFFF', cornersType: 'extra-rounded', cornersColor: '#1A1265', logo_url: '', ...card.qr_appearance });
         const { data: fd } = await supabase.from('folders').select('*').order('created_at');
@@ -225,6 +231,32 @@ export default function CardSettings() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 48, alignItems: 'start' }}>
                     <div>
+                        {/* LINKS SECTION */}
+                        {acc('share', '🚀', 'Partage & Activation', 'Liens à envoyer à votre client.', (
+                            <div style={{ marginTop: 16, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 20 }}>
+                                <div className="premium-card" style={{ padding: 20, background: 'white' }}>
+                                    <h4 style={{ fontSize: 13, fontWeight: 800, color: '#1A1265', marginBottom: 10 }}>🔗 Lien Public</h4>
+                                    <div style={{ background: '#F8FAFC', padding: 10, borderRadius: 10, fontSize: 11, fontWeight: 700, color: '#6366F1', wordBreak: 'break-all', border: '1px solid #E2E8F0', marginBottom: 12 }}>
+                                        {`${window.location.origin}/u/${cardId}`}
+                                    </div>
+                                    <button onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/u/${cardId}`); toast('Lien copié !', 'success'); }} className="btn-ghost" style={{ width: '100%', fontSize: 11, padding: '8px' }}>Copier le lien</button>
+                                </div>
+                                <div className="premium-card" style={{ padding: 20, background: '#EEF2FF', border: '1px solid #C7D2FE' }}>
+                                    <h4 style={{ fontSize: 13, fontWeight: 800, color: '#1A1265', marginBottom: 10 }}>🔑 Lien d'Activation</h4>
+                                    <div style={{ background: 'white', padding: 10, borderRadius: 10, fontSize: 11, fontWeight: 700, color: '#1A1265', wordBreak: 'break-all', border: '1px solid #C7D2FE', marginBottom: 12 }}>
+                                        {/* Get token from the card object if available, otherwise it's probably already activated or missing */}
+                                        {loading ? '...' : `${window.location.origin}/activate?cardId=${cardId}&token=${profile.activation_token || 'TOKEN_EXPIRED'}`}
+                                    </div>
+                                    <button onClick={() => { 
+                                        const token = profile.activation_token || '';
+                                        if (!token) return toast('Carte déjà activée ou jeton manquant', 'warning');
+                                        navigator.clipboard.writeText(`${window.location.origin}/activate?cardId=${cardId}&token=${token}`); 
+                                        toast('Lien d\'activation copié !', 'success'); 
+                                    }} className="btn-primary" style={{ width: '100%', fontSize: 11, padding: '8px' }}>Copier pour le client</button>
+                                </div>
+                            </div>
+                        ))}
+
                         {/* URL type */}
                         {qrType === 'url' && acc('url', '🌐', 'URL de destination', 'Lien vers lequel le QR redirige.', (
                             <div className="field" style={{ marginTop: 16 }}>

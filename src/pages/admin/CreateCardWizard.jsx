@@ -42,6 +42,8 @@ export default function CreateCardWizard() {
     const qrCode = useRef(null);
     const [activationToken, setActivationToken] = useState(null);
     const [cardId, setCardId] = useState(null);
+    const [publicUrl, setPublicUrl] = useState('');
+    const [activationUrl, setActivationUrl] = useState('');
     const [step, setStep] = useState(1);
     const [selectedType, setSelectedType] = useState(null);
     const [generating, setGenerating] = useState(false);
@@ -148,6 +150,10 @@ export default function CreateCardWizard() {
             });
             if (error) throw error;
             toast('QR créé avec succès !', 'success');
+            const pUrl = `${window.location.origin}/u/${cardId}`;
+            const aUrl = `${window.location.origin}/activate?card=${cardId}&token=${activationToken}`;
+            setPublicUrl(pUrl);
+            setActivationUrl(aUrl);
             setStep(4); // Move to success step
         } catch (err) { toast(err.message, 'error'); }
         finally { setGenerating(false); }
@@ -323,37 +329,54 @@ export default function CreateCardWizard() {
                             </div>
                         )}
 
-                        {/* Step 4 — Success */}
+                        {/* Step 4 — Success Premium */}
                         {step === 4 && (
-                            <div style={{ textAlign: 'center', padding: '20px 0' }}>
-                                <div style={{ fontSize: 64, marginBottom: 16 }}>🎉</div>
-                                <h2 style={{ fontSize: 28, fontWeight: 900, color: '#1A1265', marginBottom: 12 }}>QR Code Créé !</h2>
-                                <p style={{ color: '#64748B', marginBottom: 40 }}>Votre carte est prête. Voici les liens à transmettre à votre client.</p>
+                            <div className="animate-fade-in" style={{ textAlign: 'center', padding: '40px 0' }}>
+                                <div style={{ position: 'relative', display: 'inline-block', marginBottom: 32 }}>
+                                    <div style={{ position: 'absolute', inset: -20, background: 'var(--primary)', opacity: 0.1, borderRadius: '50%', animation: 'pulse 2s infinite' }} />
+                                    <div style={{ fontSize: 72 }}>✨</div>
+                                </div>
+                                <h2 style={{ fontSize: 36, fontWeight: 900, color: '#1A1265', marginBottom: 16, letterSpacing: '-1px' }}>Félicitations !</h2>
+                                <p style={{ color: '#64748B', fontSize: 16, maxWidth: 500, margin: '0 auto 48px', lineHeight: 1.6 }}>
+                                    Votre QR Code est prêt à conquérir le monde. Envoyez ces liens à votre client pour commencer.
+                                </p>
 
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 40 }}>
-                                    <div className="premium-card" style={{ padding: 24, textAlign: 'left', background: 'white' }}>
-                                        <h3 style={{ fontSize: 14, fontWeight: 800, color: '#1A1265', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>🔗 Lien Public</h3>
-                                        <p style={{ fontSize: 12, color: '#94A3B8', marginBottom: 16 }}>Lien direct pour voir le profil ou l'URL.</p>
-                                        <div style={{ background: '#F8FAFC', padding: 12, borderRadius: 12, fontSize: 11, fontWeight: 700, color: '#6366F1', wordBreak: 'break-all', border: '1px solid #E2E8F0', marginBottom: 12 }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32, marginBottom: 48 }}>
+                                    <div className="premium-card" style={{ padding: 32, textAlign: 'left', border: '1px solid #E2E8F0', position: 'relative', overflow: 'hidden' }}>
+                                        <div style={{ position: 'absolute', top: 0, right: 0, padding: '8px 16px', background: '#F1F5F9', fontSize: 10, fontWeight: 800, color: '#94A3B8', borderRadius: '0 0 0 12px' }}>PUBLIC</div>
+                                        <div style={{ width: 48, height: 48, borderRadius: 14, background: '#EEF2FF', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24, fontSize: 24 }}>🔗</div>
+                                        <h3 style={{ fontSize: 18, fontWeight: 800, color: '#1A1265', marginBottom: 8 }}>Lien du Profil</h3>
+                                        <p style={{ fontSize: 13, color: '#64748B', marginBottom: 20 }}>Le lien vers la page de destination finale du QR.</p>
+                                        <div style={{ background: '#F8FAFC', padding: '16px', borderRadius: 14, fontSize: 12, fontWeight: 700, color: '#6366F1', wordBreak: 'break-all', border: '1px solid #E2E8F0', marginBottom: 20 }}>
                                             {publicUrl}
                                         </div>
-                                        <button onClick={() => { navigator.clipboard.writeText(publicUrl); toast('Lien copié !', 'success'); }} className="btn-ghost" style={{ width: '100%', fontSize: 12 }}>Copier le lien</button>
+                                        <button onClick={() => { navigator.clipboard.writeText(publicUrl); toast('Lien copié !', 'success'); }} className="btn-ghost" style={{ width: '100%', padding: '14px', borderRadius: 12 }}>Copier le lien public</button>
                                     </div>
 
-                                    <div className="premium-card" style={{ padding: 24, textAlign: 'left', background: '#EEF2FF', border: '1px solid #C7D2FE' }}>
-                                        <h3 style={{ fontSize: 14, fontWeight: 800, color: '#1A1265', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>🔑 Lien d'Activation</h3>
-                                        <p style={{ fontSize: 12, color: '#64748B', marginBottom: 16 }}>À envoyer au client pour qu'il crée son compte.</p>
-                                        <div style={{ background: 'white', padding: 12, borderRadius: 12, fontSize: 11, fontWeight: 700, color: '#1A1265', wordBreak: 'break-all', border: '1px solid #C7D2FE', marginBottom: 12 }}>
+                                    <div className="premium-card" style={{ padding: 32, textAlign: 'left', background: 'white', border: '2px solid #6366F1', position: 'relative', boxShadow: '0 20px 40px rgba(99, 102, 241, 0.1)' }}>
+                                        <div style={{ position: 'absolute', top: 0, right: 0, padding: '8px 16px', background: '#6366F1', fontSize: 10, fontWeight: 800, color: 'white', borderRadius: '0 0 0 12px' }}>ACTION REQUISE</div>
+                                        <div style={{ width: 48, height: 48, borderRadius: 14, background: '#F5F3FF', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24, fontSize: 24 }}>🔑</div>
+                                        <h3 style={{ fontSize: 18, fontWeight: 800, color: '#1A1265', marginBottom: 8 }}>Activation Client</h3>
+                                        <p style={{ fontSize: 13, color: '#64748B', marginBottom: 20 }}>Envoyez ce lien au client pour qu'il crée son compte.</p>
+                                        <div style={{ background: '#F5F3FF', padding: '16px', borderRadius: 14, fontSize: 12, fontWeight: 700, color: '#1A1265', wordBreak: 'break-all', border: '1px solid #DDD6FE', marginBottom: 20 }}>
                                             {activationUrl}
                                         </div>
-                                        <button onClick={() => { navigator.clipboard.writeText(activationUrl); toast('Lien d\'activation copié !', 'success'); }} className="btn-primary" style={{ width: '100%', fontSize: 12 }}>Copier pour le client</button>
+                                        <button onClick={() => { navigator.clipboard.writeText(activationUrl); toast('Lien d\'activation copié !', 'success'); }} className="btn-primary" style={{ width: '100%', padding: '14px', borderRadius: 12, boxShadow: '0 10px 20px rgba(26, 18, 101, 0.2)' }}>Copier pour le client</button>
                                     </div>
                                 </div>
 
-                                <div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}>
-                                    <button onClick={() => navigate('/admin')} className="btn-ghost" style={{ padding: '14px 32px' }}>Retour au Dashboard</button>
-                                    <button onClick={() => window.location.reload()} className="btn-primary" style={{ padding: '14px 32px' }}>Créer un autre QR</button>
+                                <div style={{ display: 'flex', gap: 20, justifyContent: 'center', alignItems: 'center' }}>
+                                    <button onClick={() => navigate('/admin')} className="btn-ghost" style={{ padding: '16px 40px', border: 'none' }}>← Retour au Dashboard</button>
+                                    <div style={{ width: 1, height: 24, background: '#E2E8F0' }} />
+                                    <button onClick={() => window.location.reload()} className="btn-primary" style={{ padding: '16px 40px', background: '#1A1265' }}>Créer un autre QR Code</button>
                                 </div>
+                                <style>{`
+                                    @keyframes pulse {
+                                        0% { transform: scale(1); opacity: 0.1; }
+                                        50% { transform: scale(1.5); opacity: 0.05; }
+                                        100% { transform: scale(1); opacity: 0.1; }
+                                    }
+                                `}</style>
                             </div>
                         )}
 
