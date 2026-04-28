@@ -23,7 +23,7 @@ export default function LandingPage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => navigate('/')}>
                     <img src="/logo.png" alt="QR Crafter" style={{ height: '36px' }} />
                     <span style={{ fontSize: '22px', fontWeight: '800', color: '#1A1265', letterSpacing: '-0.5px' }}>
-                        QR CRAFTER
+                        NFCrafter
                     </span>
                 </div>
                 <div style={{ display: 'flex', gap: '12px' }}>
@@ -91,7 +91,7 @@ export default function LandingPage() {
             <footer style={{ padding: '80px 20px', background: '#1A1265', color: 'white' }}>
                 <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
-                        <div style={{ fontSize: '24px', fontWeight: '900', marginBottom: '8px' }}>QR CRAFTER</div>
+                        <div style={{ fontSize: '24px', fontWeight: '900', marginBottom: '8px' }}>NFCrafter</div>
                         <div style={{ color: '#94A3B8', fontSize: '14px' }}>© 2024 Tous droits réservés.</div>
                     </div>
                     <div style={{ display: 'flex', gap: '32px' }}>

@@ -52,7 +52,7 @@ export default function Login() {
                 <div style={{ textAlign: 'center', marginBottom: '40px' }}>
                     <img src="/logo.png" alt="Logo" style={{ height: '48px', marginBottom: '16px' }} />
                     <h1 style={{ fontSize: '28px', fontWeight: '800', letterSpacing: '-1px', color: 'var(--text-900)', margin: 0 }}>
-                        QR <span style={{ color: 'var(--primary)' }}>CRAFTER</span>
+                        <span style={{ color: 'var(--primary)' }}>NF</span>CRAFTER
                     </h1>
                     <p style={{ color: 'var(--text-500)', fontSize: '15px', marginTop: '8px' }}>
                         Connectez-vous à votre espace

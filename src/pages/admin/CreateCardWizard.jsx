@@ -421,7 +421,7 @@ export default function CreateCardWizard() {
                                                 <div style={{ width: '100%', padding: '16px', background: 'white', borderRadius: 16, border: '1px solid #E2E8F0', fontSize: 12, color: '#6366F1', fontWeight: 700, wordBreak: 'break-all', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
                                                     {profile.url || 'https://votre-lien.com'}
                                                 </div>
-                                                <div style={{ marginTop: 'auto', fontSize: 11, color: '#94A3B8', fontWeight: 600 }}>Propulsé par QR Crafter</div>
+                                                <div style={{ marginTop: 'auto', fontSize: 11, color: '#94A3B8', fontWeight: 600 }}>Propulsé par NFCrafter</div>
                                             </div>
                                         ) : (
                                             <>

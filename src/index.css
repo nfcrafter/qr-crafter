@@ -257,3 +257,46 @@ h1, h2, h3, h4, h5, h6 {
 
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+
+/* --- Mobile Responsiveness --- */
+@media (max-width: 1024px) {
+    .selection-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+    .max-w-wrapper { padding: 0 16px; }
+    
+    .stepper { 
+        gap: 8px; 
+        overflow-x: auto; 
+        justify-content: flex-start; 
+        padding-bottom: 10px;
+        -webkit-overflow-scrolling: touch;
+    }
+    .stepper::-webkit-scrollbar { display: none; }
+    .step { font-size: 12px; white-space: nowrap; }
+    .step-line { width: 20px; }
+
+    .selection-grid { grid-template-columns: 1fr; }
+    
+    /* Responsive Dashboard Grids */
+    main > div[style*="grid-template-columns"] {
+        grid-template-columns: 1fr !important;
+        gap: 24px !important;
+    }
+
+    .premium-card { padding: 24px !important; }
+    
+    h1 { font-size: 24px !important; }
+    
+    .accordion-header { padding: 16px; }
+    .accordion-content { padding: 0 16px 16px; }
+
+    /* Hide Desktop-only elements if any */
+    .desktop-only { display: none !important; }
+}
+
+@media (max-width: 480px) {
+    .stepper { margin-bottom: 24px; }
+    .btn-nav-next, .btn-nav-prev { padding: 10px 16px; font-size: 14px; }
+}

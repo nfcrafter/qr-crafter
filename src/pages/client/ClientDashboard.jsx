@@ -171,7 +171,7 @@ export default function ClientDashboard() {
                         <div style={{ background: 'var(--primary)', padding: '8px', borderRadius: '12px' }}>
                             <img src="/logo.png" alt="Logo" style={{ height: '24px', filter: 'brightness(0) invert(1)' }} />
                         </div>
-                        <span style={{ fontWeight: '900', fontSize: '22px', letterSpacing: '-1px', color: 'var(--primary)' }}>QR CRAFTER</span>
+                        <span style={{ fontWeight: '900', fontSize: '22px', letterSpacing: '-1px', color: 'var(--primary)' }}>NFCrafter</span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
                         <div style={{ textAlign: 'right' }}>
