@@ -118,7 +118,15 @@ export default function PublicProfile() {
   )
 
   const themeColor = profile?.theme_color || profile?.primaryColor || '#1A1265'
-  const activeLinks = SOCIAL_NETWORKS.filter(s => s.id !== 'phone' && s.id !== 'email' && (profile?.[s.id] || profile?.socials?.[s.id])?.trim())
+  
+  const activeLinks = SOCIAL_NETWORKS.filter(s => {
+    if (s.id === 'phone' || s.id === 'email') return false;
+    const val = profile?.[s.id] || profile?.socials?.[s.id];
+    if (!val) return false;
+    if (typeof val === 'object') return !!val.value;
+    return typeof val === 'string' && val.trim().length > 0;
+  });
+
   const activeCustomLinks = customLinks.filter(l => l.url)
 
   return (
@@ -183,7 +191,7 @@ export default function PublicProfile() {
           {(profile?.phone || profile?.email) && (
             <div style={{ display: 'flex', gap: 10 }}>
               {profile?.phone && (
-                <a className="pl" href={`tel:${profile.phone.replace(/\s+/g, '')}`} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '13px', background: 'white', borderRadius: 16, textDecoration: 'none', color: '#111', boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.05)', fontWeight: 700, fontSize: 14 }}>
+                <a className="pl" href={`tel:${profile.phone.toString().replace(/\s+/g, '')}`} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '13px', background: 'white', borderRadius: 16, textDecoration: 'none', color: '#111', boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.05)', fontWeight: 700, fontSize: 14 }}>
                   <span style={{ fontSize: 16 }}>📞</span> Appeler
                 </a>
               )}
@@ -196,12 +204,15 @@ export default function PublicProfile() {
           )}
 
           {activeLinks.map(link => {
-            const linkValue = profile[link.id] || profile?.socials?.[link.id];
-            const valObj = profile.socials?.[link.id];
-            const subText = typeof valObj === 'object' ? valObj.subtitle : '';
+            const rawValue = profile[link.id] || profile?.socials?.[link.id];
+            const linkValue = (typeof rawValue === 'object' && rawValue !== null) ? rawValue.value : rawValue;
+            const subText = (typeof rawValue === 'object' && rawValue !== null) ? rawValue.subtitle : '';
+            
+            if (!linkValue) return null;
+
             return (
               <a key={link.id} className="pl"
-                href={link.getUrl(typeof linkValue === 'object' ? linkValue.value : linkValue)}
+                href={link.getUrl(linkValue)}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 18px', background: 'white', borderRadius: 16, textDecoration: 'none', color: '#111', boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.05)' }}>
