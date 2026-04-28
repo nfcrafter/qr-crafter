@@ -182,12 +182,13 @@ export default function ClientDashboard() {
                             {viewMode === 'edit' ? (
                                 <>
                                     <ProfileForm
-                                        form={publicProfile}
-                                        onChange={setPublicProfile}
+                                        profile={publicProfile}
+                                        setProfile={setPublicProfile}
                                         onUploadAvatar={(f) => uploadFile(f, 'avatars', (url) => setPublicProfile(p => ({...p, photo_url: url})), setUploadingAvatar)}
                                         onUploadBanner={(f) => uploadFile(f, 'banners', (url) => setPublicProfile(p => ({...p, banner_url: url})), setUploadingBanner)}
                                         uploadingAvatar={uploadingAvatar}
                                         uploadingBanner={uploadingBanner}
+                                        toast={toast}
                                     />
                                     <div style={{ marginTop: '32px', borderTop: '1px solid #F1F5F9', paddingTop: '32px' }}>
                                         <button onClick={savePublicProfile} disabled={saving} className="btn-primary" style={{ width: '100%', padding: '16px', borderRadius: '16px' }}>
@@ -214,32 +215,34 @@ export default function ClientDashboard() {
                         </div>
                     </div>
 
-                    {/* Preview Sidebar */}
-                    <div style={{ position: 'sticky', top: '120px' }}>
-                        <div style={{ marginBottom: '16px', fontSize: '12px', fontWeight: '800', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '1px', textAlign: 'center' }}>Aperçu de votre page</div>
-                        <PhonePreview>
-                            <div style={{ minHeight: '100%', background: 'white' }}>
-                                <div style={{ height: '100px', background: publicProfile.primaryColor || '#1A1265', position: 'relative' }}>
-                                    {publicProfile.banner_url && <img src={publicProfile.banner_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
-                                </div>
-                                <div style={{ padding: '0 16px 20px', marginTop: '-30px' }}>
-                                    <div style={{ width: '60px', height: '60px', borderRadius: '16px', border: '3px solid white', background: '#F1F5F9', overflow: 'hidden' }}>
-                                        {publicProfile.photo_url && <img src={publicProfile.photo_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+                    {/* Preview Sidebar - Only visible in view mode */}
+                    {viewMode === 'view' && (
+                        <div style={{ position: 'sticky', top: '120px' }}>
+                            <div style={{ marginBottom: '16px', fontSize: '12px', fontWeight: '800', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '1px', textAlign: 'center' }}>Aperçu de votre page</div>
+                            <PhonePreview>
+                                <div style={{ minHeight: '100%', background: 'white' }}>
+                                    <div style={{ height: '100px', background: publicProfile.primaryColor || '#1A1265', position: 'relative' }}>
+                                        {publicProfile.banner_url && <img src={publicProfile.banner_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
                                     </div>
-                                    <h3 style={{ margin: '12px 0 2px', fontSize: '15px', fontWeight: '900', color: '#1A1265' }}>{publicProfile.full_name || 'Votre Nom'}</h3>
-                                    <p style={{ fontSize: '11px', color: '#64748B' }}>{publicProfile.job_title || 'Profession'}</p>
-                                    <button style={{ width: '100%', marginTop: '16px', padding: '10px', borderRadius: '10px', background: publicProfile.primaryColor || '#1A1265', color: 'white', border: 'none', fontWeight: '800', fontSize: '11px' }}>Enregistrer le contact</button>
+                                    <div style={{ padding: '0 16px 20px', marginTop: '-30px' }}>
+                                        <div style={{ width: '60px', height: '60px', borderRadius: '16px', border: '3px solid white', background: '#F1F5F9', overflow: 'hidden' }}>
+                                            {publicProfile.photo_url && <img src={publicProfile.photo_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+                                        </div>
+                                        <h3 style={{ margin: '12px 0 2px', fontSize: '15px', fontWeight: '900', color: '#1A1265' }}>{publicProfile.full_name || 'Votre Nom'}</h3>
+                                        <p style={{ fontSize: '11px', color: '#64748B' }}>{publicProfile.job_title || 'Profession'}</p>
+                                        <button style={{ width: '100%', marginTop: '16px', padding: '10px', borderRadius: '10px', background: publicProfile.primaryColor || '#1A1265', color: 'white', border: 'none', fontWeight: '800', fontSize: '11px' }}>Enregistrer le contact</button>
+                                    </div>
                                 </div>
+                            </PhonePreview>
+                            <div style={{ marginTop: '24px', background: 'white', padding: '20px', borderRadius: '20px', border: '1px solid #E2E8F0' }}>
+                                <div style={{ fontSize: '12px', fontWeight: '800', color: '#94A3B8', marginBottom: '12px' }}>VOTRE LIEN PUBLIC</div>
+                                <div style={{ background: '#F8FAFC', padding: '10px', borderRadius: '8px', fontSize: '11px', fontWeight: '700', color: '#6366F1', wordBreak: 'break-all', border: '1px solid #E2E8F0', marginBottom: '12px' }}>
+                                    {publicUrl}
+                                </div>
+                                <button onClick={() => { navigator.clipboard.writeText(publicUrl); toast('Lien copié !', 'success'); }} style={{ width: '100%', padding: '10px', borderRadius: '10px', background: 'white', border: '1px solid #E2E8F0', fontWeight: '700', cursor: 'pointer', fontSize: '12px' }}>Copier le lien</button>
                             </div>
-                        </PhonePreview>
-                        <div style={{ marginTop: '24px', background: 'white', padding: '20px', borderRadius: '20px', border: '1px solid #E2E8F0' }}>
-                            <div style={{ fontSize: '12px', fontWeight: '800', color: '#94A3B8', marginBottom: '12px' }}>VOTRE LIEN PUBLIC</div>
-                            <div style={{ background: '#F8FAFC', padding: '10px', borderRadius: '8px', fontSize: '11px', fontWeight: '700', color: '#6366F1', wordBreak: 'break-all', border: '1px solid #E2E8F0', marginBottom: '12px' }}>
-                                {publicUrl}
-                            </div>
-                            <button onClick={() => { navigator.clipboard.writeText(publicUrl); toast('Lien copié !', 'success'); }} style={{ width: '100%', padding: '10px', borderRadius: '10px', background: 'white', border: '1px solid #E2E8F0', fontWeight: '700', cursor: 'pointer', fontSize: '12px' }}>Copier le lien</button>
                         </div>
-                    </div>
+                    )}
                 </div>
             </main>
 
