@@ -19,9 +19,15 @@ export default function Login() {
             const { data, error } = await supabase.auth.signInWithPassword({ email, password })
             if (error) throw error;
 
-            // Admin check
+            // Check for activation redirect
+            const search = new URLSearchParams(window.location.search);
+            const cardId = search.get('card') || search.get('cardId');
+            const token = search.get('token');
+
             if (email === 'nfcrafter@gmail.com') {
                 navigate('/admin')
+            } else if (cardId && token) {
+                navigate(`/activate?card=${cardId}&token=${token}`)
             } else {
                 navigate('/dashboard')
             }
@@ -88,7 +94,13 @@ export default function Login() {
 
                 <div style={{ marginTop: '32px', textAlign: 'center', borderTop: '1px solid var(--border)', paddingTop: '24px' }}>
                     <p style={{ color: 'var(--text-500)', fontSize: '14px' }}>
-                        Accès réservé. Si vous êtes client, <Link to="/register" style={{ color: 'var(--primary)', fontWeight: '700' }}>activez votre carte</Link>
+                        Accès réservé. Si vous êtes client, 
+                        <Link 
+                            to={`/register${window.location.search}`} 
+                            style={{ color: 'var(--primary)', fontWeight: '700', marginLeft: 5 }}
+                        >
+                            activez votre carte ici
+                        </Link>
                     </p>
                 </div>
             </div>

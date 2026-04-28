@@ -53,7 +53,8 @@ export default function Activate() {
         const { data: { user } } = await supabase.auth.getUser()
         
         if (!user) { 
-            navigate(`/login?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`); 
+            // This case is now handled by the UI showing Login/Register buttons
+            setLoading(false);
             return;
         }
 
@@ -79,6 +80,11 @@ export default function Activate() {
         navigate('/dashboard')
     }
 
+    const [user, setUser] = useState(null);
+    useEffect(() => {
+        supabase.auth.getUser().then(({ data }) => setUser(data.user));
+    }, []);
+
     return (
         <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #F8FAFC 0%, #EFF6FF 100%)', padding: '24px' }}>
             <div className="premium-card" style={{ padding: '48px 40px', width: '100%', maxWidth: '440px', background: 'rgba(255, 255, 255, 0.8)', backdropFilter: 'blur(10px)', textAlign: 'center' }}>
@@ -93,12 +99,39 @@ export default function Activate() {
                             <div style={{ fontSize: '18px', color: '#1A1265', fontWeight: '800' }}>{cardInfo.card_name}</div>
                             <div style={{ fontSize: '13px', color: '#64748B', marginTop: 4 }}>ID: {cardId}</div>
                         </div>
-                        <p style={{ color: '#64748B', fontSize: '15px', marginBottom: '32px', lineHeight: 1.5 }}>
-                            Cette carte est prête à être activée. Elle sera liée à votre compte.
-                        </p>
-                        <button className="btn-primary" onClick={activateCard} disabled={loading} style={{ width: '100%', padding: '16px', fontSize: '16px', boxShadow: '0 10px 20px rgba(26, 18, 101, 0.2)' }}>
-                            {loading ? 'Activation...' : '🚀 Activer ma carte'}
-                        </button>
+
+                        {!user ? (
+                            <div style={{ marginTop: 32 }}>
+                                <p style={{ color: '#64748B', fontSize: '14px', marginBottom: 24, lineHeight: 1.5 }}>
+                                    Pour activer cette carte, vous devez d'abord vous connecter ou créer un compte.
+                                </p>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                                    <button 
+                                        onClick={() => navigate(`/register?card=${cardId}&token=${token}`)}
+                                        className="btn-primary" 
+                                        style={{ width: '100%', padding: '16px', fontSize: '16px' }}
+                                    >
+                                        🚀 Créer mon compte client
+                                    </button>
+                                    <button 
+                                        onClick={() => navigate(`/login?card=${cardId}&token=${token}`)}
+                                        className="btn-ghost" 
+                                        style={{ width: '100%', padding: '16px', fontSize: '16px' }}
+                                    >
+                                        J'ai déjà un compte (Connexion)
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <>
+                                <p style={{ color: '#64748B', fontSize: '15px', marginBottom: '32px', lineHeight: 1.5 }}>
+                                    Cette carte est prête à être activée. Elle sera liée à votre compte <strong>{user.email}</strong>.
+                                </p>
+                                <button className="btn-primary" onClick={activateCard} disabled={loading} style={{ width: '100%', padding: '16px', fontSize: '16px', boxShadow: '0 10px 20px rgba(26, 18, 101, 0.2)' }}>
+                                    {loading ? 'Activation...' : '🚀 Activer ma carte'}
+                                </button>
+                            </>
+                        )}
                     </>
                 ) : (
                     <div style={{ marginTop: '16px' }}>

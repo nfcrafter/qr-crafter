@@ -5,7 +5,7 @@ import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 export default function Register() {
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()
-    const cardId = searchParams.get('card')
+    const cardId = searchParams.get('card') || searchParams.get('cardId')
     const token = searchParams.get('token')
 
     const [form, setForm] = useState({ fullName: '', email: '', password: '', confirm: '' })
