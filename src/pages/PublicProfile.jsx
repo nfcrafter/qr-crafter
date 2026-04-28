@@ -91,11 +91,23 @@ export default function PublicProfile() {
     })
     customLinks.forEach(l => { if (l.url) vc += `URL;TYPE=${l.title || 'Lien'}:${l.url}\r\n` })
     vc += `END:VCARD`
-    const blob = new Blob([vc], { type: 'text/vcard;charset=utf-8' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url; a.download = `${profile.full_name || 'contact'}.vcf`; a.click()
-    URL.revokeObjectURL(url)
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    if (isIOS) {
+      window.location.href = `data:text/x-vcard;charset=utf-8,${encodeURIComponent(vc)}`;
+    } else {
+      const blob = new Blob([vc], { type: 'text/vcard;charset=utf-8' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.style.display = 'none'
+      a.href = url
+      a.download = `${profile.full_name || 'contact'}.vcf`
+      document.body.appendChild(a)
+      a.click()
+      setTimeout(() => {
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url)
+      }, 100)
+    }
   }
 
   if (loading) return (
