@@ -372,7 +372,8 @@ function CardListItem({ card, scanCount, navigate, toast, onResolve }) {
             image: card.qr_appearance?.logo_url || "",
             imageOptions: { crossOrigin: 'anonymous', margin: 10 }
         });
-        await qrCode.download({ name: `QR-${card.card_id}`, extension: 'png' });
+    }
+
     return (
         <div style={{ background: 'white', borderRadius: '20px', padding: '24px 30px', display: 'flex', alignItems: 'center', gap: '24px', border: isPendingRequest ? '2px solid #6366F1' : '1px solid #F1F5F9', boxShadow: '0 4px 12px rgba(0,0,0,0.01)', position: 'relative' }}>
             {isPendingRequest && (

@@ -299,6 +299,3 @@ export default function ClientDashboard() {
         </div>
     );
 }
-   </div>
-    );
-}
