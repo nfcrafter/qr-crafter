@@ -10,7 +10,14 @@ export default function ImageUpload({ label, value, onChange, bucket = 'avatars'
     async function handleFile(e) {
         const file = e.target.files?.[0]
         if (!file) return
-        if (file.size > 5 * 1024 * 1024) { alert('Fichier trop lourd (max 5 Mo)'); return }
+
+        const maxSize = (bucket === 'banners') ? 5 * 1024 * 1024 : 2 * 1024 * 1024
+        const maxSizeLabel = (bucket === 'banners') ? '5 Mo' : '2 Mo'
+
+        if (file.size > maxSize) { 
+            alert(`Fichier trop lourd (max ${maxSizeLabel} pour ce type d'image)`)
+            return 
+        }
 
         setUploading(true)
         try {
@@ -65,7 +72,7 @@ export default function ImageUpload({ label, value, onChange, bucket = 'avatars'
                             Supprimer
                         </button>
                     )}
-                    <p style={{ fontSize: 11, color: '#94A3B8', marginTop: 6 }}>PNG, JPG, WEBP · max 5 Mo</p>
+                    <p style={{ fontSize: 11, color: '#94A3B8', marginTop: 6 }}>PNG, JPG, WEBP · max {bucket === 'banners' ? '5 Mo' : '2 Mo'}</p>
                 </div>
             </div>
             <input ref={inputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleFile} />
