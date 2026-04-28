@@ -51,52 +51,49 @@ export default function ClientDashboard() {
 
     useEffect(() => { loadUserData(); }, []);
 
-    useEffect(() => {
-        if (selectedCard) {
-            loadCardDetails();
-        }
-    }, [selectedCard]);
-
     async function loadUserData() {
         setLoading(true);
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) { navigate('/login'); return; }
-        setUser(user);
+        const { data: { user: authUser } } = await supabase.auth.getUser();
+        if (!authUser) { navigate('/login'); return; }
+        setUser(authUser);
 
-        const { data: cards } = await supabase
-            .from('user_cards')
-            .select('card_id, profile_name')
-            .eq('user_id', user.id);
+        // Fetch cards directly from 'cards' table using owner_id
+        const { data: cards, error: cardsError } = await supabase
+            .from('cards')
+            .select('card_id, admin_profile')
+            .eq('owner_id', authUser.id);
+
+        if (cardsError) {
+            toast('Erreur chargement cartes : ' + cardsError.message, 'error');
+            setLoading(false);
+            return;
+        }
 
         setUserCards(cards || []);
+        
         if (cards?.length > 0) {
-            setSelectedCard(cards[0]);
+            const firstCard = cards[0];
+            setSelectedCard(firstCard);
+            
+            // Now load details for this card
+            await loadCardDetails(firstCard, authUser.id);
         }
         setLoading(false);
     }
 
-    async function loadCardDetails() {
-        if (!selectedCard) return;
+    async function loadCardDetails(card, userId) {
+        if (!card) return;
         
-        // Fetch card data including admin_profile and owner_id
-        const { data: cardData } = await supabase
-            .from('cards')
-            .select('admin_profile, owner_id')
-            .eq('card_id', selectedCard.card_id)
-            .single();
-
-        if (!cardData) return;
-
-        // Fetch profile data from 'profiles' table for the owner
+        // Fetch profile data from 'profiles' table for the user
         const { data: profileData } = await supabase
             .from('profiles')
             .select('*')
-            .eq('id', cardData.owner_id)
+            .eq('id', userId)
             .single();
 
-        let adminBase = cardData.admin_profile || {};
+        let adminBase = card.admin_profile || {};
         
-        // Merge logic exactly as in PublicProfile.jsx to get "true" content
+        // Default structure
         let merged = {
             banner_url: '', photo_url: '', full_name: '', job_title: '', bio: '',
             phone: '', email: '', primaryColor: '#1A1265',
@@ -104,6 +101,7 @@ export default function ClientDashboard() {
             ...adminBase
         };
 
+        // Merge profileData (user's personal data)
         if (profileData) {
             for (const k in profileData) {
                 if (profileData[k] !== null && profileData[k] !== undefined && profileData[k] !== '') {
@@ -149,9 +147,9 @@ export default function ClientDashboard() {
     }
 
     async function requestDesignChange() {
-        const message = `Bonjour, je souhaite modifier le design de ma carte QR (ID: ${selectedCard.card_id}). Client: ${user.email}`;
+        const message = `Bonjour, je souhaite modifier le design de ma carte QR (ID: ${selectedCard?.card_id}). Client: ${user?.email}`;
         const whatsappUrl = `https://wa.me/22991566846?text=${encodeURIComponent(message)}`;
-        const { error } = await supabase.from('cards').update({ design_request: 'pending' }).eq('card_id', selectedCard.card_id);
+        const { error } = await supabase.from('cards').update({ design_request: 'pending' }).eq('card_id', selectedCard?.card_id);
         if (!error) {
             toast('Demande envoyée ! Redirection...', 'success');
             setTimeout(() => window.open(whatsappUrl, '_blank'), 1500);
@@ -198,92 +196,101 @@ export default function ClientDashboard() {
             )}
 
             <main style={{ maxWidth: '1000px', margin: '0 auto', padding: '40px 24px' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-                    {/* Title */}
-                    <div>
-                        <h1 style={{ fontSize: '32px', fontWeight: '900', color: '#1A1265', margin: 0 }}>Tableau de Bord</h1>
-                        <p style={{ color: '#64748B', marginTop: '4px' }}>Gérez votre profil digital et personnalisez votre expérience.</p>
+                {!selectedCard ? (
+                    <div style={{ textAlign: 'center', padding: '80px 20px', background: 'white', borderRadius: '24px', border: '1px solid #E2E8F0' }}>
+                        <span style={{ fontSize: '48px' }}>🔍</span>
+                        <h2 style={{ fontSize: '24px', fontWeight: '900', color: '#1A1265', marginTop: '16px' }}>Aucune carte trouvée</h2>
+                        <p style={{ color: '#64748B', marginTop: '8px' }}>Vous n'avez pas encore de carte NFC activée sur votre compte.</p>
+                        <button onClick={() => navigate('/activate')} className="btn-primary" style={{ marginTop: '24px', padding: '12px 24px' }}>Activer une carte</button>
                     </div>
-
-                    {/* Public Link Box - Always visible */}
-                    <div style={{ background: 'white', padding: '24px', borderRadius: '24px', border: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
-                        <div style={{ flex: 1, minWidth: '200px' }}>
-                            <div style={{ fontSize: '12px', fontWeight: '800', color: '#94A3B8', marginBottom: '8px' }}>VOTRE LIEN PUBLIC</div>
-                            <div style={{ fontSize: '15px', fontWeight: '700', color: '#6366F1', wordBreak: 'break-all' }}>{publicUrl}</div>
+                ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+                        {/* Title */}
+                        <div>
+                            <h1 style={{ fontSize: '32px', fontWeight: '900', color: '#1A1265', margin: 0 }}>Tableau de Bord</h1>
+                            <p style={{ color: '#64748B', marginTop: '4px' }}>Gérez votre profil digital et personnalisez votre expérience.</p>
                         </div>
-                        <div style={{ display: 'flex', gap: '12px' }}>
-                            <button onClick={() => window.open(publicUrl, '_blank')} className="btn-ghost" style={{ padding: '12px 20px' }}>👁️ Voir ma page</button>
-                            <button onClick={() => { navigator.clipboard.writeText(publicUrl); toast('Lien copié !', 'success'); }} className="btn-primary" style={{ padding: '12px 24px' }}>Copier le lien</button>
-                        </div>
-                    </div>
 
-                    {/* Profile Section */}
-                    <div style={{ background: 'white', padding: '32px', borderRadius: '24px', border: '1px solid #E2E8F0', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-                            <h2 style={{ fontSize: '20px', fontWeight: '900', color: '#1A1265', margin: 0 }}>
-                                {qrType === 'url' ? 'Lien de Redirection' : 'Votre Profil'}
-                            </h2>
-                            <button 
-                                onClick={() => setViewMode(viewMode === 'view' ? 'edit' : 'view')}
-                                style={{ padding: '10px 20px', borderRadius: '12px', background: viewMode === 'edit' ? '#F1F5F9' : '#1A1265', color: viewMode === 'edit' ? '#1A1265' : 'white', border: 'none', fontWeight: '800', cursor: 'pointer' }}
-                            >
-                                {viewMode === 'edit' ? 'Annuler' : 'Modifier'}
+                        {/* Public Link Box - Always visible */}
+                        <div style={{ background: 'white', padding: '24px', borderRadius: '24px', border: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+                            <div style={{ flex: 1, minWidth: '200px' }}>
+                                <div style={{ fontSize: '12px', fontWeight: '800', color: '#94A3B8', marginBottom: '8px' }}>VOTRE LIEN PUBLIC</div>
+                                <div style={{ fontSize: '15px', fontWeight: '700', color: '#6366F1', wordBreak: 'break-all' }}>{publicUrl}</div>
+                            </div>
+                            <div style={{ display: 'flex', gap: '12px' }}>
+                                <button onClick={() => window.open(publicUrl, '_blank')} className="btn-ghost" style={{ padding: '12px 20px' }}>👁️ Voir ma page</button>
+                                <button onClick={() => { navigator.clipboard.writeText(publicUrl); toast('Lien copié !', 'success'); }} className="btn-primary" style={{ padding: '12px 24px' }}>Copier le lien</button>
+                            </div>
+                        </div>
+
+                        {/* Profile Section */}
+                        <div style={{ background: 'white', padding: '32px', borderRadius: '24px', border: '1px solid #E2E8F0', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+                                <h2 style={{ fontSize: '20px', fontWeight: '900', color: '#1A1265', margin: 0 }}>
+                                    {qrType === 'url' ? 'Lien de Redirection' : 'Votre Profil'}
+                                </h2>
+                                <button 
+                                    onClick={() => setViewMode(viewMode === 'view' ? 'edit' : 'view')}
+                                    style={{ padding: '10px 20px', borderRadius: '12px', background: viewMode === 'edit' ? '#F1F5F9' : '#1A1265', color: viewMode === 'edit' ? '#1A1265' : 'white', border: 'none', fontWeight: '800', cursor: 'pointer' }}
+                                >
+                                    {viewMode === 'edit' ? 'Annuler' : 'Modifier'}
+                                </button>
+                            </div>
+
+                            {viewMode === 'edit' ? (
+                                <>
+                                    {qrType === 'url' ? (
+                                        <div className="field">
+                                            <label>URL de destination</label>
+                                            <input 
+                                                type="url" 
+                                                value={publicProfile.url || ''} 
+                                                onChange={e => setPublicProfile({...publicProfile, url: e.target.value})} 
+                                                placeholder="https://votre-site.com" 
+                                                autoFocus
+                                            />
+                                            <p style={{ fontSize: 12, color: '#64748B', marginTop: 8 }}>Votre code QR redirigera directement vers cette adresse.</p>
+                                        </div>
+                                    ) : (
+                                        <ProfileForm
+                                            profile={publicProfile}
+                                            setProfile={setPublicProfile}
+                                            onUploadAvatar={(f) => uploadFile(f, 'avatars', (url) => setPublicProfile(p => ({...p, photo_url: url})), setUploadingAvatar)}
+                                            onUploadBanner={(f) => uploadFile(f, 'banners', (url) => setPublicProfile(p => ({...p, banner_url: url})), setUploadingBanner)}
+                                            uploadingAvatar={uploadingAvatar}
+                                            uploadingBanner={uploadingBanner}
+                                            toast={toast}
+                                        />
+                                    )}
+                                    <div style={{ marginTop: '32px', borderTop: '1px solid #F1F5F9', paddingTop: '32px' }}>
+                                        <button onClick={savePublicProfile} disabled={saving} className="btn-primary" style={{ width: '100%', padding: '16px', borderRadius: '16px' }}>
+                                            {saving ? 'Enregistrement...' : 'Enregistrer les modifications'}
+                                        </button>
+                                    </div>
+                                </>
+                            ) : (
+                                <div style={{ background: '#F8FAFC', padding: '24px', borderRadius: '20px', border: '1px solid #E2E8F0', textAlign: 'center' }}>
+                                    <p style={{ color: '#64748B', margin: 0 }}>
+                                        {qrType === 'url' 
+                                            ? `Redirection active vers : ${publicProfile.url || 'aucune URL'}`
+                                            : 'Cliquez sur le bouton pour modifier vos informations.'}
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Danger Zone / Info */}
+                        <div style={{ background: '#FFF5F5', padding: '24px', borderRadius: '20px', border: '1px solid #FCA5A5' }}>
+                            <h3 style={{ color: '#DC2626', fontWeight: '900', fontSize: '15px', margin: '0 0 8px 0' }}>Modification du design physique 🎨</h3>
+                            <p style={{ color: '#991B1B', fontSize: '13px', margin: '0 0 16px 0', lineHeight: '1.5' }}>
+                                Votre code QR a été imprimé ou encodé avec un design spécifique (couleurs, logo). Vous pouvez modifier le contenu à tout moment, mais pour changer le design du code lui-même, vous devez nous contacter.
+                            </p>
+                            <button onClick={requestDesignChange} style={{ background: 'white', color: '#DC2626', border: '1px solid #FCA5A5', padding: '12px 20px', borderRadius: '12px', fontWeight: '800', cursor: 'pointer' }}>
+                                Demander une modification via WhatsApp
                             </button>
                         </div>
-
-                        {viewMode === 'edit' ? (
-                            <>
-                                {qrType === 'url' ? (
-                                    <div className="field">
-                                        <label>URL de destination</label>
-                                        <input 
-                                            type="url" 
-                                            value={publicProfile.url || ''} 
-                                            onChange={e => setPublicProfile({...publicProfile, url: e.target.value})} 
-                                            placeholder="https://votre-site.com" 
-                                            autoFocus
-                                        />
-                                        <p style={{ fontSize: 12, color: '#64748B', marginTop: 8 }}>Votre code QR redirigera directement vers cette adresse.</p>
-                                    </div>
-                                ) : (
-                                    <ProfileForm
-                                        profile={publicProfile}
-                                        setProfile={setPublicProfile}
-                                        onUploadAvatar={(f) => uploadFile(f, 'avatars', (url) => setPublicProfile(p => ({...p, photo_url: url})), setUploadingAvatar)}
-                                        onUploadBanner={(f) => uploadFile(f, 'banners', (url) => setPublicProfile(p => ({...p, banner_url: url})), setUploadingBanner)}
-                                        uploadingAvatar={uploadingAvatar}
-                                        uploadingBanner={uploadingBanner}
-                                        toast={toast}
-                                    />
-                                )}
-                                <div style={{ marginTop: '32px', borderTop: '1px solid #F1F5F9', paddingTop: '32px' }}>
-                                    <button onClick={savePublicProfile} disabled={saving} className="btn-primary" style={{ width: '100%', padding: '16px', borderRadius: '16px' }}>
-                                        {saving ? 'Enregistrement...' : 'Enregistrer les modifications'}
-                                    </button>
-                                </div>
-                            </>
-                        ) : (
-                            <div style={{ background: '#F8FAFC', padding: '24px', borderRadius: '20px', border: '1px solid #E2E8F0', textAlign: 'center' }}>
-                                <p style={{ color: '#64748B', margin: 0 }}>
-                                    {qrType === 'url' 
-                                        ? `Redirection active vers : ${publicProfile.url || 'aucune URL'}`
-                                        : 'Cliquez sur le bouton pour modifier vos informations.'}
-                                </p>
-                            </div>
-                        )}
                     </div>
-
-                    {/* Danger Zone / Info */}
-                    <div style={{ background: '#FFF5F5', padding: '24px', borderRadius: '20px', border: '1px solid #FCA5A5' }}>
-                        <h3 style={{ color: '#DC2626', fontWeight: '900', fontSize: '15px', margin: '0 0 8px 0' }}>Modification du design physique 🎨</h3>
-                        <p style={{ color: '#991B1B', fontSize: '13px', margin: '0 0 16px 0', lineHeight: '1.5' }}>
-                            Votre code QR a été imprimé ou encodé avec un design spécifique (couleurs, logo). Vous pouvez modifier le contenu à tout moment, mais pour changer le design du code lui-même, vous devez nous contacter.
-                        </p>
-                        <button onClick={requestDesignChange} style={{ background: 'white', color: '#DC2626', border: '1px solid #FCA5A5', padding: '12px 20px', borderRadius: '12px', fontWeight: '800', cursor: 'pointer' }}>
-                            Demander une modification via WhatsApp
-                        </button>
-                    </div>
-                </div>
+                )}
             </main>
 
             <style>{`
