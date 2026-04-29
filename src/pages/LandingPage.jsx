@@ -191,14 +191,32 @@ export default function LandingPage() {
             <nav className={`glass-nav ${scrolled ? 'scrolled' : ''}`}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => navigate('/')}>
                     <img src="/logo.png" alt="NFCrafter" style={{ height: '32px' }} />
-                    <span style={{ fontSize: '22px', fontWeight: '900', color: '#111827', letterSpacing: '-0.5px', fontFamily: 'Outfit' }}>NFCrafter</span>
+                    <span className="mobile-hide" style={{ fontSize: '22px', fontWeight: '900', color: '#111827', letterSpacing: '-0.5px', fontFamily: 'Outfit' }}>NFCrafter</span>
                 </div>
                 <div className="mobile-hide" style={{ display: 'flex', gap: '8px' }}>
                     <a href="#utilite" className="nav-link">Comment ça marche ?</a>
                     <a href="#tarifs" className="nav-link">Tarifs</a>
                 </div>
                 <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                    <button onClick={() => navigate('/login')} style={{ background: 'transparent', border: 'none', color: '#111827', fontWeight: '700', cursor: 'pointer', fontSize: '15px', padding: '8px 16px' }}>Connexion</button>
+                    <button 
+                        onClick={() => navigate('/login')} 
+                        style={{ 
+                            background: '#FFFFFF', 
+                            border: '1px solid #E5E7EB', 
+                            color: '#111827', 
+                            fontWeight: '700', 
+                            cursor: 'pointer', 
+                            fontSize: '14px', 
+                            padding: '10px 20px', 
+                            borderRadius: '100px',
+                            boxShadow: '0 2px 10px rgba(0,0,0,0.03)',
+                            transition: 'all 0.2s'
+                        }}
+                        onMouseOver={e => { e.currentTarget.style.borderColor = '#D1D5DB'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                        onMouseOut={e => { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                    >
+                        Connexion
+                    </button>
                     <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary" style={{ padding: '10px 24px', fontSize: '14px', boxShadow: '0 4px 15px rgba(0,0,0,0.1)' }}>Commander</button>
                 </div>
             </nav>
