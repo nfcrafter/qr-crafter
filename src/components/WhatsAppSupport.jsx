@@ -5,21 +5,7 @@ export default function WhatsAppSupport() {
 
     return (
         <div style={{ position: 'fixed', bottom: '24px', right: '24px', display: 'flex', alignItems: 'center', gap: '12px', zIndex: 999 }}>
-            {/* Floating Message */}
-            <div style={{ 
-                background: 'white', 
-                padding: '10px 16px', 
-                borderRadius: '16px', 
-                boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
-                fontSize: '13px',
-                fontWeight: '700',
-                color: '#1A1265',
-                border: '1px solid #E2E8F0',
-                whiteSpace: 'nowrap',
-                animation: 'floatMessage 3s ease-in-out infinite'
-            }}>
-                Besoin d'aide ? Contactez-nous ! 👋
-            </div>
+
 
             <a href={url} target="_blank" rel="noopener noreferrer" title="Support NFCrafter" style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#25D366', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 16px rgba(37,211,102,0.4)', textDecoration: 'none' }}>
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
@@ -27,12 +13,7 @@ export default function WhatsAppSupport() {
                 </svg>
             </a>
 
-            <style>{`
-                @keyframes floatMessage {
-                    0%, 100% { transform: translateY(0); }
-                    50% { transform: translateY(-5px); }
-                }
-            `}</style>
+
         </div>
     )
 }
