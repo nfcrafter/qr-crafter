@@ -370,7 +370,7 @@ export default function LandingPage() {
                     <img src="/logo.png" alt="NFCrafter" style={{ height: '24px', opacity: 0.6 }} />
                     <span style={{ fontSize: '18px', fontWeight: '900', color: '#111827', letterSpacing: '-0.5px', fontFamily: 'Outfit', opacity: 0.8 }}>NFCrafter</span>
                 </div>
-                <p style={{ fontWeight: '500', fontSize: '14px', margin: 0 }}>© 2026 NFCrafter. Fièrement fabriqué vous.</p>
+                <p style={{ fontWeight: '500', fontSize: '14px', margin: 0 }}>© 2026 NFCrafter. Fièrement fabriqué pour vous.</p>
             </footer>
         </div>
     );
