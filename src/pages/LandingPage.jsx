@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 
 export default function LandingPage() {
     const navigate = useNavigate();
-    const [openFaq, setOpenFaq] = useState(null);
     const [scrolled, setScrolled] = useState(false);
 
     useEffect(() => {
@@ -22,171 +21,99 @@ export default function LandingPage() {
     };
 
     return (
-        <div style={{ background: '#FAFAFB', minHeight: '100vh', width: '100%', overflowX: 'hidden', fontFamily: "'Inter', sans-serif", color: '#0F172A' }}>
+        <div style={{ background: '#F4F5F7', minHeight: '100vh', width: '100%', overflowX: 'hidden', fontFamily: "'Inter', sans-serif", color: '#111827' }}>
             <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap');
+                @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap');
                 
                 html { scroll-behavior: smooth; }
                 
+                /* Layout */
+                .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+                .section { padding: 100px 0; }
+                
                 /* Animations */
                 @keyframes fadeUp {
-                    from { opacity: 0; transform: translateY(30px); }
+                    from { opacity: 0; transform: translateY(20px); }
                     to { opacity: 1; transform: translateY(0); }
                 }
-                @keyframes floatSlow {
-                    0%, 100% { transform: translateY(0px) rotate(0deg); }
-                    50% { transform: translateY(-15px) rotate(1deg); }
-                }
-                @keyframes floatMed {
-                    0%, 100% { transform: translateY(0px) rotate(0deg); }
-                    50% { transform: translateY(-10px) rotate(-1deg); }
-                }
-                @keyframes pulseGlow {
-                    0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
-                    70% { box-shadow: 0 0 0 15px rgba(99, 102, 241, 0); }
-                    100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
-                }
-
-                .fade-in-up { animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
+                .animate-fade-up { animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
                 .delay-1 { animation-delay: 0.1s; }
                 .delay-2 { animation-delay: 0.2s; }
-                .delay-3 { animation-delay: 0.3s; }
-
-                /* Nav */
-                .nav-link { 
-                    color: #475569; text-decoration: none; font-weight: 600; font-size: 15px; 
-                    transition: all 0.2s; cursor: pointer; padding: 8px 12px; border-radius: 8px;
-                }
-                .nav-link:hover { color: #1A1265; background: rgba(0,0,0,0.03); }
                 
+                /* Nav */
                 .glass-nav {
-                    background: rgba(255, 255, 255, 0.7);
-                    backdrop-filter: blur(20px);
-                    -webkit-backdrop-filter: blur(20px);
-                    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+                    background: rgba(244, 245, 247, 0.85);
+                    backdrop-filter: blur(16px);
+                    -webkit-backdrop-filter: blur(16px);
+                    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
                     transition: all 0.3s ease;
                 }
                 .glass-nav.scrolled {
-                    box-shadow: 0 4px 30px rgba(0,0,0,0.05);
-                    background: rgba(255, 255, 255, 0.9);
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+                    background: rgba(255, 255, 255, 0.95);
                 }
-
-                /* Hero */
-                .hero-section {
-                    position: relative;
-                    padding: 140px 20px 80px;
-                    background: #FAFAFB;
-                    overflow: hidden;
-                }
-                .hero-bg-shapes {
-                    position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
-                }
-                .shape-1 {
-                    position: absolute; top: -10%; right: -5%; width: 50vw; height: 50vw;
-                    border-radius: 50%; background: radial-gradient(circle, rgba(99,102,241,0.12) 0%, rgba(99,102,241,0) 70%);
-                    filter: blur(60px);
-                }
-                .shape-2 {
-                    position: absolute; bottom: 10%; left: -10%; width: 40vw; height: 40vw;
-                    border-radius: 50%; background: radial-gradient(circle, rgba(236,72,153,0.08) 0%, rgba(236,72,153,0) 70%);
-                    filter: blur(60px);
-                }
-
-                .hero-grid { 
-                    max-width: 1200px; margin: 0 auto; display: grid; 
-                    grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; 
-                    position: relative; z-index: 10;
-                }
-
-                .visual-stack { position: relative; width: 100%; height: 550px; display: flex; align-items: center; justify-content: center; }
-                
-                .img-phone { 
-                    width: 250px; border-radius: 38px; 
-                    border: 6px solid #F8FAFC; 
-                    box-shadow: 0 30px 60px rgba(0,0,0,0.12), inset 0 0 0 1px #E2E8F0; 
-                    position: absolute; z-index: 2; overflow: hidden; background: white;
-                    animation: floatSlow 6s ease-in-out infinite;
-                }
-                .img-card { 
-                    width: 300px; border-radius: 16px; 
-                    box-shadow: 0 24px 48px rgba(0,0,0,0.15); position: absolute; 
-                    border: 1px solid rgba(255,255,255,0.8);
-                }
-                .card-front { top: 20%; left: -10px; z-index: 3; animation: floatMed 5s ease-in-out infinite; animation-delay: 0.5s; }
-                .card-back { top: 45%; left: 80px; z-index: 1; animation: floatMed 5.5s ease-in-out infinite; animation-delay: 1s; }
+                .nav-link { color: #4B5563; text-decoration: none; font-weight: 600; font-size: 15px; transition: all 0.2s; cursor: pointer; padding: 8px 12px; border-radius: 8px; }
+                .nav-link:hover { color: #111827; background: rgba(0,0,0,0.04); }
 
                 /* Buttons */
                 .btn-primary {
-                    background: linear-gradient(135deg, #1A1265 0%, #31259A 100%);
-                    color: white; padding: 18px 40px; border-radius: 100px; 
-                    font-size: 17px; font-weight: 800; border: none; cursor: pointer; 
-                    box-shadow: 0 10px 25px rgba(26, 18, 101, 0.25);
-                    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-                    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+                    background: #111827; color: white; padding: 18px 36px; border-radius: 100px; 
+                    font-size: 16px; font-weight: 700; border: none; cursor: pointer; 
+                    transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
                 }
-                .btn-primary:hover {
-                    transform: translateY(-3px) scale(1.02);
-                    box-shadow: 0 20px 35px rgba(26, 18, 101, 0.3);
-                }
+                .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(17, 24, 39, 0.15); }
+                
                 .btn-secondary {
-                    background: white; color: #1A1265; padding: 18px 40px; border-radius: 100px; 
-                    font-size: 17px; font-weight: 800; border: 1px solid #E2E8F0; 
+                    background: white; color: #111827; padding: 18px 36px; border-radius: 100px; 
+                    font-size: 16px; font-weight: 700; border: 1px solid #E5E7EB; 
                     text-decoration: none; display: inline-flex; align-items: center; justify-content: center;
-                    transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+                    transition: all 0.2s; box-shadow: 0 2px 10px rgba(0,0,0,0.02);
                 }
-                .btn-secondary:hover {
-                    background: #F8FAFC; border-color: #CBD5E1; transform: translateY(-2px);
+                .btn-secondary:hover { border-color: #D1D5DB; background: #F9FAFB; transform: translateY(-2px); }
+
+                /* Hero */
+                .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+                
+                /* Cards & Grids */
+                .bento-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+                .card-white {
+                    background: white; border-radius: 32px; padding: 40px;
+                    box-shadow: 0 4px 24px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.04);
+                    transition: all 0.3s ease;
+                }
+                .card-white:hover { box-shadow: 0 12px 32px rgba(0,0,0,0.06); transform: translateY(-4px); }
+                
+                .icon-circle {
+                    width: 56px; height: 56px; border-radius: 50%; background: #F3F4F6;
+                    display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 24px;
                 }
 
-                /* Cards */
-                .feature-card {
-                    background: rgba(255, 255, 255, 0.8);
-                    backdrop-filter: blur(20px);
-                    padding: 40px 32px; border-radius: 32px; 
-                    box-shadow: 0 10px 30px rgba(0,0,0,0.03); border: 1px solid rgba(255,255,255,1);
-                    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-                    height: 100%; display: flex; flex-direction: column;
-                }
-                .feature-card:hover {
-                    transform: translateY(-8px);
-                    box-shadow: 0 24px 48px rgba(0,0,0,0.06);
-                    border-color: rgba(99, 102, 241, 0.2);
-                }
-
-                .price-card { 
-                    padding: 48px 40px; border-radius: 32px; 
-                    border: 1px solid #E2E8F0; background: white; 
-                    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
+                /* Pricing */
+                .pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; max-width: 900px; margin: 0 auto; }
+                .price-card {
+                    background: white; border-radius: 32px; padding: 48px;
+                    box-shadow: 0 4px 24px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.04);
                     display: flex; flex-direction: column; position: relative;
                 }
-                .price-card:hover { transform: translateY(-10px); box-shadow: 0 30px 60px rgba(0,0,0,0.08); }
-                .price-card.featured { 
-                    background: linear-gradient(135deg, #1A1265 0%, #31259A 100%); 
-                    color: white; border: none; box-shadow: 0 20px 40px rgba(26, 18, 101, 0.2);
-                }
-                .price-card.featured:hover { box-shadow: 0 30px 60px rgba(26, 18, 101, 0.3); }
+                .price-card.featured { background: #111827; color: white; border: none; }
+                .price-list { list-style: none; padding: 0; margin: 0 0 40px 0; display: flex; flex-direction: column; gap: 16px; }
+                .price-list li { display: flex; align-items: center; gap: 12px; font-size: 15px; font-weight: 500; }
 
                 @media (max-width: 1024px) {
                     .hero-grid { grid-template-columns: 1fr; text-align: center; }
-                    .hero-text { display: flex; flex-direction: column; align-items: center; }
-                    .visual-stack { height: 450px; margin-top: 20px; }
-                    .card-front { left: 10%; top: 10%; }
-                    .card-back { left: 50%; top: 40%; }
+                    .hero-text { align-items: center; display: flex; flex-direction: column; }
+                    .bento-grid { grid-template-columns: repeat(2, 1fr); }
                 }
 
                 @media (max-width: 768px) {
                     .mobile-hide { display: none; }
-                    .hero-title { font-size: 42px !important; line-height: 1.1 !important; }
+                    .section { padding: 60px 0; }
+                    .hero-title { font-size: 40px !important; line-height: 1.1 !important; }
                     .hero-subtitle { font-size: 18px !important; }
-                    
-                    .visual-stack { height: auto; min-height: 400px; display: flex; flex-direction: column; align-items: center; justify-content: center; transform: scale(0.9); }
-                    .img-phone { position: relative !important; top: auto !important; right: auto !important; left: auto !important; width: 220px !important; margin: 0 auto; animation: none; }
-                    .img-card { display: none !important; } 
-                    .mobile-cards-row { display: flex !important; gap: 16px; justify-content: center; margin-top: 30px; width: 100%; }
-                    .mobile-cards-row img { width: 45%; max-width: 160px; border-radius: 12px; box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
-                    
-                    .pricing-grid { grid-template-columns: 1fr !important; }
+                    .bento-grid { grid-template-columns: 1fr; }
+                    .pricing-grid { grid-template-columns: 1fr; }
                     .btn-primary, .btn-secondary { width: 100%; justify-content: center; }
+                    .price-card { padding: 32px; }
                 }
             `}</style>
 
@@ -195,85 +122,106 @@ export default function LandingPage() {
                 <div style={{ width: '100%', maxWidth: '1200px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => navigate('/')}>
                         <img src="/logo.png" alt="NFCrafter" style={{ height: '32px' }} />
-                        <span style={{ fontSize: '22px', fontWeight: '900', color: '#1A1265', letterSpacing: '-0.5px', fontFamily: 'Outfit' }}>NFCrafter</span>
+                        <span style={{ fontSize: '22px', fontWeight: '900', color: '#111827', letterSpacing: '-0.5px', fontFamily: 'Outfit' }}>NFCrafter</span>
                     </div>
                     <div className="mobile-hide" style={{ display: 'flex', gap: '16px' }}>
-                        <a href="#concept" className="nav-link">Concept</a>
+                        <a href="#utilite" className="nav-link">Comment ça marche ?</a>
                         <a href="#tarifs" className="nav-link">Tarifs</a>
                     </div>
                     <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                        <button onClick={() => navigate('/login')} style={{ background: 'transparent', border: 'none', color: '#1A1265', fontWeight: '800', cursor: 'pointer', fontSize: '15px', padding: '8px 16px' }}>Connexion</button>
-                        <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} style={{ background: '#1A1265', color: 'white', border: 'none', padding: '10px 24px', borderRadius: '100px', fontWeight: '800', cursor: 'pointer', fontSize: '14px', boxShadow: '0 4px 12px rgba(26,18,101,0.2)' }}>Commander</button>
+                        <button onClick={() => navigate('/login')} style={{ background: 'transparent', border: 'none', color: '#111827', fontWeight: '700', cursor: 'pointer', fontSize: '15px', padding: '8px 16px' }}>Connexion</button>
+                        <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary" style={{ padding: '10px 24px', fontSize: '14px' }}>Commander</button>
                     </div>
                 </div>
             </nav>
 
+            <div style={{ height: '80px' }}></div>
+
             {/* Hero Section */}
-            <section className="hero-section">
-                <div className="hero-bg-shapes">
-                    <div className="shape-1"></div>
-                    <div className="shape-2"></div>
-                </div>
-                
-                <div className="hero-grid">
-                    <div className="hero-text fade-in-up">
-                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '8px 20px', background: 'white', border: '1px solid #E2E8F0', color: '#6366F1', borderRadius: '100px', fontSize: '13px', fontWeight: '800', marginBottom: '24px', letterSpacing: '0.5px', textTransform: 'uppercase', boxShadow: '0 4px 10px rgba(0,0,0,0.03)' }}>
-                            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#6366F1', display: 'inline-block', animation: 'pulseGlow 2s infinite' }}></span>
-                            Identité Professionnelle 2.0
+            <section className="section">
+                <div className="container">
+                    <div className="hero-grid">
+                        <div className="hero-text animate-fade-up">
+                            <div style={{ background: '#E5E7EB', color: '#374151', padding: '8px 20px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: '24px', display: 'inline-block' }}>
+                                La carte de visite réinventée
+                            </div>
+                            <h1 className="hero-title" style={{ fontSize: '64px', fontWeight: '900', color: '#111827', letterSpacing: '-0.03em', lineHeight: '1.05', marginBottom: '24px', fontFamily: 'Outfit' }}>
+                                Touchez, partagez, <br/>impressionnez.
+                            </h1>
+                            <p className="hero-subtitle" style={{ fontSize: '20px', color: '#4B5563', maxWidth: '600px', marginBottom: '40px', lineHeight: '1.6', fontWeight: '500' }}>
+                                Échangez vos coordonnées, réseaux sociaux et bien plus en un seul geste. Plus besoin d'épeler votre nom ou votre numéro.
+                            </p>
+                            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                                <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary">
+                                    Commander ma carte
+                                </button>
+                                <a href="#utilite" className="btn-secondary">Découvrir comment</a>
+                            </div>
                         </div>
-                        <h1 className="hero-title" style={{ fontSize: '68px', fontWeight: '900', color: '#0F172A', letterSpacing: '-0.03em', lineHeight: '1.05', marginBottom: '24px', fontFamily: 'Outfit' }}>
-                            La dernière carte de visite <br/><span style={{ background: 'linear-gradient(135deg, #6366F1, #A855F7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>dont vous aurez besoin.</span>
-                        </h1>
-                        <p className="hero-subtitle" style={{ fontSize: '20px', color: '#475569', maxWidth: '600px', marginBottom: '40px', lineHeight: '1.6', fontWeight: '500' }}>
-                            Un simple geste sur un téléphone pour partager tout votre univers. Moderne, écologique et sans limites.
-                        </p>
-                        <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center' }}>
-                            <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary">
-                                Commander ma carte (10.000f)
-                            </button>
-                            <a href="#tarifs" className="btn-secondary">Voir les tarifs</a>
-                        </div>
-                    </div>
 
-                    <div className="hero-visuals fade-in-up delay-1">
-                        <div className="visual-stack">
-                            <div className="img-phone">
-                                <img src="/profile-mockup.png" alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => e.target.src='https://placehold.co/400x800/white/1A1265?text=Profil+Digital'} />
-                            </div>
-
-                            <div className="img-card card-front">
-                                <img src="/card-recto.png" alt="Card Front" style={{ width: '100%', borderRadius: '16px', display: 'block' }} onError={(e) => e.target.src='https://placehold.co/600x375/f8fafc/1a1265?text=Design+Recto'} />
-                            </div>
-
-                            <div className="img-card card-back">
-                                <img src="/card-verso.png" alt="Card Back" style={{ width: '100%', borderRadius: '16px', display: 'block' }} onError={(e) => e.target.src='https://placehold.co/600x375/f1f5f9/1a1265?text=Design+Verso'} />
-                            </div>
-
-                            <div className="mobile-cards-row">
-                                <img src="/card-recto.png" alt="Card Front" onError={(e) => e.target.src='https://placehold.co/600x375/f8fafc/1a1265?text=Recto'} />
-                                <img src="/card-verso.png" alt="Card Back" onError={(e) => e.target.src='https://placehold.co/600x375/f1f5f9/1a1265?text=Verso'} />
+                        <div className="animate-fade-up delay-1" style={{ position: 'relative', display: 'flex', justifyContent: 'center' }}>
+                            <div style={{ position: 'relative', width: '100%', maxWidth: '500px', background: 'white', borderRadius: '40px', padding: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.05)' }}>
+                                <img src="/card-recto.png" alt="Carte NFC" style={{ width: '100%', borderRadius: '24px', display: 'block', marginBottom: '16px' }} onError={(e) => e.target.src='https://placehold.co/600x375/111827/ffffff?text=Design+Carte'} />
+                                <div style={{ background: '#F3F4F6', borderRadius: '24px', padding: '24px', textAlign: 'center' }}>
+                                    <div style={{ fontSize: '24px', marginBottom: '8px' }}>📱</div>
+                                    <h3 style={{ fontWeight: '800', fontSize: '18px', color: '#111827', marginBottom: '4px' }}>Fonctionne partout</h3>
+                                    <p style={{ color: '#6B7280', fontSize: '14px', margin: 0 }}>Approchez la carte d'un téléphone, votre profil s'ouvre instantanément.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* Concept Section */}
-            <section id="concept" style={{ padding: '100px 20px', background: '#FFFFFF', position: 'relative' }}>
-                <div style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'center' }}>
-                    <h2 className="fade-in-up" style={{ fontSize: '44px', fontWeight: '900', marginBottom: '60px', fontFamily: 'Outfit', color: '#0F172A', letterSpacing: '-0.02em' }}>Comment ça marche ?</h2>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '30px' }}>
+            {/* Utility Section */}
+            <section id="utilite" className="section" style={{ background: 'white', borderTop: '1px solid rgba(0,0,0,0.03)', borderBottom: '1px solid rgba(0,0,0,0.03)' }}>
+                <div className="container">
+                    <div style={{ textAlign: 'center', marginBottom: '64px' }} className="animate-fade-up">
+                        <h2 style={{ fontSize: '40px', fontWeight: '900', fontFamily: 'Outfit', color: '#111827', letterSpacing: '-0.02em', marginBottom: '16px' }}>Pourquoi choisir une carte intelligente ?</h2>
+                        <p style={{ color: '#6B7280', fontSize: '18px', maxWidth: '600px', margin: '0 auto' }}>Fini les cartes en papier qui s'entassent et qu'on perd. Passez au niveau supérieur de votre networking.</p>
+                    </div>
+
+                    <div className="bento-grid">
+                        <div className="card-white animate-fade-up delay-1">
+                            <div className="icon-circle">⚡</div>
+                            <h3 style={{ fontWeight: '800', fontSize: '20px', marginBottom: '12px' }}>Sans application</h3>
+                            <p style={{ color: '#4B5563', lineHeight: '1.6' }}>Votre interlocuteur n'a rien à télécharger. Le profil s'ouvre directement dans son navigateur web par simple contact NFC ou scan de QR code.</p>
+                        </div>
+                        <div className="card-white animate-fade-up delay-2">
+                            <div className="icon-circle">🔄</div>
+                            <h3 style={{ fontWeight: '800', fontSize: '20px', marginBottom: '12px' }}>Modifiable à l'infini</h3>
+                            <p style={{ color: '#4B5563', lineHeight: '1.6' }}>Vous changez de numéro ou d'entreprise ? Modifiez vos informations en temps réel depuis votre tableau de bord. La carte physique reste la même.</p>
+                        </div>
+                        <div className="card-white animate-fade-up delay-3">
+                            <div className="icon-circle">🌍</div>
+                            <h3 style={{ fontWeight: '800', fontSize: '20px', marginBottom: '12px' }}>Un seul achat à vie</h3>
+                            <p style={{ color: '#4B5563', lineHeight: '1.6' }}>Plus besoin de réimprimer 500 cartes tous les 6 mois. Une seule carte NFC robuste suffit pour des années de rencontres professionnelles.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Steps Section */}
+            <section className="section">
+                <div className="container">
+                    <div style={{ textAlign: 'center', marginBottom: '64px' }}>
+                        <h2 style={{ fontSize: '40px', fontWeight: '900', fontFamily: 'Outfit', color: '#111827', letterSpacing: '-0.02em' }}>Comment l'obtenir en 3 étapes</h2>
+                    </div>
+
+                    <div className="bento-grid">
                         {[
-                            { t: "Commandez", d: "Choisissez votre pack sur WhatsApp et envoyez vos infos.", icon: "🛍️" },
-                            { t: "Personnalisez", d: "Nous créons votre profil et votre carte sur-mesure.", icon: "✨" },
-                            { t: "Connectez", d: "Recevez votre carte et touchez un téléphone pour partager.", icon: "🤝" }
+                            { step: "1", title: "Choisissez votre pack", desc: "Optez pour le profil digital seul ou recevez en plus notre carte physique premium chez vous." },
+                            { step: "2", title: "Personnalisez", desc: "Créez votre profil en ligne, ajoutez votre photo, vos réseaux et vos moyens de contact." },
+                            { step: "3", title: "Connectez", desc: "Faites bonne impression. Lors de votre prochain rendez-vous, touchez un téléphone et partagez tout." }
                         ].map((item, i) => (
-                            <div key={i} className={`feature-card fade-in-up delay-${i+1}`}>
-                                <div style={{ width: '64px', height: '64px', borderRadius: '20px', background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', margin: '0 auto 24px' }}>
-                                    {item.icon}
+                            <div key={i} className="card-white" style={{ position: 'relative', overflow: 'hidden' }}>
+                                <div style={{ position: 'absolute', top: '-10px', right: '-10px', fontSize: '120px', fontWeight: '900', color: '#F3F4F6', lineHeight: 1, zIndex: 0, pointerEvents: 'none' }}>
+                                    {item.step}
                                 </div>
-                                <h3 style={{ fontWeight: '900', fontSize: '22px', marginBottom: '12px', color: '#0F172A' }}>{item.t}</h3>
-                                <p style={{ color: '#475569', fontSize: '16px', lineHeight: '1.6' }}>{item.d}</p>
+                                <div style={{ position: 'relative', zIndex: 1 }}>
+                                    <h3 style={{ fontWeight: '800', fontSize: '22px', marginBottom: '16px' }}>{item.title}</h3>
+                                    <p style={{ color: '#4B5563', lineHeight: '1.6', fontSize: '15px' }}>{item.desc}</p>
+                                </div>
                             </div>
                         ))}
                     </div>
@@ -281,49 +229,58 @@ export default function LandingPage() {
             </section>
 
             {/* Pricing Section */}
-            <section id="tarifs" style={{ padding: '120px 20px', background: '#F8FAFC' }}>
-                <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-                    <div style={{ textAlign: 'center', marginBottom: '60px' }} className="fade-in-up">
-                        <h2 style={{ fontSize: '44px', fontWeight: '900', fontFamily: 'Outfit', color: '#0F172A', letterSpacing: '-0.02em', marginBottom: '16px' }}>Nos Solutions</h2>
-                        <p style={{ color: '#64748B', fontSize: '18px' }}>Un paiement unique, votre profil pour la vie.</p>
+            <section id="tarifs" className="section" style={{ background: 'white', borderTop: '1px solid rgba(0,0,0,0.03)' }}>
+                <div className="container">
+                    <div style={{ textAlign: 'center', marginBottom: '64px' }}>
+                        <h2 style={{ fontSize: '40px', fontWeight: '900', fontFamily: 'Outfit', color: '#111827', letterSpacing: '-0.02em', marginBottom: '16px' }}>Nos Solutions</h2>
+                        <p style={{ color: '#6B7280', fontSize: '18px' }}>Un investissement unique, pas d'abonnement.</p>
                     </div>
+
                     <div className="pricing-grid">
-                        <div className="price-card fade-in-up delay-1">
-                            <div style={{ fontSize: '13px', fontWeight: '800', color: '#6366F1', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '16px' }}>Essentiel</div>
-                            <h3 style={{ fontSize: '28px', fontWeight: '900', marginBottom: '16px', color: '#0F172A' }}>Pack Digital</h3>
-                            <div style={{ fontSize: '48px', fontWeight: '900', color: '#1A1265', marginBottom: '32px', fontFamily: 'Outfit', letterSpacing: '-0.03em' }}>5.000<small style={{ fontSize: '20px', fontWeight: '700', color: '#64748B' }}>f CFA</small></div>
-                            <ul style={{ listStyle: 'none', marginBottom: '40px', padding: 0, display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                                <li style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '16px', fontWeight: '600', color: '#334155' }}><span style={{ color: '#10B981', fontSize: '20px' }}>✓</span> Profil Digital Unique</li>
-                                <li style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '16px', fontWeight: '600', color: '#334155' }}><span style={{ color: '#10B981', fontSize: '20px' }}>✓</span> Code QR Stylisé</li>
-                                <li style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '16px', fontWeight: '600', color: '#94A3B8' }}><span style={{ color: '#CBD5E1', fontSize: '20px' }}>✕</span> Pas de carte physique</li>
-                                <li style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '16px', fontWeight: '600', color: '#334155' }}><span style={{ color: '#10B981', fontSize: '20px' }}>✓</span> Livraison Immédiate</li>
+                        {/* Digital Pack */}
+                        <div className="price-card">
+                            <div style={{ background: '#F3F4F6', color: '#4B5563', padding: '6px 16px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', alignSelf: 'flex-start', marginBottom: '24px' }}>L'essentiel</div>
+                            <h3 style={{ fontSize: '32px', fontWeight: '900', marginBottom: '8px' }}>Pack Digital</h3>
+                            <div style={{ fontSize: '48px', fontWeight: '900', fontFamily: 'Outfit', letterSpacing: '-0.03em', marginBottom: '32px' }}>5.000<small style={{ fontSize: '18px', fontWeight: '600', color: '#6B7280' }}>f CFA</small></div>
+                            
+                            <ul className="price-list">
+                                <li><span style={{ color: '#111827', fontWeight: '900' }}>✓</span> Création du profil digital complet</li>
+                                <li><span style={{ color: '#111827', fontWeight: '900' }}>✓</span> QR Code dynamique généré</li>
+                                <li><span style={{ color: '#111827', fontWeight: '900' }}>✓</span> Liens sociaux et contacts illimités</li>
+                                <li><span style={{ color: '#111827', fontWeight: '900' }}>✓</span> Accès au tableau de bord</li>
+                                <li style={{ color: '#9CA3AF' }}><span style={{ color: '#D1D5DB', fontWeight: '900' }}>✕</span> Pas de carte physique envoyée</li>
                             </ul>
-                            <button onClick={() => window.open(getWhatsAppUrl('digital'), '_blank')} style={{ width: '100%', padding: '18px', borderRadius: '100px', border: '2px solid #E2E8F0', background: 'transparent', color: '#0F172A', fontWeight: '800', fontSize: '16px', cursor: 'pointer', transition: 'all 0.2s', marginTop: 'auto' }} onMouseOver={e => { e.currentTarget.style.background = '#F1F5F9'; e.currentTarget.style.borderColor = '#CBD5E1'; }} onMouseOut={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = '#E2E8F0'; }}>Commander le Digital</button>
+                            
+                            <button onClick={() => window.open(getWhatsAppUrl('digital'), '_blank')} className="btn-secondary" style={{ width: '100%', marginTop: 'auto' }}>Commander le Digital</button>
                         </div>
-                        <div className="price-card featured fade-in-up delay-2">
-                            <div style={{ position: 'absolute', top: '-16px', left: '50%', transform: 'translateX(-50%)', background: 'linear-gradient(135deg, #6366F1, #A855F7)', color: 'white', padding: '6px 20px', borderRadius: '100px', fontSize: '12px', fontWeight: '900', letterSpacing: '1px', textTransform: 'uppercase', boxShadow: '0 4px 12px rgba(99,102,241,0.3)' }}>Le plus populaire</div>
-                            <div style={{ fontSize: '13px', fontWeight: '800', color: '#A5B4FC', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '16px' }}>Complet</div>
-                            <h3 style={{ fontSize: '28px', fontWeight: '900', marginBottom: '16px' }}>Pack Physique</h3>
-                            <div style={{ fontSize: '48px', fontWeight: '900', marginBottom: '32px', fontFamily: 'Outfit', letterSpacing: '-0.03em' }}>10.000<small style={{ fontSize: '20px', fontWeight: '700', color: '#A5B4FC' }}>f CFA</small></div>
-                            <ul style={{ listStyle: 'none', marginBottom: '40px', padding: 0, display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                                <li style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '16px', fontWeight: '600' }}><span style={{ color: '#34D399', fontSize: '20px' }}>✓</span> Carte NFC Premium</li>
-                                <li style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '16px', fontWeight: '600' }}><span style={{ color: '#34D399', fontSize: '20px' }}>✓</span> Design Personnalisé</li>
-                                <li style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '16px', fontWeight: '600' }}><span style={{ color: '#34D399', fontSize: '20px' }}>✓</span> Profil Digital Inclus</li>
-                                <li style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '16px', fontWeight: '600' }}><span style={{ color: '#34D399', fontSize: '20px' }}>✓</span> Livraison à domicile</li>
+
+                        {/* Physical Pack */}
+                        <div className="price-card featured">
+                            <div style={{ background: 'rgba(255,255,255,0.1)', color: 'white', padding: '6px 16px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', alignSelf: 'flex-start', marginBottom: '24px' }}>Le Complet</div>
+                            <h3 style={{ fontSize: '32px', fontWeight: '900', marginBottom: '8px' }}>Pack Physique</h3>
+                            <div style={{ fontSize: '48px', fontWeight: '900', fontFamily: 'Outfit', letterSpacing: '-0.03em', marginBottom: '32px' }}>10.000<small style={{ fontSize: '18px', fontWeight: '600', color: '#9CA3AF' }}>f CFA</small></div>
+                            
+                            <ul className="price-list">
+                                <li><span style={{ color: 'white', fontWeight: '900' }}>✓</span> Carte physique NFC Premium</li>
+                                <li><span style={{ color: 'white', fontWeight: '900' }}>✓</span> Design avec votre nom/logo</li>
+                                <li><span style={{ color: 'white', fontWeight: '900' }}>✓</span> Profil digital et QR code inclus</li>
+                                <li><span style={{ color: 'white', fontWeight: '900' }}>✓</span> Liens sociaux et contacts illimités</li>
+                                <li><span style={{ color: 'white', fontWeight: '900' }}>✓</span> Livraison à domicile (Bénin & sous-région)</li>
                             </ul>
-                            <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} style={{ width: '100%', padding: '18px', borderRadius: '100px', border: 'none', background: 'white', color: '#1A1265', fontWeight: '800', fontSize: '16px', cursor: 'pointer', transition: 'all 0.2s', marginTop: 'auto', boxShadow: '0 4px 15px rgba(0,0,0,0.1)' }} onMouseOver={e => { e.currentTarget.style.transform = 'scale(1.02)'; }} onMouseOut={e => { e.currentTarget.style.transform = 'scale(1)'; }}>Commander la Carte</button>
+                            
+                            <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary" style={{ width: '100%', background: 'white', color: '#111827', marginTop: 'auto' }}>Commander la Carte</button>
                         </div>
                     </div>
                 </div>
             </section>
 
             {/* Footer */}
-            <footer style={{ padding: '80px 20px 40px', background: '#FFFFFF', color: '#64748B', textAlign: 'center', borderTop: '1px solid #F1F5F9' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '24px' }}>
-                    <img src="/logo.png" alt="NFCrafter" style={{ height: '28px', opacity: 0.8 }} />
-                    <span style={{ fontSize: '20px', fontWeight: '900', color: '#0F172A', letterSpacing: '-0.5px', fontFamily: 'Outfit' }}>NFCrafter</span>
+            <footer style={{ padding: '60px 24px', background: '#F4F5F7', color: '#6B7280', textAlign: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '16px' }}>
+                    <img src="/logo.png" alt="NFCrafter" style={{ height: '24px', opacity: 0.6 }} />
+                    <span style={{ fontSize: '18px', fontWeight: '900', color: '#111827', letterSpacing: '-0.5px', fontFamily: 'Outfit', opacity: 0.8 }}>NFCrafter</span>
                 </div>
-                <p style={{ fontWeight: '500', fontSize: '15px' }}>© 2024 NFCrafter. Fièrement fabriqué pour les leaders africains.</p>
+                <p style={{ fontWeight: '500', fontSize: '14px', margin: 0 }}>© 2024 NFCrafter. Fièrement fabriqué pour les leaders africains.</p>
             </footer>
         </div>
     );
