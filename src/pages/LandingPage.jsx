@@ -263,12 +263,12 @@ export default function LandingPage() {
                         <div className="glass-panel animate-fade-up delay-2">
                             <div className="icon-circle">🔄</div>
                             <h3 style={{ fontWeight: '800', fontSize: '22px', marginBottom: '12px', fontFamily: 'Outfit' }}>Modifiable à l'infini</h3>
-                            <p style={{ color: '#4B5563', lineHeight: '1.6' }}>Vous changez de numéro ou d'entreprise ? Modifiez vos informations en temps réel depuis votre tableau de bord. La carte physique reste la même.</p>
+                            <p style={{ color: '#4B5563', lineHeight: '1.6' }}>Vous changez de numéro ou de réseau social ? Modifiez vos informations en temps réel depuis votre tableau de bord. La carte physique reste la même.</p>
                         </div>
                         <div className="glass-panel animate-fade-up delay-3">
                             <div className="icon-circle">🌍</div>
                             <h3 style={{ fontWeight: '800', fontSize: '22px', marginBottom: '12px', fontFamily: 'Outfit' }}>Un seul achat à vie</h3>
-                            <p style={{ color: '#4B5563', lineHeight: '1.6' }}>Plus besoin de réimprimer 500 cartes tous les 6 mois. Une seule carte NFC robuste suffit pour des années de rencontres professionnelles.</p>
+                            <p style={{ color: '#4B5563', lineHeight: '1.6' }}>Plus besoin de réimprimer 500 cartes tous les 6 mois. Une seule carte NFC robuste suffit pour des années de rencontres.</p>
                         </div>
                     </div>
                 </div>
@@ -353,7 +353,7 @@ export default function LandingPage() {
                     <img src="/logo.png" alt="NFCrafter" style={{ height: '24px', opacity: 0.6 }} />
                     <span style={{ fontSize: '18px', fontWeight: '900', color: '#111827', letterSpacing: '-0.5px', fontFamily: 'Outfit', opacity: 0.8 }}>NFCrafter</span>
                 </div>
-                <p style={{ fontWeight: '500', fontSize: '14px', margin: 0 }}>© 2024 NFCrafter. Fièrement fabriqué pour les leaders africains.</p>
+                <p style={{ fontWeight: '500', fontSize: '14px', margin: 0 }}>© 2026 NFCrafter. Fièrement fabriqué vous.</p>
             </footer>
         </div>
     );
