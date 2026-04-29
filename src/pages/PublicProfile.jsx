@@ -71,8 +71,8 @@ export default function PublicProfile() {
     SOCIAL_NETWORKS.forEach(s => {
       const rawVal = profile[s.id] || profile?.socials?.[s.id]
       const val = (typeof rawVal === 'object' && rawVal !== null) ? rawVal.value : rawVal
-      
-      if (val && !['phone','email'].includes(s.id)) {
+
+      if (val && !['phone', 'email'].includes(s.id)) {
         try {
           const url = s.getUrl(val)
           if (s.id === 'website') {
@@ -125,7 +125,7 @@ export default function PublicProfile() {
   )
 
   const themeColor = profile?.theme_color || profile?.primaryColor || '#1A1265'
-  
+
   const activeLinks = SOCIAL_NETWORKS.filter(s => {
     if (s.id === 'phone' || s.id === 'email') return false;
     const val = profile?.[s.id] || profile?.socials?.[s.id];
@@ -188,7 +188,7 @@ export default function PublicProfile() {
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
               boxShadow: `0 8px 24px ${themeColor}44`, transition: 'all .18s'
             }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><line x1="19" y1="8" x2="19" y2="14" /><line x1="22" y1="11" x2="16" y2="11" /></svg>
               Enregistrer le contact
             </button>
           </div>
@@ -214,7 +214,7 @@ export default function PublicProfile() {
             const rawValue = profile[link.id] || profile?.socials?.[link.id];
             const linkValue = (typeof rawValue === 'object' && rawValue !== null) ? rawValue.value : rawValue;
             const subText = (typeof rawValue === 'object' && rawValue !== null) ? rawValue.subtitle : '';
-            
+
             if (!linkValue) return null;
 
             return (
@@ -223,10 +223,10 @@ export default function PublicProfile() {
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 18px', background: 'white', borderRadius: 16, textDecoration: 'none', color: '#111', boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.05)' }}>
-                <div style={{ 
-                  width: 44, height: 44, borderRadius: 12, flexShrink: 0, 
-                  background: link.id === 'snapchat' ? link.color : link.color + '18', 
-                  display: 'flex', alignItems: 'center', justifyContent: 'center' 
+                <div style={{
+                  width: 44, height: 44, borderRadius: 12, flexShrink: 0,
+                  background: link.id === 'snapchat' ? link.color : link.color + '18',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
                 }}
                   dangerouslySetInnerHTML={{ __html: `<div style="width:22px;height:22px;color:${link.id === 'snapchat' ? '#000000' : (link.iconColor || link.color)}">${link.svg}</div>` }} />
                 <div style={{ flex: 1, overflow: 'hidden' }}>
