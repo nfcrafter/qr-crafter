@@ -1,12 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export default function LandingPage() {
     const navigate = useNavigate();
     const [openFaq, setOpenFaq] = useState(null);
+    const [scrolled, setScrolled] = useState(false);
 
     const whatsappNumber = "22991566846";
     
+    useEffect(() => {
+        const handleScroll = () => setScrolled(window.scrollY > 50);
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
     const getWhatsAppUrl = (pack) => {
         const message = pack === 'physique' 
             ? "Bonjour NFCrafter, je souhaite commander le Pack Physique (Carte + Profil) à 10.000f."
@@ -14,165 +21,218 @@ export default function LandingPage() {
         return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
     };
 
-    const toggleFaq = (index) => {
-        setOpenFaq(openFaq === index ? null : index);
-    };
-
     const faqs = [
         {
-            q: "Est-ce que ça marche sur tous les téléphones en Afrique ?",
-            a: "Oui ! Pour les smartphones récents (iPhone, Samsung, Huawei, etc.), il suffit de toucher la carte. Pour les modèles plus anciens, le client peut simplement scanner le code QR personnalisé qui se trouve sur votre carte ou votre page."
+            q: "Est-ce que ça marche sur tous les téléphones ?",
+            a: "Oui ! Les smartphones récents utilisent le NFC (sans contact). Pour les plus anciens, votre profil s'ouvre via le Code QR personnalisé présent sur votre carte."
         },
         {
-            q: "Comment se passe la livraison ?",
-            a: "Pour le Pack Digital, vous recevez vos accès instantanément. Pour la carte physique, nous livrons partout au Bénin et dans la sous-région sous 48h à 72h."
+            q: "Combien de temps dure la carte ?",
+            a: "À vie ! Il n'y a pas de batterie, pas d'abonnement. Une fois achetée, elle est à vous pour toujours."
         },
         {
-            q: "Dois-je payer un abonnement chaque mois ?",
-            a: "Non, aucun abonnement. Vous payez une seule fois pour votre carte ou votre profil, et c'est à vous pour toujours."
-        },
-        {
-            q: "Puis-je changer mon numéro plus tard ?",
-            a: "Absolument. Vous avez un accès personnel pour modifier vos infos (téléphone, liens, photo) à tout moment. Votre carte physique restera toujours à jour."
+            q: "Puis-je modifier mes informations ?",
+            a: "Oui, à tout moment et gratuitement. Changez votre numéro, vos réseaux sociaux ou votre photo depuis votre espace client."
         }
     ];
 
     return (
-        <div style={{ background: '#FFFFFF', minHeight: '100vh', width: '100%', overflowX: 'hidden', fontFamily: "'Inter', sans-serif", color: '#1A1265' }}>
+        <div style={{ background: '#050505', minHeight: '100vh', width: '100%', overflowX: 'hidden', fontFamily: "'Outfit', sans-serif", color: '#FFFFFF' }}>
             <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap');
+                @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@400;500;600&display=swap');
                 
-                .nav-link { color: #1A1265; text-decoration: none; font-weight: 700; font-size: 14px; transition: all 0.2s; cursor: pointer; opacity: 0.8; }
-                .nav-link:hover { opacity: 1; }
-                
+                :root { 
+                    --accent: #6366F1; 
+                    --gradient: linear-gradient(135deg, #6366F1 0%, #A855F7 50%, #EC4899 100%); 
+                }
+
+                * { box-sizing: border-box; margin: 0; padding: 0; }
+                html { scroll-behavior: smooth; }
+
                 .glass-nav {
-                    background: rgba(255, 255, 255, 0.75);
-                    backdrop-filter: blur(16px) saturate(180%);
-                    -webkit-backdrop-filter: blur(16px) saturate(180%);
-                    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+                    background: ${scrolled ? 'rgba(5, 5, 5, 0.8)' : 'transparent'};
+                    backdrop-filter: ${scrolled ? 'blur(20px)' : 'none'};
+                    border-bottom: ${scrolled ? '1px solid rgba(255, 255, 255, 0.1)' : 'none'};
+                    transition: all 0.4s ease;
                 }
 
-                @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
-                .floating { animation: float 5s ease-in-out infinite; }
-
-                /* --- RESPONSIVE LOGIC --- */
-                .hero-grid { 
-                    max-width: 1200px; margin: 0 auto; display: grid; 
-                    grid-template-columns: 1.1fr 1fr; gap: 40px; align-items: center; 
+                .text-gradient {
+                    background: var(--gradient);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
                 }
 
-                .visual-stack { position: relative; width: 100%; height: 500px; display: flex; align-items: center; justify-content: center; }
-                .img-card { width: 300px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); position: absolute; }
-                .img-phone { width: 240px; border-radius: 40px; border: 8px solid #222; box-shadow: 0 30px 60px rgba(0,0,0,0.3); position: absolute; z-index: 2; overflow: hidden; background: #000; }
+                .hero-visual-container {
+                    perspective: 2000px;
+                    width: 100%;
+                    max-width: 600px;
+                    height: 600px;
+                    position: relative;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .card-3d {
+                    width: 320px;
+                    height: 200px;
+                    border-radius: 20px;
+                    position: absolute;
+                    transform-style: preserve-3d;
+                    transition: all 0.5s ease;
+                    box-shadow: 0 50px 100px rgba(0,0,0,0.5);
+                }
+
+                .card-front {
+                    background: linear-gradient(135deg, #111 0%, #222 100%);
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    transform: rotateY(-20deg) rotateX(10deg) translateZ(50px);
+                    z-index: 3;
+                }
+
+                .card-back {
+                    background: #111;
+                    border: 1px solid rgba(255, 255, 255, 0.05);
+                    transform: rotateY(-15deg) rotateX(5deg) translateZ(-50px) translateY(120px) translateX(-40px);
+                    z-index: 1;
+                    opacity: 0.8;
+                }
+
+                .phone-mockup {
+                    width: 260px;
+                    height: 520px;
+                    background: #000;
+                    border: 12px solid #1A1A1A;
+                    border-radius: 45px;
+                    position: relative;
+                    z-index: 2;
+                    transform: rotateY(15deg) rotateX(5deg);
+                    box-shadow: 0 100px 200px rgba(99, 102, 241, 0.2);
+                    overflow: hidden;
+                }
+
+                .btn-premium {
+                    background: var(--gradient);
+                    color: white;
+                    padding: 20px 48px;
+                    border-radius: 100px;
+                    font-weight: 900;
+                    font-size: 18px;
+                    border: none;
+                    cursor: pointer;
+                    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                    box-shadow: 0 20px 40px rgba(99, 102, 241, 0.3);
+                }
+                .btn-premium:hover {
+                    transform: scale(1.05) translateY(-5px);
+                    box-shadow: 0 30px 60px rgba(99, 102, 241, 0.5);
+                }
+
+                @keyframes float {
+                    0%, 100% { transform: translateY(0) rotateY(-20deg) rotateX(10deg) translateZ(50px); }
+                    50% { transform: translateY(-30px) rotateY(-15deg) rotateX(5deg) translateZ(60px); }
+                }
+                .floating-card { animation: float 8s ease-in-out infinite; }
 
                 @media (max-width: 1024px) {
-                    .hero-grid { grid-template-columns: 1fr; text-align: center; padding-top: 40px; }
-                    .hero-text { display: flex; flex-direction: column; align-items: center; }
-                    .visual-stack { height: 450px; margin-top: 40px; }
+                    .hero-section { flex-direction: column !important; text-align: center; padding-top: 140px !important; }
+                    .hero-visual-container { margin-top: 80px; transform: scale(0.8); }
                 }
 
                 @media (max-width: 768px) {
-                    .mobile-hide { display: none; }
-                    .hero-title { font-size: 40px !important; line-height: 1.1 !important; }
-                    .hero-subtitle { font-size: 17px !important; }
-                    
-                    /* Visuals on Mobile */
-                    .visual-stack { height: auto; min-height: 400px; display: flex; flex-direction: column; align-items: center; justify-content: center; transform: scale(0.9); }
-                    .img-phone { position: relative !important; top: auto !important; right: auto !important; left: auto !important; width: 220px !important; margin: 0 auto; }
-                    .img-card { display: none !important; } /* Hidden main cards to avoid mess */
-                    .mobile-cards-row { display: flex !important; gap: 12px; justify-content: center; margin-top: 20px; width: 100%; }
-                    .mobile-cards-row img { width: 45%; max-width: 160px; border-radius: 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+                    .hero-title { font-size: 48px !important; }
+                    .hero-visual-container { transform: scale(0.65); height: 450px; }
+                    .mobile-nav { display: none; }
                 }
 
-                .price-card { padding: 40px 24px; border-radius: 24px; border: 1px solid #E2E8F0; background: white; text-align: center; transition: 0.3s; }
-                .price-card.featured { background: #1A1265; color: white; border: none; }
-                .pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 40px; }
-                
-                @media (max-width: 600px) {
-                    .pricing-grid { grid-template-columns: 1fr !important; }
+                .price-glass-card {
+                    background: rgba(255, 255, 255, 0.03);
+                    backdrop-filter: blur(10px);
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    border-radius: 40px;
+                    padding: 60px 40px;
+                    transition: all 0.4s ease;
                 }
-
-                .faq-item { border-bottom: 1px solid #F1F5F9; padding: 20px 0; cursor: pointer; }
+                .price-glass-card:hover {
+                    background: rgba(255, 255, 255, 0.06);
+                    border-color: var(--accent);
+                    transform: translateY(-15px);
+                }
             `}</style>
 
-            {/* Navigation */}
-            <nav className="glass-nav" style={{ height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000 }}>
-                <div className="nav-container" style={{ width: '100%', maxWidth: '1200px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 40px' }}>
+            {/* Premium Nav */}
+            <nav className="glass-nav" style={{ height: '90px', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'fixed', top: 0, zIndex: 1000 }}>
+                <div style={{ width: '100%', maxWidth: '1400px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 40px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => navigate('/')}>
-                        <img src="/logo.png" alt="NFCrafter" style={{ height: '32px' }} />
-                        <span style={{ fontSize: '20px', fontWeight: '900', color: '#1A1265', letterSpacing: '-0.5px', fontFamily: 'Outfit' }}>NFCrafter</span>
+                        <img src="/logo.png" alt="NFCrafter" style={{ height: '36px' }} />
+                        <span style={{ fontSize: '24px', fontWeight: '900', letterSpacing: '-1px' }}>NFCrafter</span>
                     </div>
-                    <div className="mobile-hide" style={{ display: 'flex', gap: '32px' }}>
-                        <a href="#concept" className="nav-link">Concept</a>
-                        <a href="#tarifs" className="nav-link">Tarifs</a>
-                        <a href="#faq" className="nav-link">FAQ</a>
+                    <div className="mobile-nav" style={{ display: 'flex', gap: '40px' }}>
+                        <a href="#concept" style={{ color: '#999', textDecoration: 'none', fontWeight: '600' }}>Concept</a>
+                        <a href="#tarifs" style={{ color: '#999', textDecoration: 'none', fontWeight: '600' }}>Tarifs</a>
+                        <a href="#faq" style={{ color: '#999', textDecoration: 'none', fontWeight: '600' }}>FAQ</a>
                     </div>
-                    <div style={{ display: 'flex', gap: '12px' }}>
-                        <button onClick={() => navigate('/login')} style={{ background: 'transparent', border: 'none', color: '#1A1265', fontWeight: '800', cursor: 'pointer', fontSize: '14px' }}>Connexion</button>
-                        <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} style={{ background: '#1A1265', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '12px', fontWeight: '800', cursor: 'pointer', fontSize: '13px' }}>Commander</button>
+                    <div style={{ display: 'flex', gap: '20px' }}>
+                        <button onClick={() => navigate('/login')} style={{ background: 'transparent', border: 'none', color: 'white', fontWeight: '700', cursor: 'pointer' }}>Connexion</button>
+                        <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} style={{ background: 'white', color: 'black', border: 'none', padding: '12px 28px', borderRadius: '100px', fontWeight: '800', cursor: 'pointer' }}>Commander</button>
                     </div>
                 </div>
             </nav>
 
-            <div style={{ height: '80px' }}></div>
-
             {/* Hero Section */}
-            <section style={{ padding: '60px 20px 80px', background: 'radial-gradient(circle at 70% 30%, #F5F3FF 0%, #FFFFFF 100%)' }}>
-                <div className="hero-grid">
-                    <div className="hero-text">
-                        <div style={{ display: 'inline-block', padding: '8px 20px', background: '#EEF2FF', color: '#6366F1', borderRadius: '100px', fontSize: '12px', fontWeight: '900', marginBottom: '24px', letterSpacing: '1px', textTransform: 'uppercase' }}>Identité Professionnelle 2.0</div>
-                        <h1 className="hero-title" style={{ fontSize: '64px', fontWeight: '900', color: '#1A1265', letterSpacing: '-2px', lineHeight: '1.1', marginBottom: '24px', fontFamily: 'Outfit' }}>
-                            La dernière carte de visite <span style={{ color: '#6366F1' }}>dont vous aurez besoin.</span>
-                        </h1>
-                        <p className="hero-subtitle" style={{ fontSize: '20px', color: '#64748B', maxWidth: '600px', marginBottom: '40px', lineHeight: '1.6', fontWeight: '500' }}>
-                            Un simple geste sur un téléphone pour partager tout votre univers. Moderne, écologique et sans limites.
-                        </p>
-                        <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center' }}>
-                            <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} style={{ background: '#1A1265', color: 'white', padding: '18px 40px', borderRadius: '16px', fontSize: '18px', fontWeight: '800', border: 'none', cursor: 'pointer', boxShadow: '0 20px 40px rgba(26, 18, 101, 0.2)' }}>Commander ma carte (10.000f)</button>
-                            <a href="#tarifs" style={{ background: 'white', color: '#1A1265', padding: '18px 40px', borderRadius: '16px', fontSize: '18px', fontWeight: '800', border: '1px solid #E2E8F0', textDecoration: 'none', display: 'flex', alignItems: 'center' }}>Voir les tarifs</a>
-                        </div>
+            <section className="hero-section" style={{ padding: '180px 40px 100px', display: 'flex', alignItems: 'center', justifyContent: 'center', maxWidth: '1400px', margin: '0 auto', gap: '40px' }}>
+                <div style={{ flex: 1 }}>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 20px', background: 'rgba(99, 102, 241, 0.1)', border: '1px solid rgba(99, 102, 241, 0.2)', borderRadius: '100px', color: '#818CF8', fontWeight: '800', fontSize: '14px', marginBottom: '32px' }}>
+                        <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#818CF8' }}></span>
+                        ÉDITION AFRICAINE 2024
                     </div>
+                    <h1 className="hero-title" style={{ fontSize: 'clamp(48px, 8vw, 84px)', fontWeight: '950', lineHeight: '0.95', letterSpacing: '-4px', marginBottom: '40px' }}>
+                        Faites <span className="text-gradient">parler</span> votre carte.
+                    </h1>
+                    <p style={{ fontSize: '22px', color: '#999', lineHeight: '1.5', maxWidth: '600px', marginBottom: '56px', fontWeight: '500' }}>
+                        La dernière carte de visite que vous achèterez. Échangez vos coordonnées d'un simple geste, sans contact, sans limites.
+                    </p>
+                    <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+                        <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-premium">Commander ma carte</button>
+                        <a href="#concept" style={{ color: 'white', display: 'flex', alignItems: 'center', gap: '12px', fontWeight: '700', textDecoration: 'none', fontSize: '18px' }}>
+                            <span style={{ width: '48px', height: '48px', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>▶</span>
+                            Voir le concept
+                        </a>
+                    </div>
+                </div>
 
-                    <div className="hero-visuals">
-                        <div className="visual-stack">
-                            {/* Phone Mockup */}
-                            <div className="img-phone floating" style={{ top: '0', right: '0' }}>
-                                <img src="/profile-mockup.png" alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => e.target.src='https://placehold.co/400x800/white/1A1265?text=Profil+Digital'} />
-                            </div>
-
-                            {/* Card Recto */}
-                            <div className="img-card floating" style={{ top: '15%', left: '0', zIndex: 3 }}>
-                                <img src="/card-recto.png" alt="Card Front" style={{ width: '100%', borderRadius: '16px' }} onError={(e) => e.target.src='https://placehold.co/600x375/111/white?text=Design+Recto'} />
-                            </div>
-
-                            {/* Card Verso */}
-                            <div className="img-card floating" style={{ top: '50%', left: '40px', zIndex: 1, animationDelay: '-2s' }}>
-                                <img src="/card-verso.png" alt="Card Back" style={{ width: '100%', borderRadius: '16px' }} onError={(e) => e.target.src='https://placehold.co/600x375/222/white?text=Design+Verso'} />
-                            </div>
-
-                            {/* Mobile only cards row */}
-                            <div className="mobile-cards-row" style={{ display: 'none' }}>
-                                <img src="/card-recto.png" alt="Card Front" onError={(e) => e.target.src='https://placehold.co/600x375/111/white?text=Recto'} />
-                                <img src="/card-verso.png" alt="Card Back" onError={(e) => e.target.src='https://placehold.co/600x375/222/white?text=Verso'} />
-                            </div>
+                <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+                    <div className="hero-visual-container">
+                        {/* Phone Mockup */}
+                        <div className="phone-mockup">
+                            <img src="/profile-mockup.png" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => e.target.src='https://placehold.co/400x800/111/6366F1?text=Aperçu+Profil'} alt="Profile" />
+                        </div>
+                        {/* Card Front */}
+                        <div className="card-3d card-front floating-card">
+                            <img src="/card-recto.png" style={{ width: '100%', height: '100%', borderRadius: '20px' }} onError={(e) => e.target.src='https://placehold.co/600x375/111/white?text=Design+Premium'} alt="Recto" />
+                        </div>
+                        {/* Card Back */}
+                        <div className="card-3d card-back">
+                            <img src="/card-verso.png" style={{ width: '100%', height: '100%', borderRadius: '20px' }} onError={(e) => e.target.src='https://placehold.co/600x375/111/white?text=Design+Verso'} alt="Verso" />
                         </div>
                     </div>
                 </div>
             </section>
 
             {/* Concept Section */}
-            <section id="concept" style={{ padding: '80px 20px', background: '#F8FAFC' }}>
-                <div style={{ maxWidth: '1000px', margin: '0 auto', textAlign: 'center' }}>
-                    <h2 style={{ fontSize: '32px', fontWeight: '900', marginBottom: '40px', fontFamily: 'Outfit' }}>Comment ça marche ?</h2>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '40px' }}>
+            <section id="concept" style={{ padding: '120px 40px', background: '#080808' }}>
+                <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+                    <h2 style={{ fontSize: 'clamp(32px, 5vw, 64px)', fontWeight: '900', letterSpacing: '-2px', marginBottom: '80px', textAlign: 'center' }}>Plus qu'une carte, <br/><span className="text-gradient">un outil de pouvoir.</span></h2>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '40px' }}>
                         {[
-                            { t: "1. Commandez", d: "Choisissez votre pack sur WhatsApp et envoyez vos infos." },
-                            { t: "2. Personnalisez", d: "Nous créons votre profil et votre carte sur-mesure." },
-                            { t: "3. Connectez", d: "Recevez votre carte et touchez un téléphone pour partager." }
-                        ].map((item, i) => (
-                            <div key={i} style={{ background: 'white', padding: '32px', borderRadius: '24px', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}>
-                                <h3 style={{ fontWeight: '800', marginBottom: '12px' }}>{item.t}</h3>
-                                <p style={{ color: '#64748B', fontSize: '15px' }}>{item.d}</p>
+                            { title: "Zéro Papier", desc: "Économisez des milliers de cartes papier chaque année. Un choix écologique pour l'Afrique de demain." },
+                            { title: "Mise à jour en temps réel", desc: "Changez votre job ou votre numéro ? Modifiez votre profil digital instantanément, sans frais." },
+                            { title: "Partout, sans App", desc: "Le client approche son téléphone, votre profil s'affiche. Pas d'application à installer." }
+                        ].map((feat, i) => (
+                            <div key={i} style={{ padding: '40px', background: '#111', borderRadius: '32px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                <div style={{ fontSize: '32px', marginBottom: '24px' }}>✨</div>
+                                <h3 style={{ fontSize: '24px', fontWeight: '800', marginBottom: '16px' }}>{feat.title}</h3>
+                                <p style={{ color: '#999', lineHeight: '1.6' }}>{feat.desc}</p>
                             </div>
                         ))}
                     </div>
@@ -180,41 +240,65 @@ export default function LandingPage() {
             </section>
 
             {/* Pricing Section */}
-            <section id="tarifs" style={{ padding: '80px 20px' }}>
-                <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-                    <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-                        <h2 style={{ fontSize: '40px', fontWeight: '900', fontFamily: 'Outfit' }}>Nos Solutions</h2>
+            <section id="tarifs" style={{ padding: '120px 40px' }}>
+                <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+                    <div style={{ textAlign: 'center', marginBottom: '100px' }}>
+                        <h2 style={{ fontSize: '64px', fontWeight: '900', letterSpacing: '-3px' }}>Simple. <span className="text-gradient">Transparent.</span></h2>
                     </div>
-                    <div className="pricing-grid">
-                        <div className="price-card">
-                            <h3 style={{ fontSize: '24px', fontWeight: '800', marginBottom: '16px' }}>Pack Digital</h3>
-                            <div style={{ fontSize: '42px', fontWeight: '900', color: '#1A1265', marginBottom: '24px' }}>5.000<small style={{ fontSize: '18px' }}>f CFA</small></div>
-                            <ul style={{ listStyle: 'none', marginBottom: '32px', textAlign: 'left', display: 'inline-block' }}>
-                                <li>✅ Profil Digital Unique</li>
-                                <li>✅ Code QR Stylisé</li>
-                                <li>❌ Pas de carte physique</li>
-                                <li>✅ Livraison Immédiate</li>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '40px' }}>
+                        {/* Pack Digital */}
+                        <div className="price-glass-card">
+                            <h3 style={{ fontSize: '24px', fontWeight: '800', marginBottom: '16px', color: '#999' }}>PACK DIGITAL</h3>
+                            <div style={{ fontSize: '64px', fontWeight: '950', marginBottom: '32px' }}>5.000<small style={{ fontSize: '20px' }}>f CFA</small></div>
+                            <ul style={{ listStyle: 'none', marginBottom: '48px', color: '#999', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                <li>✓ Profil Digital Premium</li>
+                                <li>✓ Code QR personnalisé</li>
+                                <li>✓ Mise à jour illimitée</li>
+                                <li>✕ Pas de carte physique</li>
                             </ul>
-                            <button onClick={() => window.open(getWhatsAppUrl('digital'), '_blank')} style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid #1A1265', background: 'transparent', color: '#1A1265', fontWeight: '800', cursor: 'pointer' }}>Commander</button>
+                            <button onClick={() => window.open(getWhatsAppUrl('digital'), '_blank')} style={{ width: '100%', padding: '20px', borderRadius: '100px', background: 'rgba(255,255,255,0.05)', color: 'white', border: '1px solid rgba(255,255,255,0.1)', fontWeight: '800', cursor: 'pointer' }}>Choisir le Digital</button>
                         </div>
-                        <div className="price-card featured">
-                            <h3 style={{ fontSize: '24px', fontWeight: '800', marginBottom: '16px' }}>Pack Physique</h3>
-                            <div style={{ fontSize: '42px', fontWeight: '900', marginBottom: '24px' }}>10.000<small style={{ fontSize: '18px' }}>f CFA</small></div>
-                            <ul style={{ listStyle: 'none', marginBottom: '32px', textAlign: 'left', display: 'inline-block' }}>
-                                <li>✅ Carte NFC Premium</li>
-                                <li>✅ Design Personnalisé</li>
-                                <li>✅ Profil Digital Inclus</li>
-                                <li>✅ Livraison à domicile</li>
+
+                        {/* Pack Physique */}
+                        <div className="price-glass-card" style={{ border: '1px solid rgba(99, 102, 241, 0.3)', background: 'rgba(99, 102, 241, 0.05)' }}>
+                            <div style={{ display: 'inline-block', padding: '6px 12px', background: 'var(--accent)', borderRadius: '6px', fontSize: '10px', fontWeight: '900', marginBottom: '16px' }}>PLUS POPULAIRE</div>
+                            <h3 style={{ fontSize: '24px', fontWeight: '800', marginBottom: '16px' }}>PACK PHYSIQUE</h3>
+                            <div style={{ fontSize: '64px', fontWeight: '950', marginBottom: '32px' }}>10.000<small style={{ fontSize: '20px' }}>f CFA</small></div>
+                            <ul style={{ listStyle: 'none', marginBottom: '48px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                <li>✓ Carte NFC Premium gravée</li>
+                                <li>✓ Design Recto/Verso sur-mesure</li>
+                                <li>✓ Profil Digital Inclus</li>
+                                <li>✓ Livraison à domicile</li>
                             </ul>
-                            <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} style={{ width: '100%', padding: '16px', borderRadius: '12px', border: 'none', background: 'white', color: '#1A1265', fontWeight: '800', cursor: 'pointer' }}>Commander</button>
+                            <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-premium" style={{ width: '100%' }}>Commander ma carte</button>
                         </div>
                     </div>
                 </div>
             </section>
 
+            {/* FAQ */}
+            <section id="faq" style={{ padding: '120px 40px', background: '#080808' }}>
+                <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+                    <h2 style={{ fontSize: '48px', fontWeight: '900', textAlign: 'center', marginBottom: '64px' }}>Questions.</h2>
+                    {faqs.map((faq, i) => (
+                        <div key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', padding: '32px 0', cursor: 'pointer' }} onClick={() => setOpenFaq(openFaq === i ? null : i)}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '20px', fontWeight: '700' }}>
+                                <span>{faq.q}</span>
+                                <span style={{ transition: '0.3s', transform: openFaq === i ? 'rotate(45deg)' : 'none' }}>+</span>
+                            </div>
+                            {openFaq === i && <div style={{ marginTop: '20px', color: '#999', lineHeight: '1.6', fontSize: '18px' }}>{faq.a}</div>}
+                        </div>
+                    ))}
+                </div>
+            </section>
+
             {/* Footer */}
-            <footer style={{ padding: '60px 20px', background: '#0F172A', color: 'white', textAlign: 'center' }}>
-                <p>© 2024 NFCrafter. Fièrement fabriqué pour les leaders africains.</p>
+            <footer style={{ padding: '100px 40px', borderTop: '1px solid rgba(255,255,255,0.05)', textAlign: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', justifyContent: 'center', marginBottom: '32px' }}>
+                    <img src="/logo.png" alt="NFCrafter" style={{ height: '28px' }} />
+                    <span style={{ fontSize: '22px', fontWeight: '900' }}>NFCrafter</span>
+                </div>
+                <p style={{ color: '#555', fontWeight: '600' }}>© 2024 NFCrafter. Propulser le networking en Afrique.</p>
             </footer>
         </div>
     );
