@@ -217,7 +217,6 @@ export default function LandingPage() {
                     >
                         Connexion
                     </button>
-                    <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary" style={{ padding: '10px 24px', fontSize: '14px', boxShadow: '0 4px 15px rgba(0,0,0,0.1)' }}>Commander</button>
                 </div>
             </nav>
 
