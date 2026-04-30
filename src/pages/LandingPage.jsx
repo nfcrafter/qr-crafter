@@ -336,9 +336,10 @@ export default function LandingPage() {
                                 </li>
                             </ul>
                             
-                            <div style={{ display: 'flex', gap: '24px', marginBottom: '40px', flexWrap: 'wrap', justifyContent: 'center' }}>
-                                <img src="/placeholder-public-profile.jpg" alt="Capture profil public" style={{ height: '280px', width: 'auto', objectFit: 'cover', borderRadius: '20px', boxShadow: '0 25px 50px rgba(0,0,0,0.15)', animation: 'floatPackImg 6s ease-in-out infinite' }} onError={(e) => e.target.src='https://placehold.co/400x700/f8fafc/1a1265?text=Page+Profil'} />
-                                <img src="/placeholder-qr-custom.jpg" alt="QR Code personnalisé" style={{ height: '280px', width: 'auto', aspectRatio: '1/1', objectFit: 'cover', borderRadius: '20px', boxShadow: '0 25px 50px rgba(0,0,0,0.15)', animation: 'floatPackImg 7s ease-in-out infinite 0.5s' }} onError={(e) => e.target.src='https://placehold.co/400x400/f1f5f9/1a1265?text=QR+Code'} />
+                            <div style={{ display: 'flex', gap: '32px', marginBottom: '40px', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap' }}>
+                                <img src="/placeholder-public-profile.jpg" alt="Capture profil public" style={{ height: '350px', width: 'auto', objectFit: 'cover', borderRadius: '24px', boxShadow: '0 25px 50px rgba(0,0,0,0.15)', animation: 'floatPackImg 6s ease-in-out infinite' }} onError={(e) => e.target.src='https://placehold.co/400x700/f8fafc/1a1265?text=Page+Profil'} />
+                                <div style={{ fontSize: '56px', fontWeight: '900', color: '#111827', textShadow: '0 10px 30px rgba(0,0,0,0.05)', fontFamily: 'Outfit' }}>+</div>
+                                <img src="/placeholder-qr-custom.jpg" alt="QR Code personnalisé" style={{ height: '180px', width: '180px', objectFit: 'cover', borderRadius: '24px', boxShadow: '0 25px 50px rgba(0,0,0,0.15)', animation: 'floatPackImg 7s ease-in-out infinite 0.5s' }} onError={(e) => e.target.src='https://placehold.co/400x400/f1f5f9/1a1265?text=QR+Code'} />
                             </div>
 
                             <button onClick={() => window.open(getWhatsAppUrl('digital'), '_blank')} className="btn-primary" style={{ background: '#111827', color: 'white', margin: '0 auto' }}>
