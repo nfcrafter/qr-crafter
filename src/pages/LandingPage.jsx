@@ -341,7 +341,7 @@ export default function LandingPage() {
                                 <li style={{ color: '#9CA3AF' }}><span style={{ color: '#D1D5DB', fontWeight: '900' }}>✕</span> Pas de carte physique envoyée</li>
                             </ul>
                             
-                            <button onClick={() => window.open(getWhatsAppUrl('digital'), '_blank')} className="btn-secondary" style={{ width: '100%', marginTop: 'auto' }}>Commander le Digital</button>
+                            <button onClick={() => window.open(getWhatsAppUrl('digital'), '_blank')} className="btn-secondary" style={{ background: 'rgba(255,255,255,0.1)',width: '100%', marginTop: 'auto' }}>Commander le Digital</button>
                         </div>
 
                         {/* Physical Pack */}
