@@ -347,15 +347,16 @@ export default function LandingPage() {
                         {/* Physical Pack */}
                         <div className="glass-panel price-card featured">
                             <div style={{ background: 'rgba(255,255,255,0.1)', color: 'white', padding: '8px 20px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', alignSelf: 'flex-start', marginBottom: '24px', backdropFilter: 'blur(10px)' }}>Le Complet</div>
-                            <h3 style={{ fontSize: '32px', fontWeight: '900', marginBottom: '8px', fontFamily: 'Outfit' }}>Pack Physique</h3>
+                            <h3 style={{ color: 'white', fontSize: '32px', fontWeight: '900', marginBottom: '8px', fontFamily: 'Outfit' }}>Pack Physique</h3>
                             <div style={{ fontSize: '48px', fontWeight: '900', fontFamily: 'Outfit', letterSpacing: '-0.03em', marginBottom: '32px' }}>10.000<small style={{ fontSize: '18px', fontWeight: '600', color: '#9CA3AF' }}>f CFA</small></div>
                             
                             <ul className="price-list">
                                 <li><span style={{ color: 'white', fontWeight: '900' }}>✓</span> Carte physique NFC Premium</li>
-                                <li><span style={{ color: 'white', fontWeight: '900' }}>✓</span> Design avec votre nom/logo</li>
+                                <li><span style={{ color: 'white', fontWeight: '900' }}>✓</span> Design avec votre nom/photo/logo</li>
                                 <li><span style={{ color: 'white', fontWeight: '900' }}>✓</span> Profil digital et QR code inclus</li>
                                 <li><span style={{ color: 'white', fontWeight: '900' }}>✓</span> Liens sociaux et contacts illimités</li>
-                                <li><span style={{ color: 'white', fontWeight: '900' }}>✓</span> Livraison à domicile (Bénin & sous-région)</li>
+                                <li><span style={{ color: 'white', fontWeight: '900' }}>✓</span> Accès au tableau de bord</li>
+                                <li><span style={{ color: 'white', fontWeight: '900' }}>✓</span> Livraison au Bénin & sous-région</li>
                             </ul>
                             
                             <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary" style={{ width: '100%', background: 'white', color: '#111827', marginTop: 'auto' }}>Commander la Carte</button>
