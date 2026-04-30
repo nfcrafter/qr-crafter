@@ -179,7 +179,7 @@ export default function LandingPage() {
                     
                     .glass-nav { width: calc(100% - 32px); padding: 0 16px; }
                     
-                    .visual-stack { height: 220px; min-height: unset; display: flex; align-items: center; justify-content: center; transform: scale(0.65); margin-top: 0; margin-bottom: 20px; }
+                    .visual-stack { height: 160px; min-height: unset; display: flex; align-items: center; justify-content: center; transform: scale(0.65); margin-top: 0; margin-bottom: 0; }
                 }
             `}</style>
 
