@@ -179,10 +179,7 @@ export default function LandingPage() {
                     
                     .glass-nav { width: calc(100% - 32px); padding: 0 16px; }
                     
-                    .visual-stack { height: auto; min-height: 300px; display: flex; flex-direction: column; align-items: center; justify-content: center; transform: scale(0.9); }
-                    .glass-card { display: none !important; } 
-                    .mobile-cards-row { display: flex !important; gap: 16px; justify-content: center; margin-top: 30px; width: 100%; }
-                    .mobile-cards-row img { width: 45%; max-width: 160px; border-radius: 12px; box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
+                    .visual-stack { height: 350px; min-height: unset; display: flex; align-items: center; justify-content: center; transform: scale(0.75); margin-top: 20px; }
                 }
             `}</style>
 
@@ -253,10 +250,7 @@ export default function LandingPage() {
                                 {/* Card Verso */}
                                 <img src="/card-verso.png" alt="Card Back" className="glass-card back" onError={(e) => e.target.src = 'https://placehold.co/600x375/f1f5f9/1a1265?text=Design+Verso'} />
 
-                                <div className="mobile-cards-row" style={{ display: 'none' }}>
-                                    <img src="/card-recto.png" alt="Card Front" onError={(e) => e.target.src = 'https://placehold.co/600x375/f8fafc/1a1265?text=Recto'} />
-                                    <img src="/card-verso.png" alt="Card Back" onError={(e) => e.target.src = 'https://placehold.co/600x375/f1f5f9/1a1265?text=Verso'} />
-                                </div>
+
                             </div>
                         </div>
                     </div>
