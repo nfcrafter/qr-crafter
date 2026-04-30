@@ -117,21 +117,25 @@ export default function LandingPage() {
                 .hero-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 60px; align-items: center; min-height: 80vh; padding-top: 100px; }
                 
                 /* Hero Visual Stack */
-                .visual-stack { position: relative; width: 100%; height: 600px; display: flex; align-items: center; justify-content: center; }
-                .glass-phone {
-                    width: 260px; border-radius: 44px; position: absolute; z-index: 2;
-                    border: 8px solid rgba(255,255,255,0.8);
-                    box-shadow: 0 30px 60px rgba(0,0,0,0.15); background: white;
-                    animation: floatSlow 6s ease-in-out infinite;
-                }
+                .visual-stack { position: relative; width: 100%; height: 500px; display: flex; align-items: center; justify-content: center; perspective: 1200px; }
                 .glass-card {
-                    width: 320px; border-radius: 20px; position: absolute;
+                    width: 360px; border-radius: 22px; position: absolute;
                     border: 1px solid rgba(255,255,255,0.9);
-                    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+                    box-shadow: 0 25px 60px rgba(0,0,0,0.2);
                     backdrop-filter: blur(10px);
+                    transition: all 0.5s ease-out;
                 }
-                .glass-card.front { top: 15%; left: -30px; z-index: 3; animation: floatMed 5s ease-in-out infinite; animation-delay: 0.5s; }
-                .glass-card.back { bottom: 15%; right: -10px; z-index: 1; animation: floatFast 5.5s ease-in-out infinite; animation-delay: 1s; }
+                .glass-card.front { top: 15%; left: 5%; z-index: 3; animation: float3dFront 6s ease-in-out infinite; }
+                .glass-card.back { bottom: 15%; right: 5%; z-index: 1; animation: float3dBack 7.5s ease-in-out infinite; animation-delay: 1s; }
+
+                @keyframes float3dFront {
+                    0%, 100% { transform: translateY(0) rotateY(15deg) rotateX(10deg) rotateZ(-5deg) scale(1); }
+                    50% { transform: translateY(-20px) rotateY(5deg) rotateX(5deg) rotateZ(-2deg) scale(1.02); }
+                }
+                @keyframes float3dBack {
+                    0%, 100% { transform: translateY(0) rotateY(-15deg) rotateX(-10deg) rotateZ(5deg) scale(1); }
+                    50% { transform: translateY(-25px) rotateY(-5deg) rotateX(-5deg) rotateZ(2deg) scale(1.02); }
+                }
 
                 /* Cards & Grids */
                 .bento-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
@@ -175,8 +179,7 @@ export default function LandingPage() {
                     
                     .glass-nav { width: calc(100% - 32px); padding: 0 16px; }
                     
-                    .visual-stack { height: auto; min-height: 400px; display: flex; flex-direction: column; align-items: center; justify-content: center; transform: scale(0.9); }
-                    .glass-phone { position: relative !important; width: 220px !important; margin: 0 auto; animation: none; }
+                    .visual-stack { height: auto; min-height: 300px; display: flex; flex-direction: column; align-items: center; justify-content: center; transform: scale(0.9); }
                     .glass-card { display: none !important; } 
                     .mobile-cards-row { display: flex !important; gap: 16px; justify-content: center; margin-top: 30px; width: 100%; }
                     .mobile-cards-row img { width: 45%; max-width: 160px; border-radius: 12px; box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
@@ -244,9 +247,6 @@ export default function LandingPage() {
 
                         <div className="animate-fade-up delay-1">
                             <div className="visual-stack">
-                                {/* Phone Mockup */}
-                                <img src="/profile-mockup.png" alt="Profile" className="glass-phone" onError={(e) => e.target.src = 'https://placehold.co/400x800/white/1A1265?text=Profil+Digital'} />
-
                                 {/* Card Recto */}
                                 <img src="/card-recto.png" alt="Card Front" className="glass-card front" onError={(e) => e.target.src = 'https://placehold.co/600x375/f8fafc/1a1265?text=Design+Recto'} />
 
@@ -291,6 +291,60 @@ export default function LandingPage() {
                 </div>
             </section>
 
+            {/* Digital Pack Extra Features Section */}
+            <section className="section" style={{ background: 'rgba(255,255,255,0.4)', borderTop: '1px solid rgba(255,255,255,0.5)', borderBottom: '1px solid rgba(255,255,255,0.5)' }}>
+                <div className="container">
+                    <div className="hero-grid" style={{ minHeight: 'auto', paddingTop: 0 }}>
+                        <div className="animate-fade-up">
+                            <h2 style={{ fontSize: '44px', fontWeight: '900', fontFamily: 'Outfit', color: '#111827', letterSpacing: '-0.02em', marginBottom: '24px' }}>
+                                Le Pack Digital : Votre identité partout
+                            </h2>
+                            <p style={{ color: '#4B5563', fontSize: '18px', marginBottom: '32px', lineHeight: '1.6' }}>
+                                Le Pack Digital est parfait pour booster votre visibilité en ligne. Commandez-le directement et transformez votre manière de communiquer, sans même avoir besoin de carte physique.
+                            </p>
+                            
+                            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 40px 0', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                                <li style={{ display: 'flex', gap: '16px' }}>
+                                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(255,255,255,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', flexShrink: 0, border: '1px solid rgba(255,255,255,0.9)', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>🔗</div>
+                                    <div>
+                                        <h4 style={{ fontWeight: '800', fontSize: '18px', marginBottom: '6px' }}>Lien en bio (Instagram, TikTok)</h4>
+                                        <p style={{ color: '#4B5563', fontSize: '15px', lineHeight: '1.5' }}>Un lien unique pour centraliser vos réseaux, portfolio et contacts. Vos abonnés ont accès à tout votre univers.</p>
+                                    </div>
+                                </li>
+                                <li style={{ display: 'flex', gap: '16px' }}>
+                                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(255,255,255,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', flexShrink: 0, border: '1px solid rgba(255,255,255,0.9)', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>📱</div>
+                                    <div>
+                                        <h4 style={{ fontWeight: '800', fontSize: '18px', marginBottom: '6px' }}>Votre code QR personnalisé</h4>
+                                        <p style={{ color: '#4B5563', fontSize: '15px', lineHeight: '1.5' }}>Affichez votre QR code sur ordinateur, flyers ou cartes de restaurant. Il suffit d'un scan pour y accéder.</p>
+                                    </div>
+                                </li>
+                                <li style={{ display: 'flex', gap: '16px' }}>
+                                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(255,255,255,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', flexShrink: 0, border: '1px solid rgba(255,255,255,0.9)', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>💼</div>
+                                    <div>
+                                        <h4 style={{ fontWeight: '800', fontSize: '18px', marginBottom: '6px' }}>Un véritable Mini-Portfolio</h4>
+                                        <p style={{ color: '#4B5563', fontSize: '15px', lineHeight: '1.5' }}>Idéal pour les professionnels, intégrez vos créations et laissez vos clients vous contacter en un clic.</p>
+                                    </div>
+                                </li>
+                            </ul>
+                            
+                            <button onClick={() => window.open(getWhatsAppUrl('digital'), '_blank')} className="btn-primary" style={{ background: '#111827', color: 'white' }}>
+                                Commander le Pack Digital
+                            </button>
+                        </div>
+                        
+                        <div className="animate-fade-up delay-2">
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', position: 'relative' }}>
+                                <img src="/placeholder-public-profile.jpg" alt="Capture profil public" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.1)', transform: 'translateY(30px)' }} onError={(e) => e.target.src='https://placehold.co/400x700/f8fafc/1a1265?text=Page+Profil'} />
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                    <img src="/placeholder-qr-custom.jpg" alt="QR Code personnalisé" style={{ width: '100%', aspectRatio: '1/1', objectFit: 'cover', borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }} onError={(e) => e.target.src='https://placehold.co/400x400/f1f5f9/1a1265?text=QR+Code'} />
+                                    <img src="/placeholder-multitude.jpg" alt="Supports multiples" style={{ width: '100%', height: '100%', minHeight: '150px', objectFit: 'cover', borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }} onError={(e) => e.target.src='https://placehold.co/400x300/e2e8f0/1a1265?text=PC+%2B+Supports'} />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* Steps Section */}
             <section className="section">
                 <div className="container">
@@ -300,9 +354,9 @@ export default function LandingPage() {
 
                     <div className="bento-grid">
                         {[
-                            { step: "1", title: "Choisissez votre pack", desc: "Optez pour le profil digital seul ou recevez en plus notre carte physique premium chez vous." },
-                            { step: "2", title: "Personnalisez", desc: "Créez votre profil en ligne, ajoutez votre photo, vos réseaux et vos moyens de contact." },
-                            { step: "3", title: "Connectez", desc: "Faites bonne impression. Lors de votre prochain rendez-vous, touchez un téléphone et partagez tout." }
+                            { step: "1", title: "Commandez via WhatsApp", desc: "Choisissez votre pack digital ou physique. Contactez-nous et envoyez-nous vos informations personnelles." },
+                            { step: "2", title: "Lien d'activation", desc: "Nous préparons votre commande et vous envoyons un lien d'activation pour créer votre compte sur notre plateforme." },
+                            { step: "3", title: "Gérez votre profil", desc: "Connectez-vous à tout moment pour modifier les informations de votre profil quand vous le voulez." }
                         ].map((item, i) => (
                             <div key={i} className="glass-panel" style={{ position: 'relative', overflow: 'hidden' }}>
                                 <div style={{ position: 'absolute', top: '-10px', right: '-10px', fontSize: '140px', fontWeight: '900', color: 'rgba(255,255,255,0.8)', textShadow: '0 10px 30px rgba(0,0,0,0.02)', lineHeight: 1, zIndex: 0, pointerEvents: 'none', fontFamily: 'Outfit' }}>
