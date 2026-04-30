@@ -12,9 +12,9 @@ export default function LandingPage() {
     }, []);
 
     const whatsappNumber = "22991566846";
-    
+
     const getWhatsAppUrl = (pack) => {
-        const message = pack === 'physique' 
+        const message = pack === 'physique'
             ? "Bonjour NFCrafter, je souhaite commander le Pack Physique (Carte + Profil) à 10.000f."
             : "Bonjour NFCrafter, je souhaite commander le Pack Digital (QR + Profil) à 5.000f.";
         return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
@@ -198,16 +198,16 @@ export default function LandingPage() {
                     <a href="#tarifs" className="nav-link">Tarifs</a>
                 </div>
                 <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                    <button 
-                        onClick={() => navigate('/login')} 
-                        style={{ 
-                            background: '#FFFFFF', 
-                            border: '1px solid #E5E7EB', 
-                            color: '#111827', 
-                            fontWeight: '700', 
-                            cursor: 'pointer', 
-                            fontSize: '14px', 
-                            padding: '10px 20px', 
+                    <button
+                        onClick={() => navigate('/login')}
+                        style={{
+                            background: '#FFFFFF',
+                            border: '1px solid #E5E7EB',
+                            color: '#111827',
+                            fontWeight: '700',
+                            cursor: 'pointer',
+                            fontSize: '14px',
+                            padding: '10px 20px',
                             borderRadius: '100px',
                             boxShadow: '0 2px 10px rgba(0,0,0,0.03)',
                             transition: 'all 0.2s'
@@ -229,7 +229,7 @@ export default function LandingPage() {
                                 La carte de visite réinventée
                             </div>
                             <h1 className="hero-title" style={{ fontSize: '68px', fontWeight: '900', color: '#111827', letterSpacing: '-0.03em', lineHeight: '1.05', marginBottom: '24px', fontFamily: 'Outfit' }}>
-                                Touchez, partagez, <br/>impressionnez.
+                                Touchez, partagez, <br />impressionnez.
                             </h1>
                             <p className="hero-subtitle" style={{ fontSize: '20px', color: '#4B5563', maxWidth: '600px', marginBottom: '40px', lineHeight: '1.6', fontWeight: '500' }}>
                                 Échangez vos coordonnées, réseaux sociaux et bien plus en un seul geste. Plus besoin d'épeler votre nom ou votre numéro.
@@ -245,17 +245,17 @@ export default function LandingPage() {
                         <div className="animate-fade-up delay-1">
                             <div className="visual-stack">
                                 {/* Phone Mockup */}
-                                <img src="/profile-mockup.png" alt="Profile" className="glass-phone" onError={(e) => e.target.src='https://placehold.co/400x800/white/1A1265?text=Profil+Digital'} />
-                                
+                                <img src="/profile-mockup.png" alt="Profile" className="glass-phone" onError={(e) => e.target.src = 'https://placehold.co/400x800/white/1A1265?text=Profil+Digital'} />
+
                                 {/* Card Recto */}
-                                <img src="/card-recto.png" alt="Card Front" className="glass-card front" onError={(e) => e.target.src='https://placehold.co/600x375/f8fafc/1a1265?text=Design+Recto'} />
-                                
+                                <img src="/card-recto.png" alt="Card Front" className="glass-card front" onError={(e) => e.target.src = 'https://placehold.co/600x375/f8fafc/1a1265?text=Design+Recto'} />
+
                                 {/* Card Verso */}
-                                <img src="/card-verso.png" alt="Card Back" className="glass-card back" onError={(e) => e.target.src='https://placehold.co/600x375/f1f5f9/1a1265?text=Design+Verso'} />
+                                <img src="/card-verso.png" alt="Card Back" className="glass-card back" onError={(e) => e.target.src = 'https://placehold.co/600x375/f1f5f9/1a1265?text=Design+Verso'} />
 
                                 <div className="mobile-cards-row" style={{ display: 'none' }}>
-                                    <img src="/card-recto.png" alt="Card Front" onError={(e) => e.target.src='https://placehold.co/600x375/f8fafc/1a1265?text=Recto'} />
-                                    <img src="/card-verso.png" alt="Card Back" onError={(e) => e.target.src='https://placehold.co/600x375/f1f5f9/1a1265?text=Verso'} />
+                                    <img src="/card-recto.png" alt="Card Front" onError={(e) => e.target.src = 'https://placehold.co/600x375/f8fafc/1a1265?text=Recto'} />
+                                    <img src="/card-verso.png" alt="Card Back" onError={(e) => e.target.src = 'https://placehold.co/600x375/f1f5f9/1a1265?text=Verso'} />
                                 </div>
                             </div>
                         </div>
@@ -332,7 +332,7 @@ export default function LandingPage() {
                             <div style={{ background: 'rgba(255,255,255,0.8)', color: '#4B5563', padding: '8px 20px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', alignSelf: 'flex-start', marginBottom: '24px', border: '1px solid rgba(0,0,0,0.05)' }}>L'essentiel</div>
                             <h3 style={{ fontSize: '32px', fontWeight: '900', marginBottom: '8px', fontFamily: 'Outfit' }}>Pack Digital</h3>
                             <div style={{ fontSize: '48px', fontWeight: '900', fontFamily: 'Outfit', letterSpacing: '-0.03em', marginBottom: '32px' }}>5.000<small style={{ fontSize: '18px', fontWeight: '600', color: '#6B7280' }}>f CFA</small></div>
-                            
+
                             <ul className="price-list">
                                 <li><span style={{ color: '#111827', fontWeight: '900' }}>✓</span> Création du profil digital complet</li>
                                 <li><span style={{ color: '#111827', fontWeight: '900' }}>✓</span> QR Code dynamique généré</li>
@@ -340,8 +340,8 @@ export default function LandingPage() {
                                 <li><span style={{ color: '#111827', fontWeight: '900' }}>✓</span> Accès au tableau de bord</li>
                                 <li style={{ color: '#9CA3AF' }}><span style={{ color: '#D1D5DB', fontWeight: '900' }}>✕</span> Pas de carte physique envoyée</li>
                             </ul>
-                            
-                            <button onClick={() => window.open(getWhatsAppUrl('digital'), '_blank')} className="btn-secondary" style={{ width: '100%', marginTop: 'auto', background: 'rgba(255,255,255,0.1)' }}>Commander le Digital</button>
+
+                            <button onClick={() => window.open(getWhatsAppUrl('digital'), '_blank')} className="btn-secondary" style={{ width: '100%', marginTop: 'auto', background: '#111827' }}>Commander le Digital</button>
                         </div>
 
                         {/* Physical Pack */}
@@ -349,7 +349,7 @@ export default function LandingPage() {
                             <div style={{ background: 'rgba(255,255,255,0.1)', color: 'white', padding: '8px 20px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', alignSelf: 'flex-start', marginBottom: '24px', backdropFilter: 'blur(10px)' }}>Le Complet</div>
                             <h3 style={{ color: 'white', fontSize: '32px', fontWeight: '900', marginBottom: '8px', fontFamily: 'Outfit' }}>Pack Physique</h3>
                             <div style={{ fontSize: '48px', fontWeight: '900', fontFamily: 'Outfit', letterSpacing: '-0.03em', marginBottom: '32px' }}>10.000<small style={{ fontSize: '18px', fontWeight: '600', color: '#9CA3AF' }}>f CFA</small></div>
-                            
+
                             <ul className="price-list">
                                 <li><span style={{ color: 'white', fontWeight: '900' }}>✓</span> Carte physique NFC Premium</li>
                                 <li><span style={{ color: 'white', fontWeight: '900' }}>✓</span> Design avec votre nom/photo/logo</li>
@@ -358,7 +358,7 @@ export default function LandingPage() {
                                 <li><span style={{ color: 'white', fontWeight: '900' }}>✓</span> Accès au tableau de bord</li>
                                 <li><span style={{ color: 'white', fontWeight: '900' }}>✓</span> Livraison au Bénin & sous-région</li>
                             </ul>
-                            
+
                             <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary" style={{ width: '100%', background: 'white', color: '#111827', marginTop: 'auto' }}>Commander la Carte</button>
                         </div>
                     </div>
