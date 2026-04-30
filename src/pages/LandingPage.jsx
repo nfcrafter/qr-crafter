@@ -261,6 +261,11 @@ export default function LandingPage() {
                                 <img src="/card-verso.png" alt="Card Back" className="glass-card back" onError={(e) => e.target.src = 'https://placehold.co/600x375/f1f5f9/1a1265?text=Design+Verso'} />
 
 
+                                {/* Plus Sign and Profile Mockup */}
+                                <div className="mobile-hide" style={{ position: 'absolute', right: '-15%', top: '5%', zIndex: 4, display: 'flex', alignItems: 'center', gap: '20px' }}>
+                                    <div style={{ fontSize: '64px', fontWeight: '900', color: '#111827', textShadow: '0 10px 30px rgba(0,0,0,0.05)', fontFamily: 'Outfit' }}>+</div>
+                                    <img src="/placeholder-public-profile.jpg" alt="Profile Public" style={{ width: '200px', borderRadius: '24px', boxShadow: '0 25px 50px rgba(0,0,0,0.15)', animation: 'floatPackImg 6s ease-in-out infinite' }} onError={(e) => e.target.src='https://placehold.co/400x700/f8fafc/1a1265?text=Page+Profil'} />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -297,8 +302,8 @@ export default function LandingPage() {
 
             {/* Digital Pack Extra Features Section */}
             <section className="section" style={{ background: 'rgba(255,255,255,0.4)', borderTop: '1px solid rgba(255,255,255,0.5)', borderBottom: '1px solid rgba(255,255,255,0.5)' }}>
-                <div className="container">
-                    <div className="hero-grid" style={{ minHeight: 'auto', paddingTop: 0 }}>
+                <div className="container" style={{ textAlign: 'center' }}>
+                    <div style={{ maxWidth: '800px', margin: '0 auto' }}>
                         <div className="animate-fade-up">
                             <h2 style={{ fontSize: '44px', fontWeight: '900', fontFamily: 'Outfit', color: '#111827', letterSpacing: '-0.02em', marginBottom: '24px' }}>
                                 Le Pack Digital : Votre identité partout
@@ -307,7 +312,7 @@ export default function LandingPage() {
                                 Le Pack Digital est parfait pour booster votre visibilité en ligne. Commandez-le directement et transformez votre manière de communiquer, sans même avoir besoin de carte physique.
                             </p>
                             
-                            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 40px 0', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 40px 0', display: 'flex', flexDirection: 'column', gap: '24px', textAlign: 'left' }}>
                                 <li style={{ display: 'flex', gap: '16px' }}>
                                     <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(255,255,255,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', flexShrink: 0, border: '1px solid rgba(255,255,255,0.9)', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>🔗</div>
                                     <div>
@@ -331,19 +336,14 @@ export default function LandingPage() {
                                 </li>
                             </ul>
                             
-                            <button onClick={() => window.open(getWhatsAppUrl('digital'), '_blank')} className="btn-primary" style={{ background: '#111827', color: 'white' }}>
+                            <div style={{ display: 'flex', gap: '24px', marginBottom: '40px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                                <img src="/placeholder-public-profile.jpg" alt="Capture profil public" style={{ height: '280px', width: 'auto', objectFit: 'cover', borderRadius: '20px', boxShadow: '0 25px 50px rgba(0,0,0,0.15)', animation: 'floatPackImg 6s ease-in-out infinite' }} onError={(e) => e.target.src='https://placehold.co/400x700/f8fafc/1a1265?text=Page+Profil'} />
+                                <img src="/placeholder-qr-custom.jpg" alt="QR Code personnalisé" style={{ height: '280px', width: 'auto', aspectRatio: '1/1', objectFit: 'cover', borderRadius: '20px', boxShadow: '0 25px 50px rgba(0,0,0,0.15)', animation: 'floatPackImg 7s ease-in-out infinite 0.5s' }} onError={(e) => e.target.src='https://placehold.co/400x400/f1f5f9/1a1265?text=QR+Code'} />
+                            </div>
+
+                            <button onClick={() => window.open(getWhatsAppUrl('digital'), '_blank')} className="btn-primary" style={{ background: '#111827', color: 'white', margin: '0 auto' }}>
                                 Commander le Pack Digital
                             </button>
-                        </div>
-                        
-                        <div className="animate-fade-up delay-2">
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', position: 'relative' }}>
-                                <img src="/placeholder-public-profile.jpg" alt="Capture profil public" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '24px', boxShadow: '0 25px 50px rgba(0,0,0,0.15)', transform: 'translateY(30px)', animation: 'floatPackImgOffset 6s ease-in-out infinite' }} onError={(e) => e.target.src='https://placehold.co/400x700/f8fafc/1a1265?text=Page+Profil'} />
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                                    <img src="/placeholder-qr-custom.jpg" alt="QR Code personnalisé" style={{ width: '100%', aspectRatio: '1/1', objectFit: 'cover', borderRadius: '24px', boxShadow: '0 25px 50px rgba(0,0,0,0.15)', animation: 'floatPackImg 7s ease-in-out infinite' }} onError={(e) => e.target.src='https://placehold.co/400x400/f1f5f9/1a1265?text=QR+Code'} />
-                                    <img src="/placeholder-multitude.jpg" alt="Supports multiples" style={{ width: '100%', height: '100%', minHeight: '150px', objectFit: 'cover', borderRadius: '24px', boxShadow: '0 25px 50px rgba(0,0,0,0.15)', animation: 'floatPackImg 5.5s ease-in-out infinite 1s' }} onError={(e) => e.target.src='https://placehold.co/400x300/e2e8f0/1a1265?text=PC+%2B+Supports'} />
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
