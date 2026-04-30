@@ -265,6 +265,58 @@ export default function LandingPage() {
                         <p style={{ color: '#4B5563', fontSize: '18px', maxWidth: '600px', margin: '0 auto' }}>Fini les cartes en papier qui s'entassent et qu'on perd. Passez au niveau supérieur de votre networking.</p>
                     </div>
 
+                    {/* Digital Pack Features Inside Utility */}
+                    <div style={{ background: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.5)', borderRadius: '32px', padding: '40px', marginBottom: '64px' }} className="animate-fade-up delay-1">
+                        <div className="hero-grid" style={{ minHeight: 'auto', paddingTop: 0 }}>
+                            <div className="animate-fade-up">
+                                <h3 style={{ fontSize: '36px', fontWeight: '900', fontFamily: 'Outfit', color: '#111827', letterSpacing: '-0.02em', marginBottom: '24px' }}>
+                                    Le Pack Digital : Votre identité partout
+                                </h3>
+                                <p style={{ color: '#4B5563', fontSize: '18px', marginBottom: '32px', lineHeight: '1.6' }}>
+                                    Le Pack Digital est parfait pour booster votre visibilité en ligne. Commandez-le directement et transformez votre manière de communiquer, sans même avoir besoin de carte physique.
+                                </p>
+                                
+                                <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 40px 0', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                                    <li style={{ display: 'flex', gap: '16px' }}>
+                                        <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(255,255,255,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', flexShrink: 0, border: '1px solid rgba(255,255,255,0.9)', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>🔗</div>
+                                        <div>
+                                            <h4 style={{ fontWeight: '800', fontSize: '18px', marginBottom: '6px' }}>Lien en bio (Instagram, TikTok)</h4>
+                                            <p style={{ color: '#4B5563', fontSize: '15px', lineHeight: '1.5' }}>Un lien unique pour centraliser vos réseaux, portfolio et contacts. Vos abonnés ont accès à tout votre univers.</p>
+                                        </div>
+                                    </li>
+                                    <li style={{ display: 'flex', gap: '16px' }}>
+                                        <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(255,255,255,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', flexShrink: 0, border: '1px solid rgba(255,255,255,0.9)', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>📱</div>
+                                        <div>
+                                            <h4 style={{ fontWeight: '800', fontSize: '18px', marginBottom: '6px' }}>Votre code QR personnalisé</h4>
+                                            <p style={{ color: '#4B5563', fontSize: '15px', lineHeight: '1.5' }}>Affichez votre QR code sur ordinateur, flyers ou cartes de restaurant. Il suffit d'un scan pour y accéder.</p>
+                                        </div>
+                                    </li>
+                                    <li style={{ display: 'flex', gap: '16px' }}>
+                                        <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(255,255,255,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', flexShrink: 0, border: '1px solid rgba(255,255,255,0.9)', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>💼</div>
+                                        <div>
+                                            <h4 style={{ fontWeight: '800', fontSize: '18px', marginBottom: '6px' }}>Un véritable Mini-Portfolio</h4>
+                                            <p style={{ color: '#4B5563', fontSize: '15px', lineHeight: '1.5' }}>Idéal pour les professionnels, intégrez vos créations et laissez vos clients vous contacter en un clic.</p>
+                                        </div>
+                                    </li>
+                                </ul>
+                                
+                                <button onClick={() => window.open(getWhatsAppUrl('digital'), '_blank')} className="btn-primary" style={{ background: '#111827', color: 'white' }}>
+                                    Commander le Pack Digital
+                                </button>
+                            </div>
+                            
+                            <div className="animate-fade-up delay-2">
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', position: 'relative' }}>
+                                    <img src="/placeholder-public-profile.jpg" alt="Capture profil public" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.1)', transform: 'translateY(30px)' }} onError={(e) => e.target.src='https://placehold.co/400x700/f8fafc/1a1265?text=Page+Profil'} />
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                        <img src="/placeholder-qr-custom.jpg" alt="QR Code personnalisé" style={{ width: '100%', aspectRatio: '1/1', objectFit: 'cover', borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }} onError={(e) => e.target.src='https://placehold.co/400x400/f1f5f9/1a1265?text=QR+Code'} />
+                                        <img src="/placeholder-multitude.jpg" alt="Supports multiples" style={{ width: '100%', height: '100%', minHeight: '150px', objectFit: 'cover', borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }} onError={(e) => e.target.src='https://placehold.co/400x300/e2e8f0/1a1265?text=PC+%2B+Supports'} />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div className="bento-grid">
                         <div className="glass-panel animate-fade-up delay-1">
                             <div className="icon-circle">⚡</div>
@@ -285,59 +337,7 @@ export default function LandingPage() {
                 </div>
             </section>
 
-            {/* Digital Pack Extra Features Section */}
-            <section className="section" style={{ background: 'rgba(255,255,255,0.4)', borderTop: '1px solid rgba(255,255,255,0.5)', borderBottom: '1px solid rgba(255,255,255,0.5)' }}>
-                <div className="container">
-                    <div className="hero-grid" style={{ minHeight: 'auto', paddingTop: 0 }}>
-                        <div className="animate-fade-up">
-                            <h2 style={{ fontSize: '44px', fontWeight: '900', fontFamily: 'Outfit', color: '#111827', letterSpacing: '-0.02em', marginBottom: '24px' }}>
-                                Le Pack Digital : Votre identité partout
-                            </h2>
-                            <p style={{ color: '#4B5563', fontSize: '18px', marginBottom: '32px', lineHeight: '1.6' }}>
-                                Le Pack Digital est parfait pour booster votre visibilité en ligne. Commandez-le directement et transformez votre manière de communiquer, sans même avoir besoin de carte physique.
-                            </p>
-                            
-                            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 40px 0', display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                                <li style={{ display: 'flex', gap: '16px' }}>
-                                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(255,255,255,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', flexShrink: 0, border: '1px solid rgba(255,255,255,0.9)', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>🔗</div>
-                                    <div>
-                                        <h4 style={{ fontWeight: '800', fontSize: '18px', marginBottom: '6px' }}>Lien en bio (Instagram, TikTok)</h4>
-                                        <p style={{ color: '#4B5563', fontSize: '15px', lineHeight: '1.5' }}>Un lien unique pour centraliser vos réseaux, portfolio et contacts. Vos abonnés ont accès à tout votre univers.</p>
-                                    </div>
-                                </li>
-                                <li style={{ display: 'flex', gap: '16px' }}>
-                                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(255,255,255,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', flexShrink: 0, border: '1px solid rgba(255,255,255,0.9)', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>📱</div>
-                                    <div>
-                                        <h4 style={{ fontWeight: '800', fontSize: '18px', marginBottom: '6px' }}>Votre code QR personnalisé</h4>
-                                        <p style={{ color: '#4B5563', fontSize: '15px', lineHeight: '1.5' }}>Affichez votre QR code sur ordinateur, flyers ou cartes de restaurant. Il suffit d'un scan pour y accéder.</p>
-                                    </div>
-                                </li>
-                                <li style={{ display: 'flex', gap: '16px' }}>
-                                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(255,255,255,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', flexShrink: 0, border: '1px solid rgba(255,255,255,0.9)', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>💼</div>
-                                    <div>
-                                        <h4 style={{ fontWeight: '800', fontSize: '18px', marginBottom: '6px' }}>Un véritable Mini-Portfolio</h4>
-                                        <p style={{ color: '#4B5563', fontSize: '15px', lineHeight: '1.5' }}>Idéal pour les professionnels, intégrez vos créations et laissez vos clients vous contacter en un clic.</p>
-                                    </div>
-                                </li>
-                            </ul>
-                            
-                            <button onClick={() => window.open(getWhatsAppUrl('digital'), '_blank')} className="btn-primary" style={{ background: '#111827', color: 'white' }}>
-                                Commander le Pack Digital
-                            </button>
-                        </div>
-                        
-                        <div className="animate-fade-up delay-2">
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', position: 'relative' }}>
-                                <img src="/placeholder-public-profile.jpg" alt="Capture profil public" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.1)', transform: 'translateY(30px)' }} onError={(e) => e.target.src='https://placehold.co/400x700/f8fafc/1a1265?text=Page+Profil'} />
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                                    <img src="/placeholder-qr-custom.jpg" alt="QR Code personnalisé" style={{ width: '100%', aspectRatio: '1/1', objectFit: 'cover', borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }} onError={(e) => e.target.src='https://placehold.co/400x400/f1f5f9/1a1265?text=QR+Code'} />
-                                    <img src="/placeholder-multitude.jpg" alt="Supports multiples" style={{ width: '100%', height: '100%', minHeight: '150px', objectFit: 'cover', borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }} onError={(e) => e.target.src='https://placehold.co/400x300/e2e8f0/1a1265?text=PC+%2B+Supports'} />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+
 
             {/* Steps Section */}
             <section className="section">
