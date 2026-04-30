@@ -137,6 +137,16 @@ export default function LandingPage() {
                     50% { transform: translateY(-25px) rotateY(-5deg) rotateX(-5deg) rotateZ(2deg) scale(1.02); }
                 }
 
+                @keyframes floatPackImg {
+                    0%, 100% { transform: translateY(0); }
+                    50% { transform: translateY(-10px); }
+                }
+
+                @keyframes floatPackImgOffset {
+                    0%, 100% { transform: translateY(30px); }
+                    50% { transform: translateY(15px); }
+                }
+
                 /* Cards & Grids */
                 .bento-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
                 
@@ -328,10 +338,10 @@ export default function LandingPage() {
                         
                         <div className="animate-fade-up delay-2">
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', position: 'relative' }}>
-                                <img src="/placeholder-public-profile.jpg" alt="Capture profil public" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.1)', transform: 'translateY(30px)' }} onError={(e) => e.target.src='https://placehold.co/400x700/f8fafc/1a1265?text=Page+Profil'} />
+                                <img src="/placeholder-public-profile.jpg" alt="Capture profil public" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '24px', boxShadow: '0 25px 50px rgba(0,0,0,0.15)', transform: 'translateY(30px)', animation: 'floatPackImgOffset 6s ease-in-out infinite' }} onError={(e) => e.target.src='https://placehold.co/400x700/f8fafc/1a1265?text=Page+Profil'} />
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                                    <img src="/placeholder-qr-custom.jpg" alt="QR Code personnalisé" style={{ width: '100%', aspectRatio: '1/1', objectFit: 'cover', borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }} onError={(e) => e.target.src='https://placehold.co/400x400/f1f5f9/1a1265?text=QR+Code'} />
-                                    <img src="/placeholder-multitude.jpg" alt="Supports multiples" style={{ width: '100%', height: '100%', minHeight: '150px', objectFit: 'cover', borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }} onError={(e) => e.target.src='https://placehold.co/400x300/e2e8f0/1a1265?text=PC+%2B+Supports'} />
+                                    <img src="/placeholder-qr-custom.jpg" alt="QR Code personnalisé" style={{ width: '100%', aspectRatio: '1/1', objectFit: 'cover', borderRadius: '24px', boxShadow: '0 25px 50px rgba(0,0,0,0.15)', animation: 'floatPackImg 7s ease-in-out infinite' }} onError={(e) => e.target.src='https://placehold.co/400x400/f1f5f9/1a1265?text=QR+Code'} />
+                                    <img src="/placeholder-multitude.jpg" alt="Supports multiples" style={{ width: '100%', height: '100%', minHeight: '150px', objectFit: 'cover', borderRadius: '24px', boxShadow: '0 25px 50px rgba(0,0,0,0.15)', animation: 'floatPackImg 5.5s ease-in-out infinite 1s' }} onError={(e) => e.target.src='https://placehold.co/400x300/e2e8f0/1a1265?text=PC+%2B+Supports'} />
                                 </div>
                             </div>
                         </div>
