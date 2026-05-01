@@ -632,10 +632,10 @@ export default function LandingPage() {
 
                             <ul className="price-list">
                                 <li><span style={{ color: '#111827', fontWeight: '900' }}>✓</span> Création du profil digital complet</li>
-                                <li><span style={{ color: '#111827', fontWeight: '900' }}>✓</span> QR Code dynamique généré</li>
+                                <li><span style={{ color: '#111827', fontWeight: '900' }}>✓</span> QR Code personnalisé </li>
                                 <li><span style={{ color: '#111827', fontWeight: '900' }}>✓</span> Liens sociaux et contacts illimités</li>
                                 <li><span style={{ color: '#111827', fontWeight: '900' }}>✓</span> Accès au tableau de bord</li>
-                                <li style={{ color: '#9CA3AF' }}><span style={{ color: '#D1D5DB', fontWeight: '900' }}>✕</span> Pas de carte physique envoyée</li>
+                                <li style={{ color: '#9CA3AF' }}><span style={{ color: '#D1D5DB', fontWeight: '900' }}>✕</span> Pas de carte physique</li>
                             </ul>
 
                             <button onClick={() => window.open(getWhatsAppUrl('digital'), '_blank')} className="btn-secondary" style={{ width: '100%', marginTop: 'auto', background: '#111827', color: '#D1D5DB' }}>Commander le Digital</button>
@@ -684,7 +684,7 @@ export default function LandingPage() {
                         <details>
                             <summary>Est-ce que ça marche avec tous les téléphones ?</summary>
                             <div className="faq-content">
-                                Oui, à 100% ! Tous les smartphones récents (iPhone depuis 2018, Android) intègrent la technologie NFC et scannent la carte par simple contact. Pour les téléphones plus anciens, le QR Code gravé au verso prend le relais instantanément via l'appareil photo.
+                                Oui, à 100% ! Tous les smartphones récents (iPhone depuis 2018, Android) intègrent la technologie NFC et scannent la carte par simple contact. Pour les téléphones plus anciens, le QR Code gravé sur le dos de la carte prend le relais instantanément via l'appareil photo.
                             </div>
                         </details>
                         
@@ -725,7 +725,7 @@ export default function LandingPage() {
                     <img src="/logo.png" alt="NFCrafter" style={{ height: '24px', opacity: 0.6 }} />
                     <span style={{ fontSize: '18px', fontWeight: '900', color: '#111827', letterSpacing: '-0.5px', fontFamily: 'Outfit', opacity: 0.8 }}>NFCrafter</span>
                 </div>
-                <p style={{ fontWeight: '500', fontSize: '14px', margin: 0 }}>© 2026 NFCrafter. Fièrement fabriqué pour vous.</p>
+                <p style={{ fontWeight: '500', fontSize: '14px', margin: 0 }}>© 2026 NFCrafter. Fièrement personnalisé pour vous.</p>
             </footer>
         </div>
     );
