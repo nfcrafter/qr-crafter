@@ -48,7 +48,16 @@ export default function LandingPage() {
                 @keyframes floatMed { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-15px) rotate(2deg); } }
                 @keyframes floatFast { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-10px) rotate(-2deg); } }
 
+                @keyframes pulseBadge { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
                 .animate-fade-up { animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
+                
+                details { background: rgba(255,255,255,0.6); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.9); border-radius: 16px; margin-bottom: 16px; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.02); overflow: hidden; }
+                details[open] { background: rgba(255,255,255,0.9); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+                summary { padding: 24px; font-weight: 800; font-size: 18px; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; color: #111827; }
+                summary::-webkit-details-marker { display: none; }
+                summary::after { content: '+'; font-size: 24px; font-weight: 400; color: #6B7280; transition: transform 0.3s; }
+                details[open] summary::after { transform: rotate(45deg); }
+                .faq-content { padding: 0 24px 24px 24px; color: #4B5563; line-height: 1.6; font-size: 16px; }
                 .delay-1 { animation-delay: 0.1s; }
                 .delay-2 { animation-delay: 0.2s; }
                 .delay-3 { animation-delay: 0.3s; }
@@ -523,6 +532,66 @@ export default function LandingPage() {
                 </div>
             </section>
 
+            {/* Social Proof Section */}
+            <section className="section" style={{ background: 'rgba(255,255,255,0.6)', borderTop: '1px solid rgba(255,255,255,0.9)' }}>
+                <div className="container">
+                    <div style={{ textAlign: 'center', marginBottom: '64px' }} className="animate-fade-up">
+                        <h2 style={{ fontSize: '44px', fontWeight: '900', fontFamily: 'Outfit', color: '#111827', letterSpacing: '-0.02em', marginBottom: '16px' }}>Ils ont passé le cap</h2>
+                        <p style={{ color: '#4B5563', fontSize: '18px', maxWidth: '600px', margin: '0 auto' }}>Découvrez pourquoi nos utilisateurs ne jurent plus que par NFCrafter pour leur networking.</p>
+                    </div>
+
+                    <div className="bento-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
+                        {/* Testimonial 1 */}
+                        <div className="glass-panel animate-fade-up delay-1" style={{ padding: '32px', position: 'relative' }}>
+                            <div style={{ fontSize: '60px', color: '#E5E7EB', position: 'absolute', top: '16px', right: '24px', fontFamily: 'serif', lineHeight: 1 }}>"</div>
+                            <div style={{ display: 'flex', gap: '4px', color: '#FBBF24', marginBottom: '16px' }}>★★★★★</div>
+                            <p style={{ color: '#374151', fontSize: '16px', lineHeight: '1.6', marginBottom: '24px', fontStyle: 'italic', position: 'relative', zIndex: 1 }}>
+                                "Hier en pleine réunion, on m'a demandé mon numéro. Au lieu de dicter les chiffres, j'ai juste sorti ma carte et scanné le téléphone de mon client. Il a lâché un 'Wow' et m'a enregistré instantanément. Ça change tout."
+                            </p>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                                <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#E0E7FF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', color: '#4F46E5', fontSize: '18px' }}>M</div>
+                                <div>
+                                    <div style={{ fontWeight: '800', color: '#111827' }}>Marc A.</div>
+                                    <div style={{ fontSize: '13px', color: '#6B7280' }}>Entrepreneur</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Testimonial 2 */}
+                        <div className="glass-panel animate-fade-up delay-2" style={{ padding: '32px', position: 'relative' }}>
+                            <div style={{ fontSize: '60px', color: '#E5E7EB', position: 'absolute', top: '16px', right: '24px', fontFamily: 'serif', lineHeight: 1 }}>"</div>
+                            <div style={{ display: 'flex', gap: '4px', color: '#FBBF24', marginBottom: '16px' }}>★★★★★</div>
+                            <p style={{ color: '#374151', fontSize: '16px', lineHeight: '1.6', marginBottom: '24px', fontStyle: 'italic', position: 'relative', zIndex: 1 }}>
+                                "J'avais l'habitude de jeter la moitié de mes cartes de visite classiques parce que je changeais d'offre. Avec le Pack Digital, je mets tout à jour en temps réel. Mon lien est dans ma bio Insta et ça m'apporte des clients."
+                            </p>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                                <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#FCE7F3', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', color: '#DB2777', fontSize: '18px' }}>S</div>
+                                <div>
+                                    <div style={{ fontWeight: '800', color: '#111827' }}>Sarah D.</div>
+                                    <div style={{ fontSize: '13px', color: '#6B7280' }}>Créatrice de Contenu</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Testimonial 3 */}
+                        <div className="glass-panel animate-fade-up delay-3" style={{ padding: '32px', position: 'relative' }}>
+                            <div style={{ fontSize: '60px', color: '#E5E7EB', position: 'absolute', top: '16px', right: '24px', fontFamily: 'serif', lineHeight: 1 }}>"</div>
+                            <div style={{ display: 'flex', gap: '4px', color: '#FBBF24', marginBottom: '16px' }}>★★★★★</div>
+                            <p style={{ color: '#374151', fontSize: '16px', lineHeight: '1.6', marginBottom: '24px', fontStyle: 'italic', position: 'relative', zIndex: 1 }}>
+                                "J'ai commandé 5 cartes physiques pour mon équipe commerciale au Bénin. Le design est hyper qualitatif. Quand nos commerciaux vont en rendez-vous, l'image de marque qu'on dégage fait vraiment la différence."
+                            </p>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                                <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#D1FAE5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', color: '#059669', fontSize: '18px' }}>E</div>
+                                <div>
+                                    <div style={{ fontWeight: '800', color: '#111827' }}>Emmanuel T.</div>
+                                    <div style={{ fontSize: '13px', color: '#6B7280' }}>Directeur d'Agence</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* Pricing Section */}
             <section id="tarifs" className="section">
                 <div className="container">
@@ -536,7 +605,10 @@ export default function LandingPage() {
                         <div className="glass-panel price-card">
                             <div style={{ background: 'rgba(255,255,255,0.8)', color: '#4B5563', padding: '8px 20px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', alignSelf: 'flex-start', marginBottom: '24px', border: '1px solid rgba(0,0,0,0.05)' }}>L'essentiel</div>
                             <h3 style={{ fontSize: '32px', fontWeight: '900', marginBottom: '8px', fontFamily: 'Outfit' }}>Pack Digital</h3>
-                            <div style={{ fontSize: '48px', fontWeight: '900', fontFamily: 'Outfit', letterSpacing: '-0.03em', marginBottom: '32px' }}>5.000<small style={{ fontSize: '18px', fontWeight: '600', color: '#6B7280' }}>f CFA</small></div>
+                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '32px' }}>
+                                <div style={{ fontSize: '48px', fontWeight: '900', fontFamily: 'Outfit', letterSpacing: '-0.03em' }}>5.000<small style={{ fontSize: '18px', fontWeight: '600', color: '#6B7280' }}>f CFA</small></div>
+                                <div style={{ fontSize: '20px', fontWeight: '700', color: '#9CA3AF', textDecoration: 'line-through' }}>7.500f</div>
+                            </div>
 
                             <ul className="price-list">
                                 <li><span style={{ color: '#111827', fontWeight: '900' }}>✓</span> Création du profil digital complet</li>
@@ -551,9 +623,15 @@ export default function LandingPage() {
 
                         {/* Physical Pack */}
                         <div className="glass-panel price-card featured">
-                            <div style={{ background: 'rgba(255,255,255,0.1)', color: 'white', padding: '8px 20px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', alignSelf: 'flex-start', marginBottom: '24px', backdropFilter: 'blur(10px)' }}>Le Complet</div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', width: '100%', flexWrap: 'wrap', gap: '12px' }}>
+                                <div style={{ background: 'rgba(255,255,255,0.1)', color: 'white', padding: '8px 20px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', backdropFilter: 'blur(10px)' }}>Le Complet</div>
+                                <div style={{ background: '#EF4444', color: 'white', padding: '6px 12px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', animation: 'pulseBadge 2s infinite' }}>🔥 Offre de Lancement</div>
+                            </div>
                             <h3 style={{ color: 'white', fontSize: '32px', fontWeight: '900', marginBottom: '8px', fontFamily: 'Outfit' }}>Pack Physique</h3>
-                            <div style={{ fontSize: '48px', fontWeight: '900', fontFamily: 'Outfit', letterSpacing: '-0.03em', marginBottom: '32px' }}>10.000<small style={{ fontSize: '18px', fontWeight: '600', color: '#9CA3AF' }}>f CFA</small></div>
+                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '32px' }}>
+                                <div style={{ fontSize: '48px', fontWeight: '900', fontFamily: 'Outfit', letterSpacing: '-0.03em' }}>10.000<small style={{ fontSize: '18px', fontWeight: '600', color: '#9CA3AF' }}>f CFA</small></div>
+                                <div style={{ fontSize: '24px', fontWeight: '700', color: '#6B7280', textDecoration: 'line-through' }}>15.000f</div>
+                            </div>
 
                             <ul className="price-list">
                                 <li><span style={{ color: 'white', fontWeight: '900' }}>✓</span> Carte physique NFC Premium</li>
@@ -566,6 +644,53 @@ export default function LandingPage() {
 
                             <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary" style={{ width: '100%', background: 'white', color: '#111827', marginTop: 'auto' }}>Commander la Carte</button>
                         </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* FAQ Section */}
+            <section className="section" style={{ background: '#F4F6F9', borderTop: '1px solid rgba(0,0,0,0.05)' }}>
+                <div className="container" style={{ maxWidth: '800px' }}>
+                    <div style={{ textAlign: 'center', marginBottom: '48px' }} className="animate-fade-up">
+                        <h2 style={{ fontSize: '44px', fontWeight: '900', fontFamily: 'Outfit', color: '#111827', letterSpacing: '-0.02em', marginBottom: '16px' }}>Questions Fréquentes</h2>
+                        <p style={{ color: '#4B5563', fontSize: '18px' }}>Vous hésitez encore ? Voici tout ce que vous devez savoir.</p>
+                    </div>
+
+                    <div className="animate-fade-up delay-1">
+                        <details>
+                            <summary>Est-ce que ça marche avec tous les téléphones ?</summary>
+                            <div className="faq-content">
+                                Oui, à 100% ! Tous les smartphones récents (iPhone depuis 2018, Android) intègrent la technologie NFC et scannent la carte par simple contact. Pour les téléphones plus anciens, le QR Code gravé au verso prend le relais instantanément via l'appareil photo.
+                            </div>
+                        </details>
+                        
+                        <details>
+                            <summary>Mon interlocuteur a-t-il besoin d'une application ?</summary>
+                            <div className="faq-content">
+                                Absolument pas. C'est la beauté du système : votre profil s'ouvre directement dans le navigateur web par défaut de la personne (Safari, Chrome, etc.), comme un site internet classique.
+                            </div>
+                        </details>
+
+                        <details>
+                            <summary>Y a-t-il un abonnement caché à payer ?</summary>
+                            <div className="faq-content">
+                                Non, c'est un paiement unique ! Vous payez une seule fois votre Pack Digital (5.000f) ou votre Pack Physique (10.000f) et vous en profitez à vie. Vous pouvez modifier vos informations à l'infini depuis votre espace client gratuit.
+                            </div>
+                        </details>
+
+                        <details>
+                            <summary>Comment se passe la livraison de la carte physique ?</summary>
+                            <div className="faq-content">
+                                Après validation de votre design, nous expédions la carte. La livraison est actuellement disponible uniquement au Bénin (via nos coursiers partenaires). Vous recevrez votre carte en général sous 24 à 48 heures ouvrées.
+                            </div>
+                        </details>
+
+                        <details>
+                            <summary>C'est sécurisé ? Que se passe-t-il si je perds ma carte ?</summary>
+                            <div className="faq-content">
+                                Votre carte ne partage que les informations que vous avez choisi de rendre publiques sur votre profil digital (exactement comme une vraie carte de visite en papier). En cas de perte, vous pouvez vous connecter à votre compte et désactiver la puce d'un simple clic pour la rendre inutilisable.
+                            </div>
+                        </details>
                     </div>
                 </div>
             </section>
