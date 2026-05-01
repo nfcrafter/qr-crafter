@@ -53,6 +53,10 @@ export default function LandingPage() {
                 @media (hover: hover) {
                     .gallery-fade:hover .gallery-row-left { animation-play-state: paused; }
                 }
+                /* Faster on mobile */
+                @media (max-width: 768px) {
+                    .gallery-row-left { animation-duration: 18s; gap: 20px; }
+                }
                 .gallery-fade {
                     -webkit-mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
                     mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
@@ -575,7 +579,7 @@ export default function LandingPage() {
 
 
             {/* Gallery Section — Premium */}
-            <section style={{ background: 'linear-gradient(160deg, #0B0F1A 0%, #111827 45%, #0D1321 100%)', overflow: 'hidden', padding: '120px 0', position: 'relative' }}>
+            <section style={{ background: 'linear-gradient(160deg, #0B0F1A 0%, #111827 45%, #0D1321 100%)', overflow: 'hidden', padding: '72px 0', position: 'relative' }}>
                 {/* Dot grid */}
                 <div className="gallery-dot-grid"></div>
 
@@ -585,7 +589,7 @@ export default function LandingPage() {
                 <div style={{ position: 'absolute', top: '60%', left: '55%', width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(168,85,247,0.10) 0%, transparent 65%)', pointerEvents: 'none', zIndex: 0 }}></div>
 
                 {/* Header */}
-                <div className="container" style={{ textAlign: 'center', marginBottom: '56px', position: 'relative', zIndex: 2 }}>
+                <div className="container" style={{ textAlign: 'center', marginBottom: '32px', position: 'relative', zIndex: 2 }}>
                     <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(99,102,241,0.12)', border: '1px solid rgba(99,102,241,0.3)', padding: '8px 20px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '24px', color: '#A5B4FC' }}>
                         <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#818CF8', boxShadow: '0 0 8px #818CF8', display: 'inline-block' }}></span>
                         Nos Réalisations
@@ -626,7 +630,7 @@ export default function LandingPage() {
                 </div>
 
                 {/* CTA */}
-                <div style={{ textAlign: 'center', marginTop: '64px', position: 'relative', zIndex: 2 }}>
+                <div style={{ textAlign: 'center', marginTop: '40px', position: 'relative', zIndex: 2 }}>
                     <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary" style={{ background: 'linear-gradient(135deg, #6366F1, #0EA5E9)', color: 'white', border: 'none', boxShadow: '0 10px 40px rgba(99,102,241,0.4)', fontSize: '17px', padding: '20px 44px' }}>
                         ✦ Je veux ma carte personnalisée
                     </button>
