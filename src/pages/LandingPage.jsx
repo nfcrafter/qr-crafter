@@ -49,7 +49,12 @@ export default function LandingPage() {
                 @keyframes floatFast { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-10px) rotate(-2deg); } }
 
                 @keyframes pulseBadge { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+                @keyframes scrollText { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
                 .animate-fade-up { animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
+                
+                .marquee-container { overflow: hidden; white-space: nowrap; padding: 16px 0; background: rgba(255,255,255,0.5); border-top: 1px solid rgba(0,0,0,0.03); border-bottom: 1px solid rgba(0,0,0,0.03); }
+                .marquee-content { display: inline-block; animation: scrollText 30s linear infinite; font-size: 14px; font-weight: 800; color: #9CA3AF; text-transform: uppercase; letter-spacing: 2px; }
+                .marquee-content span { margin: 0 24px; }
                 
                 details { background: rgba(255,255,255,0.6); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.9); border-radius: 16px; margin-bottom: 16px; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.02); overflow: hidden; }
                 details[open] { background: rgba(255,255,255,0.9); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
@@ -265,11 +270,14 @@ export default function LandingPage() {
                             <p className="hero-subtitle" style={{ fontSize: '20px', color: '#4B5563', maxWidth: '600px', marginBottom: '40px', lineHeight: '1.6', fontWeight: '500' }}>
                                 Échangez vos coordonnées, réseaux sociaux et bien plus en un seul geste. Plus besoin d'épeler votre nom ou votre numéro.
                             </p>
-                            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '16px' }}>
                                 <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary">
                                     Commander ma carte
                                 </button>
                                 <a href="#utilite" className="btn-secondary">Découvrir comment</a>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#6B7280', fontWeight: '600' }}>
+                                <span style={{ fontSize: '16px' }}>🛡️</span> <span><strong style={{ color: '#10B981' }}>100% Sécurisé.</strong> Vos données sont modifiables uniquement par vous.</span>
                             </div>
                         </div>
 
@@ -307,6 +315,16 @@ export default function LandingPage() {
                     </div>
                 </div>
             </section>
+
+            {/* Scrolling Banner */}
+            <div className="marquee-container">
+                <div className="marquee-content">
+                    <span>Étudiants</span> • <span>Médecins</span> • <span>Commerciaux</span> • <span>Artisans</span> • <span>Influenceurs</span> • <span>Avocats</span> • <span>Restaurateurs</span> • <span>Freelances</span> • <span>Dirigeants</span> • <span>Artistes</span> •
+                    <span>Étudiants</span> • <span>Médecins</span> • <span>Commerciaux</span> • <span>Artisans</span> • <span>Influenceurs</span> • <span>Avocats</span> • <span>Restaurateurs</span> • <span>Freelances</span> • <span>Dirigeants</span> • <span>Artistes</span> •
+                    <span>Étudiants</span> • <span>Médecins</span> • <span>Commerciaux</span> • <span>Artisans</span> • <span>Influenceurs</span> • <span>Avocats</span> • <span>Restaurateurs</span> • <span>Freelances</span> • <span>Dirigeants</span> • <span>Artistes</span> •
+                    <span>Étudiants</span> • <span>Médecins</span> • <span>Commerciaux</span> • <span>Artisans</span> • <span>Influenceurs</span> • <span>Avocats</span> • <span>Restaurateurs</span> • <span>Freelances</span> • <span>Dirigeants</span> • <span>Artistes</span> •
+                </div>
+            </div>
 
             {/* Utility Section */}
             <section id="utilite" className="section">
@@ -404,17 +422,17 @@ export default function LandingPage() {
                                     </div>
                                 </li>
                                 <li style={{ display: 'flex', gap: '16px' }}>
-                                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(255,255,255,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', flexShrink: 0, border: '1px solid rgba(255,255,255,0.9)', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>📱</div>
+                                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(255,255,255,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', flexShrink: 0, border: '1px solid rgba(255,255,255,0.9)', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>📅</div>
                                     <div>
-                                        <h4 style={{ fontWeight: '800', fontSize: '18px', marginBottom: '6px' }}>Votre code QR personnalisé</h4>
-                                        <p style={{ color: '#4B5563', fontSize: '15px', lineHeight: '1.5' }}>Affichez votre QR code sur ordinateur, flyers ou cartes de restaurant. Il suffit d'un scan pour y accéder.</p>
+                                        <h4 style={{ fontWeight: '800', fontSize: '18px', marginBottom: '6px' }}>Prise de Rendez-vous simplifiée</h4>
+                                        <p style={{ color: '#4B5563', fontSize: '15px', lineHeight: '1.5' }}>Médecins, artisans, salons : posez votre QR Code sur votre comptoir ou bureau. Vos clients y trouvent vos liens Doctolib, Calendly ou WhatsApp pour booker en 1 clic.</p>
                                     </div>
                                 </li>
                                 <li style={{ display: 'flex', gap: '16px' }}>
-                                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(255,255,255,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', flexShrink: 0, border: '1px solid rgba(255,255,255,0.9)', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>💼</div>
+                                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(255,255,255,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', flexShrink: 0, border: '1px solid rgba(255,255,255,0.9)', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>📱</div>
                                     <div>
-                                        <h4 style={{ fontWeight: '800', fontSize: '18px', marginBottom: '6px' }}>Un véritable Mini-Portfolio</h4>
-                                        <p style={{ color: '#4B5563', fontSize: '15px', lineHeight: '1.5' }}>Idéal pour les professionnels, intégrez vos créations et laissez vos clients vous contacter en un clic.</p>
+                                        <h4 style={{ fontWeight: '800', fontSize: '18px', marginBottom: '6px' }}>Votre code QR personnalisé</h4>
+                                        <p style={{ color: '#4B5563', fontSize: '15px', lineHeight: '1.5' }}>Affichez-le sur vos flyers, menus ou cartes classiques. Idéal pour partager votre univers digital sans le moindre effort.</p>
                                     </div>
                                 </li>
                             </ul>
@@ -642,7 +660,11 @@ export default function LandingPage() {
                                 <li><span style={{ color: 'white', fontWeight: '900' }}>✓</span> Livraison uniquement au Bénin (pour le moment)</li>
                             </ul>
 
-                            <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary" style={{ width: '100%', background: 'white', color: '#111827', marginTop: 'auto' }}>Commander la Carte</button>
+                            <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary" style={{ width: '100%', background: 'white', color: '#111827', marginTop: 'auto', marginBottom: '16px' }}>Commander la Carte</button>
+                            
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#9CA3AF', justifyContent: 'center' }}>
+                                <span style={{ fontSize: '14px' }}>🛡️</span> <span><strong>Sécurité garantie.</strong> Contrôlez l'accès à vos données.</span>
+                            </div>
                         </div>
                     </div>
                 </div>
