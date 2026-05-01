@@ -382,23 +382,23 @@ export default function LandingPage() {
                                 </li>
                             </ul>
 
-                            {/* 3D Floating Cards optimized for mobile */}
-                            <div className="animate-fade-up delay-1" style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-                                <div className="visual-stack showcase-stack-mobile">
-                                    {/* Card Recto */}
-                                    <img src="/card-recto.png" alt="Card Front" className="glass-card front" style={{ boxShadow: '0 30px 60px rgba(0,0,0,0.5)', borderColor: 'rgba(255,255,255,0.2)' }} onError={(e) => e.target.src = 'https://placehold.co/600x375/334155/ffffff?text=Design+Recto'} />
-
-                                    {/* Card Verso */}
-                                    <img src="/card-verso.png" alt="Card Back" className="glass-card back" style={{ boxShadow: '0 30px 60px rgba(0,0,0,0.5)', borderColor: 'rgba(255,255,255,0.1)' }} onError={(e) => e.target.src = 'https://placehold.co/600x375/1e293b/ffffff?text=Design+Verso'} />
-                                </div>
-                            </div>
+                            
                             
                             <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary" style={{ background: 'white', color: '#111827', border: 'none', boxShadow: '0 10px 20px rgba(0,0,0,0.3)' }}>
                                 Je veux ma carte physique
                             </button>
                         </div>
                         
-                        
+                        {/* 3D Floating Cards optimized for mobile */}
+                        <div className="animate-fade-up delay-1" style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+                            <div className="visual-stack showcase-stack-mobile">
+                                {/* Card Recto */}
+                                <img src="/card-recto.png" alt="Card Front" className="glass-card front" style={{ boxShadow: '0 30px 60px rgba(0,0,0,0.5)', borderColor: 'rgba(255,255,255,0.2)' }} onError={(e) => e.target.src = 'https://placehold.co/600x375/334155/ffffff?text=Design+Recto'} />
+
+                                {/* Card Verso */}
+                                <img src="/card-verso.png" alt="Card Back" className="glass-card back" style={{ boxShadow: '0 30px 60px rgba(0,0,0,0.5)', borderColor: 'rgba(255,255,255,0.1)' }} onError={(e) => e.target.src = 'https://placehold.co/600x375/1e293b/ffffff?text=Design+Verso'} />
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
