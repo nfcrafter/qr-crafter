@@ -27,46 +27,60 @@ export default function LandingPage() {
                 
                 html { scroll-behavior: smooth; }
 
-                /* Gallery Card Wobble */
+                /* ── Gallery Premium ── */
                 @keyframes cardWobble1 {
-                    0%, 100% { transform: perspective(700px) rotateY(-18deg) rotateX(4deg) translateY(0px) scale(1); }
-                    50% { transform: perspective(700px) rotateY(18deg) rotateX(-3deg) translateY(-10px) scale(1.03); }
+                    0%, 100% { transform: perspective(900px) rotateY(-22deg) rotateX(6deg) translateY(0px) scale(1); }
+                    50% { transform: perspective(900px) rotateY(22deg) rotateX(-4deg) translateY(-14px) scale(1.04); }
                 }
                 @keyframes cardWobble2 {
-                    0%, 100% { transform: perspective(700px) rotateY(12deg) rotateX(-4deg) translateY(0px) scale(1); }
-                    50% { transform: perspective(700px) rotateY(-20deg) rotateX(5deg) translateY(-12px) scale(1.02); }
+                    0%, 100% { transform: perspective(900px) rotateY(18deg) rotateX(-6deg) translateY(0px) scale(1); }
+                    50% { transform: perspective(900px) rotateY(-24deg) rotateX(6deg) translateY(-16px) scale(1.03); }
                 }
                 @keyframes cardWobble3 {
-                    0%, 100% { transform: perspective(700px) rotateY(-22deg) rotateX(3deg) translateY(0px) scale(1); }
-                    50% { transform: perspective(700px) rotateY(14deg) rotateX(-5deg) translateY(-8px) scale(1.04); }
+                    0%, 100% { transform: perspective(900px) rotateY(-26deg) rotateX(4deg) translateY(0px) scale(1); }
+                    50% { transform: perspective(900px) rotateY(18deg) rotateX(-6deg) translateY(-12px) scale(1.05); }
                 }
-                @keyframes galleryScroll {
+                @keyframes galleryScrollLeft {
                     0% { transform: translateX(0); }
                     100% { transform: translateX(-50%); }
                 }
-                .gallery-strip {
-                    display: flex;
-                    gap: 40px;
-                    animation: galleryScroll 35s linear infinite;
-                    width: max-content;
-                    padding: 40px 20px;
+                @keyframes galleryScrollRight {
+                    0% { transform: translateX(-50%); }
+                    100% { transform: translateX(0); }
                 }
-                .gallery-strip:hover { animation-play-state: paused; }
-                .gallery-card-wrap {
-                    flex-shrink: 0;
-                    border-radius: 20px;
+                .gallery-row-left {
+                    display: flex; gap: 32px;
+                    animation: galleryScrollLeft 40s linear infinite;
+                    width: max-content; padding: 20px 0;
+                }
+                .gallery-row-right {
+                    display: flex; gap: 32px;
+                    animation: galleryScrollRight 36s linear infinite;
+                    width: max-content; padding: 20px 0;
+                }
+                .gallery-rows-wrap:hover .gallery-row-left,
+                .gallery-rows-wrap:hover .gallery-row-right { animation-play-state: paused; }
+                .gallery-fade {
+                    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
+                    mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
                     overflow: hidden;
-                    box-shadow: 0 30px 70px rgba(0,0,0,0.45);
-                    border: 2px solid rgba(255,255,255,0.12);
-                    backface-visibility: hidden;
-                    -webkit-backface-visibility: hidden;
-                    cursor: pointer;
-                    transition: box-shadow 0.3s;
                 }
-                .gallery-card-wrap:hover { box-shadow: 0 40px 90px rgba(0,0,0,0.6); }
-                .gallery-card-wrap:nth-child(3n+1) { animation: cardWobble1 7s ease-in-out infinite; }
-                .gallery-card-wrap:nth-child(3n+2) { animation: cardWobble2 8s ease-in-out infinite; animation-delay: -2s; }
-                .gallery-card-wrap:nth-child(3n+3) { animation: cardWobble3 6.5s ease-in-out infinite; animation-delay: -4s; }
+                .gcw {
+                    flex-shrink: 0; border-radius: 18px; overflow: hidden;
+                    box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08);
+                    backface-visibility: hidden; -webkit-backface-visibility: hidden;
+                    cursor: pointer; transition: transform 0.3s, box-shadow 0.3s;
+                }
+                .gcw:hover { box-shadow: 0 30px 80px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.2); }
+                .gcw:nth-child(3n+1) { animation: cardWobble1 7s ease-in-out infinite; }
+                .gcw:nth-child(3n+2) { animation: cardWobble2 8.5s ease-in-out infinite; animation-delay: -3s; }
+                .gcw:nth-child(3n+3) { animation: cardWobble3 6s ease-in-out infinite; animation-delay: -5s; }
+                .gallery-dot-grid {
+                    position: absolute; inset: 0;
+                    background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+                    background-size: 32px 32px;
+                    pointer-events: none; z-index: 0;
+                }
                 
                 /* Animated Background Orbs for Glassmorphism Context */
                 .bg-orb {
@@ -567,61 +581,83 @@ export default function LandingPage() {
             </section>
 
 
-            {/* Gallery Section */}
-            <section style={{ background: '#F4F6F9', overflow: 'hidden', padding: '100px 0', position: 'relative' }}>
-                {/* Ambient glow */}
-                <div style={{ position: 'absolute', top: '50%', left: '30%', transform: 'translate(-50%,-50%)', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(79,70,229,0.08) 0%, transparent 70%)', pointerEvents: 'none' }}></div>
-                <div style={{ position: 'absolute', top: '50%', right: '10%', transform: 'translateY(-50%)', width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(14,165,233,0.07) 0%, transparent 70%)', pointerEvents: 'none' }}></div>
+            {/* Gallery Section — Premium */}
+            <section style={{ background: 'linear-gradient(160deg, #0B0F1A 0%, #111827 45%, #0D1321 100%)', overflow: 'hidden', padding: '120px 0', position: 'relative' }}>
+                {/* Dot grid */}
+                <div className="gallery-dot-grid"></div>
 
-                <div className="container" style={{ textAlign: 'center', marginBottom: '16px', position: 'relative', zIndex: 2 }}>
-                    <div style={{ background: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(10px)', color: '#374151', padding: '8px 20px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '20px', display: 'inline-block', border: '1px solid rgba(255,255,255,0.9)' }}>Nos Réalisations</div>
-                    <h2 style={{ fontSize: '44px', fontWeight: '900', fontFamily: 'Outfit', color: '#111827', letterSpacing: '-0.02em', marginBottom: '16px' }}>Des cartes qui font tourner les têtes</h2>
-                    <p style={{ color: '#4B5563', fontSize: '18px', maxWidth: '550px', margin: '0 auto' }}>Chaque carte est unique, conçue sur-mesure selon votre identité et votre style.</p>
+                {/* Glows */}
+                <div style={{ position: 'absolute', top: '20%', left: '15%', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 65%)', pointerEvents: 'none', zIndex: 0 }}></div>
+                <div style={{ position: 'absolute', bottom: '10%', right: '10%', width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(14,165,233,0.12) 0%, transparent 65%)', pointerEvents: 'none', zIndex: 0 }}></div>
+                <div style={{ position: 'absolute', top: '60%', left: '55%', width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(168,85,247,0.10) 0%, transparent 65%)', pointerEvents: 'none', zIndex: 0 }}></div>
+
+                {/* Header */}
+                <div className="container" style={{ textAlign: 'center', marginBottom: '56px', position: 'relative', zIndex: 2 }}>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(99,102,241,0.12)', border: '1px solid rgba(99,102,241,0.3)', padding: '8px 20px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '24px', color: '#A5B4FC' }}>
+                        <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#818CF8', boxShadow: '0 0 8px #818CF8', display: 'inline-block' }}></span>
+                        Nos Réalisations
+                    </div>
+                    <h2 style={{ fontSize: '52px', fontWeight: '900', fontFamily: 'Outfit', letterSpacing: '-0.03em', marginBottom: '20px', lineHeight: 1.05, background: 'linear-gradient(135deg, #FFFFFF 0%, #C7D2FE 40%, #7DD3FC 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+                        Des cartes qui font tourner les têtes
+                    </h2>
+                    <p style={{ color: '#6B7280', fontSize: '18px', maxWidth: '520px', margin: '0 auto', lineHeight: '1.6' }}>Chaque design est créé sur-mesure. Votre identité, votre style, votre carte.</p>
                 </div>
 
-                {/* Scrolling strip */}
-                <div style={{ overflow: 'hidden', position: 'relative', zIndex: 2 }}>
-                    <div className="gallery-strip">
-                        {[
-                            { src: '/gallery-1.jpg', label: 'Entrepreneur' },
-                            { src: '/gallery-8.jpg', label: 'Marque' },
-                            { src: '/gallery-2.jpg', label: 'Comptable' },
-                            { src: '/gallery-3.jpg', label: 'Commercial' },
-                            { src: '/gallery-4.jpg', label: 'Corporate' },
-                            { src: '/gallery-5.jpg', label: 'Etudiant' },
-                            { src: '/gallery-6.jpg', label: 'Médecin' },
-                            { src: '/gallery-7.jpg', label: 'Sans photo' },
-
-                            { src: '/gallery-1.jpg', label: 'Entrepreneur' },
-                            { src: '/gallery-8.jpg', label: 'Marque' },
-                            { src: '/gallery-2.jpg', label: 'Comptable' },
-                            { src: '/gallery-3.jpg', label: 'Commercial' },
-                            { src: '/gallery-4.jpg', label: 'Corporate' },
-                            { src: '/gallery-5.jpg', label: 'Etudiant' },
-                            { src: '/gallery-6.jpg', label: 'Médecin' },
-                            { src: '/gallery-7.jpg', label: 'Sans photo' },
-
-                        ].map((card, i) => (
-                            <div key={i} className="gallery-card-wrap" style={{ width: '320px', height: '200px', position: 'relative' }}>
-                                <img
-                                    src={card.src}
-                                    alt={`Carte NFC ${card.label}`}
-                                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                                    onError={(e) => { e.target.src = `https://placehold.co/640x400/1e293b/4F46E5?text=${encodeURIComponent(card.label)}`; }}
-                                />
-                                <div style={{ position: 'absolute', bottom: '12px', left: '16px', background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(8px)', color: 'white', padding: '4px 12px', borderRadius: '100px', fontSize: '12px', fontWeight: '700', letterSpacing: '0.5px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                                    {card.label}
+                {/* Two-row scrolling gallery */}
+                <div className="gallery-rows-wrap" style={{ position: 'relative', zIndex: 2 }}>
+                    {/* Row 1 — left */}
+                    <div className="gallery-fade">
+                        <div className="gallery-row-left">
+                            {[
+                                { src: '/gallery-1.jpg', label: 'Entrepreneur' },
+                                { src: '/gallery-2.jpg', label: 'Comptable' },
+                                { src: '/gallery-3.jpg', label: 'Commercial' },
+                                { src: '/gallery-4.jpg', label: 'Corporate' },
+                                { src: '/gallery-8.jpg', label: 'Marque' },
+                                { src: '/gallery-1.jpg', label: 'Entrepreneur' },
+                                { src: '/gallery-2.jpg', label: 'Comptable' },
+                                { src: '/gallery-3.jpg', label: 'Commercial' },
+                                { src: '/gallery-4.jpg', label: 'Corporate' },
+                                { src: '/gallery-8.jpg', label: 'Marque' },
+                            ].map((card, i) => (
+                                <div key={i} className="gcw" style={{ width: '300px', height: '190px', position: 'relative' }}>
+                                    <img src={card.src} alt={`Carte NFC ${card.label}`} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} onError={(e) => { e.target.src = `https://placehold.co/600x380/1e2d4a/818CF8?text=${encodeURIComponent(card.label)}`; }} />
+                                    <div style={{ position: 'absolute', bottom: '10px', left: '14px', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(10px)', color: 'white', padding: '3px 11px', borderRadius: '100px', fontSize: '11px', fontWeight: '700', letterSpacing: '0.5px', border: '1px solid rgba(255,255,255,0.12)' }}>{card.label}</div>
                                 </div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Row 2 — right (offset) */}
+                    <div className="gallery-fade" style={{ marginTop: '16px' }}>
+                        <div className="gallery-row-right">
+                            {[
+                                { src: '/gallery-5.jpg', label: 'Étudiant' },
+                                { src: '/gallery-6.jpg', label: 'Médecin' },
+                                { src: '/gallery-7.jpg', label: 'Sans photo' },
+                                { src: '/gallery-1.jpg', label: 'Artiste' },
+                                { src: '/gallery-3.jpg', label: 'Freelance' },
+                                { src: '/gallery-5.jpg', label: 'Étudiant' },
+                                { src: '/gallery-6.jpg', label: 'Médecin' },
+                                { src: '/gallery-7.jpg', label: 'Sans photo' },
+                                { src: '/gallery-1.jpg', label: 'Artiste' },
+                                { src: '/gallery-3.jpg', label: 'Freelance' },
+                            ].map((card, i) => (
+                                <div key={i} className="gcw" style={{ width: '300px', height: '190px', position: 'relative' }}>
+                                    <img src={card.src} alt={`Carte NFC ${card.label}`} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} onError={(e) => { e.target.src = `https://placehold.co/600x380/1a2744/7DD3FC?text=${encodeURIComponent(card.label)}`; }} />
+                                    <div style={{ position: 'absolute', bottom: '10px', left: '14px', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(10px)', color: 'white', padding: '3px 11px', borderRadius: '100px', fontSize: '11px', fontWeight: '700', letterSpacing: '0.5px', border: '1px solid rgba(255,255,255,0.12)' }}>{card.label}</div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
 
-                <div style={{ textAlign: 'center', marginTop: '48px', position: 'relative', zIndex: 2 }}>
-                    <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary">
+                {/* CTA */}
+                <div style={{ textAlign: 'center', marginTop: '64px', position: 'relative', zIndex: 2 }}>
+                    <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary" style={{ background: 'linear-gradient(135deg, #6366F1, #0EA5E9)', color: 'white', border: 'none', boxShadow: '0 10px 40px rgba(99,102,241,0.4)', fontSize: '17px', padding: '20px 44px' }}>
                         ✦ Je veux ma carte personnalisée
                     </button>
-                    <p style={{ color: '#6B7280', fontSize: '13px', marginTop: '16px', fontWeight: '600' }}>Design inclus — Livraison sous 24-48h au Bénin</p>
+                    <p style={{ color: '#4B5563', fontSize: '13px', marginTop: '16px', fontWeight: '600' }}>Design inclus — Livraison sous 24-48h au Bénin</p>
                 </div>
             </section>
             
