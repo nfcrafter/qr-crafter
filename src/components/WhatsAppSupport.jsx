@@ -1,5 +1,5 @@
 export default function WhatsAppSupport() {
-    const number = '22991566846'
+    const number = '22969473921'
     const message = 'Bonjour NFCrafter'
     const url = 'https://wa.me/' + number + '?text=' + encodeURIComponent(message)
 
