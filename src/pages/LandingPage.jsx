@@ -184,6 +184,8 @@ export default function LandingPage() {
 
                 @media (max-width: 768px) {
                     .mobile-hide { display: none; }
+                    .showcase-mobile-fix { padding: 60px 0 20px 0 !important; }
+                    .showcase-stack-mobile { transform: scale(0.75) !important; height: 200px !important; margin-top: 20px !important; margin-bottom: 20px !important; }
                     .section { padding: 60px 0; }
                     .hero-title { font-size: 42px !important; line-height: 1.1 !important; }
                     .hero-subtitle { font-size: 18px !important; }
@@ -262,19 +264,34 @@ export default function LandingPage() {
                             </div>
                         </div>
 
-                        <div className="animate-fade-up delay-1">
-                            <div className="visual-stack">
-                                {/* Card Recto */}
-                                <img src="/card-recto.png" alt="Card Front" className="glass-card front" onError={(e) => e.target.src = 'https://placehold.co/600x375/f8fafc/1a1265?text=Design+Recto'} />
-
-                                {/* Card Verso */}
-                                <img src="/card-verso.png" alt="Card Back" className="glass-card back" onError={(e) => e.target.src = 'https://placehold.co/600x375/f1f5f9/1a1265?text=Design+Verso'} />
-
-
-                                {/* Plus Sign and Profile Mockup */}
-                                <div className="mobile-hide" style={{ position: 'absolute', right: '-15%', top: '5%', zIndex: 4, display: 'flex', alignItems: 'center', gap: '20px' }}>
-                                    <div style={{ fontSize: '64px', fontWeight: '900', color: '#111827', textShadow: '0 10px 30px rgba(0,0,0,0.05)', fontFamily: 'Outfit' }}>+</div>
-                                    <img src="/placeholder-public-profile.jpg" alt="Profile Public" style={{ width: '200px', borderRadius: '24px', boxShadow: '0 25px 50px rgba(0,0,0,0.15)', animation: 'floatPackImg 6s ease-in-out infinite' }} onError={(e) => e.target.src='https://placehold.co/400x700/f8fafc/1a1265?text=Page+Profil'} />
+                        <div className="animate-fade-up delay-1" style={{ display: 'flex', justifyContent: 'center', padding: '20px 0' }}>
+                            <div style={{ position: 'relative', width: '100%', maxWidth: '420px' }}>
+                                {/* Arrière-plan coloré pour faire ressortir l'image */}
+                                <div style={{ position: 'absolute', top: '10px', left: '-10px', right: '10px', bottom: '-10px', background: 'linear-gradient(135deg, #4F46E5, #0EA5E9)', borderRadius: '32px', opacity: 0.15, filter: 'blur(20px)', zIndex: 0 }}></div>
+                                
+                                <img 
+                                    src="/lifestyle.jpg" 
+                                    alt="NFCrafter en action" 
+                                    style={{ 
+                                        width: '100%', 
+                                        height: 'auto', 
+                                        borderRadius: '32px', 
+                                        boxShadow: '0 25px 60px rgba(0,0,0,0.15)', 
+                                        transform: 'rotate(-2deg)', 
+                                        border: '6px solid white',
+                                        position: 'relative',
+                                        zIndex: 1,
+                                        animation: 'floatSlow 6s ease-in-out infinite',
+                                        aspectRatio: '1/1',
+                                        objectFit: 'cover'
+                                    }} 
+                                    onError={(e) => { e.target.src = 'https://placehold.co/800x800/f8fafc/1a1265?text=Image+Lifestyle'; }}
+                                />
+                                
+                                {/* Badge de statut flottant */}
+                                <div className="glass-panel" style={{ position: 'absolute', bottom: '-15px', right: '-10px', padding: '10px 20px', borderRadius: '100px', zIndex: 2, display: 'flex', alignItems: 'center', gap: '10px', animation: 'floatFast 4s ease-in-out infinite', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}>
+                                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#10B981', boxShadow: '0 0 10px #10B981' }}></div>
+                                    <span style={{ fontWeight: '800', fontSize: '14px', color: '#111827' }}>Profil activé</span>
                                 </div>
                             </div>
                         </div>
@@ -305,6 +322,53 @@ export default function LandingPage() {
                             <div className="icon-circle">🌍</div>
                             <h3 style={{ fontWeight: '800', fontSize: '22px', marginBottom: '12px', fontFamily: 'Outfit' }}>Un seul achat à vie</h3>
                             <p style={{ color: '#4B5563', lineHeight: '1.6' }}>Plus besoin de réimprimer 500 cartes tous les 6 mois. Une seule carte NFC robuste suffit pour des années de rencontres.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Showcase 3D Cards Section (Dark Mode Premium) */}
+            <section className="section showcase-mobile-fix" style={{ background: '#111827', color: 'white', position: 'relative', overflow: 'hidden' }}>
+                <div className="bg-orb" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '80vw', height: '80vw', background: '#374151', filter: 'blur(120px)', opacity: 0.6 }}></div>
+                
+                <div className="container" style={{ position: 'relative', zIndex: 10 }}>
+                    <div className="hero-grid" style={{ minHeight: 'unset', padding: '0', alignItems: 'center' }}>
+                        <div className="hero-text animate-fade-up">
+                            <h2 style={{ fontSize: '44px', fontWeight: '900', fontFamily: 'Outfit', color: 'white', letterSpacing: '-0.02em', marginBottom: '24px' }}>
+                                Une carte premium,<br/>100% à votre image.
+                            </h2>
+                            <p style={{ color: '#D1D5DB', fontSize: '18px', marginBottom: '32px', lineHeight: '1.6' }}>
+                                Ne vous contentez pas d'une carte standard. Intégrez votre logo, votre nom et vos couleurs. Nos cartes NFC sont conçues en matériaux durables pour laisser une impression inoubliable à chaque rencontre.
+                            </p>
+                            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 32px 0', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                <li style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '16px', color: '#E5E7EB' }}>
+                                    <div style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#34D399', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 'bold' }}>✓</div>
+                                    Finition mate ou brillante
+                                </li>
+                                <li style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '16px', color: '#E5E7EB' }}>
+                                    <div style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#34D399', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 'bold' }}>✓</div>
+                                    Puce NFC ultra-rapide intégrée
+                                </li>
+                                <li style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '16px', color: '#E5E7EB' }}>
+                                    <div style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#34D399', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 'bold' }}>✓</div>
+                                    QR Code permanent gravé au verso
+                                </li>
+                            </ul>
+                            
+                            <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary" style={{ background: 'white', color: '#111827', border: 'none', boxShadow: '0 10px 20px rgba(0,0,0,0.3)' }}>
+                                Je veux ma carte physique
+                            </button>
+                        </div>
+                        
+                        {/* 3D Floating Cards optimized for mobile */}
+                        <div className="animate-fade-up delay-1" style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+                            <div className="visual-stack showcase-stack-mobile">
+                                {/* Card Recto */}
+                                <img src="/card-recto.png" alt="Card Front" className="glass-card front" style={{ boxShadow: '0 30px 60px rgba(0,0,0,0.5)', borderColor: 'rgba(255,255,255,0.2)' }} onError={(e) => e.target.src = 'https://placehold.co/600x375/334155/ffffff?text=Design+Recto'} />
+
+                                {/* Card Verso */}
+                                <img src="/card-verso.png" alt="Card Back" className="glass-card back" style={{ boxShadow: '0 30px 60px rgba(0,0,0,0.5)', borderColor: 'rgba(255,255,255,0.1)' }} onError={(e) => e.target.src = 'https://placehold.co/600x375/1e293b/ffffff?text=Design+Verso'} />
+                            </div>
                         </div>
                     </div>
                 </div>
