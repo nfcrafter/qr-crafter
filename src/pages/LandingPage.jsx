@@ -592,8 +592,8 @@ export default function LandingPage() {
                 <div className="container" style={{ textAlign: 'center', marginBottom: '32px', position: 'relative', zIndex: 2 }}>
                     <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(99,102,241,0.12)', border: '1px solid rgba(99,102,241,0.3)', padding: '8px 20px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '24px', color: '#A5B4FC' }}>
                         <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#818CF8', boxShadow: '0 0 8px #818CF8', display: 'inline-block' }}></span>
-                        Nos Réalisations
-                    </div>
+                        Pour tous types de métiers
+                                         </div>
                     <h2 style={{ fontSize: '52px', fontWeight: '900', fontFamily: 'Outfit', letterSpacing: '-0.03em', marginBottom: '20px', lineHeight: 1.05, background: 'linear-gradient(135deg, #FFFFFF 0%, #C7D2FE 40%, #7DD3FC 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                         Des cartes qui font tourner les têtes
                     </h2>
