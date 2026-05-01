@@ -853,7 +853,7 @@ export default function LandingPage() {
                     </a>
                 </div>
                 <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '24px' }}>
-                    <p style={{ fontWeight: '500', fontSize: '13px', margin: 0, color: '#4B5563' }}>© 2026 NFCrafter — Fièrement fait au Bénin 🇧🇯</p>
+                    <p style={{ fontWeight: '500', fontSize: '13px', margin: 0, color: '#4B5563' }}>© 2026 NFCrafter — Fièrement personnalisé pour vous</p>
                 </div>
             </footer>
         </div>
