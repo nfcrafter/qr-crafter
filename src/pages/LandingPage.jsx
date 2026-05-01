@@ -610,21 +610,23 @@ export default function LandingPage() {
                     <div className="gallery-strip">
                         {[
                             { src: '/gallery-1.jpg', label: 'Entrepreneur' },
+                            { src: '/gallery-8.jpg', label: 'Marque' },
                             { src: '/gallery-2.jpg', label: 'Comptable' },
                             { src: '/gallery-3.jpg', label: 'Commercial' },
                             { src: '/gallery-4.jpg', label: 'Corporate' },
                             { src: '/gallery-5.jpg', label: 'Etudiant' },
                             { src: '/gallery-6.jpg', label: 'Médecin' },
                             { src: '/gallery-7.jpg', label: 'Sans photo' },
-                            { src: '/gallery-8.jpg', label: 'Marque' },
+                            
                             { src: '/gallery-1.jpg', label: 'Entrepreneur' },
+                            { src: '/gallery-8.jpg', label: 'Marque' },
                             { src: '/gallery-2.jpg', label: 'Comptable' },
                             { src: '/gallery-3.jpg', label: 'Commercial' },
                             { src: '/gallery-4.jpg', label: 'Corporate' },
                             { src: '/gallery-5.jpg', label: 'Etudiant' },
                             { src: '/gallery-6.jpg', label: 'Médecin' },
                             { src: '/gallery-7.jpg', label: 'Sans photo' },
-                            { src: '/gallery-8.jpg', label: 'Marque' },
+                            
                         ].map((card, i) => (
                             <div key={i} className="gallery-card-wrap" style={{ width: '320px', height: '200px', position: 'relative' }}>
                                 <img
