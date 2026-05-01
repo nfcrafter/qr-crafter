@@ -44,22 +44,15 @@ export default function LandingPage() {
                     0% { transform: translateX(0); }
                     100% { transform: translateX(-50%); }
                 }
-                @keyframes galleryScrollRight {
-                    0% { transform: translateX(-50%); }
-                    100% { transform: translateX(0); }
-                }
                 .gallery-row-left {
                     display: flex; gap: 32px;
                     animation: galleryScrollLeft 40s linear infinite;
                     width: max-content; padding: 20px 0;
                 }
-                .gallery-row-right {
-                    display: flex; gap: 32px;
-                    animation: galleryScrollRight 36s linear infinite;
-                    width: max-content; padding: 20px 0;
+                /* Pause only on real pointer devices — not on touch screens */
+                @media (hover: hover) {
+                    .gallery-fade:hover .gallery-row-left { animation-play-state: paused; }
                 }
-                .gallery-rows-wrap:hover .gallery-row-left,
-                .gallery-rows-wrap:hover .gallery-row-right { animation-play-state: paused; }
                 .gallery-fade {
                     -webkit-mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
                     mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
@@ -603,52 +596,32 @@ export default function LandingPage() {
                     <p style={{ color: '#6B7280', fontSize: '18px', maxWidth: '520px', margin: '0 auto', lineHeight: '1.6' }}>Chaque design est créé sur-mesure. Votre identité, votre style, votre carte.</p>
                 </div>
 
-                {/* Two-row scrolling gallery */}
-                <div className="gallery-rows-wrap" style={{ position: 'relative', zIndex: 2 }}>
-                    {/* Row 1 — left */}
-                    <div className="gallery-fade">
-                        <div className="gallery-row-left">
-                            {[
-                                { src: '/gallery-1.jpg', label: 'Entrepreneur' },
-                                { src: '/gallery-2.jpg', label: 'Comptable' },
-                                { src: '/gallery-3.jpg', label: 'Commercial' },
-                                { src: '/gallery-4.jpg', label: 'Corporate' },
-                                { src: '/gallery-8.jpg', label: 'Marque' },
-                                { src: '/gallery-1.jpg', label: 'Entrepreneur' },
-                                { src: '/gallery-2.jpg', label: 'Comptable' },
-                                { src: '/gallery-3.jpg', label: 'Commercial' },
-                                { src: '/gallery-4.jpg', label: 'Corporate' },
-                                { src: '/gallery-8.jpg', label: 'Marque' },
-                            ].map((card, i) => (
-                                <div key={i} className="gcw" style={{ width: '300px', height: '190px', position: 'relative' }}>
-                                    <img src={card.src} alt={`Carte NFC ${card.label}`} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} onError={(e) => { e.target.src = `https://placehold.co/600x380/1e2d4a/818CF8?text=${encodeURIComponent(card.label)}`; }} />
-                                    <div style={{ position: 'absolute', bottom: '10px', left: '14px', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(10px)', color: 'white', padding: '3px 11px', borderRadius: '100px', fontSize: '11px', fontWeight: '700', letterSpacing: '0.5px', border: '1px solid rgba(255,255,255,0.12)' }}>{card.label}</div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Row 2 — right (offset) */}
-                    <div className="gallery-fade" style={{ marginTop: '16px' }}>
-                        <div className="gallery-row-right">
-                            {[
-                                { src: '/gallery-5.jpg', label: 'Étudiant' },
-                                { src: '/gallery-6.jpg', label: 'Médecin' },
-                                { src: '/gallery-7.jpg', label: 'Sans photo' },
-                                { src: '/gallery-1.jpg', label: 'Artiste' },
-                                { src: '/gallery-3.jpg', label: 'Freelance' },
-                                { src: '/gallery-5.jpg', label: 'Étudiant' },
-                                { src: '/gallery-6.jpg', label: 'Médecin' },
-                                { src: '/gallery-7.jpg', label: 'Sans photo' },
-                                { src: '/gallery-1.jpg', label: 'Artiste' },
-                                { src: '/gallery-3.jpg', label: 'Freelance' },
-                            ].map((card, i) => (
-                                <div key={i} className="gcw" style={{ width: '300px', height: '190px', position: 'relative' }}>
-                                    <img src={card.src} alt={`Carte NFC ${card.label}`} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} onError={(e) => { e.target.src = `https://placehold.co/600x380/1a2744/7DD3FC?text=${encodeURIComponent(card.label)}`; }} />
-                                    <div style={{ position: 'absolute', bottom: '10px', left: '14px', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(10px)', color: 'white', padding: '3px 11px', borderRadius: '100px', fontSize: '11px', fontWeight: '700', letterSpacing: '0.5px', border: '1px solid rgba(255,255,255,0.12)' }}>{card.label}</div>
-                                </div>
-                            ))}
-                        </div>
+                {/* Single-row scrolling gallery */}
+                <div className="gallery-fade" style={{ position: 'relative', zIndex: 2 }}>
+                    <div className="gallery-row-left">
+                        {[
+                            { src: '/gallery-1.jpg', label: 'Entrepreneur' },
+                            { src: '/gallery-2.jpg', label: 'Comptable' },
+                            { src: '/gallery-3.jpg', label: 'Commercial' },
+                            { src: '/gallery-4.jpg', label: 'Corporate' },
+                            { src: '/gallery-5.jpg', label: 'Étudiant' },
+                            { src: '/gallery-6.jpg', label: 'Médecin' },
+                            { src: '/gallery-7.jpg', label: 'Sans photo' },
+                            { src: '/gallery-8.jpg', label: 'Marque' },
+                            { src: '/gallery-1.jpg', label: 'Entrepreneur' },
+                            { src: '/gallery-2.jpg', label: 'Comptable' },
+                            { src: '/gallery-3.jpg', label: 'Commercial' },
+                            { src: '/gallery-4.jpg', label: 'Corporate' },
+                            { src: '/gallery-5.jpg', label: 'Étudiant' },
+                            { src: '/gallery-6.jpg', label: 'Médecin' },
+                            { src: '/gallery-7.jpg', label: 'Sans photo' },
+                            { src: '/gallery-8.jpg', label: 'Marque' },
+                        ].map((card, i) => (
+                            <div key={i} className="gcw" style={{ width: '300px', height: '190px', position: 'relative' }}>
+                                <img src={card.src} alt={`Carte NFC ${card.label}`} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} onError={(e) => { e.target.src = `https://placehold.co/600x380/1e2d4a/818CF8?text=${encodeURIComponent(card.label)}`; }} />
+                                <div style={{ position: 'absolute', bottom: '10px', left: '14px', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(10px)', color: 'white', padding: '3px 11px', borderRadius: '100px', fontSize: '11px', fontWeight: '700', letterSpacing: '0.5px', border: '1px solid rgba(255,255,255,0.12)' }}>{card.label}</div>
+                            </div>
+                        ))}
                     </div>
                 </div>
 
