@@ -26,6 +26,47 @@ export default function LandingPage() {
                 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap');
                 
                 html { scroll-behavior: smooth; }
+
+                /* Gallery Card Wobble */
+                @keyframes cardWobble1 {
+                    0%, 100% { transform: perspective(700px) rotateY(-18deg) rotateX(4deg) translateY(0px) scale(1); }
+                    50% { transform: perspective(700px) rotateY(18deg) rotateX(-3deg) translateY(-10px) scale(1.03); }
+                }
+                @keyframes cardWobble2 {
+                    0%, 100% { transform: perspective(700px) rotateY(12deg) rotateX(-4deg) translateY(0px) scale(1); }
+                    50% { transform: perspective(700px) rotateY(-20deg) rotateX(5deg) translateY(-12px) scale(1.02); }
+                }
+                @keyframes cardWobble3 {
+                    0%, 100% { transform: perspective(700px) rotateY(-22deg) rotateX(3deg) translateY(0px) scale(1); }
+                    50% { transform: perspective(700px) rotateY(14deg) rotateX(-5deg) translateY(-8px) scale(1.04); }
+                }
+                @keyframes galleryScroll {
+                    0% { transform: translateX(0); }
+                    100% { transform: translateX(-50%); }
+                }
+                .gallery-strip {
+                    display: flex;
+                    gap: 40px;
+                    animation: galleryScroll 35s linear infinite;
+                    width: max-content;
+                    padding: 40px 20px;
+                }
+                .gallery-strip:hover { animation-play-state: paused; }
+                .gallery-card-wrap {
+                    flex-shrink: 0;
+                    border-radius: 20px;
+                    overflow: hidden;
+                    box-shadow: 0 30px 70px rgba(0,0,0,0.45);
+                    border: 2px solid rgba(255,255,255,0.12);
+                    backface-visibility: hidden;
+                    -webkit-backface-visibility: hidden;
+                    cursor: pointer;
+                    transition: box-shadow 0.3s;
+                }
+                .gallery-card-wrap:hover { box-shadow: 0 40px 90px rgba(0,0,0,0.6); }
+                .gallery-card-wrap:nth-child(3n+1) { animation: cardWobble1 7s ease-in-out infinite; }
+                .gallery-card-wrap:nth-child(3n+2) { animation: cardWobble2 8s ease-in-out infinite; animation-delay: -2s; }
+                .gallery-card-wrap:nth-child(3n+3) { animation: cardWobble3 6.5s ease-in-out infinite; animation-delay: -4s; }
                 
                 /* Animated Background Orbs for Glassmorphism Context */
                 .bg-orb {
@@ -535,8 +576,8 @@ export default function LandingPage() {
                     <div className="bento-grid">
                         {[
                             { step: "1", title: "Commandez via WhatsApp", desc: "Choisissez votre pack digital ou physique. Contactez-nous et envoyez-nous vos informations personnelles." },
-                            { step: "2", title: "Lien d'activation", desc: "Nous préparons votre commande et vous envoyons un lien d'activation pour créer votre compte sur notre plateforme." },
-                            { step: "3", title: "Gérez votre profil", desc: "Connectez-vous à tout moment pour modifier les informations de votre profil quand vous le voulez." }
+                            { step: "2", title: "Reçu sous 24–48h", desc: "Nous préparons votre commande et vous envoyons un lien d'activation sous 24 à 48 heures ouvrées pour créer votre compte sur notre plateforme." },
+                            { step: "3", title: "Gérez votre profil", desc: "Connectez-vous à tout moment pour modifier vos informations en temps réel. Votre carte physique, elle, reste inchangée." }
                         ].map((item, i) => (
                             <div key={i} className="glass-panel" style={{ position: 'relative', overflow: 'hidden' }}>
                                 <div style={{ position: 'absolute', top: '-10px', right: '-10px', fontSize: '140px', fontWeight: '900', color: 'rgba(255,255,255,0.8)', textShadow: '0 10px 30px rgba(0,0,0,0.02)', lineHeight: 1, zIndex: 0, pointerEvents: 'none', fontFamily: 'Outfit' }}>
@@ -549,6 +590,58 @@ export default function LandingPage() {
                             </div>
                         ))}
                     </div>
+                </div>
+            </section>
+
+            {/* Gallery Section */}
+            <section style={{ background: '#0D1117', overflow: 'hidden', padding: '100px 0', position: 'relative' }}>
+                {/* Ambient glow */}
+                <div style={{ position: 'absolute', top: '50%', left: '30%', transform: 'translate(-50%,-50%)', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(79,70,229,0.15) 0%, transparent 70%)', pointerEvents: 'none' }}></div>
+                <div style={{ position: 'absolute', top: '50%', right: '10%', transform: 'translateY(-50%)', width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(14,165,233,0.1) 0%, transparent 70%)', pointerEvents: 'none' }}></div>
+
+                <div className="container" style={{ textAlign: 'center', marginBottom: '16px', position: 'relative', zIndex: 2 }}>
+                    <div style={{ background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(10px)', color: '#9CA3AF', padding: '8px 20px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '20px', display: 'inline-block', border: '1px solid rgba(255,255,255,0.08)' }}>Nos Réalisations</div>
+                    <h2 style={{ fontSize: '44px', fontWeight: '900', fontFamily: 'Outfit', color: 'white', letterSpacing: '-0.02em', marginBottom: '16px' }}>Des cartes qui font tourner les têtes</h2>
+                    <p style={{ color: '#6B7280', fontSize: '18px', maxWidth: '550px', margin: '0 auto' }}>Chaque carte est unique, conçue sur-mesure selon votre identité et votre style.</p>
+                </div>
+
+                {/* Scrolling strip */}
+                <div style={{ overflow: 'hidden', position: 'relative', zIndex: 2 }}>
+                    <div className="gallery-strip">
+                        {[
+                            { src: '/gallery-1.jpg', label: 'Entrepreneur' },
+                            { src: '/gallery-2.jpg', label: 'Créatif' },
+                            { src: '/gallery-3.jpg', label: 'Commercial' },
+                            { src: '/gallery-4.jpg', label: 'Corporate' },
+                            { src: '/gallery-5.jpg', label: 'Artiste' },
+                            { src: '/gallery-6.jpg', label: 'Médecin' },
+                            { src: '/gallery-1.jpg', label: 'Entrepreneur' },
+                            { src: '/gallery-2.jpg', label: 'Créatif' },
+                            { src: '/gallery-3.jpg', label: 'Commercial' },
+                            { src: '/gallery-4.jpg', label: 'Corporate' },
+                            { src: '/gallery-5.jpg', label: 'Artiste' },
+                            { src: '/gallery-6.jpg', label: 'Médecin' },
+                        ].map((card, i) => (
+                            <div key={i} className="gallery-card-wrap" style={{ width: '320px', height: '200px', position: 'relative' }}>
+                                <img
+                                    src={card.src}
+                                    alt={`Carte NFC ${card.label}`}
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                                    onError={(e) => { e.target.src = `https://placehold.co/640x400/1e293b/4F46E5?text=${encodeURIComponent(card.label)}`; }}
+                                />
+                                <div style={{ position: 'absolute', bottom: '12px', left: '16px', background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(8px)', color: 'white', padding: '4px 12px', borderRadius: '100px', fontSize: '12px', fontWeight: '700', letterSpacing: '0.5px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                    {card.label}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div style={{ textAlign: 'center', marginTop: '48px', position: 'relative', zIndex: 2 }}>
+                    <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary" style={{ background: 'white', color: '#111827', boxShadow: '0 10px 30px rgba(0,0,0,0.4)' }}>
+                        ✦ Je veux ma carte personnalisée
+                    </button>
+                    <p style={{ color: '#4B5563', fontSize: '13px', marginTop: '16px', fontWeight: '600' }}>Design inclus — Livraison sous 24-48h au Bénin</p>
                 </div>
             </section>
 
@@ -720,12 +813,27 @@ export default function LandingPage() {
             </section>
 
             {/* Footer */}
-            <footer style={{ padding: '60px 24px', color: '#6B7280', textAlign: 'center', position: 'relative', zIndex: 10 }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '16px' }}>
-                    <img src="/logo.png" alt="NFCrafter" style={{ height: '24px', opacity: 0.6 }} />
-                    <span style={{ fontSize: '18px', fontWeight: '900', color: '#111827', letterSpacing: '-0.5px', fontFamily: 'Outfit', opacity: 0.8 }}>NFCrafter</span>
+            <footer style={{ background: '#111827', padding: '60px 24px 40px 24px', color: '#6B7280', textAlign: 'center', position: 'relative', zIndex: 10 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '24px' }}>
+                    <img src="/logo.png" alt="NFCrafter" style={{ height: '28px', opacity: 0.8 }} />
+                    <span style={{ fontSize: '22px', fontWeight: '900', color: 'white', letterSpacing: '-0.5px', fontFamily: 'Outfit' }}>NFCrafter</span>
                 </div>
-                <p style={{ fontWeight: '500', fontSize: '14px', margin: 0 }}>© 2026 NFCrafter. Fièrement personnalisé pour vous.</p>
+                <p style={{ color: '#9CA3AF', fontSize: '15px', marginBottom: '32px', maxWidth: '400px', margin: '0 auto 32px auto', lineHeight: '1.6' }}>La carte de visite intelligente qui vous fait remarquer. Disponible au Bénin.</p>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', flexWrap: 'wrap', marginBottom: '40px' }}>
+                    <a
+                        href={`https://wa.me/22991566846?text=${encodeURIComponent('Bonjour NFCrafter, j\'ai une question concernant vos cartes.')}`}
+                        target="_blank" rel="noopener noreferrer"
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#25D366', color: 'white', padding: '12px 24px', borderRadius: '100px', fontWeight: '700', fontSize: '14px', textDecoration: 'none', transition: 'all 0.2s', boxShadow: '0 4px 15px rgba(37,211,102,0.3)' }}
+                        onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 25px rgba(37,211,102,0.4)'; }}
+                        onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 15px rgba(37,211,102,0.3)'; }}
+                    >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                        Nous contacter sur WhatsApp
+                    </a>
+                </div>
+                <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '24px' }}>
+                    <p style={{ fontWeight: '500', fontSize: '13px', margin: 0, color: '#4B5563' }}>© 2026 NFCrafter — Fièrement fait au Bénin 🇧🇯</p>
+                </div>
             </footer>
         </div>
     );
