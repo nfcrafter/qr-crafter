@@ -610,13 +610,13 @@ export default function LandingPage() {
                     <div className="gallery-strip">
                         {[
                             { src: '/gallery-1.jpg', label: 'Entrepreneur' },
-                            { src: '/gallery-2.jpg', label: 'Créatif' },
+                            { src: '/gallery-2.jpg', label: 'Comptable' },
                             { src: '/gallery-3.jpg', label: 'Commercial' },
                             { src: '/gallery-4.jpg', label: 'Corporate' },
                             { src: '/gallery-5.jpg', label: 'Artiste' },
                             { src: '/gallery-6.jpg', label: 'Médecin' },
                             { src: '/gallery-1.jpg', label: 'Entrepreneur' },
-                            { src: '/gallery-2.jpg', label: 'Créatif' },
+                            { src: '/gallery-2.jpg', label: 'Comptable' },
                             { src: '/gallery-3.jpg', label: 'Commercial' },
                             { src: '/gallery-4.jpg', label: 'Corporate' },
                             { src: '/gallery-5.jpg', label: 'Artiste' },
