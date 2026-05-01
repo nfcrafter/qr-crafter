@@ -566,32 +566,6 @@ export default function LandingPage() {
                 </div>
             </section>
 
-            {/* Steps Section */}
-            <section className="section">
-                <div className="container">
-                    <div style={{ textAlign: 'center', marginBottom: '64px' }}>
-                        <h2 style={{ fontSize: '44px', fontWeight: '900', fontFamily: 'Outfit', color: '#111827', letterSpacing: '-0.02em' }}>Comment l'obtenir en 3 étapes</h2>
-                    </div>
-
-                    <div className="bento-grid">
-                        {[
-                            { step: "1", title: "Commandez via WhatsApp", desc: "Choisissez votre pack digital ou physique. Contactez-nous et envoyez-nous vos informations personnelles." },
-                            { step: "2", title: "Reçu sous 24–48h", desc: "Nous préparons votre commande et vous envoyons un lien d'activation sous 24 à 48 heures ouvrées pour créer votre compte sur notre plateforme." },
-                            { step: "3", title: "Gérez votre profil", desc: "Connectez-vous à tout moment pour modifier vos informations en temps réel. Votre carte physique, elle, reste inchangée." }
-                        ].map((item, i) => (
-                            <div key={i} className="glass-panel" style={{ position: 'relative', overflow: 'hidden' }}>
-                                <div style={{ position: 'absolute', top: '-10px', right: '-10px', fontSize: '140px', fontWeight: '900', color: 'rgba(255,255,255,0.8)', textShadow: '0 10px 30px rgba(0,0,0,0.02)', lineHeight: 1, zIndex: 0, pointerEvents: 'none', fontFamily: 'Outfit' }}>
-                                    {item.step}
-                                </div>
-                                <div style={{ position: 'relative', zIndex: 1 }}>
-                                    <h3 style={{ fontWeight: '800', fontSize: '24px', marginBottom: '16px', fontFamily: 'Outfit' }}>{item.title}</h3>
-                                    <p style={{ color: '#4B5563', lineHeight: '1.6', fontSize: '16px' }}>{item.desc}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
 
             {/* Gallery Section */}
             <section style={{ background: '#0D1117', overflow: 'hidden', padding: '100px 0', position: 'relative' }}>
@@ -617,7 +591,7 @@ export default function LandingPage() {
                             { src: '/gallery-5.jpg', label: 'Etudiant' },
                             { src: '/gallery-6.jpg', label: 'Médecin' },
                             { src: '/gallery-7.jpg', label: 'Sans photo' },
-                            
+
                             { src: '/gallery-1.jpg', label: 'Entrepreneur' },
                             { src: '/gallery-8.jpg', label: 'Marque' },
                             { src: '/gallery-2.jpg', label: 'Comptable' },
@@ -626,7 +600,7 @@ export default function LandingPage() {
                             { src: '/gallery-5.jpg', label: 'Etudiant' },
                             { src: '/gallery-6.jpg', label: 'Médecin' },
                             { src: '/gallery-7.jpg', label: 'Sans photo' },
-                            
+
                         ].map((card, i) => (
                             <div key={i} className="gallery-card-wrap" style={{ width: '320px', height: '200px', position: 'relative' }}>
                                 <img
@@ -648,6 +622,34 @@ export default function LandingPage() {
                         ✦ Je veux ma carte personnalisée
                     </button>
                     <p style={{ color: '#4B5563', fontSize: '13px', marginTop: '16px', fontWeight: '600' }}>Design inclus — Livraison sous 24-48h au Bénin</p>
+                </div>
+            </section>
+            
+
+            {/* Steps Section */}
+            <section className="section">
+                <div className="container">
+                    <div style={{ textAlign: 'center', marginBottom: '64px' }}>
+                        <h2 style={{ fontSize: '44px', fontWeight: '900', fontFamily: 'Outfit', color: '#111827', letterSpacing: '-0.02em' }}>Comment l'obtenir en 3 étapes</h2>
+                    </div>
+
+                    <div className="bento-grid">
+                        {[
+                            { step: "1", title: "Commandez via WhatsApp", desc: "Choisissez votre pack digital ou physique. Contactez-nous et envoyez-nous vos informations personnelles." },
+                            { step: "2", title: "Reçu sous 24–48h", desc: "Nous préparons votre commande et vous envoyons un lien d'activation sous 24 à 48 heures ouvrées pour créer votre compte sur notre plateforme." },
+                            { step: "3", title: "Gérez votre profil", desc: "Connectez-vous à tout moment pour modifier vos informations en temps réel. Votre carte physique, elle, reste inchangée." }
+                        ].map((item, i) => (
+                            <div key={i} className="glass-panel" style={{ position: 'relative', overflow: 'hidden' }}>
+                                <div style={{ position: 'absolute', top: '-10px', right: '-10px', fontSize: '140px', fontWeight: '900', color: 'rgba(255,255,255,0.8)', textShadow: '0 10px 30px rgba(0,0,0,0.02)', lineHeight: 1, zIndex: 0, pointerEvents: 'none', fontFamily: 'Outfit' }}>
+                                    {item.step}
+                                </div>
+                                <div style={{ position: 'relative', zIndex: 1 }}>
+                                    <h3 style={{ fontWeight: '800', fontSize: '24px', marginBottom: '16px', fontFamily: 'Outfit' }}>{item.title}</h3>
+                                    <p style={{ color: '#4B5563', lineHeight: '1.6', fontSize: '16px' }}>{item.desc}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </section>
 
