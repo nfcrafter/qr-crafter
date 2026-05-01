@@ -313,7 +313,7 @@ export default function LandingPage() {
                 <div className="container">
                     <div style={{ textAlign: 'center', marginBottom: '64px' }} className="animate-fade-up">
                         <h2 style={{ fontSize: '44px', fontWeight: '900', fontFamily: 'Outfit', color: '#111827', letterSpacing: '-0.02em', marginBottom: '16px' }}>Pourquoi choisir une carte intelligente ?</h2>
-                        <p style={{ color: '#4B5563', fontSize: '18px', maxWidth: '600px', margin: '0 auto' }}>Fini les cartes en papier qui s'entassent et qu'on perd. Passez au niveau supérieur de votre networking.</p>
+                        <p style={{ color: '#4B5563', fontSize: '18px', maxWidth: '600px', margin: '0 auto' }}>Oubliez les dictées de numéros et les cartes en papier perdues. Passez au niveau supérieur dans toutes vos rencontres.</p>
                     </div>
 
                     <div className="bento-grid">
@@ -437,8 +437,8 @@ export default function LandingPage() {
             <section className="section">
                 <div className="container">
                     <div style={{ textAlign: 'center', marginBottom: '64px' }} className="animate-fade-up">
-                        <h2 style={{ fontSize: '44px', fontWeight: '900', fontFamily: 'Outfit', color: '#111827', letterSpacing: '-0.02em', marginBottom: '16px' }}>À qui s'adressent nos packs ?</h2>
-                        <p style={{ color: '#4B5563', fontSize: '18px', maxWidth: '600px', margin: '0 auto' }}>Que vous soyez 100% en ligne ou souvent sur le terrain, nous avons la solution adaptée à vos besoins.</p>
+                        <h2 style={{ fontSize: '44px', fontWeight: '900', fontFamily: 'Outfit', color: '#111827', letterSpacing: '-0.02em', marginBottom: '16px' }}>À qui s'adresse NFCrafter ?</h2>
+                        <p style={{ color: '#4B5563', fontSize: '18px', maxWidth: '600px', margin: '0 auto' }}>Absolument tout le monde ! C'est l'outil ultime pour toutes vos prises de contact rapides, pro ou perso.</p>
                     </div>
 
                     <div className="pricing-grid">
@@ -446,20 +446,20 @@ export default function LandingPage() {
                         <div className="glass-panel animate-fade-up delay-1" style={{ padding: '40px', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
                             <div style={{ position: 'absolute', top: '-20px', right: '-20px', fontSize: '150px', opacity: '0.05', pointerEvents: 'none' }}>🌐</div>
                             <h3 style={{ fontSize: '28px', fontWeight: '900', fontFamily: 'Outfit', marginBottom: '12px', color: '#111827', position: 'relative', zIndex: 1 }}>Le Pack Digital</h3>
-                            <div style={{ fontWeight: '700', color: '#4B5563', marginBottom: '32px', fontSize: '16px', position: 'relative', zIndex: 1 }}>Pour les profils 100% connectés :</div>
+                            <div style={{ fontWeight: '700', color: '#4B5563', marginBottom: '32px', fontSize: '16px', position: 'relative', zIndex: 1 }}>L'identité 100% connectée :</div>
                             
                             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '20px', flex: 1, position: 'relative', zIndex: 1 }}>
                                 <li style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
                                     <div style={{ background: '#E0E7FF', color: '#4F46E5', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px', fontWeight: 'bold' }}>✓</div>
-                                    <span style={{ color: '#374151', lineHeight: '1.6', fontSize: '16px' }}><strong>Créateurs & Influenceurs</strong> souhaitant un "Lien en bio" premium pour tout centraliser.</span>
+                                    <span style={{ color: '#374151', lineHeight: '1.6', fontSize: '16px' }}><strong>Créateurs & Freelances</strong> souhaitant un "Lien en bio" premium pour centraliser tous leurs réseaux et portfolios.</span>
                                 </li>
                                 <li style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
                                     <div style={{ background: '#E0E7FF', color: '#4F46E5', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px', fontWeight: 'bold' }}>✓</div>
-                                    <span style={{ color: '#374151', lineHeight: '1.6', fontSize: '16px' }}><strong>Freelances & Artistes</strong> voulant partager rapidement leur portfolio et réseaux en ligne.</span>
+                                    <span style={{ color: '#374151', lineHeight: '1.6', fontSize: '16px' }}><strong>Commerces & Boutiques</strong> désirant afficher un QR Code élégant à scanner sur leur comptoir ou menu.</span>
                                 </li>
                                 <li style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
                                     <div style={{ background: '#E0E7FF', color: '#4F46E5', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px', fontWeight: 'bold' }}>✓</div>
-                                    <span style={{ color: '#374151', lineHeight: '1.6', fontSize: '16px' }}><strong>Commerces & Boutiques</strong> désirant afficher un QR Code à scanner sur leur comptoir.</span>
+                                    <span style={{ color: '#374151', lineHeight: '1.6', fontSize: '16px' }}><strong>Pour tous au quotidien</strong> : Un lien unique à envoyer par message pour donner toutes vos infos d'un coup.</span>
                                 </li>
                             </ul>
                         </div>
@@ -481,15 +481,15 @@ export default function LandingPage() {
                             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '20px', flex: 1, position: 'relative', zIndex: 1 }}>
                                 <li style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
                                     <div style={{ background: 'rgba(255,255,255,0.1)', color: 'white', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px', fontWeight: 'bold' }}>✓</div>
-                                    <span style={{ color: '#D1D5DB', lineHeight: '1.6', fontSize: '16px' }}><strong>Entrepreneurs & Commerciaux</strong> pour se démarquer lors des événements de networking.</span>
+                                    <span style={{ color: '#D1D5DB', lineHeight: '1.6', fontSize: '16px' }}><strong>En Soirée, Concerts & Festivals</strong> : La musique est trop forte ? Sortez votre carte et partagez votre Snapchat ou Insta en un "tap".</span>
                                 </li>
                                 <li style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
                                     <div style={{ background: 'rgba(255,255,255,0.1)', color: 'white', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px', fontWeight: 'bold' }}>✓</div>
-                                    <span style={{ color: '#D1D5DB', lineHeight: '1.6', fontSize: '16px' }}><strong>Dirigeants & Cadres</strong> souhaitant remplacer les cartes en papier par une solution premium.</span>
+                                    <span style={{ color: '#D1D5DB', lineHeight: '1.6', fontSize: '16px' }}><strong>Dans la rue & en Voyage</strong> : Une rencontre inattendue ? Plus besoin de dicter les chiffres ou d'épeler votre nom.</span>
                                 </li>
                                 <li style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
                                     <div style={{ background: 'rgba(255,255,255,0.1)', color: 'white', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px', fontWeight: 'bold' }}>✓</div>
-                                    <span style={{ color: '#D1D5DB', lineHeight: '1.6', fontSize: '16px' }}><strong>Agences & Marques</strong> désirant équiper leurs équipes de cartes connectées à leur image.</span>
+                                    <span style={{ color: '#D1D5DB', lineHeight: '1.6', fontSize: '16px' }}><strong>Networking, Meetings & Étudiants</strong> : Faites le show ! Marquez les esprits lors de vos conférences ou événements universitaires.</span>
                                 </li>
                             </ul>
                             
@@ -562,13 +562,13 @@ export default function LandingPage() {
                             <div style={{ fontSize: '60px', color: '#E5E7EB', position: 'absolute', top: '16px', right: '24px', fontFamily: 'serif', lineHeight: 1 }}>"</div>
                             <div style={{ display: 'flex', gap: '4px', color: '#FBBF24', marginBottom: '16px' }}>★★★★★</div>
                             <p style={{ color: '#374151', fontSize: '16px', lineHeight: '1.6', marginBottom: '24px', fontStyle: 'italic', position: 'relative', zIndex: 1 }}>
-                                "J'avais l'habitude de jeter la moitié de mes cartes de visite classiques parce que je changeais d'offre. Avec le Pack Digital, je mets tout à jour en temps réel. Mon lien est dans ma bio Insta et ça m'apporte des clients."
+                                "Ce week-end en boîte de nuit, avec la musique à fond, c'était impossible de dicter mon Snap. J'ai sorti ma carte, le gars l'a scannée et paf, ajouté direct. Meilleur truc du monde pour faire des rencontres sans crier !"
                             </p>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                                <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#FCE7F3', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', color: '#DB2777', fontSize: '18px' }}>S</div>
+                                <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#FEF3C7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', color: '#D97706', fontSize: '18px' }}>L</div>
                                 <div>
-                                    <div style={{ fontWeight: '800', color: '#111827' }}>Sarah D.</div>
-                                    <div style={{ fontSize: '13px', color: '#6B7280' }}>Créatrice de Contenu</div>
+                                    <div style={{ fontWeight: '800', color: '#111827' }}>Léo M.</div>
+                                    <div style={{ fontSize: '13px', color: '#6B7280' }}>Étudiant</div>
                                 </div>
                             </div>
                         </div>
