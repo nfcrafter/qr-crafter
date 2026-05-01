@@ -568,15 +568,15 @@ export default function LandingPage() {
 
 
             {/* Gallery Section */}
-            <section style={{ background: '#0D1117', overflow: 'hidden', padding: '100px 0', position: 'relative' }}>
+            <section style={{ background: '#F4F6F9', overflow: 'hidden', padding: '100px 0', position: 'relative' }}>
                 {/* Ambient glow */}
-                <div style={{ position: 'absolute', top: '50%', left: '30%', transform: 'translate(-50%,-50%)', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(79,70,229,0.15) 0%, transparent 70%)', pointerEvents: 'none' }}></div>
-                <div style={{ position: 'absolute', top: '50%', right: '10%', transform: 'translateY(-50%)', width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(14,165,233,0.1) 0%, transparent 70%)', pointerEvents: 'none' }}></div>
+                <div style={{ position: 'absolute', top: '50%', left: '30%', transform: 'translate(-50%,-50%)', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(79,70,229,0.08) 0%, transparent 70%)', pointerEvents: 'none' }}></div>
+                <div style={{ position: 'absolute', top: '50%', right: '10%', transform: 'translateY(-50%)', width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(14,165,233,0.07) 0%, transparent 70%)', pointerEvents: 'none' }}></div>
 
                 <div className="container" style={{ textAlign: 'center', marginBottom: '16px', position: 'relative', zIndex: 2 }}>
-                    <div style={{ background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(10px)', color: '#9CA3AF', padding: '8px 20px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '20px', display: 'inline-block', border: '1px solid rgba(255,255,255,0.08)' }}>Nos Réalisations</div>
-                    <h2 style={{ fontSize: '44px', fontWeight: '900', fontFamily: 'Outfit', color: 'white', letterSpacing: '-0.02em', marginBottom: '16px' }}>Des cartes qui font tourner les têtes</h2>
-                    <p style={{ color: '#6B7280', fontSize: '18px', maxWidth: '550px', margin: '0 auto' }}>Chaque carte est unique, conçue sur-mesure selon votre identité et votre style.</p>
+                    <div style={{ background: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(10px)', color: '#374151', padding: '8px 20px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '20px', display: 'inline-block', border: '1px solid rgba(255,255,255,0.9)' }}>Nos Réalisations</div>
+                    <h2 style={{ fontSize: '44px', fontWeight: '900', fontFamily: 'Outfit', color: '#111827', letterSpacing: '-0.02em', marginBottom: '16px' }}>Des cartes qui font tourner les têtes</h2>
+                    <p style={{ color: '#4B5563', fontSize: '18px', maxWidth: '550px', margin: '0 auto' }}>Chaque carte est unique, conçue sur-mesure selon votre identité et votre style.</p>
                 </div>
 
                 {/* Scrolling strip */}
@@ -618,10 +618,10 @@ export default function LandingPage() {
                 </div>
 
                 <div style={{ textAlign: 'center', marginTop: '48px', position: 'relative', zIndex: 2 }}>
-                    <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary" style={{ background: 'white', color: '#111827', boxShadow: '0 10px 30px rgba(0,0,0,0.4)' }}>
+                    <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary">
                         ✦ Je veux ma carte personnalisée
                     </button>
-                    <p style={{ color: '#4B5563', fontSize: '13px', marginTop: '16px', fontWeight: '600' }}>Design inclus — Livraison sous 24-48h au Bénin</p>
+                    <p style={{ color: '#6B7280', fontSize: '13px', marginTop: '16px', fontWeight: '600' }}>Design inclus — Livraison sous 24-48h au Bénin</p>
                 </div>
             </section>
             
