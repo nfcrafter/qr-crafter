@@ -370,7 +370,7 @@ export default function LandingPage() {
                             <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 32px 0', display: 'flex', flexDirection: 'column', gap: '16px' }}>
                                 <li style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '16px', color: '#E5E7EB' }}>
                                     <div style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#34D399', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 'bold' }}>✓</div>
-                                    Finition mate ou brillante
+                                    Finition brillante
                                 </li>
                                 <li style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '16px', color: '#E5E7EB' }}>
                                     <div style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#34D399', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 'bold' }}>✓</div>
@@ -378,25 +378,27 @@ export default function LandingPage() {
                                 </li>
                                 <li style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '16px', color: '#E5E7EB' }}>
                                     <div style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#34D399', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 'bold' }}>✓</div>
-                                    QR Code permanent gravé au verso
+                                    QR Code permanent gravé au verso de la carte
                                 </li>
                             </ul>
+
+                            {/* 3D Floating Cards optimized for mobile */}
+                            <div className="animate-fade-up delay-1" style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+                                <div className="visual-stack showcase-stack-mobile">
+                                    {/* Card Recto */}
+                                    <img src="/card-recto.png" alt="Card Front" className="glass-card front" style={{ boxShadow: '0 30px 60px rgba(0,0,0,0.5)', borderColor: 'rgba(255,255,255,0.2)' }} onError={(e) => e.target.src = 'https://placehold.co/600x375/334155/ffffff?text=Design+Recto'} />
+
+                                    {/* Card Verso */}
+                                    <img src="/card-verso.png" alt="Card Back" className="glass-card back" style={{ boxShadow: '0 30px 60px rgba(0,0,0,0.5)', borderColor: 'rgba(255,255,255,0.1)' }} onError={(e) => e.target.src = 'https://placehold.co/600x375/1e293b/ffffff?text=Design+Verso'} />
+                                </div>
+                            </div>
                             
                             <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary" style={{ background: 'white', color: '#111827', border: 'none', boxShadow: '0 10px 20px rgba(0,0,0,0.3)' }}>
                                 Je veux ma carte physique
                             </button>
                         </div>
                         
-                        {/* 3D Floating Cards optimized for mobile */}
-                        <div className="animate-fade-up delay-1" style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-                            <div className="visual-stack showcase-stack-mobile">
-                                {/* Card Recto */}
-                                <img src="/card-recto.png" alt="Card Front" className="glass-card front" style={{ boxShadow: '0 30px 60px rgba(0,0,0,0.5)', borderColor: 'rgba(255,255,255,0.2)' }} onError={(e) => e.target.src = 'https://placehold.co/600x375/334155/ffffff?text=Design+Recto'} />
-
-                                {/* Card Verso */}
-                                <img src="/card-verso.png" alt="Card Back" className="glass-card back" style={{ boxShadow: '0 30px 60px rgba(0,0,0,0.5)', borderColor: 'rgba(255,255,255,0.1)' }} onError={(e) => e.target.src = 'https://placehold.co/600x375/1e293b/ffffff?text=Design+Verso'} />
-                            </div>
-                        </div>
+                        
                     </div>
                 </div>
             </section>
@@ -417,7 +419,7 @@ export default function LandingPage() {
                                 <li style={{ display: 'flex', gap: '16px' }}>
                                     <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(255,255,255,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', flexShrink: 0, border: '1px solid rgba(255,255,255,0.9)', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>🔗</div>
                                     <div>
-                                        <h4 style={{ fontWeight: '800', fontSize: '18px', marginBottom: '6px' }}>Lien en bio (Instagram, TikTok)</h4>
+                                        <h4 style={{ fontWeight: '800', fontSize: '18px', marginBottom: '6px' }}>Lien en bio (Instagram, TikTok,etc.)</h4>
                                         <p style={{ color: '#4B5563', fontSize: '15px', lineHeight: '1.5' }}>Un lien unique pour centraliser vos réseaux, portfolio et contacts. Vos abonnés ont accès à tout votre univers.</p>
                                     </div>
                                 </li>
