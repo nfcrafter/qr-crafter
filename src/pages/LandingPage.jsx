@@ -360,6 +360,78 @@ export default function LandingPage() {
                 </div>
             </section>
 
+            {/* Target Audience Section */}
+            <section className="section">
+                <div className="container">
+                    <div style={{ textAlign: 'center', marginBottom: '64px' }} className="animate-fade-up">
+                        <h2 style={{ fontSize: '44px', fontWeight: '900', fontFamily: 'Outfit', color: '#111827', letterSpacing: '-0.02em', marginBottom: '16px' }}>À qui s'adressent nos packs ?</h2>
+                        <p style={{ color: '#4B5563', fontSize: '18px', maxWidth: '600px', margin: '0 auto' }}>Que vous soyez 100% en ligne ou souvent sur le terrain, nous avons la solution adaptée à vos besoins.</p>
+                    </div>
+
+                    <div className="pricing-grid">
+                        {/* Digital Audience */}
+                        <div className="glass-panel animate-fade-up delay-1" style={{ padding: '40px', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
+                            <div style={{ position: 'absolute', top: '-20px', right: '-20px', fontSize: '150px', opacity: '0.05', pointerEvents: 'none' }}>🌐</div>
+                            <h3 style={{ fontSize: '28px', fontWeight: '900', fontFamily: 'Outfit', marginBottom: '12px', color: '#111827', position: 'relative', zIndex: 1 }}>Le Pack Digital</h3>
+                            <div style={{ fontWeight: '700', color: '#4B5563', marginBottom: '32px', fontSize: '16px', position: 'relative', zIndex: 1 }}>Pour les profils 100% connectés :</div>
+                            
+                            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '20px', flex: 1, position: 'relative', zIndex: 1 }}>
+                                <li style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+                                    <div style={{ background: '#E0E7FF', color: '#4F46E5', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px', fontWeight: 'bold' }}>✓</div>
+                                    <span style={{ color: '#374151', lineHeight: '1.6', fontSize: '16px' }}><strong>Créateurs & Influenceurs</strong> souhaitant un "Lien en bio" premium pour tout centraliser.</span>
+                                </li>
+                                <li style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+                                    <div style={{ background: '#E0E7FF', color: '#4F46E5', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px', fontWeight: 'bold' }}>✓</div>
+                                    <span style={{ color: '#374151', lineHeight: '1.6', fontSize: '16px' }}><strong>Freelances & Artistes</strong> voulant partager rapidement leur portfolio et réseaux en ligne.</span>
+                                </li>
+                                <li style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+                                    <div style={{ background: '#E0E7FF', color: '#4F46E5', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px', fontWeight: 'bold' }}>✓</div>
+                                    <span style={{ color: '#374151', lineHeight: '1.6', fontSize: '16px' }}><strong>Commerces & Boutiques</strong> désirant afficher un QR Code à scanner sur leur comptoir.</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        {/* Physical Audience */}
+                        <div className="glass-panel animate-fade-up delay-2" style={{ padding: '40px', background: '#111827', color: 'white', border: '1px solid #374151', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
+                            <div style={{ position: 'absolute', top: '-20px', right: '-20px', fontSize: '150px', opacity: '0.05', pointerEvents: 'none' }}>💳</div>
+                            
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px', position: 'relative', zIndex: 1 }}>
+                                <h3 style={{ fontSize: '28px', fontWeight: '900', fontFamily: 'Outfit', margin: 0, color: 'white' }}>Le Pack Physique</h3>
+                                <div style={{ background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.3)', padding: '6px 12px', borderRadius: '100px', fontSize: '12px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px', color: '#34D399' }}>
+                                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10B981', boxShadow: '0 0 10px #10B981' }}></span>
+                                    Bénin
+                                </div>
+                            </div>
+                            
+                            <div style={{ fontWeight: '700', color: '#9CA3AF', marginBottom: '32px', fontSize: '16px', position: 'relative', zIndex: 1 }}>L'atout des rencontres en présentiel :</div>
+                            
+                            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '20px', flex: 1, position: 'relative', zIndex: 1 }}>
+                                <li style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+                                    <div style={{ background: 'rgba(255,255,255,0.1)', color: 'white', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px', fontWeight: 'bold' }}>✓</div>
+                                    <span style={{ color: '#D1D5DB', lineHeight: '1.6', fontSize: '16px' }}><strong>Entrepreneurs & Commerciaux</strong> pour se démarquer lors des événements de networking.</span>
+                                </li>
+                                <li style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+                                    <div style={{ background: 'rgba(255,255,255,0.1)', color: 'white', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px', fontWeight: 'bold' }}>✓</div>
+                                    <span style={{ color: '#D1D5DB', lineHeight: '1.6', fontSize: '16px' }}><strong>Dirigeants & Cadres</strong> souhaitant remplacer les cartes en papier par une solution premium.</span>
+                                </li>
+                                <li style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+                                    <div style={{ background: 'rgba(255,255,255,0.1)', color: 'white', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px', fontWeight: 'bold' }}>✓</div>
+                                    <span style={{ color: '#D1D5DB', lineHeight: '1.6', fontSize: '16px' }}><strong>Agences & Marques</strong> désirant équiper leurs équipes de cartes connectées à leur image.</span>
+                                </li>
+                            </ul>
+                            
+                            <div style={{ marginTop: '32px', padding: '16px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', borderRadius: '16px', display: 'flex', alignItems: 'flex-start', gap: '12px', position: 'relative', zIndex: 1 }}>
+                                <div style={{ fontSize: '20px' }}>📍</div>
+                                <div>
+                                    <div style={{ color: '#FCA5A5', fontWeight: '700', fontSize: '14px', marginBottom: '4px' }}>Disponibilité Limitée</div>
+                                    <div style={{ color: '#D1D5DB', fontSize: '13px', lineHeight: '1.5' }}>La carte physique est actuellement disponible <strong>uniquement au Bénin</strong> pour le moment.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* Steps Section */}
             <section className="section">
                 <div className="container">
@@ -425,7 +497,7 @@ export default function LandingPage() {
                                 <li><span style={{ color: 'white', fontWeight: '900' }}>✓</span> Profil digital et QR code inclus</li>
                                 <li><span style={{ color: 'white', fontWeight: '900' }}>✓</span> Liens sociaux et contacts illimités</li>
                                 <li><span style={{ color: 'white', fontWeight: '900' }}>✓</span> Accès au tableau de bord</li>
-                                <li><span style={{ color: 'white', fontWeight: '900' }}>✓</span> Livraison au Bénin & sous-région</li>
+                                <li><span style={{ color: 'white', fontWeight: '900' }}>✓</span> Livraison uniquement au Bénin (pour le moment)</li>
                             </ul>
 
                             <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary" style={{ width: '100%', background: 'white', color: '#111827', marginTop: 'auto' }}>Commander la Carte</button>
