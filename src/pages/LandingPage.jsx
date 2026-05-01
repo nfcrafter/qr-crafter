@@ -912,7 +912,7 @@ export default function LandingPage() {
                 <p style={{ color: '#9CA3AF', fontSize: '15px', marginBottom: '32px', maxWidth: '400px', margin: '0 auto 32px auto', lineHeight: '1.6' }}>La carte de visite intelligente qui vous fait remarquer. Disponible au Bénin.</p>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', flexWrap: 'wrap', marginBottom: '40px' }}>
                     <a
-                        href={`https://wa.me/22991566846?text=${encodeURIComponent('Bonjour NFCrafter, j\'ai une question concernant vos cartes.')}`}
+                        href={`https://wa.me/22969473921?text=${encodeURIComponent('Bonjour NFCrafter, j\'ai une question concernant vos cartes.')}`}
                         target="_blank" rel="noopener noreferrer"
                         style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#25D366', color: 'white', padding: '12px 24px', borderRadius: '100px', fontWeight: '700', fontSize: '14px', textDecoration: 'none', transition: 'all 0.2s', boxShadow: '0 4px 15px rgba(37,211,102,0.3)' }}
                         onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 25px rgba(37,211,102,0.4)'; }}
