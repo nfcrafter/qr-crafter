@@ -477,7 +477,7 @@ export default function LandingPage() {
                                 </li>
                                 <li style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
                                     <div style={{ background: '#E0E7FF', color: '#4F46E5', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px', fontWeight: 'bold' }}>✓</div>
-                                    <span style={{ color: '#374151', lineHeight: '1.6', fontSize: '16px' }}><strong>Pour tous au quotidien</strong> : Un lien unique à envoyer par message pour donner toutes vos infos d'un coup.</span>
+                                    <span style={{ color: '#374151', lineHeight: '1.6', fontSize: '16px' }}><strong>Pour tous au quotidien</strong> : Un lien unique à envoyer par message ou à mettre en bio pour donner toutes vos infos d'un coup.</span>
                                 </li>
                             </ul>
                         </div>
@@ -499,7 +499,7 @@ export default function LandingPage() {
                             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '20px', flex: 1, position: 'relative', zIndex: 1 }}>
                                 <li style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
                                     <div style={{ background: 'rgba(255,255,255,0.1)', color: 'white', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px', fontWeight: 'bold' }}>✓</div>
-                                    <span style={{ color: '#D1D5DB', lineHeight: '1.6', fontSize: '16px' }}><strong>En Soirée, Concerts & Festivals</strong> : La musique est trop forte ? Sortez votre carte et partagez votre Snapchat ou Insta en un "tap".</span>
+                                    <span style={{ color: '#D1D5DB', lineHeight: '1.6', fontSize: '16px' }}><strong>En Soirée, Concerts & Festivals</strong> : La musique est trop forte ? Sortez votre carte et partagez vos coordonnées en un "tap".</span>
                                 </li>
                                 <li style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
                                     <div style={{ background: 'rgba(255,255,255,0.1)', color: 'white', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px', fontWeight: 'bold' }}>✓</div>
@@ -507,7 +507,7 @@ export default function LandingPage() {
                                 </li>
                                 <li style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
                                     <div style={{ background: 'rgba(255,255,255,0.1)', color: 'white', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px', fontWeight: 'bold' }}>✓</div>
-                                    <span style={{ color: '#D1D5DB', lineHeight: '1.6', fontSize: '16px' }}><strong>Networking, Meetings & Étudiants</strong> : Faites le show ! Marquez les esprits lors de vos conférences ou événements universitaires.</span>
+                                    <span style={{ color: '#D1D5DB', lineHeight: '1.6', fontSize: '16px' }}><strong>Networking, Meetings & Étudiants</strong> : Faites le show ! Marquez les esprits lors de vos conférences ou événements en donnant vos contacts, vos réseaux sociaux ou portfolio en un clic.</span>
                                 </li>
                             </ul>
                             
@@ -555,7 +555,7 @@ export default function LandingPage() {
                 <div className="container">
                     <div style={{ textAlign: 'center', marginBottom: '64px' }} className="animate-fade-up">
                         <h2 style={{ fontSize: '44px', fontWeight: '900', fontFamily: 'Outfit', color: '#111827', letterSpacing: '-0.02em', marginBottom: '16px' }}>Ils ont passé le cap</h2>
-                        <p style={{ color: '#4B5563', fontSize: '18px', maxWidth: '600px', margin: '0 auto' }}>Découvrez pourquoi nos utilisateurs ne jurent plus que par NFCrafter pour leur networking.</p>
+                        <p style={{ color: '#4B5563', fontSize: '18px', maxWidth: '600px', margin: '0 auto' }}>Découvrez pourquoi nos utilisateurs ne jurent plus que par NFCrafter pour leur quotidien.</p>
                     </div>
 
                     <div className="bento-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
@@ -564,7 +564,7 @@ export default function LandingPage() {
                             <div style={{ fontSize: '60px', color: '#E5E7EB', position: 'absolute', top: '16px', right: '24px', fontFamily: 'serif', lineHeight: 1 }}>"</div>
                             <div style={{ display: 'flex', gap: '4px', color: '#FBBF24', marginBottom: '16px' }}>★★★★★</div>
                             <p style={{ color: '#374151', fontSize: '16px', lineHeight: '1.6', marginBottom: '24px', fontStyle: 'italic', position: 'relative', zIndex: 1 }}>
-                                "Hier en pleine réunion, on m'a demandé mon numéro. Au lieu de dicter les chiffres, j'ai juste sorti ma carte et scanné le téléphone de mon client. Il a lâché un 'Wow' et m'a enregistré instantanément. Ça change tout."
+                                "Hier à la fin d'une conférence, on m'a demandé mes coordonnées. Au lieu de dicter les chiffres, j'ai juste sorti ma carte et touché le téléphone de mon interlocuteur. Il a lâché un 'Wow' et m'a enregistré instantanément. Ça change tout."
                             </p>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                                 <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#E0E7FF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', color: '#4F46E5', fontSize: '18px' }}>M</div>
@@ -580,13 +580,13 @@ export default function LandingPage() {
                             <div style={{ fontSize: '60px', color: '#E5E7EB', position: 'absolute', top: '16px', right: '24px', fontFamily: 'serif', lineHeight: 1 }}>"</div>
                             <div style={{ display: 'flex', gap: '4px', color: '#FBBF24', marginBottom: '16px' }}>★★★★★</div>
                             <p style={{ color: '#374151', fontSize: '16px', lineHeight: '1.6', marginBottom: '24px', fontStyle: 'italic', position: 'relative', zIndex: 1 }}>
-                                "Ce week-end en boîte de nuit, avec la musique à fond, c'était impossible de dicter mon Snap. J'ai sorti ma carte, le gars l'a scannée et paf, ajouté direct. Meilleur truc du monde pour faire des rencontres sans crier !"
+                                "Ce week-end en pleine ambiance, avec la musique à fond, c'était impossible de dicter mon Snap. J'ai sorti ma carte, je l'ai déposé une seconde en haut de l'écran du gars et paf, ajouté direct. Meilleur truc du monde pour faire des rencontres sans crier !"
                             </p>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                                 <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#FEF3C7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', color: '#D97706', fontSize: '18px' }}>L</div>
                                 <div>
-                                    <div style={{ fontWeight: '800', color: '#111827' }}>Léo M.</div>
-                                    <div style={{ fontSize: '13px', color: '#6B7280' }}>Étudiant</div>
+                                    <div style={{ fontWeight: '800', color: '#111827' }}>Nadia M.</div>
+                                    <div style={{ fontSize: '13px', color: '#6B7280' }}>Étudiante</div>
                                 </div>
                             </div>
                         </div>
@@ -710,7 +710,7 @@ export default function LandingPage() {
                         <details>
                             <summary>C'est sécurisé ? Que se passe-t-il si je perds ma carte ?</summary>
                             <div className="faq-content">
-                                Votre carte ne partage que les informations que vous avez choisi de rendre publiques sur votre profil digital (exactement comme une vraie carte de visite en papier). En cas de perte, vous pouvez vous connecter à votre compte et désactiver la puce d'un simple clic pour la rendre inutilisable.
+                                Votre carte ne partage que les informations que vous avez choisi de rendre publiques sur votre profil digital. En cas de perte, il suffit de nous contacter et nous la désactiverons à distance et gratuitement.
                             </div>
                         </details>
                     </div>
