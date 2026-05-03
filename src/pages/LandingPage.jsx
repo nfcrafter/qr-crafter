@@ -381,7 +381,6 @@ export default function LandingPage() {
                                 <div style={{ display: 'flex' }}>
                                     <span style={{ color: '#F59E0B', fontSize: '16px' }}>★</span><span style={{ color: '#F59E0B', fontSize: '16px' }}>★</span><span style={{ color: '#F59E0B', fontSize: '16px' }}>★</span><span style={{ color: '#F59E0B', fontSize: '16px' }}>★</span><span style={{ color: '#F59E0B', fontSize: '16px' }}>★</span>
                                 </div>
-                                <span>Noté <strong>4.9/5</strong> par plus de <strong>300+ pros</strong></span>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#6B7280', fontWeight: '600' }}>
                                 <span style={{ fontSize: '16px' }}>🛡️</span> <span><strong style={{ color: '#10B981' }}>100% Sécurisé.</strong> Vos données sont modifiables uniquement par vous.</span>
