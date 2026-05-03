@@ -1,16 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 
 export default function LandingPage() {
     const navigate = useNavigate();
     const [scrolled, setScrolled] = useState(false);
+    const [session, setSession] = useState(null);
 
     useEffect(() => {
         const handleScroll = () => {
             setScrolled(window.scrollY > 20);
         };
         window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
+        
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            setSession(session);
+        });
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            setSession(session);
+        });
+        
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+            subscription?.unsubscribe();
+        };
     }, []);
 
     const whatsappNumber = "22969473921";
@@ -259,6 +272,7 @@ export default function LandingPage() {
 
                 @media (max-width: 768px) {
                     .mobile-hide { display: none !important; }
+                    .mobile-text-hide { display: none !important; }
                     .showcase-mobile-fix { padding: 60px 0 20px 0 !important; }
                     .showcase-stack-mobile { transform: scale(0.75) !important; height: 200px !important; margin-top: 20px !important; margin-bottom: 20px !important; }
                     .section { padding: 60px 0; }
@@ -297,23 +311,27 @@ export default function LandingPage() {
                 <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                     <button
                         onClick={() => navigate('/login')}
-                        className="mobile-hide"
                         style={{
-                            background: '#FFFFFF',
-                            border: '1px solid #E5E7EB',
-                            color: '#4B5563',
-                            fontWeight: '600',
+                            background: session ? '#EEF2FF' : '#FFFFFF',
+                            border: session ? '1px solid #C7D2FE' : '1px solid #E5E7EB',
+                            color: session ? '#4F46E5' : '#4B5563',
+                            fontWeight: '700',
                             cursor: 'pointer',
                             fontSize: '14px',
-                            padding: '10px 20px',
+                            padding: '10px 16px',
                             borderRadius: '100px',
                             boxShadow: '0 2px 10px rgba(0,0,0,0.03)',
-                            transition: 'all 0.2s'
+                            transition: 'all 0.2s',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            whiteSpace: 'nowrap'
                         }}
-                        onMouseOver={e => { e.currentTarget.style.borderColor = '#D1D5DB'; e.currentTarget.style.color = '#111827'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
-                        onMouseOut={e => { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.color = '#4B5563'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                        onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                        onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; }}
                     >
-                        Espace Client
+                        <span style={{ fontSize: '16px' }}>{session ? '👤' : '🔒'}</span>
+                        <span className="mobile-text-hide">{session ? 'Mon Espace' : 'Connexion'}</span>
                     </button>
                     <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary" style={{ padding: '10px 16px', fontSize: '14px', whiteSpace: 'nowrap' }}>
                         Commander

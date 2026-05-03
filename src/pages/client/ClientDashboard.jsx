@@ -171,6 +171,9 @@ export default function ClientDashboard() {
                     </div>
 
                     <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
+                        <button onClick={() => navigate('/')} className="desktop-only" style={{ background: '#F1F5F9', color: '#475569', border: 'none', padding: '10px 16px', borderRadius: '12px', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            🏠 Accueil
+                        </button>
                         <div className="desktop-only" style={{ textAlign: 'right' }}>
                             <div style={{ fontSize: '13px', fontWeight: '800', color: '#1A1265' }}>Mon Espace</div>
                             <div style={{ fontSize: '11px', color: '#64748B' }}>{user?.email}</div>
@@ -190,7 +193,10 @@ export default function ClientDashboard() {
                             <div style={{ fontWeight: '800', color: '#1A1265' }}>{user?.email}</div>
                             <div style={{ fontSize: '12px', color: '#64748B' }}>Client NFCrafter</div>
                         </div>
-                        <button onClick={() => { supabase.auth.signOut(); navigate('/login'); }} style={{ width: '100%', padding: '16px', borderRadius: '16px', background: '#FEF2F2', color: '#DC2626', border: 'none', fontWeight: '800' }}>Déconnexion</button>
+                        <button onClick={() => navigate('/')} style={{ width: '100%', padding: '16px', borderRadius: '16px', background: '#F1F5F9', color: '#1A1265', border: 'none', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+                            🏠 Retour à l'accueil
+                        </button>
+                        <button onClick={() => { supabase.auth.signOut(); navigate('/login'); }} style={{ width: '100%', padding: '16px', borderRadius: '16px', background: '#FEF2F2', color: '#DC2626', border: 'none', fontWeight: '800', cursor: 'pointer' }}>Déconnexion</button>
                     </div>
                 </div>
             )}

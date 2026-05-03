@@ -66,7 +66,6 @@ export default function Register() {
         }
 
         if (data.user) {
-            // Créer le profil avec les infos admin si disponibles
             const adminProfile = cardInfo?.admin_profile || {}
             await supabase.from('profiles').upsert({
                 id: data.user.id,
@@ -76,12 +75,11 @@ export default function Register() {
                 ...adminProfile,
             })
 
-            // Lier la carte et CLEAR le token
             await supabase.from('cards')
                 .update({ 
                     owner_id: data.user.id, 
                     status: 'active',
-                    activation_token: null // Une seule utilisation
+                    activation_token: null
                 })
                 .eq('card_id', cardId)
                 .eq('activation_token', token)
@@ -101,82 +99,100 @@ export default function Register() {
         <div style={{
             minHeight: '100vh', display: 'flex',
             alignItems: 'center', justifyContent: 'center',
-            background: 'linear-gradient(135deg, #F8FAFC 0%, #EFF6FF 100%)',
+            background: 'linear-gradient(135deg, #F8FAFC 0%, #E0E7FF 100%)',
+            position: 'relative', overflow: 'hidden',
             padding: '40px 20px'
         }}>
-            <div className="premium-card" style={{
+            {/* Orbs de fond */}
+            <div style={{ position: 'absolute', top: '-10%', right: '-10%', width: '40vw', height: '40vw', background: '#4F46E5', borderRadius: '50%', filter: 'blur(100px)', opacity: 0.15 }}></div>
+            <div style={{ position: 'absolute', bottom: '-10%', left: '-5%', width: '35vw', height: '35vw', background: '#EC4899', borderRadius: '50%', filter: 'blur(100px)', opacity: 0.15 }}></div>
+
+            <div className="animate-fade-in" style={{
                 padding: '48px 40px', width: '100%', maxWidth: '500px',
-                background: 'rgba(255, 255, 255, 0.8)',
-                backdropFilter: 'blur(10px)'
+                background: 'rgba(255, 255, 255, 0.6)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                borderRadius: '32px',
+                boxShadow: '0 40px 80px rgba(0,0,0,0.07), inset 0 0 0 1px rgba(255,255,255,0.5)',
+                position: 'relative', zIndex: 10
             }}>
-                {/* Logo */}
                 <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-                    <img src="/logo.png" alt="Logo" style={{ height: '48px', marginBottom: '16px' }} />
-                    <h1 style={{ fontSize: '28px', fontWeight: '800', letterSpacing: '-1px', color: 'var(--text-900)', margin: 0 }}>
+                    <div style={{ width: '64px', height: '64px', background: 'white', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px auto', boxShadow: '0 10px 25px rgba(0,0,0,0.05)' }}>
+                        <img src="/logo.png" alt="Logo" style={{ height: '40px' }} />
+                    </div>
+                    <h1 style={{ fontSize: '28px', fontWeight: '900', letterSpacing: '-1px', color: '#111827', margin: 0, fontFamily: 'Outfit' }}>
                         {cardId ? 'ACTIVER MA CARTE' : 'CRÉER MON COMPTE'}
                     </h1>
                     
                     {cardId && cardInfo && (
                         <div style={{
                             marginTop: '16px', padding: '12px 16px',
-                            background: 'var(--primary-light)', borderRadius: '12px',
-                            fontSize: '14px', color: '#166534', fontWeight: '600',
-                            border: '1px solid #BBF7D0', display: 'inline-flex', alignItems: 'center', gap: '8px'
+                            background: 'rgba(22, 163, 74, 0.1)', borderRadius: '16px',
+                            fontSize: '14px', color: '#166534', fontWeight: '700',
+                            border: '1px solid rgba(22, 163, 74, 0.2)', display: 'inline-flex', alignItems: 'center', gap: '8px'
                         }}>
-                            <span>✅</span> Carte #{cardId} reconnue ({cardInfo.card_name})
+                            <span>✅</span> Carte #{cardId} reconnue
                         </div>
                     )}
                     
                     {cardId && !cardInfo && (
                         <div style={{
                             marginTop: '16px', padding: '12px 16px',
-                            background: '#FEF2F2', borderRadius: '12px',
-                            fontSize: '14px', color: '#991B1B', fontWeight: '600',
-                            border: '1px solid #FECACA', display: 'inline-flex', alignItems: 'center', gap: '8px'
+                            background: 'rgba(220, 38, 38, 0.1)', borderRadius: '16px',
+                            fontSize: '14px', color: '#991B1B', fontWeight: '700',
+                            border: '1px solid rgba(220, 38, 38, 0.2)', display: 'inline-flex', alignItems: 'center', gap: '8px'
                         }}>
-                            <span>⚠️</span> Lien d'activation invalide ou expiré
+                            <span>⚠️</span> Lien invalide ou expiré
                         </div>
                     )}
 
                     {!cardId && (
-                        <p style={{ color: 'var(--text-500)', fontSize: '15px', marginTop: '8px' }}>
+                        <p style={{ color: '#64748B', fontSize: '15px', marginTop: '8px' }}>
                             Rejoignez la révolution des cartes de visite numériques
                         </p>
                     )}
                 </div>
 
                 <form onSubmit={handleRegister}>
-                    <div className="field">
-                        <label style={{ fontWeight: '600', color: 'var(--text-700)' }}>Nom complet</label>
+                    <div style={{ marginBottom: '20px' }}>
+                        <label style={{ display: 'block', marginBottom: '8px', fontWeight: '700', fontSize: '13px', color: '#374151' }}>Nom complet</label>
                         <input type="text" placeholder="Jean Dupont"
-                            value={form.fullName}
-                            onChange={e => update('fullName', e.target.value)}
+                            value={form.fullName} onChange={e => update('fullName', e.target.value)}
                             required autoFocus
+                            style={{ width: '100%', padding: '16px', borderRadius: '16px', border: '1px solid #E2E8F0', background: 'rgba(255,255,255,0.8)', fontSize: '15px', outline: 'none', transition: 'all 0.2s', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)' }}
+                            onFocus={e => { e.target.style.borderColor = '#6366F1'; e.target.style.boxShadow = '0 0 0 4px rgba(99, 102, 241, 0.1)'; }}
+                            onBlur={e => { e.target.style.borderColor = '#E2E8F0'; e.target.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.02)'; }}
                         />
                     </div>
-                    <div className="field">
-                        <label style={{ fontWeight: '600', color: 'var(--text-700)' }}>Email</label>
+                    <div style={{ marginBottom: '20px' }}>
+                        <label style={{ display: 'block', marginBottom: '8px', fontWeight: '700', fontSize: '13px', color: '#374151' }}>Email</label>
                         <input type="email" placeholder="jean@example.com"
-                            value={form.email}
-                            onChange={e => update('email', e.target.value)}
+                            value={form.email} onChange={e => update('email', e.target.value)}
                             required
+                            style={{ width: '100%', padding: '16px', borderRadius: '16px', border: '1px solid #E2E8F0', background: 'rgba(255,255,255,0.8)', fontSize: '15px', outline: 'none', transition: 'all 0.2s', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)' }}
+                            onFocus={e => { e.target.style.borderColor = '#6366F1'; e.target.style.boxShadow = '0 0 0 4px rgba(99, 102, 241, 0.1)'; }}
+                            onBlur={e => { e.target.style.borderColor = '#E2E8F0'; e.target.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.02)'; }}
                         />
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                        <div className="field">
-                            <label style={{ fontWeight: '600', color: 'var(--text-700)' }}>Mot de passe</label>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '32px' }}>
+                        <div>
+                            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '700', fontSize: '13px', color: '#374151' }}>Mot de passe</label>
                             <input type="password" placeholder="••••••••"
-                                value={form.password}
-                                onChange={e => update('password', e.target.value)}
+                                value={form.password} onChange={e => update('password', e.target.value)}
                                 required
+                                style={{ width: '100%', padding: '16px', borderRadius: '16px', border: '1px solid #E2E8F0', background: 'rgba(255,255,255,0.8)', fontSize: '15px', outline: 'none', transition: 'all 0.2s', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)' }}
+                                onFocus={e => { e.target.style.borderColor = '#6366F1'; e.target.style.boxShadow = '0 0 0 4px rgba(99, 102, 241, 0.1)'; }}
+                                onBlur={e => { e.target.style.borderColor = '#E2E8F0'; e.target.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.02)'; }}
                             />
                         </div>
-                        <div className="field">
-                            <label style={{ fontWeight: '600', color: 'var(--text-700)' }}>Confirmer</label>
+                        <div>
+                            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '700', fontSize: '13px', color: '#374151' }}>Confirmer</label>
                             <input type="password" placeholder="••••••••"
-                                value={form.confirm}
-                                onChange={e => update('confirm', e.target.value)}
+                                value={form.confirm} onChange={e => update('confirm', e.target.value)}
                                 required
+                                style={{ width: '100%', padding: '16px', borderRadius: '16px', border: '1px solid #E2E8F0', background: 'rgba(255,255,255,0.8)', fontSize: '15px', outline: 'none', transition: 'all 0.2s', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)' }}
+                                onFocus={e => { e.target.style.borderColor = '#6366F1'; e.target.style.boxShadow = '0 0 0 4px rgba(99, 102, 241, 0.1)'; }}
+                                onBlur={e => { e.target.style.borderColor = '#E2E8F0'; e.target.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.02)'; }}
                             />
                         </div>
                     </div>
@@ -192,21 +208,36 @@ export default function Register() {
                         </div>
                     )}
 
-                    <button type="submit" className="btn-primary"
-                        style={{ width: '100%', justifyContent: 'center', padding: '14px', fontSize: '16px', marginTop: '8px' }}
+                    <button type="submit" 
+                        style={{ 
+                            width: '100%', padding: '16px', borderRadius: '16px', 
+                            background: 'linear-gradient(135deg, #4F46E5, #3B82F6)', color: 'white', 
+                            fontSize: '16px', fontWeight: '800', border: 'none', cursor: 'pointer',
+                            boxShadow: '0 10px 25px rgba(79, 70, 229, 0.3)', transition: 'all 0.2s'
+                        }}
+                        onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 15px 35px rgba(79, 70, 229, 0.4)'; }}
+                        onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 10px 25px rgba(79, 70, 229, 0.3)'; }}
                         disabled={loading}>
                         {loading ? 'Création...' : cardId ? '🚀 Activer ma carte' : 'Créer mon compte'}
                     </button>
                 </form>
 
-                <div style={{ marginTop: '32px', textAlign: 'center', borderTop: '1px solid var(--border)', paddingTop: '24px' }}>
-                    <p style={{ color: 'var(--text-500)', fontSize: '14px' }}>
+                <div style={{ marginTop: '32px', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <p style={{ color: '#64748B', fontSize: '14px', margin: 0 }}>
                         Déjà un compte ?{' '}
                         <Link to={cardId ? `/activate?card=${cardId}&token=${token}` : '/login'}
-                            style={{ color: 'var(--primary)', fontWeight: '700', textDecoration: 'none' }}>
+                            style={{ color: '#4F46E5', fontWeight: '800', textDecoration: 'none' }}>
                             Se connecter
                         </Link>
                     </p>
+                    <button 
+                        onClick={() => navigate('/')}
+                        style={{ background: 'none', border: 'none', color: '#94A3B8', fontSize: '14px', cursor: 'pointer', fontWeight: '600', transition: 'color 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                        onMouseOver={e => e.currentTarget.style.color = '#4B5563'}
+                        onMouseOut={e => e.currentTarget.style.color = '#94A3B8'}
+                    >
+                        <span>🏠</span> Retour à l'accueil
+                    </button>
                 </div>
             </div>
         </div>
