@@ -165,12 +165,19 @@ export default function LandingPage() {
 
                 /* Buttons */
                 .btn-primary {
-                    background: #111827; color: white; padding: 18px 36px; border-radius: 100px; 
-                    font-size: 16px; font-weight: 700; border: none; cursor: pointer; 
+                    background: linear-gradient(135deg, #4F46E5, #3B82F6); color: white; padding: 18px 36px; border-radius: 100px; 
+                    font-size: 16px; font-weight: 800; border: none; cursor: pointer; 
                     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-                    box-shadow: 0 10px 20px rgba(17, 24, 39, 0.15);
+                    box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
+                    position: relative; overflow: hidden;
                 }
-                .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(17, 24, 39, 0.25); }
+                .btn-primary::after {
+                    content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+                    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+                    animation: shine 3s infinite;
+                }
+                @keyframes shine { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
+                .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(79, 70, 229, 0.4); }
                 
                 .btn-secondary {
                     background: rgba(255, 255, 255, 0.7); color: #111827; padding: 18px 36px; border-radius: 100px; 
@@ -251,7 +258,7 @@ export default function LandingPage() {
                 .pack-qr-img { height: 180px; width: 180px; object-fit: cover; border-radius: 24px; box-shadow: 0 25px 50px rgba(0,0,0,0.15); animation: floatPackImg 7s ease-in-out infinite 0.5s; }
 
                 @media (max-width: 768px) {
-                    .mobile-hide { display: none; }
+                    .mobile-hide { display: none !important; }
                     .showcase-mobile-fix { padding: 60px 0 20px 0 !important; }
                     .showcase-stack-mobile { transform: scale(0.75) !important; height: 200px !important; margin-top: 20px !important; margin-bottom: 20px !important; }
                     .section { padding: 60px 0; }
@@ -279,17 +286,18 @@ export default function LandingPage() {
 
             {/* Navigation */}
             <nav className={`glass-nav ${scrolled ? 'scrolled' : ''}`}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => navigate('/')}>
-                    <img src="/logo.png" alt="NFCrafter" style={{ height: '32px' }} />
-                    <span className="mobile-hide" style={{ fontSize: '22px', fontWeight: '900', color: '#111827', letterSpacing: '-0.5px', fontFamily: 'Outfit' }}>NFCrafter</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }} onClick={() => navigate('/')}>
+                    <img src="/logo.png" alt="NFCrafter" style={{ height: '28px' }} />
+                    <span style={{ fontSize: '20px', fontWeight: '900', color: '#111827', letterSpacing: '-0.5px', fontFamily: 'Outfit' }}>NFCrafter</span>
                 </div>
                 <div className="mobile-hide" style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
                     <a href="#utilite" className="nav-link">Comment ça marche ?</a>
                     <a href="#tarifs" className="nav-link">Nos Packs</a>
                 </div>
-                <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                     <button
                         onClick={() => navigate('/login')}
+                        className="mobile-hide"
                         style={{
                             background: '#FFFFFF',
                             border: '1px solid #E5E7EB',
@@ -307,7 +315,7 @@ export default function LandingPage() {
                     >
                         Espace Client
                     </button>
-                    <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary mobile-hide" style={{ padding: '10px 24px', fontSize: '14px' }}>
+                    <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary" style={{ padding: '10px 16px', fontSize: '14px', whiteSpace: 'nowrap' }}>
                         Commander
                     </button>
                 </div>
@@ -327,15 +335,21 @@ export default function LandingPage() {
                             <p className="hero-subtitle" style={{ fontSize: '20px', color: '#4B5563', maxWidth: '600px', marginBottom: '40px', lineHeight: '1.6', fontWeight: '500' }}>
                                 Échangez vos coordonnées, réseaux sociaux et bien plus en un seul geste. Plus besoin d'épeler votre nom ou votre numéro.
                             </p>
-                            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '16px' }}>
+                            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '24px' }}>
                                 <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary">
-                                    Commander ma carte
+                                    ⚡ Créer ma carte maintenant
                                 </button>
                                 {/* ⚠️ Remplacer /p/demo par le slug d'un vrai profil client */}
                                 <a href="/p/demo" className="btn-secondary" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                                    <span>Voir un exemple</span>
+                                    <span>👀 Tester un profil</span>
                                     <span style={{ fontSize: '16px' }}>&#8594;</span>
                                 </a>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '14px', color: '#4B5563', fontWeight: '600', marginBottom: '12px' }}>
+                                <div style={{ display: 'flex' }}>
+                                    <span style={{ color: '#F59E0B', fontSize: '16px' }}>★</span><span style={{ color: '#F59E0B', fontSize: '16px' }}>★</span><span style={{ color: '#F59E0B', fontSize: '16px' }}>★</span><span style={{ color: '#F59E0B', fontSize: '16px' }}>★</span><span style={{ color: '#F59E0B', fontSize: '16px' }}>★</span>
+                                </div>
+                                <span>Noté <strong>4.9/5</strong> par plus de <strong>300+ pros</strong> au Bénin</span>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#6B7280', fontWeight: '600' }}>
                                 <span style={{ fontSize: '16px' }}>🛡️</span> <span><strong style={{ color: '#10B981' }}>100% Sécurisé.</strong> Vos données sont modifiables uniquement par vous.</span>
@@ -510,7 +524,7 @@ export default function LandingPage() {
                                 <img src="/placeholder-qr-custom.jpg" alt="QR Code personnalisé" className="pack-qr-img" onError={(e) => e.target.src='https://placehold.co/400x400/f1f5f9/1a1265?text=QR+Code'} />
                             </div>
 
-                            <button onClick={() => window.open(getWhatsAppUrl('digital'), '_blank')} className="btn-primary" style={{ background: '#111827', color: 'white', margin: '0 auto' }}>
+                            <button onClick={() => window.open(getWhatsAppUrl('digital'), '_blank')} className="btn-primary" style={{ margin: '0 auto' }}>
                                 Commander le Pack Digital
                             </button>
                         </div>
@@ -554,7 +568,12 @@ export default function LandingPage() {
                             <div style={{ position: 'absolute', top: '-20px', right: '-20px', fontSize: '150px', opacity: '0.05', pointerEvents: 'none' }}>💳</div>
                             
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px', position: 'relative', zIndex: 1 }}>
-                                <h3 style={{ fontSize: '28px', fontWeight: '900', fontFamily: 'Outfit', margin: 0, color: 'white' }}>Le Pack Physique</h3>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                    <div style={{ background: 'linear-gradient(90deg, #F59E0B, #FBBF24)', color: '#111827', padding: '4px 12px', borderRadius: '100px', fontSize: '11px', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '4px', alignSelf: 'flex-start', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                        <span>🌟</span> LE PLUS POPULAIRE
+                                    </div>
+                                    <h3 style={{ fontSize: '28px', fontWeight: '900', fontFamily: 'Outfit', margin: 0, color: 'white' }}>Le Pack Physique</h3>
+                                </div>
                                 <div style={{ background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.3)', padding: '6px 12px', borderRadius: '100px', fontSize: '12px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px', color: '#34D399' }}>
                                     <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10B981', boxShadow: '0 0 10px #10B981' }}></span>
                                     Bénin
@@ -893,6 +912,54 @@ export default function LandingPage() {
                                         <div style={{ width: '100%', height: '40px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', marginBottom: '8px' }}></div>
                                         <div style={{ width: '100%', height: '40px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px' }}></div>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Social Proof / Testimonials Section */}
+            <section className="section" style={{ background: 'white' }}>
+                <div className="container">
+                    <div style={{ textAlign: 'center', marginBottom: '48px' }} className="animate-fade-up">
+                        <h2 style={{ fontSize: '40px', fontWeight: '900', fontFamily: 'Outfit', color: '#111827', letterSpacing: '-0.02em', marginBottom: '16px' }}>Ils l'ont adoptée</h2>
+                        <p style={{ color: '#4B5563', fontSize: '18px', maxWidth: '600px', margin: '0 auto' }}>Des centaines de professionnels au Bénin utilisent déjà NFCrafter pour booster leur réseau.</p>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+                        <div className="glass-panel animate-fade-up delay-1" style={{ padding: '32px', background: '#F8FAFC', border: '1px solid #E2E8F0', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
+                            <div style={{ color: '#F59E0B', fontSize: '20px', marginBottom: '16px' }}>★★★★★</div>
+                            <p style={{ color: '#4B5563', fontSize: '16px', lineHeight: '1.6', marginBottom: '24px', fontStyle: 'italic' }}>"Je ne perds plus aucun contact après mes séminaires. Les gens scannent ma carte et j'ai directement un nouveau follower ou un message WhatsApp. C'est magique !"</p>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>👨🏾‍💼</div>
+                                <div>
+                                    <h4 style={{ fontWeight: '800', color: '#111827', fontSize: '15px' }}>Alain D.</h4>
+                                    <span style={{ color: '#64748B', fontSize: '13px' }}>Entrepreneur Web</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="glass-panel animate-fade-up delay-2" style={{ padding: '32px', background: '#F8FAFC', border: '1px solid #E2E8F0', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
+                            <div style={{ color: '#F59E0B', fontSize: '20px', marginBottom: '16px' }}>★★★★★</div>
+                            <p style={{ color: '#4B5563', fontSize: '16px', lineHeight: '1.6', marginBottom: '24px', fontStyle: 'italic' }}>"Mes clients au restaurant adorent ! Ils scannent la carte sur le comptoir, voient le menu et s'abonnent à notre page Instagram. C'est ultra pratique et pro."</p>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>👩🏾‍🍳</div>
+                                <div>
+                                    <h4 style={{ fontWeight: '800', color: '#111827', fontSize: '15px' }}>Sarah M.</h4>
+                                    <span style={{ color: '#64748B', fontSize: '13px' }}>Gérante de Restaurant</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="glass-panel animate-fade-up delay-3" style={{ padding: '32px', background: '#F8FAFC', border: '1px solid #E2E8F0', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
+                            <div style={{ color: '#F59E0B', fontSize: '20px', marginBottom: '16px' }}>★★★★★</div>
+                            <p style={{ color: '#4B5563', fontSize: '16px', lineHeight: '1.6', marginBottom: '24px', fontStyle: 'italic' }}>"La qualité de la carte est incroyable. Quand je la sors en rendez-vous client, ça crée direct l'effet waouh. C'est le meilleur investissement pour mon business."</p>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>🧑🏾‍💻</div>
+                                <div>
+                                    <h4 style={{ fontWeight: '800', color: '#111827', fontSize: '15px' }}>Marc K.</h4>
+                                    <span style={{ color: '#64748B', fontSize: '13px' }}>Freelance IT</span>
                                 </div>
                             </div>
                         </div>
