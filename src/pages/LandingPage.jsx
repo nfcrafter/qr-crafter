@@ -375,7 +375,7 @@ export default function LandingPage() {
                         </div>
 
                         <div className="animate-fade-up delay-1" style={{ display: 'flex', justifyContent: 'center', padding: '20px 0' }}>
-                            <div style={{ position: 'relative', width: '100%', maxWidth: '420px' }}>
+                            <div style={{ position: 'relative', width: '100%', maxWidth: '300px' }}>
                                 {/* Arrière-plan coloré pour faire ressortir l'image */}
                                 <div style={{ position: 'absolute', top: '10px', left: '-10px', right: '10px', bottom: '-10px', background: 'linear-gradient(135deg, #4F46E5, #0EA5E9)', borderRadius: '32px', opacity: 0.15, filter: 'blur(20px)', zIndex: 0 }}></div>
                                 
@@ -388,7 +388,7 @@ export default function LandingPage() {
                                     controls
                                     style={{ 
                                         width: '100%', 
-                                        height: 'auto', 
+                                        height: '400px', 
                                         borderRadius: '32px', 
                                         boxShadow: '0 25px 60px rgba(0,0,0,0.15)', 
                                         transform: 'rotate(-2deg)', 
@@ -396,16 +396,15 @@ export default function LandingPage() {
                                         position: 'relative',
                                         zIndex: 1,
                                         animation: 'floatSlow 6s ease-in-out infinite',
-                                        aspectRatio: '9/16',
                                         objectFit: 'cover',
                                         backgroundColor: '#1A1265'
                                     }} 
                                 />
                                 
                                 {/* Badge de statut flottant */}
-                                <div className="glass-panel" style={{ position: 'absolute', bottom: '-15px', right: '-10px', padding: '10px 20px', borderRadius: '100px', zIndex: 2, display: 'flex', alignItems: 'center', gap: '10px', animation: 'floatFast 4s ease-in-out infinite', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}>
+                                <div className="glass-panel" style={{ position: 'absolute', bottom: '-15px', right: '-15px', padding: '10px 18px', borderRadius: '100px', zIndex: 2, display: 'flex', alignItems: 'center', gap: '8px', animation: 'floatFast 4s ease-in-out infinite', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}>
                                     <span style={{ fontSize: '18px' }}>🎬</span>
-                                    <span style={{ fontWeight: '800', fontSize: '14px', color: '#111827' }}>Démonstration en direct</span>
+                                    <span style={{ fontWeight: '800', fontSize: '13px', color: '#111827' }}>Démonstration</span>
                                 </div>
                             </div>
                         </div>
