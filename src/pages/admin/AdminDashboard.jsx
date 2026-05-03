@@ -25,12 +25,15 @@ export default function AdminDashboard() {
     const [view, setView] = useState('dashboard'); // 'dashboard' or 'users' or 'finance'
     const [users, setUsers] = useState([]);
     
-    const [financeData, setFinanceData] = useState({
-        digitalCount: 0,
-        physicalCount: 0,
-        otherRevenue: 0,
-        expenses: 0
-    });
+    const [financeTransactions, setFinanceTransactions] = useState([]);
+    
+    // Form states
+    const [transactionType, setTransactionType] = useState('income');
+    const [incomeCategory, setIncomeCategory] = useState('digital');
+    const [incomeQty, setIncomeQty] = useState(1);
+    const [incomeAmount, setIncomeAmount] = useState('');
+    const [expenseDesc, setExpenseDesc] = useState('');
+    const [expenseAmount, setExpenseAmount] = useState('');
 
     const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', children: null, onConfirm: null, type: 'info' });
     const [folderNameInput, setFolderNameInput] = useState('');
@@ -50,17 +53,46 @@ export default function AdminDashboard() {
         updateRequestsCount();
         
         // Load finance data from local storage
-        const savedFinance = localStorage.getItem('nfcrafter_finance');
-        if (savedFinance) {
-            try { setFinanceData(JSON.parse(savedFinance)); } catch (e) {}
+        const savedTrans = localStorage.getItem('nfcrafter_transactions');
+        if (savedTrans) {
+            try { setFinanceTransactions(JSON.parse(savedTrans)); } catch (e) {}
         }
     }, [filterFolder, view]);
 
-    const updateFinance = (key, value) => {
-        const newData = { ...financeData, [key]: Number(value) || 0 };
-        setFinanceData(newData);
-        localStorage.setItem('nfcrafter_finance', JSON.stringify(newData));
+    const handleAddTransaction = () => {
+        let newTx = { id: Date.now(), date: new Date().toISOString() };
+        
+        if (transactionType === 'income') {
+            if (incomeCategory === 'digital') {
+                newTx = { ...newTx, type: 'income', category: 'Pack Digital', amount: incomeQty * 5000, desc: `${incomeQty}x Pack Digital` };
+            } else if (incomeCategory === 'physical') {
+                newTx = { ...newTx, type: 'income', category: 'Pack Physique', amount: incomeQty * 10000, desc: `${incomeQty}x Pack Physique` };
+            } else {
+                if (!incomeAmount) return toast("Veuillez entrer un montant", "error");
+                newTx = { ...newTx, type: 'income', category: 'Autre', amount: Number(incomeAmount), desc: 'Autre revenu' };
+            }
+        } else {
+            if (!expenseDesc || !expenseAmount) return toast("Veuillez remplir la description et le montant", "error");
+            newTx = { ...newTx, type: 'expense', category: 'Dépense', amount: Number(expenseAmount), desc: expenseDesc };
+        }
+
+        const updated = [newTx, ...financeTransactions];
+        setFinanceTransactions(updated);
+        localStorage.setItem('nfcrafter_transactions', JSON.stringify(updated));
+        toast('Ajouté avec succès', 'success');
+
+        setIncomeQty(1); setIncomeAmount(''); setExpenseDesc(''); setExpenseAmount('');
     };
+
+    const handleDeleteTransaction = (id) => {
+        const updated = financeTransactions.filter(t => t.id !== id);
+        setFinanceTransactions(updated);
+        localStorage.setItem('nfcrafter_transactions', JSON.stringify(updated));
+    };
+
+    const totalIncome = financeTransactions.filter(t => t.type === 'income').reduce((acc, curr) => acc + curr.amount, 0);
+    const totalExpense = financeTransactions.filter(t => t.type === 'expense').reduce((acc, curr) => acc + curr.amount, 0);
+    const netProfit = totalIncome - totalExpense;
 
     async function loadData() {
         setLoading(true);
@@ -315,56 +347,109 @@ export default function AdminDashboard() {
                             <div style={{ textAlign: 'center', padding: '100px' }}>Chargement...</div>
                         ) : view === 'finance' ? (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                                {/* KPI Cards */}
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px' }}>
                                     <div style={{ padding: '24px', background: 'white', borderRadius: '20px', border: '1px solid #E2E8F0', boxShadow: '0 4px 15px rgba(0,0,0,0.02)' }}>
                                         <div style={{ fontSize: '13px', fontWeight: '800', color: '#64748B', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>CA Total</div>
                                         <div style={{ fontSize: '32px', fontWeight: '900', color: '#1A1265' }}>
-                                            {(financeData.digitalCount * 5000 + financeData.physicalCount * 10000 + financeData.otherRevenue).toLocaleString('fr-FR')} <small style={{fontSize: '16px', color: '#94A3B8'}}>f CFA</small>
+                                            {totalIncome.toLocaleString('fr-FR')} <small style={{fontSize: '16px', color: '#94A3B8'}}>f CFA</small>
                                         </div>
                                     </div>
                                     <div style={{ padding: '24px', background: 'white', borderRadius: '20px', border: '1px solid #E2E8F0', boxShadow: '0 4px 15px rgba(0,0,0,0.02)' }}>
                                         <div style={{ fontSize: '13px', fontWeight: '800', color: '#64748B', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>Dépenses</div>
                                         <div style={{ fontSize: '32px', fontWeight: '900', color: '#EF4444' }}>
-                                            {financeData.expenses.toLocaleString('fr-FR')} <small style={{fontSize: '16px', color: '#FCA5A5'}}>f CFA</small>
+                                            {totalExpense.toLocaleString('fr-FR')} <small style={{fontSize: '16px', color: '#FCA5A5'}}>f CFA</small>
                                         </div>
                                     </div>
                                     <div style={{ padding: '24px', background: '#1A1265', borderRadius: '20px', color: 'white', boxShadow: '0 10px 25px rgba(26,18,101,0.2)' }}>
                                         <div style={{ fontSize: '13px', fontWeight: '800', color: '#A5B4FC', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>Bénéfice Net</div>
                                         <div style={{ fontSize: '32px', fontWeight: '900', color: '#10B981' }}>
-                                            {((financeData.digitalCount * 5000 + financeData.physicalCount * 10000 + financeData.otherRevenue) - financeData.expenses).toLocaleString('fr-FR')} <small style={{fontSize: '16px', color: '#6EE7B7'}}>f CFA</small>
+                                            {netProfit.toLocaleString('fr-FR')} <small style={{fontSize: '16px', color: '#6EE7B7'}}>f CFA</small>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div style={{ background: 'white', borderRadius: '20px', border: '1px solid #E2E8F0', padding: '32px' }}>
-                                    <h3 style={{ fontSize: '20px', fontWeight: '900', color: '#1A1265', marginBottom: '24px' }}>Mise à jour manuelle des données</h3>
-                                    
-                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '32px' }}>
-                                        <div>
-                                            <label style={{ display: 'block', fontSize: '14px', fontWeight: '700', color: '#475569', marginBottom: '8px' }}>Pack Digital (5.000f) - Quantité vendue</label>
-                                            <input type="number" min="0" value={financeData.digitalCount || ''} onChange={e => updateFinance('digitalCount', e.target.value)} style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #E2E8F0', background: '#F8FAFC', fontSize: '16px', fontWeight: '600', outline: 'none' }} />
-                                            <div style={{ marginTop: '8px', fontSize: '13px', color: '#10B981', fontWeight: '700' }}>CA généré : {(financeData.digitalCount * 5000).toLocaleString('fr-FR')} f</div>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+                                    {/* Action Form */}
+                                    <div style={{ background: 'white', borderRadius: '20px', border: '1px solid #E2E8F0', padding: '32px' }}>
+                                        <h3 style={{ fontSize: '20px', fontWeight: '900', color: '#1A1265', marginBottom: '24px' }}>Ajouter une opération</h3>
+                                        
+                                        <div style={{ display: 'flex', gap: '12px', marginBottom: '24px' }}>
+                                            <button onClick={() => setTransactionType('income')} style={{ flex: 1, padding: '12px', borderRadius: '12px', fontWeight: '700', border: transactionType === 'income' ? '2px solid #10B981' : '1px solid #E2E8F0', background: transactionType === 'income' ? '#ECFDF5' : 'white', color: transactionType === 'income' ? '#059669' : '#64748B', cursor: 'pointer', transition: 'all 0.2s' }}>📈 Vente (Revenu)</button>
+                                            <button onClick={() => setTransactionType('expense')} style={{ flex: 1, padding: '12px', borderRadius: '12px', fontWeight: '700', border: transactionType === 'expense' ? '2px solid #EF4444' : '1px solid #E2E8F0', background: transactionType === 'expense' ? '#FEF2F2' : 'white', color: transactionType === 'expense' ? '#DC2626' : '#64748B', cursor: 'pointer', transition: 'all 0.2s' }}>📉 Dépense</button>
                                         </div>
 
-                                        <div>
-                                            <label style={{ display: 'block', fontSize: '14px', fontWeight: '700', color: '#475569', marginBottom: '8px' }}>Pack Physique (10.000f) - Quantité vendue</label>
-                                            <input type="number" min="0" value={financeData.physicalCount || ''} onChange={e => updateFinance('physicalCount', e.target.value)} style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #E2E8F0', background: '#F8FAFC', fontSize: '16px', fontWeight: '600', outline: 'none' }} />
-                                            <div style={{ marginTop: '8px', fontSize: '13px', color: '#10B981', fontWeight: '700' }}>CA généré : {(financeData.physicalCount * 10000).toLocaleString('fr-FR')} f</div>
-                                        </div>
+                                        {transactionType === 'income' && (
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                                <div>
+                                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: '#475569', marginBottom: '8px' }}>Que venez-vous de vendre ?</label>
+                                                    <select value={incomeCategory} onChange={e => setIncomeCategory(e.target.value)} style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #E2E8F0', background: '#F8FAFC', fontSize: '15px', fontWeight: '600', outline: 'none' }}>
+                                                        <option value="digital">Pack Digital (5.000f)</option>
+                                                        <option value="physical">Pack Physique (10.000f)</option>
+                                                        <option value="other">Autre revenu</option>
+                                                    </select>
+                                                </div>
+                                                
+                                                {incomeCategory !== 'other' ? (
+                                                    <div>
+                                                        <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: '#475569', marginBottom: '8px' }}>Combien de packs vendus ?</label>
+                                                        <input type="number" min="1" value={incomeQty} onChange={e => setIncomeQty(e.target.value)} style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #E2E8F0', background: '#F8FAFC', fontSize: '16px', fontWeight: '600', outline: 'none' }} />
+                                                    </div>
+                                                ) : (
+                                                    <div>
+                                                        <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: '#475569', marginBottom: '8px' }}>Montant total (f CFA)</label>
+                                                        <input type="number" min="0" value={incomeAmount} onChange={e => setIncomeAmount(e.target.value)} placeholder="Ex: 15000" style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #E2E8F0', background: '#F8FAFC', fontSize: '16px', fontWeight: '600', outline: 'none' }} />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
 
-                                        <div>
-                                            <label style={{ display: 'block', fontSize: '14px', fontWeight: '700', color: '#475569', marginBottom: '8px' }}>Autres revenus (f CFA)</label>
-                                            <input type="number" min="0" value={financeData.otherRevenue || ''} onChange={e => updateFinance('otherRevenue', e.target.value)} style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #E2E8F0', background: '#F8FAFC', fontSize: '16px', fontWeight: '600', outline: 'none' }} />
-                                        </div>
+                                        {transactionType === 'expense' && (
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                                <div>
+                                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: '#475569', marginBottom: '8px' }}>Détails de la dépense</label>
+                                                    <input type="text" value={expenseDesc} onChange={e => setExpenseDesc(e.target.value)} placeholder="Ex: Cartes vierges, Imprimeur, Pub FB..." style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #E2E8F0', background: '#F8FAFC', fontSize: '15px', fontWeight: '600', outline: 'none' }} />
+                                                </div>
+                                                <div>
+                                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: '#475569', marginBottom: '8px' }}>Combien avez-vous payé ? (f CFA)</label>
+                                                    <input type="number" min="0" value={expenseAmount} onChange={e => setExpenseAmount(e.target.value)} placeholder="Ex: 25000" style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #E2E8F0', background: '#F8FAFC', fontSize: '16px', fontWeight: '600', outline: 'none' }} />
+                                                </div>
+                                            </div>
+                                        )}
 
-                                        <div>
-                                            <label style={{ display: 'block', fontSize: '14px', fontWeight: '700', color: '#475569', marginBottom: '8px' }}>Dépenses totales (f CFA)</label>
-                                            <input type="number" min="0" value={financeData.expenses || ''} onChange={e => updateFinance('expenses', e.target.value)} style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #EF4444', background: '#FEF2F2', fontSize: '16px', fontWeight: '600', color: '#DC2626', outline: 'none' }} />
-                                        </div>
+                                        <button onClick={handleAddTransaction} style={{ width: '100%', marginTop: '24px', background: '#1A1265', color: 'white', padding: '16px', borderRadius: '12px', border: 'none', fontWeight: '800', fontSize: '15px', cursor: 'pointer', boxShadow: '0 4px 15px rgba(26,18,101,0.2)' }}>
+                                            Valider l'opération
+                                        </button>
                                     </div>
-                                    
-                                    <div style={{ marginTop: '32px', padding: '16px', background: '#F8FAFC', borderRadius: '12px', fontSize: '13px', color: '#64748B', display: 'flex', gap: '8px' }}>
-                                        <span>ℹ️</span> <span>Ces données sont sauvegardées localement sur ce navigateur pour vous permettre de suivre vos performances.</span>
+
+                                    {/* History List */}
+                                    <div style={{ background: 'white', borderRadius: '20px', border: '1px solid #E2E8F0', padding: '32px', display: 'flex', flexDirection: 'column' }}>
+                                        <h3 style={{ fontSize: '20px', fontWeight: '900', color: '#1A1265', marginBottom: '24px' }}>Historique des opérations</h3>
+                                        <div style={{ flex: 1, overflowY: 'auto', maxHeight: '400px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                            {financeTransactions.length === 0 ? (
+                                                <div style={{ textAlign: 'center', padding: '40px 0', color: '#94A3B8', fontSize: '14px', fontWeight: '600' }}>Aucune opération enregistrée</div>
+                                            ) : (
+                                                financeTransactions.map(t => (
+                                                    <div key={t.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', borderRadius: '12px', background: '#F8FAFC', border: '1px solid #E2E8F0' }}>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: t.type === 'income' ? '#DCFCE7' : '#FEE2E2', color: t.type === 'income' ? '#15803D' : '#B91C1C', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>
+                                                                {t.type === 'income' ? '📈' : '📉'}
+                                                            </div>
+                                                            <div>
+                                                                <div style={{ fontWeight: '800', fontSize: '14px', color: '#1A1265' }}>{t.desc}</div>
+                                                                <div style={{ fontSize: '12px', color: '#94A3B8', marginTop: '2px' }}>{new Date(t.date).toLocaleDateString('fr-FR')} à {new Date(t.date).toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})}</div>
+                                                            </div>
+                                                        </div>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                                                            <div style={{ fontWeight: '900', fontSize: '15px', color: t.type === 'income' ? '#10B981' : '#EF4444' }}>
+                                                                {t.type === 'income' ? '+' : '-'}{t.amount.toLocaleString('fr-FR')} f
+                                                            </div>
+                                                            <button onClick={() => handleDeleteTransaction(t.id)} style={{ border: 'none', background: 'transparent', color: '#CBD5E1', cursor: 'pointer', fontSize: '14px' }} className="trash-btn" title="Supprimer l'opération">🗑️</button>
+                                                        </div>
+                                                    </div>
+                                                ))
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
