@@ -695,7 +695,7 @@ export default function LandingPage() {
                     <div className="bento-grid">
                         {[
                             { step: "1", title: "Commandez via WhatsApp", desc: "Choisissez votre pack digital ou physique. Contactez-nous et envoyez-nous vos informations personnelles." },
-                            { step: "2", title: "Reçu sous 24–48h", desc: "Nous préparons votre commande et vous envoyons un lien d'activation sous 24 à 48 heures ouvrées pour créer votre compte sur notre plateforme." },
+                            { step: "2", title: "Reçu sous 24–48h", desc: "Nous préparons votre commande et vous envoyons un lien d'activation quelques minutes après pour le pack digital et sous 24 à 48 heures ouvrées pour le pack physique pour créer votre compte sur notre plateforme." },
                             { step: "3", title: "Gérez votre profil", desc: "Connectez-vous à tout moment pour modifier vos informations en temps réel. Votre carte physique, elle, reste inchangée." }
                         ].map((item, i) => (
                             <div key={i} className="glass-panel" style={{ position: 'relative', overflow: 'hidden' }}>
@@ -852,7 +852,7 @@ export default function LandingPage() {
                             </h2>
                             
                             <p style={{ color: '#D1D5DB', fontSize: '18px', marginBottom: '24px', lineHeight: '1.6' }}>
-                                La carte NFC est parfaite pour le contact physique. Mais pour exister en ligne et trouver des clients 24h/24, il vous faut un site web sur-mesure. Confiez-nous votre projet.
+                                La carte NFC est parfaite pour le contact physique. Mais pour exister en ligne et digitaliser votre business, il vous faut un site web sur-mesure à intégrer dans votre profil digital NFCrafter ainsi que dans votre carte physique NFC. Confiez-nous votre projet.
                             </p>
 
                             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', background: 'linear-gradient(90deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.2))', border: '1px solid rgba(16, 185, 129, 0.3)', padding: '12px 24px', borderRadius: '12px', marginBottom: '40px' }}>
@@ -938,7 +938,7 @@ export default function LandingPage() {
                 <div className="container">
                     <div style={{ textAlign: 'center', marginBottom: '48px' }} className="animate-fade-up">
                         <h2 style={{ fontSize: '40px', fontWeight: '900', fontFamily: 'Outfit', color: '#111827', letterSpacing: '-0.02em', marginBottom: '16px' }}>Ils l'ont adoptée</h2>
-                        <p style={{ color: '#4B5563', fontSize: '18px', maxWidth: '600px', margin: '0 auto' }}>Des centaines de professionnels utilisent déjà NFCrafter pour booster leur réseau.</p>
+                        <p style={{ color: '#4B5563', fontSize: '18px', maxWidth: '600px', margin: '0 auto' }}>Des centaines de professionnels utilisent déjà des cartes NFC pour booster leur réseau.</p>
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
@@ -956,7 +956,7 @@ export default function LandingPage() {
 
                         <div className="glass-panel animate-fade-up delay-2" style={{ padding: '32px', background: '#F8FAFC', border: '1px solid #E2E8F0', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
                             <div style={{ color: '#F59E0B', fontSize: '20px', marginBottom: '16px' }}>★★★★★</div>
-                            <p style={{ color: '#4B5563', fontSize: '16px', lineHeight: '1.6', marginBottom: '24px', fontStyle: 'italic' }}>"Mes clients au restaurant adorent ! Ils scannent la carte sur le comptoir, voient le menu et s'abonnent à notre page Instagram. C'est ultra pratique et pro."</p>
+                            <p style={{ color: '#4B5563', fontSize: '16px', lineHeight: '1.6', marginBottom: '24px', fontStyle: 'italic' }}>"Mes clients au restaurant adorent ! Ils scannent la carte sur le comptoir, voient le menu (que j'ai commandé sur NFCrafter) et s'abonnent à notre page Instagram. C'est ultra pratique et pro."</p>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                 <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>👩🏾‍🍳</div>
                                 <div>
@@ -993,14 +993,14 @@ export default function LandingPage() {
                         <details>
                             <summary>Est-ce que ça marche avec tous les téléphones ?</summary>
                             <div className="faq-content">
-                                Oui, à 100% ! Tous les smartphones récents (iPhone depuis 2018, Android) intègrent la technologie NFC et scannent la carte par simple contact. Pour les téléphones plus anciens, le QR Code gravé sur le dos de la carte prend le relais instantanément via l'appareil photo.
+                                Oui, à 100% ! Tous les smartphones récents (iPhone depuis 2018, Android) intègrent la technologie NFC et scannent la carte par simple contact. Pour les téléphones plus anciens, le QR Code gravé sur le dos de la carte prend le relais instantanément via scan QR.
                             </div>
                         </details>
                         
                         <details>
                             <summary>Mon interlocuteur a-t-il besoin d'une application ?</summary>
                             <div className="faq-content">
-                                Absolument pas. C'est la beauté du système : votre profil s'ouvre directement dans le navigateur web par défaut de la personne (Safari, Chrome, etc.), comme un site internet classique.
+                                Absolument pas. C'est la beauté du système : votre profil s'ouvre directement dans le navigateur web par défaut de la personne (Safari, Chrome, etc.), comme un site internet.
                             </div>
                         </details>
 
