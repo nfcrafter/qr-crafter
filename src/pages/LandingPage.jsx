@@ -372,7 +372,7 @@ export default function LandingPage() {
                                     ⚡ Créer ma carte maintenant
                                 </button>
                                 {/* ⚠️ Remplacer /p/demo par le slug d'un vrai profil client */}
-                                <a href="/p/demo" className="btn-secondary" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                                <a href="u/10j24wrb" className="btn-secondary" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                                     <span>👀 Tester un profil</span>
                                     <span style={{ fontSize: '16px' }}>&#8594;</span>
                                 </a>
