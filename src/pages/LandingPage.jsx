@@ -283,9 +283,9 @@ export default function LandingPage() {
                     <img src="/logo.png" alt="NFCrafter" style={{ height: '32px' }} />
                     <span className="mobile-hide" style={{ fontSize: '22px', fontWeight: '900', color: '#111827', letterSpacing: '-0.5px', fontFamily: 'Outfit' }}>NFCrafter</span>
                 </div>
-                <div className="mobile-hide" style={{ display: 'flex', gap: '8px' }}>
+                <div className="mobile-hide" style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
                     <a href="#utilite" className="nav-link">Comment ça marche ?</a>
-                    <a href="#tarifs" className="nav-link">Tarifs</a>
+                    <a href="#tarifs" className="nav-link">Nos Packs</a>
                 </div>
                 <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                     <button
@@ -293,8 +293,8 @@ export default function LandingPage() {
                         style={{
                             background: '#FFFFFF',
                             border: '1px solid #E5E7EB',
-                            color: '#111827',
-                            fontWeight: '700',
+                            color: '#4B5563',
+                            fontWeight: '600',
                             cursor: 'pointer',
                             fontSize: '14px',
                             padding: '10px 20px',
@@ -302,10 +302,13 @@ export default function LandingPage() {
                             boxShadow: '0 2px 10px rgba(0,0,0,0.03)',
                             transition: 'all 0.2s'
                         }}
-                        onMouseOver={e => { e.currentTarget.style.borderColor = '#D1D5DB'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
-                        onMouseOut={e => { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                        onMouseOver={e => { e.currentTarget.style.borderColor = '#D1D5DB'; e.currentTarget.style.color = '#111827'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                        onMouseOut={e => { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.color = '#4B5563'; e.currentTarget.style.transform = 'translateY(0)'; }}
                     >
-                        Connexion
+                        Espace Client
+                    </button>
+                    <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary mobile-hide" style={{ padding: '10px 24px', fontSize: '14px' }}>
+                        Commander
                     </button>
                 </div>
             </nav>
@@ -344,9 +347,13 @@ export default function LandingPage() {
                                 {/* Arrière-plan coloré pour faire ressortir l'image */}
                                 <div style={{ position: 'absolute', top: '10px', left: '-10px', right: '10px', bottom: '-10px', background: 'linear-gradient(135deg, #4F46E5, #0EA5E9)', borderRadius: '32px', opacity: 0.15, filter: 'blur(20px)', zIndex: 0 }}></div>
                                 
-                                <img 
-                                    src="/lifestyle.jpg" 
-                                    alt="NFCrafter en action" 
+                                <video 
+                                    src="/demo-nfc.mp4" 
+                                    autoPlay 
+                                    loop 
+                                    muted 
+                                    playsInline
+                                    controls
                                     style={{ 
                                         width: '100%', 
                                         height: 'auto', 
@@ -357,16 +364,16 @@ export default function LandingPage() {
                                         position: 'relative',
                                         zIndex: 1,
                                         animation: 'floatSlow 6s ease-in-out infinite',
-                                        aspectRatio: '1/1',
-                                        objectFit: 'cover'
+                                        aspectRatio: '9/16',
+                                        objectFit: 'cover',
+                                        backgroundColor: '#1A1265'
                                     }} 
-                                    onError={(e) => { e.target.src = 'https://placehold.co/800x800/f8fafc/1a1265?text=Image+Lifestyle'; }}
                                 />
                                 
                                 {/* Badge de statut flottant */}
                                 <div className="glass-panel" style={{ position: 'absolute', bottom: '-15px', right: '-10px', padding: '10px 20px', borderRadius: '100px', zIndex: 2, display: 'flex', alignItems: 'center', gap: '10px', animation: 'floatFast 4s ease-in-out infinite', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}>
-                                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#10B981', boxShadow: '0 0 10px #10B981' }}></div>
-                                    <span style={{ fontWeight: '800', fontSize: '14px', color: '#111827' }}>Profil activé</span>
+                                    <span style={{ fontSize: '18px' }}>🎬</span>
+                                    <span style={{ fontWeight: '800', fontSize: '14px', color: '#111827' }}>Démonstration en direct</span>
                                 </div>
                             </div>
                         </div>
@@ -811,9 +818,14 @@ export default function LandingPage() {
                                 On crée aussi votre <span style={{ color: '#818CF8', textShadow: '0 0 30px rgba(129, 140, 248, 0.4)' }}>Site Internet</span> de A à Z.
                             </h2>
                             
-                            <p style={{ color: '#D1D5DB', fontSize: '18px', marginBottom: '40px', lineHeight: '1.6' }}>
+                            <p style={{ color: '#D1D5DB', fontSize: '18px', marginBottom: '24px', lineHeight: '1.6' }}>
                                 La carte NFC est parfaite pour le contact physique. Mais pour exister en ligne et trouver des clients 24h/24, il vous faut un site web sur-mesure. Confiez-nous votre projet.
                             </p>
+
+                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', background: 'linear-gradient(90deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.2))', border: '1px solid rgba(16, 185, 129, 0.3)', padding: '12px 24px', borderRadius: '12px', marginBottom: '40px' }}>
+                                <span style={{ fontSize: '24px' }}>🎁</span>
+                                <span style={{ color: '#34D399', fontWeight: '800', fontSize: '16px', letterSpacing: '0.5px' }}>Un site commandé = Une carte personnalisée offerte !</span>
+                            </div>
 
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '40px' }}>
                                 <div style={{ background: 'rgba(255,255,255,0.05)', padding: '24px', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}>
