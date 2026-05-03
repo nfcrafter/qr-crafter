@@ -828,8 +828,8 @@ export default function LandingPage() {
                                 </div>
                             </div>
 
-                            <button onClick={() => window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Bonjour NFCrafter, je voudrais créer un site internet professionnel pour mon entreprise. Pouvons-nous en parler ?')}`, '_blank')} className="btn-primary" style={{ background: 'white', color: '#111827', width: '100%', maxWidth: '400px', fontSize: '16px', padding: '20px 32px' }}>
-                                Discuter de mon projet web
+                            <button onClick={() => window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Bonjour NFCrafter, je voudrais discuter de la création d\'un site internet professionnel pour mon entreprise. Pouvons-nous en parler ?')}`, '_blank')} className="btn-primary" style={{ background: 'white', color: '#111827', width: '100%', maxWidth: '400px', fontSize: '16px', padding: '20px 32px' }}>
+                                Discuter à propos
                             </button>
                         </div>
 
