@@ -359,7 +359,7 @@ export default function LandingPage() {
                     <div className="hero-grid">
                         <div className="hero-text animate-fade-up">
                             <div style={{ background: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(10px)', color: '#374151', padding: '10px 24px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: '24px', display: 'inline-block', border: '1px solid rgba(255,255,255,0.9)', boxShadow: '0 4px 15px rgba(0,0,0,0.03)' }}>
-                                La carte de visite réinventée
+                                La carte de visite intelligente
                             </div>
                             <h1 className="hero-title" style={{ fontSize: '68px', fontWeight: '900', color: '#111827', letterSpacing: '-0.03em', lineHeight: '1.05', marginBottom: '24px', fontFamily: 'Outfit' }}>
                                 Touchez, partagez, <br />impressionnez.
