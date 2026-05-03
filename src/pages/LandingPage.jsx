@@ -4,12 +4,10 @@ import { useNavigate } from 'react-router-dom';
 export default function LandingPage() {
     const navigate = useNavigate();
     const [scrolled, setScrolled] = useState(false);
-    const [showSticky, setShowSticky] = useState(false);
 
     useEffect(() => {
         const handleScroll = () => {
             setScrolled(window.scrollY > 20);
-            setShowSticky(window.scrollY > 300);
         };
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
@@ -83,69 +81,7 @@ export default function LandingPage() {
                     pointer-events: none; z-index: 0;
                 }
                 
-                /* ── Sticky Floating Pill ── */
-                .sticky-pill { display: none; }
-                @keyframes pillIn {
-                    from { opacity: 0; transform: translate(-50%, 20px); }
-                    to   { opacity: 1; transform: translate(-50%, 0); }
-                }
-                @keyframes waGlow {
-                    0%, 100% { box-shadow: 0 0 0 0 rgba(37,211,102,0.4); }
-                    50%       { box-shadow: 0 0 0 8px rgba(37,211,102,0); }
-                }
-                @media (max-width: 768px) {
-                    .sticky-pill {
-                        display: flex;
-                        align-items: center;
-                        gap: 12px;
-                        position: fixed;
-                        bottom: 28px;
-                        left: 50%;
-                        transform: translate(-50%, 20px);
-                        z-index: 999;
-                        background: #111827;
-                        color: white;
-                        border: none;
-                        border-radius: 100px;
-                        padding: 14px 22px 14px 16px;
-                        font-size: 15px;
-                        font-weight: 800;
-                        font-family: 'Outfit', sans-serif;
-                        letter-spacing: -0.2px;
-                        white-space: nowrap;
-                        cursor: pointer;
-                        box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 2px 8px rgba(0,0,0,0.15);
-                        opacity: 0;
-                        pointer-events: none;
-                        transition: opacity 0.3s, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s;
-                    }
-                    .sticky-pill.visible {
-                        opacity: 1;
-                        transform: translate(-50%, 0);
-                        pointer-events: auto;
-                    }
-                    .sticky-pill:active {
-                        transform: translate(-50%, 0) scale(0.96);
-                        box-shadow: 0 4px 16px rgba(0,0,0,0.25);
-                    }
-                    .pill-wa-dot {
-                        width: 32px; height: 32px;
-                        border-radius: 50%;
-                        background: #25D366;
-                        display: flex; align-items: center; justify-content: center;
-                        flex-shrink: 0;
-                        animation: waGlow 2.5s ease-in-out infinite;
-                    }
-                    .pill-price {
-                        background: rgba(255,255,255,0.1);
-                        border-radius: 6px;
-                        padding: 3px 8px;
-                        font-size: 12px;
-                        font-weight: 700;
-                        color: rgba(255,255,255,0.7);
-                        margin-left: 4px;
-                    }
-                }
+
                 .bg-orb {
                     position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.5; pointer-events: none; z-index: 0;
                 }
@@ -856,6 +792,27 @@ export default function LandingPage() {
                 </div>
             </section>
 
+            {/* Autres Services Section */}
+            <section className="section">
+                <div className="container">
+                    <div style={{ textAlign: 'center', marginBottom: '64px' }} className="animate-fade-up">
+                        <h2 style={{ fontSize: '44px', fontWeight: '900', fontFamily: 'Outfit', color: '#111827', letterSpacing: '-0.02em', marginBottom: '16px' }}>Autres services</h2>
+                        <p style={{ color: '#4B5563', fontSize: '18px', maxWidth: '600px', margin: '0 auto' }}>Allons plus loin ensemble.</p>
+                    </div>
+
+                    <div className="glass-panel animate-fade-up delay-1" style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center', padding: '48px', position: 'relative', overflow: 'hidden' }}>
+                        <div style={{ position: 'absolute', top: '-20px', left: '-20px', fontSize: '150px', opacity: '0.03', pointerEvents: 'none' }}>💻</div>
+                        <h3 style={{ fontSize: '28px', fontWeight: '900', fontFamily: 'Outfit', marginBottom: '16px', color: '#111827' }}>Création de Site Internet</h3>
+                        <p style={{ color: '#4B5563', fontSize: '16px', lineHeight: '1.6', marginBottom: '32px' }}>
+                            Vous avez besoin d'une présence en ligne plus complète ? Notre équipe conçoit et développe votre propre site web vitrine ou e-commerce sur-mesure pour votre activité. Un design professionnel, adapté aux mobiles et optimisé pour Google.
+                        </p>
+                        <button onClick={() => window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Bonjour NFCrafter, je souhaite avoir plus d\'informations sur la création d\'un site internet pour mon entreprise.')}`, '_blank')} className="btn-primary" style={{ background: '#111827', color: 'white' }}>
+                            Demander un devis sur WhatsApp
+                        </button>
+                    </div>
+                </div>
+            </section>
+
             {/* FAQ Section */}
             <section className="section" style={{ background: '#F4F6F9', borderTop: '1px solid rgba(0,0,0,0.05)' }}>
                 <div className="container" style={{ maxWidth: '800px' }}>
@@ -927,17 +884,6 @@ export default function LandingPage() {
                 </div>
             </footer>
 
-            {/* Floating Pill CTA — Mobile only */}
-            <button
-                className={`sticky-pill ${showSticky ? 'visible' : ''}`}
-                onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')}
-            >
-                <span className="pill-wa-dot">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                </span>
-                Commander ma carte
-                <span className="pill-price">10.000f</span>
-            </button>
         </div>
     );
 }
