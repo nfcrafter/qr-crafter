@@ -602,7 +602,7 @@ export default function LandingPage() {
                                 </div>
                             </div>
                             
-                            <div style={{ fontWeight: '700', color: '#9CA3AF', marginBottom: '32px', fontSize: '16px', position: 'relative', zIndex: 1 }}>L'atout des rencontres en présentiel :</div>
+                            <div style={{ fontWeight: '700', color: '#9CA3AF', marginBottom: '32px', fontSize: '16px', position: 'relative', zIndex: 1 }}>L'atout des rencontres en présentiel </div>
                             
                             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '20px', flex: 1, position: 'relative', zIndex: 1 }}>
                                 <li style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
