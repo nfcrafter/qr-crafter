@@ -604,6 +604,7 @@ export default function LandingPage() {
                                         <span>🌟</span> LE PLUS POPULAIRE
                                     </div>
                                     <h3 style={{ fontSize: '28px', fontWeight: '900', fontFamily: 'Outfit', margin: 0, color: 'white' }}>Le Pack Physique</h3>
+                                </div>
                             </div>
                             
                             <div style={{ fontWeight: '700', color: '#9CA3AF', marginBottom: '32px', fontSize: '16px', position: 'relative', zIndex: 1 }}>L'atout des rencontres en présentiel :</div>
