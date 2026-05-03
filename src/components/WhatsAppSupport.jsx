@@ -4,8 +4,7 @@ export default function WhatsAppSupport() {
     const url = 'https://wa.me/' + number + '?text=' + encodeURIComponent(message)
 
     return (
-        <div style={{ position: 'fixed', bottom: '24px', right: '24px', display: 'flex', alignItems: 'center', gap: '12px', zIndex: 999 }}>
-
+        <div className="desktop-only" style={{ position: 'fixed', bottom: '24px', right: '24px', display: 'flex', alignItems: 'center', gap: '12px', zIndex: 999 }}>
 
             <a href={url} target="_blank" rel="noopener noreferrer" title="Support NFCrafter" style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#25D366', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 16px rgba(37,211,102,0.4)', textDecoration: 'none' }}>
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
