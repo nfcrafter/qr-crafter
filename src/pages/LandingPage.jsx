@@ -792,23 +792,98 @@ export default function LandingPage() {
                 </div>
             </section>
 
-            {/* Autres Services Section */}
-            <section className="section">
-                <div className="container">
-                    <div style={{ textAlign: 'center', marginBottom: '64px' }} className="animate-fade-up">
-                        <h2 style={{ fontSize: '44px', fontWeight: '900', fontFamily: 'Outfit', color: '#111827', letterSpacing: '-0.02em', marginBottom: '16px' }}>Autres services</h2>
-                        <p style={{ color: '#4B5563', fontSize: '18px', maxWidth: '600px', margin: '0 auto' }}>Allons plus loin ensemble.</p>
-                    </div>
+            {/* Premium Web Design Service Section */}
+            <section className="section" style={{ background: '#111827', color: 'white', position: 'relative', overflow: 'hidden' }}>
+                <div style={{ position: 'absolute', top: '-20%', left: '-10%', width: '50vw', height: '50vw', background: 'radial-gradient(circle, rgba(79,70,229,0.15) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 0 }}></div>
+                <div style={{ position: 'absolute', bottom: '-20%', right: '-10%', width: '40vw', height: '40vw', background: 'radial-gradient(circle, rgba(14,165,233,0.15) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 0 }}></div>
 
-                    <div className="glass-panel animate-fade-up delay-1" style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center', padding: '48px', position: 'relative', overflow: 'hidden' }}>
-                        <div style={{ position: 'absolute', top: '-20px', left: '-20px', fontSize: '150px', opacity: '0.03', pointerEvents: 'none' }}>💻</div>
-                        <h3 style={{ fontSize: '28px', fontWeight: '900', fontFamily: 'Outfit', marginBottom: '16px', color: '#111827' }}>Création de Site Internet</h3>
-                        <p style={{ color: '#4B5563', fontSize: '16px', lineHeight: '1.6', marginBottom: '32px' }}>
-                            Vous avez besoin d'une présence en ligne plus complète ? Notre équipe conçoit et développe votre propre site web vitrine ou e-commerce sur-mesure pour votre activité. Un design professionnel, adapté aux mobiles et optimisé pour Google.
-                        </p>
-                        <button onClick={() => window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Bonjour NFCrafter, je souhaite avoir plus d\'informations sur la création d\'un site internet pour mon entreprise.')}`, '_blank')} className="btn-primary" style={{ background: '#111827', color: 'white' }}>
-                            Demander un devis sur WhatsApp
-                        </button>
+                <div className="container" style={{ position: 'relative', zIndex: 10 }}>
+                    <div className="hero-grid" style={{ alignItems: 'center', gap: '64px', minHeight: 'unset', padding: '0' }}>
+                        
+                        {/* Text Content */}
+                        <div className="animate-fade-up">
+                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(79, 70, 229, 0.2)', border: '1px solid rgba(79, 70, 229, 0.4)', padding: '8px 20px', borderRadius: '100px', fontSize: '13px', fontWeight: '800', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '24px', color: '#A5B4FC' }}>
+                                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#818CF8', display: 'inline-block', boxShadow: '0 0 10px #818CF8' }}></span>
+                                Au-delà de la carte
+                            </div>
+                            
+                            <h2 style={{ fontSize: '48px', fontWeight: '900', fontFamily: 'Outfit', color: 'white', letterSpacing: '-0.02em', marginBottom: '24px', lineHeight: '1.1' }}>
+                                On crée aussi votre <span style={{ color: '#818CF8', textShadow: '0 0 30px rgba(129, 140, 248, 0.4)' }}>Site Internet</span> de A à Z.
+                            </h2>
+                            
+                            <p style={{ color: '#D1D5DB', fontSize: '18px', marginBottom: '40px', lineHeight: '1.6' }}>
+                                La carte NFC est parfaite pour le contact physique. Mais pour exister en ligne et trouver des clients 24h/24, il vous faut un site web sur-mesure. Confiez-nous votre projet.
+                            </p>
+
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '40px' }}>
+                                <div style={{ background: 'rgba(255,255,255,0.05)', padding: '24px', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}>
+                                    <div style={{ fontSize: '32px', marginBottom: '16px' }}>💎</div>
+                                    <h4 style={{ fontSize: '18px', fontWeight: '800', fontFamily: 'Outfit', color: 'white', marginBottom: '8px' }}>Sites Vitrines</h4>
+                                    <p style={{ fontSize: '14px', color: '#9CA3AF', lineHeight: '1.5' }}>Présentez votre entreprise, vos services et attirez de nouveaux prospects.</p>
+                                </div>
+                                <div style={{ background: 'rgba(255,255,255,0.05)', padding: '24px', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}>
+                                    <div style={{ fontSize: '32px', marginBottom: '16px' }}>🛍️</div>
+                                    <h4 style={{ fontSize: '18px', fontWeight: '800', fontFamily: 'Outfit', color: 'white', marginBottom: '8px' }}>Boutiques E-commerce</h4>
+                                    <p style={{ fontSize: '14px', color: '#9CA3AF', lineHeight: '1.5' }}>Vendez vos produits en ligne avec des paiements sécurisés intégrés.</p>
+                                </div>
+                            </div>
+
+                            <button onClick={() => window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Bonjour NFCrafter, je voudrais créer un site internet professionnel pour mon entreprise. Pouvons-nous en parler ?')}`, '_blank')} className="btn-primary" style={{ background: 'white', color: '#111827', width: '100%', maxWidth: '400px', fontSize: '16px', padding: '20px 32px' }}>
+                                Discuter de mon projet web
+                            </button>
+                        </div>
+
+                        {/* Visual Mockup */}
+                        <div className="animate-fade-up delay-1" style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center' }}>
+                            <div style={{ position: 'relative', width: '100%', maxWidth: '500px' }}>
+                                {/* Decorative elements */}
+                                <div style={{ position: 'absolute', top: '10%', right: '-5%', width: '120px', height: '120px', background: 'linear-gradient(135deg, #3B82F6, #8B5CF6)', borderRadius: '50%', filter: 'blur(40px)', zIndex: 0 }}></div>
+                                
+                                {/* Main Laptop Mockup */}
+                                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px', padding: '16px', position: 'relative', zIndex: 1, backdropFilter: 'blur(20px)', boxShadow: '0 30px 60px rgba(0,0,0,0.5)' }}>
+                                    <div style={{ background: '#0F172A', borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                        {/* Browser Toolbar */}
+                                        <div style={{ background: '#1E293B', padding: '12px 16px', display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                            <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#EF4444' }}></div>
+                                            <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#F59E0B' }}></div>
+                                            <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#10B981' }}></div>
+                                            <div style={{ flex: 1, background: 'rgba(255,255,255,0.05)', height: '24px', borderRadius: '100px', marginLeft: '12px', display: 'flex', alignItems: 'center', padding: '0 12px' }}>
+                                                <span style={{ fontSize: '10px', color: '#64748B' }}>www.votresite.com</span>
+                                            </div>
+                                        </div>
+                                        {/* Browser Content */}
+                                        <div style={{ padding: '32px 24px', position: 'relative' }}>
+                                            {/* Hero Mockup */}
+                                            <div style={{ width: '40%', height: '16px', background: 'rgba(255,255,255,0.1)', borderRadius: '8px', marginBottom: '24px' }}></div>
+                                            <div style={{ width: '80%', height: '32px', background: 'linear-gradient(90deg, #818CF8, #38BDF8)', borderRadius: '8px', marginBottom: '16px' }}></div>
+                                            <div style={{ width: '60%', height: '32px', background: 'rgba(255,255,255,0.2)', borderRadius: '8px', marginBottom: '32px' }}></div>
+                                            
+                                            <div style={{ display: 'flex', gap: '16px', marginBottom: '40px' }}>
+                                                <div style={{ width: '120px', height: '36px', background: '#38BDF8', borderRadius: '100px' }}></div>
+                                                <div style={{ width: '120px', height: '36px', background: 'rgba(255,255,255,0.1)', borderRadius: '100px' }}></div>
+                                            </div>
+
+                                            {/* Grid Mockup */}
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>
+                                                <div style={{ height: '100px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px' }}></div>
+                                                <div style={{ height: '100px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px' }}></div>
+                                                <div style={{ height: '100px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px' }}></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Mobile Mockup overlapping */}
+                                    <div style={{ position: 'absolute', bottom: '-20px', right: '-20px', width: '140px', background: '#0F172A', border: '4px solid #1E293B', borderRadius: '24px', padding: '8px', zIndex: 2, boxShadow: '0 20px 40px rgba(0,0,0,0.6)' }}>
+                                        <div style={{ width: '40px', height: '4px', background: 'rgba(255,255,255,0.2)', borderRadius: '4px', margin: '0 auto 12px auto' }}></div>
+                                        <div style={{ width: '100%', height: '80px', background: 'linear-gradient(135deg, #38BDF8, #818CF8)', borderRadius: '12px', marginBottom: '12px' }}></div>
+                                        <div style={{ width: '80%', height: '12px', background: 'rgba(255,255,255,0.1)', borderRadius: '4px', marginBottom: '8px' }}></div>
+                                        <div style={{ width: '60%', height: '12px', background: 'rgba(255,255,255,0.1)', borderRadius: '4px', marginBottom: '24px' }}></div>
+                                        <div style={{ width: '100%', height: '40px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', marginBottom: '8px' }}></div>
+                                        <div style={{ width: '100%', height: '40px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px' }}></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
