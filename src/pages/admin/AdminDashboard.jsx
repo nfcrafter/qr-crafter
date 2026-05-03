@@ -22,8 +22,15 @@ export default function AdminDashboard() {
     const [folders, setFolders] = useState([]);
     const [filterFolder, setFilterFolder] = useState('');
     const [expandedFolders, setExpandedFolders] = useState({});
-    const [view, setView] = useState('dashboard'); // 'dashboard' or 'users'
+    const [view, setView] = useState('dashboard'); // 'dashboard' or 'users' or 'finance'
     const [users, setUsers] = useState([]);
+    
+    const [financeData, setFinanceData] = useState({
+        digitalCount: 0,
+        physicalCount: 0,
+        otherRevenue: 0,
+        expenses: 0
+    });
 
     const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', children: null, onConfirm: null, type: 'info' });
     const [folderNameInput, setFolderNameInput] = useState('');
@@ -41,7 +48,19 @@ export default function AdminDashboard() {
             loadRequests();
         }
         updateRequestsCount();
+        
+        // Load finance data from local storage
+        const savedFinance = localStorage.getItem('nfcrafter_finance');
+        if (savedFinance) {
+            try { setFinanceData(JSON.parse(savedFinance)); } catch (e) {}
+        }
     }, [filterFolder, view]);
+
+    const updateFinance = (key, value) => {
+        const newData = { ...financeData, [key]: Number(value) || 0 };
+        setFinanceData(newData);
+        localStorage.setItem('nfcrafter_finance', JSON.stringify(newData));
+    };
 
     async function loadData() {
         setLoading(true);
@@ -218,6 +237,7 @@ export default function AdminDashboard() {
 
                 <nav style={{ flex: 1, overflowY: 'auto' }}>
                     <button onClick={() => { setView('dashboard'); setFilterFolder(''); setIsSidebarOpen(false); }} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'dashboard' && !filterFolder ? '#1A1265' : 'transparent', color: view === 'dashboard' && !filterFolder ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>📊 Dashboard</button>
+                    <button onClick={() => { setView('finance'); setIsSidebarOpen(false); }} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'finance' ? '#1A1265' : 'transparent', color: view === 'finance' ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>💰 Finance & CA</button>
                     <button onClick={() => { setView('users'); setIsSidebarOpen(false); }} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'users' ? '#1A1265' : 'transparent', color: view === 'users' ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>👥 Utilisateurs</button>
                     <button onClick={() => { setView('requests'); setIsSidebarOpen(false); }} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'requests' ? '#1A1265' : 'transparent', color: view === 'requests' ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
                         🎨 Demandes {requestsCount > 0 && <span style={{ background: '#EF4444', color: 'white', fontSize: '10px', padding: '2px 8px', borderRadius: '10px', marginLeft: 'auto' }}>{requestsCount}</span>}
@@ -269,10 +289,10 @@ export default function AdminDashboard() {
                             </button>
                             <div>
                                 <h1 style={{ fontSize: '26px', fontWeight: '900', color: '#1A1265' }}>
-                                    {view === 'users' ? 'Gestion des Utilisateurs' : (view === 'requests' ? 'Demandes de Design' : (filterFolder ? currentFolder?.name : 'Tableau de bord'))}
+                                    {view === 'users' ? 'Gestion des Utilisateurs' : (view === 'requests' ? 'Demandes de Design' : (view === 'finance' ? 'Finance & CA' : (filterFolder ? currentFolder?.name : 'Tableau de bord')))}
                                 </h1>
                                 <p style={{ color: '#64748B' }} className="desktop-only">
-                                    {view === 'users' ? 'Gérez les comptes et les profils de vos clients.' : (view === 'requests' ? 'Clients souhaitant modifier le design de leur QR.' : (filterFolder ? (isSubFolder ? 'Contenu de ce sous-dossier' : 'Contenu de ce dossier') : 'Gérez l\'ensemble de vos projets QR.'))}
+                                    {view === 'users' ? 'Gérez les comptes et les profils de vos clients.' : (view === 'requests' ? 'Clients souhaitant modifier le design de leur QR.' : (view === 'finance' ? 'Suivez votre chiffre d\'affaires et vos bénéfices.' : (filterFolder ? (isSubFolder ? 'Contenu de ce sous-dossier' : 'Contenu de ce dossier') : 'Gérez l\'ensemble de vos projets QR.')))}
                                 </p>
                             </div>
                         </div>
@@ -291,8 +311,63 @@ export default function AdminDashboard() {
                 </div>
                 <div style={{ flex: 1, overflowY: 'auto', padding: '24px 20px 60px' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxWidth: '1400px', margin: '0 auto' }}>
-                        {loading ? (
+                        {loading && view !== 'finance' ? (
                             <div style={{ textAlign: 'center', padding: '100px' }}>Chargement...</div>
+                        ) : view === 'finance' ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px' }}>
+                                    <div style={{ padding: '24px', background: 'white', borderRadius: '20px', border: '1px solid #E2E8F0', boxShadow: '0 4px 15px rgba(0,0,0,0.02)' }}>
+                                        <div style={{ fontSize: '13px', fontWeight: '800', color: '#64748B', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>CA Total</div>
+                                        <div style={{ fontSize: '32px', fontWeight: '900', color: '#1A1265' }}>
+                                            {(financeData.digitalCount * 5000 + financeData.physicalCount * 10000 + financeData.otherRevenue).toLocaleString('fr-FR')} <small style={{fontSize: '16px', color: '#94A3B8'}}>f CFA</small>
+                                        </div>
+                                    </div>
+                                    <div style={{ padding: '24px', background: 'white', borderRadius: '20px', border: '1px solid #E2E8F0', boxShadow: '0 4px 15px rgba(0,0,0,0.02)' }}>
+                                        <div style={{ fontSize: '13px', fontWeight: '800', color: '#64748B', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>Dépenses</div>
+                                        <div style={{ fontSize: '32px', fontWeight: '900', color: '#EF4444' }}>
+                                            {financeData.expenses.toLocaleString('fr-FR')} <small style={{fontSize: '16px', color: '#FCA5A5'}}>f CFA</small>
+                                        </div>
+                                    </div>
+                                    <div style={{ padding: '24px', background: '#1A1265', borderRadius: '20px', color: 'white', boxShadow: '0 10px 25px rgba(26,18,101,0.2)' }}>
+                                        <div style={{ fontSize: '13px', fontWeight: '800', color: '#A5B4FC', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>Bénéfice Net</div>
+                                        <div style={{ fontSize: '32px', fontWeight: '900', color: '#10B981' }}>
+                                            {((financeData.digitalCount * 5000 + financeData.physicalCount * 10000 + financeData.otherRevenue) - financeData.expenses).toLocaleString('fr-FR')} <small style={{fontSize: '16px', color: '#6EE7B7'}}>f CFA</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div style={{ background: 'white', borderRadius: '20px', border: '1px solid #E2E8F0', padding: '32px' }}>
+                                    <h3 style={{ fontSize: '20px', fontWeight: '900', color: '#1A1265', marginBottom: '24px' }}>Mise à jour manuelle des données</h3>
+                                    
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '32px' }}>
+                                        <div>
+                                            <label style={{ display: 'block', fontSize: '14px', fontWeight: '700', color: '#475569', marginBottom: '8px' }}>Pack Digital (5.000f) - Quantité vendue</label>
+                                            <input type="number" min="0" value={financeData.digitalCount || ''} onChange={e => updateFinance('digitalCount', e.target.value)} style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #E2E8F0', background: '#F8FAFC', fontSize: '16px', fontWeight: '600', outline: 'none' }} />
+                                            <div style={{ marginTop: '8px', fontSize: '13px', color: '#10B981', fontWeight: '700' }}>CA généré : {(financeData.digitalCount * 5000).toLocaleString('fr-FR')} f</div>
+                                        </div>
+
+                                        <div>
+                                            <label style={{ display: 'block', fontSize: '14px', fontWeight: '700', color: '#475569', marginBottom: '8px' }}>Pack Physique (10.000f) - Quantité vendue</label>
+                                            <input type="number" min="0" value={financeData.physicalCount || ''} onChange={e => updateFinance('physicalCount', e.target.value)} style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #E2E8F0', background: '#F8FAFC', fontSize: '16px', fontWeight: '600', outline: 'none' }} />
+                                            <div style={{ marginTop: '8px', fontSize: '13px', color: '#10B981', fontWeight: '700' }}>CA généré : {(financeData.physicalCount * 10000).toLocaleString('fr-FR')} f</div>
+                                        </div>
+
+                                        <div>
+                                            <label style={{ display: 'block', fontSize: '14px', fontWeight: '700', color: '#475569', marginBottom: '8px' }}>Autres revenus (f CFA)</label>
+                                            <input type="number" min="0" value={financeData.otherRevenue || ''} onChange={e => updateFinance('otherRevenue', e.target.value)} style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #E2E8F0', background: '#F8FAFC', fontSize: '16px', fontWeight: '600', outline: 'none' }} />
+                                        </div>
+
+                                        <div>
+                                            <label style={{ display: 'block', fontSize: '14px', fontWeight: '700', color: '#475569', marginBottom: '8px' }}>Dépenses totales (f CFA)</label>
+                                            <input type="number" min="0" value={financeData.expenses || ''} onChange={e => updateFinance('expenses', e.target.value)} style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #EF4444', background: '#FEF2F2', fontSize: '16px', fontWeight: '600', color: '#DC2626', outline: 'none' }} />
+                                        </div>
+                                    </div>
+                                    
+                                    <div style={{ marginTop: '32px', padding: '16px', background: '#F8FAFC', borderRadius: '12px', fontSize: '13px', color: '#64748B', display: 'flex', gap: '8px' }}>
+                                        <span>ℹ️</span> <span>Ces données sont sauvegardées localement sur ce navigateur pour vous permettre de suivre vos performances.</span>
+                                    </div>
+                                </div>
+                            </div>
                         ) : view === 'users' ? (
                             users.map(user => (
                                 <div key={user.id} className="user-list-item" style={{ background: 'white', borderRadius: '20px', padding: '20px', display: 'flex', alignItems: 'center', gap: '20px', border: '1px solid #F1F5F9', boxShadow: '0 4px 12px rgba(0,0,0,0.01)' }}>
