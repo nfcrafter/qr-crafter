@@ -381,7 +381,7 @@ export default function LandingPage() {
                                 <div style={{ display: 'flex' }}>
                                     <span style={{ color: '#F59E0B', fontSize: '16px' }}>★</span><span style={{ color: '#F59E0B', fontSize: '16px' }}>★</span><span style={{ color: '#F59E0B', fontSize: '16px' }}>★</span><span style={{ color: '#F59E0B', fontSize: '16px' }}>★</span><span style={{ color: '#F59E0B', fontSize: '16px' }}>★</span>
                                 </div>
-                                <span>Noté <strong>4.9/5</strong> par plus de <strong>300+ pros</strong> au Bénin</span>
+                                <span>Noté <strong>4.9/5</strong> par plus de <strong>300+ pros</strong></span>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#6B7280', fontWeight: '600' }}>
                                 <span style={{ fontSize: '16px' }}>🛡️</span> <span><strong style={{ color: '#10B981' }}>100% Sécurisé.</strong> Vos données sont modifiables uniquement par vous.</span>
@@ -604,11 +604,6 @@ export default function LandingPage() {
                                         <span>🌟</span> LE PLUS POPULAIRE
                                     </div>
                                     <h3 style={{ fontSize: '28px', fontWeight: '900', fontFamily: 'Outfit', margin: 0, color: 'white' }}>Le Pack Physique</h3>
-                                </div>
-                                <div style={{ background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.3)', padding: '6px 12px', borderRadius: '100px', fontSize: '12px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px', color: '#34D399' }}>
-                                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10B981', boxShadow: '0 0 10px #10B981' }}></span>
-                                    Bénin
-                                </div>
                             </div>
                             
                             <div style={{ fontWeight: '700', color: '#9CA3AF', marginBottom: '32px', fontSize: '16px', position: 'relative', zIndex: 1 }}>L'atout des rencontres en présentiel :</div>
@@ -627,14 +622,6 @@ export default function LandingPage() {
                                     <span style={{ color: '#D1D5DB', lineHeight: '1.6', fontSize: '16px' }}><strong>Networking, Meetings & Étudiants</strong> : Faites le show ! Marquez les esprits lors de vos conférences ou événements en donnant vos contacts, vos réseaux sociaux ou portfolio en un clic.</span>
                                 </li>
                             </ul>
-                            
-                            <div style={{ marginTop: '32px', padding: '16px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', borderRadius: '16px', display: 'flex', alignItems: 'flex-start', gap: '12px', position: 'relative', zIndex: 1 }}>
-                                <div style={{ fontSize: '20px' }}>📍</div>
-                                <div>
-                                    <div style={{ color: '#FCA5A5', fontWeight: '700', fontSize: '14px', marginBottom: '4px' }}>Disponibilité Limitée</div>
-                                    <div style={{ color: '#D1D5DB', fontSize: '13px', lineHeight: '1.5' }}>La carte physique est actuellement disponible <strong>uniquement au Bénin</strong> pour le moment.</div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -697,7 +684,7 @@ export default function LandingPage() {
                     <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary" style={{ background: 'white', color: '#111827', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.35)', fontSize: '16px', padding: '18px 40px' }}>
                         ✦ Je veux ma carte personnalisée
                     </button>
-                    <p style={{ color: '#4B5563', fontSize: '13px', marginTop: '16px', fontWeight: '600' }}>Design inclus — Livraison sous 24-48h au Bénin</p>
+                    <p style={{ color: '#4B5563', fontSize: '13px', marginTop: '16px', fontWeight: '600' }}>Design inclus — Livraison sous 24-48h</p>
                 </div>
             </section>
             
@@ -775,7 +762,7 @@ export default function LandingPage() {
                             <div style={{ fontSize: '60px', color: '#E5E7EB', position: 'absolute', top: '16px', right: '24px', fontFamily: 'serif', lineHeight: 1 }}>"</div>
                             <div style={{ display: 'flex', gap: '4px', color: '#FBBF24', marginBottom: '16px' }}>★★★★★</div>
                             <p style={{ color: '#374151', fontSize: '16px', lineHeight: '1.6', marginBottom: '24px', fontStyle: 'italic', position: 'relative', zIndex: 1 }}>
-                                "J'ai commandé 5 cartes physiques pour mon équipe commerciale au Bénin. Le design est hyper qualitatif. Quand nos commerciaux vont en rendez-vous, l'image de marque qu'on dégage fait vraiment la différence."
+                                "J'ai commandé 5 cartes physiques pour mon équipe commerciale. Le design est hyper qualitatif. Quand nos commerciaux vont en rendez-vous, l'image de marque qu'on dégage fait vraiment la différence."
                             </p>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                                 <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#D1FAE5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', color: '#059669', fontSize: '18px' }}>E</div>
@@ -836,7 +823,7 @@ export default function LandingPage() {
                                 <li><span style={{ color: 'white', fontWeight: '900' }}>✓</span> Profil digital et QR code inclus</li>
                                 <li><span style={{ color: 'white', fontWeight: '900' }}>✓</span> Liens sociaux et contacts illimités</li>
                                 <li><span style={{ color: 'white', fontWeight: '900' }}>✓</span> Accès au tableau de bord</li>
-                                <li><span style={{ color: 'white', fontWeight: '900' }}>✓</span> Livraison uniquement au Bénin (pour le moment)</li>
+                                <li><span style={{ color: 'white', fontWeight: '900' }}>✓</span> Livraison rapide et sécurisée</li>
                             </ul>
 
                             <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary" style={{ width: '100%', background: 'white', color: '#111827', marginTop: 'auto', marginBottom: '16px' }}>Commander la Carte</button>
@@ -955,7 +942,7 @@ export default function LandingPage() {
                 <div className="container">
                     <div style={{ textAlign: 'center', marginBottom: '48px' }} className="animate-fade-up">
                         <h2 style={{ fontSize: '40px', fontWeight: '900', fontFamily: 'Outfit', color: '#111827', letterSpacing: '-0.02em', marginBottom: '16px' }}>Ils l'ont adoptée</h2>
-                        <p style={{ color: '#4B5563', fontSize: '18px', maxWidth: '600px', margin: '0 auto' }}>Des centaines de professionnels au Bénin utilisent déjà NFCrafter pour booster leur réseau.</p>
+                        <p style={{ color: '#4B5563', fontSize: '18px', maxWidth: '600px', margin: '0 auto' }}>Des centaines de professionnels utilisent déjà NFCrafter pour booster leur réseau.</p>
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
@@ -1031,7 +1018,7 @@ export default function LandingPage() {
                         <details>
                             <summary>Comment se passe la livraison de la carte physique ?</summary>
                             <div className="faq-content">
-                                Après validation de votre design, nous expédions la carte. La livraison est actuellement disponible uniquement au Bénin (via nos coursiers partenaires). Vous recevrez votre carte en général sous 24 à 48 heures ouvrées.
+                                Après validation de votre design, nous expédions la carte. Vous recevrez votre carte en général sous 24 à 48 heures ouvrées.
                             </div>
                         </details>
 
@@ -1051,7 +1038,7 @@ export default function LandingPage() {
                     <img src="/logo.png" alt="NFCrafter" style={{ height: '28px', opacity: 0.8 }} />
                     <span style={{ fontSize: '22px', fontWeight: '900', color: 'white', letterSpacing: '-0.5px', fontFamily: 'Outfit' }}>NFCrafter</span>
                 </div>
-                <p style={{ color: '#9CA3AF', fontSize: '15px', marginBottom: '32px', maxWidth: '400px', margin: '0 auto 32px auto', lineHeight: '1.6' }}>La carte de visite intelligente qui vous fait remarquer. Disponible au Bénin.</p>
+                <p style={{ color: '#9CA3AF', fontSize: '15px', marginBottom: '32px', maxWidth: '400px', margin: '0 auto 32px auto', lineHeight: '1.6' }}>La carte de visite intelligente qui vous fait remarquer.</p>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', flexWrap: 'wrap', marginBottom: '40px' }}>
                     <a
                         href={`https://wa.me/22969473921?text=${encodeURIComponent('Bonjour NFCrafter, j\'ai une question concernant vos cartes.')}`}
