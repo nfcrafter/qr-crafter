@@ -1,4 +1,27 @@
-// src/lib/utils.js (adding error translation)
+import { supabase } from './supabase.js'
+
+export async function generateUniqueCardId() {
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    let id = '';
+    let isUnique = false;
+
+    while (!isUnique) {
+        id = '';
+        for (let i = 0; i < 8; i++) {
+            id += chars[Math.floor(Math.random() * chars.length)];
+        }
+
+        const { data } = await supabase
+            .from('cards')
+            .select('card_id')
+            .eq('card_id', id)
+            .single();
+
+        if (!data) isUnique = true;
+    }
+
+    return id;
+}
 
 export function translateError(message) {
     if (!message) return '';
