@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { supabase } from '../lib/supabase.js'
 import { useNavigate } from 'react-router-dom'
 import { useToast } from '../components/Toast.jsx'
+import { translateError } from '../lib/utils.js'
 
 export default function ForgotPassword() {
     const navigate = useNavigate()
@@ -24,13 +25,7 @@ export default function ForgotPassword() {
             toast('Lien de réinitialisation envoyé !', 'success')
         } catch (err) {
             console.error('Password reset error:', err)
-            let message = err.message
-            if (err.message.includes('rate limit')) {
-                message = 'Trop de tentatives. Veuillez réessayer dans une heure.'
-            } else if (err.message.includes('Email sending failed')) {
-                message = 'Échec de l\'envoi de l\'email. Veuillez contacter le support ou réessayer plus tard.'
-            }
-            toast(message, 'error')
+            toast(translateError(err.message), 'error')
         } finally {
             setLoading(false)
         }
