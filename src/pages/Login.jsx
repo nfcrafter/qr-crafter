@@ -121,7 +121,7 @@ export default function Login() {
 
                 <div style={{ marginTop: '32px', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     <button 
-                        onClick={() => toast('Fonctionnalité bientôt disponible. Contactez le support.', 'info')}
+                        onClick={() => navigate('/forgot-password')}
                         style={{ background: 'none', border: 'none', color: '#64748B', fontSize: '14px', cursor: 'pointer', fontWeight: '600', transition: 'color 0.2s' }}
                         onMouseOver={e => e.currentTarget.style.color = '#111827'}
                         onMouseOut={e => e.currentTarget.style.color = '#64748B'}

@@ -13,6 +13,8 @@ import WhatsAppSupport from './components/WhatsAppSupport.jsx'
 import Activate from './pages/Activate.jsx'
 import CardSettings from './pages/admin/CardSettings.jsx'
 import CreateCardWizard from './pages/admin/CreateCardWizard.jsx';
+import ForgotPassword from './pages/ForgotPassword.jsx';
+import ResetPassword from './pages/ResetPassword.jsx';
 
 function LoadingScreen() {
     return (
@@ -78,6 +80,8 @@ export default function App() {
                 <Route path="/register" element={<Register />} />
                 <Route path="/u/:cardId" element={<PublicProfile />} />
                 <Route path="/activate" element={<Activate />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
 
                 {/* Client Routes */}
                 <Route path="/dashboard" element={
