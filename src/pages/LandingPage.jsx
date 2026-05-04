@@ -369,7 +369,7 @@ export default function LandingPage() {
                             </p>
                             <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '24px' }}>
                                 <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary">
-                                    ⚡ Créer ma carte maintenant
+                                    Créer ma carte maintenant
                                 </button>
                                 {/* ⚠️ Remplacer /p/demo par le slug d'un vrai profil client */}
                                 <a href="u/10j24wrb" className="btn-secondary" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
