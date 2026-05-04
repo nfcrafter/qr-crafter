@@ -13,13 +13,18 @@ export default function ResetPassword() {
     const [checking, setChecking] = useState(true)
 
     useEffect(() => {
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            if (!session) {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'PASSWORD_RECOVERY') {
+                setChecking(false)
+            } else if (!session) {
                 toast('Session invalide ou expirée', 'error')
                 navigate('/login')
+            } else {
+                setChecking(false)
             }
-            setChecking(false)
         })
+
+        return () => subscription.unsubscribe()
     }, [navigate, toast])
 
     if (checking) {
