@@ -23,7 +23,14 @@ export default function ForgotPassword() {
             setSubmitted(true)
             toast('Lien de réinitialisation envoyé !', 'success')
         } catch (err) {
-            toast(err.message, 'error')
+            console.error('Password reset error:', err)
+            let message = err.message
+            if (err.message.includes('rate limit')) {
+                message = 'Trop de tentatives. Veuillez réessayer dans une heure.'
+            } else if (err.message.includes('Email sending failed')) {
+                message = 'Échec de l\'envoi de l\'email. Veuillez contacter le support ou réessayer plus tard.'
+            }
+            toast(message, 'error')
         } finally {
             setLoading(false)
         }
