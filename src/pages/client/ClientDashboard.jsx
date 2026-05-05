@@ -10,6 +10,8 @@ export default function ClientDashboard() {
     const toast = useToast();
 
     const [viewMode, setViewMode] = useState('view');
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    
     const [user, setUser] = useState(null);
     const [userCards, setUserCards] = useState([]);
     const [selectedCardId, setSelectedCardId] = useState(null);
@@ -54,7 +56,6 @@ export default function ClientDashboard() {
         setLoading(false);
     }
 
-    // Switch profile effect
     useEffect(() => {
         if (selectedCardId && userCards.length > 0) {
             const card = userCards.find(c => c.card_id === selectedCardId);
@@ -66,11 +67,11 @@ export default function ClientDashboard() {
                     ...(card.admin_profile || {})
                 });
                 setViewMode('view');
+                setIsMobileMenuOpen(false); // Close menu on selection
             }
         }
     }, [selectedCardId]);
 
-    // FedaPay Integration
     function handleFedaPay() {
         if (!window.FedaPay) {
             toast("Erreur : Système de paiement indisponible", "error");
@@ -78,17 +79,11 @@ export default function ClientDashboard() {
         }
 
         const widget = window.FedaPay.init({
-            public_key: 'pk_sandbox_66p8vI9E9D9D9D9D9D9D9D9D', // REMPLACER PAR TA CLÉ RÉELLE
-            transaction: {
-                amount: 2000,
-                description: 'Création de profil NFCrafter'
-            },
+            public_key: 'pk_sandbox_66p8vI9E9D9D9D9D9D9D9D9D', // À remplacer par ta clé réelle
+            transaction: { amount: 2000, description: 'Création de profil NFCrafter' },
             onComplete: async (data) => {
-                if (data.status === 'approved') {
-                    await createNewProfile();
-                } else {
-                    toast("Le paiement n'a pas été validé.", "error");
-                }
+                if (data.status === 'approved') { await createNewProfile(); }
+                else { toast("Paiement non validé.", "error"); }
             }
         });
         widget.open();
@@ -100,23 +95,15 @@ export default function ClientDashboard() {
             const cardId = Math.random().toString(36).substring(2, 10).toUpperCase();
             const newName = `Nouveau Profil ${userCards.length + 1}`;
             const { error } = await supabase.from('cards').insert({
-                card_id: cardId,
-                owner_id: user.id,
-                card_name: newName,
-                status: 'active',
+                card_id: cardId, owner_id: user.id, card_name: newName, status: 'active',
                 admin_profile: { ...publicProfile, full_name: newName, socials: {}, customLinks: [] }
             });
-
             if (error) throw error;
-            
-            toast('Paiement validé ! Votre nouveau profil est créé.', 'success');
+            toast('Profil créé !', 'success');
             setSelectedCardId(cardId);
             await loadUserData();
-        } catch (e) {
-            toast(e.message, 'error');
-        } finally {
-            setSaving(false);
-        }
+        } catch (e) { toast(e.message, 'error'); }
+        finally { setSaving(false); }
     }
 
     async function savePublicProfile() {
@@ -124,18 +111,11 @@ export default function ClientDashboard() {
         setSaving(true);
         const { error } = await supabase
             .from('cards')
-            .update({ 
-                admin_profile: publicProfile,
-                card_name: publicProfile.full_name || 'Mon Profil'
-            })
+            .update({ admin_profile: publicProfile, card_name: publicProfile.full_name || 'Mon Profil' })
             .eq('card_id', selectedCardId);
 
         if (error) toast('Erreur : ' + error.message, 'error');
-        else {
-            toast('Profil mis à jour !', 'success');
-            setViewMode('view');
-            loadUserData();
-        }
+        else { toast('Profil mis à jour !', 'success'); setViewMode('view'); loadUserData(); }
         setSaving(false);
     }
 
@@ -158,35 +138,40 @@ export default function ClientDashboard() {
     return (
         <div style={{ display: 'flex', minHeight: '100vh', background: '#F8FAFC' }}>
             
+            {/* Header Mobile Only */}
+            <div className="mobile-header" style={{ position: 'fixed', top: 0, left: 0, right: 0, height: '70px', background: 'white', borderBottom: '1px solid #E2E8F0', zIndex: 100, display: 'none', alignItems: 'center', justifyContent: 'space-between', padding: '0 20px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <img src="/logo.png" alt="Logo" style={{ height: '24px' }} />
+                    <span style={{ fontWeight: '900', color: '#1A1265' }}>NFCrafter</span>
+                </div>
+                <button onClick={() => setIsMobileMenuOpen(true)} style={{ background: '#1A1265', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '8px', fontWeight: '800', fontSize: '13px' }}>
+                    Menu
+                </button>
+            </div>
+
+            {/* Overlay Mobile */}
+            {isMobileMenuOpen && (
+                <div onClick={() => setIsMobileMenuOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 190, backdropFilter: 'blur(4px)' }} />
+            )}
+
             {/* Sidebar (Left) */}
-            <aside style={{ width: '280px', background: 'white', borderRight: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', position: 'fixed', height: '100vh' }} className="desktop-only">
-                <div style={{ padding: '32px 24px', borderBottom: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <img src="/logo.png" alt="Logo" style={{ height: '32px' }} />
-                    <span style={{ fontWeight: '900', fontSize: '18px', color: '#1A1265' }}>NFCrafter</span>
+            <aside className={`sidebar ${isMobileMenuOpen ? 'open' : ''}`} style={{ width: '280px', background: 'white', borderRight: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', position: 'fixed', height: '100vh', zIndex: 200, transition: 'transform 0.3s ease' }}>
+                <div style={{ padding: '32px 24px', borderBottom: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <img src="/logo.png" alt="Logo" style={{ height: '32px' }} />
+                        <span style={{ fontWeight: '900', fontSize: '18px', color: '#1A1265' }}>NFCrafter</span>
+                    </div>
+                    <button onClick={() => setIsMobileMenuOpen(false)} className="mobile-only" style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer' }}>✕</button>
                 </div>
 
                 <div style={{ flex: 1, overflowY: 'auto', padding: '24px 16px' }}>
                     <div style={{ fontSize: '11px', fontWeight: '800', color: '#94A3B8', textTransform: 'uppercase', marginBottom: '16px', letterSpacing: '1px' }}>Mes Profils</div>
-                    
                     {userCards.map(card => (
-                        <button 
-                            key={card.card_id}
-                            onClick={() => setSelectedCardId(card.card_id)}
-                            style={{ 
-                                width: '100%', padding: '12px 16px', borderRadius: '12px', border: 'none', textAlign: 'left', marginBottom: '8px', cursor: 'pointer',
-                                background: selectedCardId === card.card_id ? '#1A1265' : 'transparent',
-                                color: selectedCardId === card.card_id ? 'white' : '#475569',
-                                fontWeight: '700', transition: '0.2s', display: 'flex', alignItems: 'center', gap: '10px'
-                            }}
-                        >
+                        <button key={card.card_id} onClick={() => setSelectedCardId(card.card_id)} style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: 'none', textAlign: 'left', marginBottom: '8px', cursor: 'pointer', background: selectedCardId === card.card_id ? '#1A1265' : 'transparent', color: selectedCardId === card.card_id ? 'white' : '#475569', fontWeight: '700', transition: '0.2s', display: 'flex', alignItems: 'center', gap: '10px' }}>
                             <span>👤</span> {card.card_name || 'Sans titre'}
                         </button>
                     ))}
-
-                    <button 
-                        onClick={handleFedaPay}
-                        style={{ width: '100%', marginTop: '24px', padding: '14px', borderRadius: '12px', border: '2px dashed #CBD5E1', background: 'white', color: '#1A1265', fontWeight: '800', cursor: 'pointer', fontSize: '13px' }}
-                    >
+                    <button onClick={handleFedaPay} style={{ width: '100%', marginTop: '24px', padding: '14px', borderRadius: '12px', border: '2px dashed #CBD5E1', background: 'white', color: '#1A1265', fontWeight: '800', cursor: 'pointer', fontSize: '13px' }}>
                         + Nouveau Profil (2000f)
                     </button>
                 </div>
@@ -197,86 +182,54 @@ export default function ClientDashboard() {
             </aside>
 
             {/* Main Content (Right) */}
-            <main style={{ flex: 1, marginLeft: '280px', padding: '40px' }} className="main-content">
-                
+            <main className="main-content" style={{ flex: 1, marginLeft: '280px', padding: '40px' }}>
                 {userCards.length === 0 ? (
-                    <div style={{ maxWidth: '600px', margin: '100px auto', textAlign: 'center', background: 'white', padding: '60px 40px', borderRadius: '32px', border: '1px solid #E2E8F0' }}>
+                    <div style={{ maxWidth: '600px', margin: '40px auto', textAlign: 'center', background: 'white', padding: '60px 40px', borderRadius: '32px', border: '1px solid #E2E8F0' }}>
                         <div style={{ fontSize: '64px', marginBottom: '24px' }}>👋</div>
-                        <h1 style={{ fontSize: '28px', fontWeight: '900', color: '#1A1265', marginBottom: '16px' }}>Bienvenue sur NFCrafter</h1>
-                        <p style={{ color: '#64748B', lineHeight: '1.6', marginBottom: '32px' }}>Commencez par créer votre premier profil digital pour partager vos contacts en un clin d'œil.</p>
-                        <button onClick={handleFedaPay} className="btn-primary" style={{ padding: '16px 40px', borderRadius: '100px' }}>Activer mon profil (2000f)</button>
+                        <h1 style={{ fontSize: '28px', fontWeight: '900', color: '#1A1265', marginBottom: '16px' }}>Bienvenue</h1>
+                        <p style={{ color: '#64748B', lineHeight: '1.6', marginBottom: '32px' }}>Activez votre premier profil pour commencer.</p>
+                        <button onClick={handleFedaPay} className="btn-primary" style={{ padding: '16px 40px', borderRadius: '100px' }}>Activer (2000f)</button>
                     </div>
                 ) : (
                     <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '32px' }}>
                         
-                        {/* Top Bar: Profile Link */}
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'white', padding: '20px 24px', borderRadius: '24px', border: '1px solid #E2E8F0', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
-                            <div style={{ flex: 1 }}>
-                                <div style={{ fontSize: '11px', fontWeight: '800', color: '#94A3B8', marginBottom: '4px' }}>LIEN PUBLIC DU PROFIL</div>
+                        {/* Link Box */}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'white', padding: '20px 24px', borderRadius: '24px', border: '1px solid #E2E8F0', flexWrap: 'wrap', gap: '16px' }}>
+                            <div style={{ flex: 1, minWidth: '200px' }}>
+                                <div style={{ fontSize: '11px', fontWeight: '800', color: '#94A3B8', marginBottom: '4px' }}>LIEN DU PROFIL</div>
                                 <div style={{ fontSize: '15px', fontWeight: '700', color: '#6366F1' }}>{publicUrl}</div>
                             </div>
                             <div style={{ display: 'flex', gap: '8px' }}>
-                                <button onClick={() => window.open(publicUrl, '_blank')} style={{ padding: '10px 16px', borderRadius: '10px', border: '1px solid #E2E8F0', background: 'white', color: '#1A1265', fontWeight: '700', cursor: 'pointer' }}>👁️ Voir</button>
-                                <button 
-                                    onClick={async () => {
-                                        if (navigator.share) {
-                                            try { await navigator.share({ title: 'NFCrafter', url: publicUrl }); } catch (e) {}
-                                        } else { window.open(`https://wa.me/?text=${encodeURIComponent(publicUrl)}`, '_blank'); }
-                                    }} 
-                                    style={{ padding: '10px 16px', borderRadius: '10px', background: '#25D366', color: 'white', border: 'none', fontWeight: '700', cursor: 'pointer' }}
-                                >
-                                    📲 Partager
-                                </button>
+                                <button onClick={() => window.open(publicUrl, '_blank')} style={{ padding: '10px 16px', borderRadius: '10px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '700', cursor: 'pointer' }}>👁️ Voir</button>
+                                <button onClick={async () => { if (navigator.share) { try { await navigator.share({ title: 'NFCrafter', url: publicUrl }); } catch (e) {} } else { window.open(`https://wa.me/?text=${encodeURIComponent(publicUrl)}`, '_blank'); } }} style={{ padding: '10px 16px', borderRadius: '10px', background: '#25D366', color: 'white', border: 'none', fontWeight: '700', cursor: 'pointer' }}>📲 Partager</button>
                             </div>
                         </div>
 
-                        {/* Physical Card Upsell */}
-                        <div style={{ background: 'linear-gradient(135deg, #1A1265 0%, #312E81 100%)', color: 'white', padding: '32px', borderRadius: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 12px 30px rgba(26,18,101,0.2)' }}>
-                            <div>
-                                <h3 style={{ fontSize: '20px', fontWeight: '900', marginBottom: '8px' }}>Commander ma carte physique 💳</h3>
-                                <p style={{ opacity: 0.8, fontSize: '14px' }}>Matérialisez votre profil digital pour impressionner vos interlocuteurs.</p>
+                        {/* Banner */}
+                        <div style={{ background: 'linear-gradient(135deg, #1A1265 0%, #312E81 100%)', color: 'white', padding: '32px', borderRadius: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '24px' }}>
+                            <div style={{ flex: 1 }}>
+                                <h3 style={{ fontSize: '20px', fontWeight: '900', marginBottom: '8px' }}>Carte physique 💳</h3>
+                                <p style={{ opacity: 0.8, fontSize: '14px' }}>Commandez votre carte NFC pour ce profil.</p>
                             </div>
-                            <button 
-                                onClick={() => window.open(`https://wa.me/22991566846?text=${encodeURIComponent('Bonjour, je souhaite commander ma carte physique NFCrafter pour mon profil : ' + publicUrl)}`, '_blank')} 
-                                style={{ background: 'white', color: '#1A1265', border: 'none', padding: '14px 24px', borderRadius: '14px', fontWeight: '900', cursor: 'pointer' }}
-                            >
-                                Commander (WhatsApp)
-                            </button>
+                            <button onClick={() => window.open(`https://wa.me/22991566846?text=${encodeURIComponent('Commande carte : ' + publicUrl)}`, '_blank')} style={{ background: 'white', color: '#1A1265', border: 'none', padding: '14px 24px', borderRadius: '14px', fontWeight: '900', cursor: 'pointer' }}>Commander</button>
                         </div>
 
-                        {/* Editor Section */}
+                        {/* Editor */}
                         <div style={{ background: 'white', padding: '32px', borderRadius: '32px', border: '1px solid #E2E8F0' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-                                <h2 style={{ fontSize: '22px', fontWeight: '900', color: '#1A1265', margin: 0 }}>Personnaliser le profil</h2>
-                                <button 
-                                    onClick={() => setViewMode(viewMode === 'view' ? 'edit' : 'view')}
-                                    style={{ padding: '10px 20px', borderRadius: '12px', background: viewMode === 'edit' ? '#F1F5F9' : '#1A1265', color: viewMode === 'edit' ? '#1A1265' : 'white', border: 'none', fontWeight: '800', cursor: 'pointer' }}
-                                >
-                                    {viewMode === 'edit' ? 'Annuler' : '✏️ Modifier'}
-                                </button>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', gap: '16px' }}>
+                                <h2 style={{ fontSize: '22px', fontWeight: '900', color: '#1A1265', margin: 0 }}>Éditer</h2>
+                                <button onClick={() => setViewMode(viewMode === 'view' ? 'edit' : 'view')} style={{ padding: '10px 20px', borderRadius: '12px', background: viewMode === 'edit' ? '#F1F5F9' : '#1A1265', color: viewMode === 'edit' ? '#1A1265' : 'white', border: 'none', fontWeight: '800', cursor: 'pointer' }}>{viewMode === 'edit' ? 'Annuler' : '✏️ Modifier'}</button>
                             </div>
 
                             {viewMode === 'edit' ? (
                                 <div className="animate-fade-in">
-                                    <ProfileForm
-                                        profile={publicProfile}
-                                        setProfile={setPublicProfile}
-                                        onUploadAvatar={(f) => uploadFile(f, 'avatars', (url) => setPublicProfile(p => ({...p, photo_url: url})), setUploadingAvatar)}
-                                        onUploadBanner={(f) => uploadFile(f, 'banners', (url) => setPublicProfile(p => ({...p, banner_url: url})), setUploadingBanner)}
-                                        uploadingAvatar={uploadingAvatar}
-                                        uploadingBanner={uploadingBanner}
-                                        toast={toast}
-                                    />
-                                    <div style={{ marginTop: '32px', paddingTop: '32px', borderTop: '1px solid #F1F5F9' }}>
-                                        <button onClick={savePublicProfile} disabled={saving} className="btn-primary" style={{ width: '100%', padding: '16px', borderRadius: '16px' }}>
-                                            {saving ? 'Enregistrement...' : '✅ Enregistrer les modifications'}
-                                        </button>
-                                    </div>
+                                    <ProfileForm profile={publicProfile} setProfile={setPublicProfile} onUploadAvatar={(f) => uploadFile(f, 'avatars', (url) => setPublicProfile(p => ({...p, photo_url: url})), setUploadingAvatar)} onUploadBanner={(f) => uploadFile(f, 'banners', (url) => setPublicProfile(p => ({...p, banner_url: url})), setUploadingBanner)} uploadingAvatar={uploadingAvatar} uploadingBanner={uploadingBanner} toast={toast} />
+                                    <button onClick={savePublicProfile} disabled={saving} className="btn-primary" style={{ width: '100%', padding: '16px', borderRadius: '16px', marginTop: '32px' }}>{saving ? '...' : '✅ Enregistrer'}</button>
                                 </div>
                             ) : (
                                 <div style={{ textAlign: 'center', padding: '40px 0', background: '#F8FAFC', borderRadius: '24px', border: '1px dashed #E2E8F0' }}>
-                                    <p style={{ color: '#64748B' }}>Ce profil est actif. Vous pouvez modifier vos informations à tout moment.</p>
-                                    <button onClick={() => setViewMode('edit')} style={{ marginTop: '16px', background: 'transparent', color: '#1A1265', border: '1px solid #E2E8F0', padding: '10px 24px', borderRadius: '12px', fontWeight: '700', cursor: 'pointer' }}>✏️ Éditer les informations</button>
+                                    <p style={{ color: '#64748B' }}>Profil actif et prêt.</p>
+                                    <button onClick={() => setViewMode('edit')} style={{ marginTop: '16px', background: 'transparent', color: '#1A1265', border: '1px solid #E2E8F0', padding: '10px 24px', borderRadius: '12px', fontWeight: '700', cursor: 'pointer' }}>✏️ Éditer</button>
                                 </div>
                             )}
                         </div>
@@ -292,8 +245,11 @@ export default function ClientDashboard() {
                 
                 @media (max-width: 968px) {
                     .desktop-only { display: none !important; }
-                    .main-content { marginLeft: 0 !important; padding: 20px !important; }
-                    aside { display: none !important; }
+                    .mobile-only { display: block !important; }
+                    .mobile-header { display: flex !important; }
+                    .sidebar { transform: translateX(-100%); }
+                    .sidebar.open { transform: translateX(0); }
+                    .main-content { margin-left: 0 !important; padding: 100px 20px 40px !important; }
                 }
             `}</style>
         </div>
