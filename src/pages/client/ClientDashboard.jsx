@@ -79,7 +79,7 @@ export default function ClientDashboard() {
         }
 
         const widget = window.FedaPay.init({
-            public_key: 'pk_sandbox_66p8vI9E9D9D9D9D9D9D9D9D', // À remplacer par ta clé réelle
+            public_key: 'pk_live_PQ6aE-xh4IH-8aYxhyD769DpD9D',
             transaction: { amount: 2000, description: 'Création de profil NFCrafter' },
             onComplete: async (data) => {
                 if (data.status === 'approved') { await createNewProfile(); }
