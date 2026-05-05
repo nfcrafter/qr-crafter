@@ -4,50 +4,26 @@ import { supabase } from '../../lib/supabase.js';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../../components/Toast.jsx';
 import ProfileForm from '../../components/ProfileForm.jsx';
-import { SOCIAL_NETWORKS } from '../../constants/socials.js';
 
 export default function ClientDashboard() {
     const navigate = useNavigate();
     const toast = useToast();
 
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [viewMode, setViewMode] = useState('view'); // 'view' or 'edit'
+    const [viewMode, setViewMode] = useState('view');
+    const [showPaywall, setShowPaywall] = useState(false);
     
     const [user, setUser] = useState(null);
     const [userCards, setUserCards] = useState([]);
-    const [selectedCard, setSelectedCard] = useState(null);
-    const [publicProfile, setPublicProfile] = useState({});
-    const [qrType, setQrType] = useState('profile');
+    const [selectedCardId, setSelectedCardId] = useState(null);
+    const [publicProfile, setPublicProfile] = useState({
+        banner_url: '', photo_url: '', full_name: '', job_title: '', bio: '',
+        phone: '', email: '', primaryColor: '#1A1265',
+        socials: {}, customLinks: [], url: '', qr_type: 'profile'
+    });
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [uploadingAvatar, setUploadingAvatar] = useState(false);
     const [uploadingBanner, setUploadingBanner] = useState(false);
-
-    async function uploadFile(file, bucket, onUrl, setUploading) {
-        setUploading(true);
-        try {
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${Math.random()}.${fileExt}`;
-            const filePath = `${fileName}`;
-
-            const { error: uploadError } = await supabase.storage
-                .from(bucket)
-                .upload(filePath, file);
-
-            if (uploadError) throw uploadError;
-
-            const { data: { publicUrl } } = supabase.storage
-                .from(bucket)
-                .getPublicUrl(filePath);
-
-            onUrl(publicUrl);
-            toast('Image mise à jour !', 'success');
-        } catch (error) {
-            toast('Erreur upload : ' + error.message, 'error');
-        } finally {
-            setUploading(false);
-        }
-    }
 
     useEffect(() => { loadUserData(); }, []);
 
@@ -57,279 +33,262 @@ export default function ClientDashboard() {
         if (!authUser) { navigate('/login'); return; }
         setUser(authUser);
 
-        // Fetch cards directly from 'cards' table using owner_id
-        const { data: cards, error: cardsError } = await supabase
+        const { data: cards } = await supabase
             .from('cards')
-            .select('card_id, admin_profile')
+            .select('*')
             .eq('owner_id', authUser.id);
-
-        if (cardsError) {
-            toast('Erreur chargement cartes : ' + cardsError.message, 'error');
-            setLoading(false);
-            return;
-        }
 
         setUserCards(cards || []);
         
         if (cards?.length > 0) {
-            const firstCard = cards[0];
-            setSelectedCard(firstCard);
-            
-            // Now load details for this card
-            await loadCardDetails(firstCard, authUser.id);
+            const currentId = selectedCardId || cards[0].card_id;
+            const card = cards.find(c => c.card_id === currentId) || cards[0];
+            setSelectedCardId(card.card_id);
+            setPublicProfile({
+                banner_url: '', photo_url: '', full_name: '', job_title: '', bio: '',
+                phone: '', email: '', primaryColor: '#1A1265',
+                socials: {}, customLinks: [], url: '', qr_type: 'profile',
+                ...(card.admin_profile || {})
+            });
+            setShowPaywall(false);
+        } else {
+            setShowPaywall(true);
         }
         setLoading(false);
     }
 
-    async function loadCardDetails(card, userId) {
-        if (!card) return;
-        
-        // Fetch profile data from 'profiles' table for the user
-        const { data: profileData } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', userId)
-            .single();
-
-        let adminBase = card.admin_profile || {};
-        
-        // Default structure
-        let merged = {
-            banner_url: '', photo_url: '', full_name: '', job_title: '', bio: '',
-            phone: '', email: '', primaryColor: '#1A1265',
-            socials: {}, customLinks: [], url: '',
-            ...adminBase
-        };
-
-        // Merge profileData (user's personal data)
-        if (profileData) {
-            for (const k in profileData) {
-                if (profileData[k] !== null && profileData[k] !== undefined && profileData[k] !== '') {
-                    merged[k] = profileData[k];
-                }
+    useEffect(() => {
+        if (selectedCardId && userCards.length > 0) {
+            const card = userCards.find(c => c.card_id === selectedCardId);
+            if (card) {
+                setPublicProfile({
+                    banner_url: '', photo_url: '', full_name: '', job_title: '', bio: '',
+                    phone: '', email: '', primaryColor: '#1A1265',
+                    socials: {}, customLinks: [], url: '', qr_type: 'profile',
+                    ...(card.admin_profile || {})
+                });
+                setViewMode('view');
             }
         }
+    }, [selectedCardId]);
 
-        // Migrate old flat socials to new socials object if needed
-        if (!merged.socials || Object.keys(merged.socials).length === 0) {
-            const socials = {};
-            SOCIAL_NETWORKS.forEach(net => {
-                if (merged[net.id]) {
-                    socials[net.id] = { value: merged[net.id], subtitle: '' };
-                }
+    async function handlePaymentAndCreate() {
+        setSaving(true);
+        try {
+            const cardId = Math.random().toString(36).substring(2, 10).toUpperCase();
+            const { error } = await supabase.from('cards').insert({
+                card_id: cardId,
+                owner_id: user.id,
+                card_name: `Profil ${userCards.length + 1}`,
+                status: 'active',
+                admin_profile: { ...publicProfile, full_name: `Profil ${userCards.length + 1}` }
             });
-            if (Object.keys(socials).length > 0) {
-                merged.socials = socials;
-            }
+
+            if (error) throw error;
+            
+            toast('Nouveau profil créé !', 'success');
+            setSelectedCardId(cardId);
+            setShowPaywall(false);
+            await loadUserData();
+        } catch (e) {
+            toast(e.message, 'error');
+        } finally {
+            setSaving(false);
         }
-        
-        setQrType(merged.qr_type || 'profile');
-        setPublicProfile(merged);
     }
 
     async function savePublicProfile() {
-        if (!selectedCard) return;
+        if (!selectedCardId) return;
         setSaving(true);
-        
-        // Update the card's admin_profile with the current state
         const { error } = await supabase
             .from('cards')
-            .update({ admin_profile: publicProfile })
-            .eq('card_id', selectedCard.card_id);
+            .update({ 
+                admin_profile: publicProfile,
+                card_name: publicProfile.full_name || 'Mon Profil'
+            })
+            .eq('card_id', selectedCardId);
 
-        if (error) {
-            toast('Erreur : ' + error.message, 'error');
-        } else {
+        if (error) toast('Erreur : ' + error.message, 'error');
+        else {
             toast('Modifications enregistrées !', 'success');
             setViewMode('view');
+            loadUserData();
         }
         setSaving(false);
     }
 
-    async function requestDesignChange() {
-        const message = `Bonjour, je souhaite modifier le design de ma carte QR (ID: ${selectedCard?.card_id}). Client: ${user?.email}`;
-        const whatsappUrl = `https://wa.me/22991566846?text=${encodeURIComponent(message)}`;
-        const { error } = await supabase.from('cards').update({ design_request: 'pending' }).eq('card_id', selectedCard?.card_id);
-        if (!error) {
-            toast('Demande envoyée ! Redirection...', 'success');
-            setTimeout(() => window.open(whatsappUrl, '_blank'), 1500);
+    async function uploadFile(file, bucket, onUrl, setUploading) {
+        setUploading(true);
+        try {
+            const fileName = `${Math.random()}.${file.name.split('.').pop()}`;
+            const { error: uploadError } = await supabase.storage.from(bucket).upload(fileName, file);
+            if (uploadError) throw uploadError;
+            const { data: { publicUrl } } = supabase.storage.from(bucket).getPublicUrl(fileName);
+            onUrl(publicUrl);
+            toast('Image mise à jour !', 'success');
+        } catch (error) {
+            toast('Erreur upload : ' + error.message, 'error');
+        } finally {
+            setUploading(false);
         }
     }
 
     if (loading) return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="loader"></div></div>;
 
-    const publicUrl = selectedCard ? `${window.location.origin}/u/${selectedCard.card_id}` : '';
+    const publicUrl = selectedCardId ? `${window.location.origin}/u/${selectedCardId}` : '';
 
     return (
         <div style={{ minHeight: '100vh', background: '#F8FAFC' }}>
-            {/* Header / Nav */}
-            <header style={{ background: 'white', borderBottom: '1px solid #E2E8F0', padding: '0 24px', sticky: 'top', zIndex: 100 }}>
+            <header style={{ background: 'white', borderBottom: '1px solid #E2E8F0', padding: '0 24px', position: 'sticky', top: 0, zIndex: 100 }}>
                 <div style={{ maxWidth: '1200px', margin: '0 auto', height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => navigate('/')}>
                         <img src="/logo.png" alt="Logo" style={{ height: '32px' }} />
                         <span style={{ fontWeight: '900', fontSize: '20px', color: '#1A1265' }}>NFCrafter</span>
                     </div>
-
-                    <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
-                        <button onClick={() => navigate('/')} className="desktop-only" style={{ background: '#F1F5F9', color: '#475569', border: 'none', padding: '10px 16px', borderRadius: '12px', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            🏠 Accueil
-                        </button>
-                        <div className="desktop-only" style={{ textAlign: 'right' }}>
-                            <div style={{ fontSize: '13px', fontWeight: '800', color: '#1A1265' }}>Mon Espace</div>
-                            <div style={{ fontSize: '11px', color: '#64748B' }}>{user?.email}</div>
-                        </div>
-                        <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="mobile-only" style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer' }}>☰</button>
-                        <button onClick={() => { supabase.auth.signOut(); navigate('/login'); }} className="desktop-only" style={{ padding: '10px 16px', borderRadius: '12px', background: '#FEF2F2', color: '#DC2626', border: 'none', fontWeight: '800', cursor: 'pointer' }}>Déconnexion</button>
+                    <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                        <div className="desktop-only" style={{ fontSize: '13px', color: '#64748B' }}>{user?.email}</div>
+                        <button onClick={() => { supabase.auth.signOut(); navigate('/login'); }} style={{ padding: '8px 16px', borderRadius: '10px', background: '#FEF2F2', color: '#DC2626', border: 'none', fontWeight: '800', cursor: 'pointer', fontSize: '13px' }}>Quitter</button>
                     </div>
                 </div>
             </header>
 
-            {/* Mobile Menu */}
-            {isMenuOpen && (
-                <div style={{ position: 'fixed', inset: 0, background: 'white', zIndex: 200, padding: '40px 24px', animation: 'slideIn 0.3s ease-out' }}>
-                    <button onClick={() => setIsMenuOpen(false)} style={{ position: 'absolute', right: '24px', top: '24px', fontSize: '32px', background: 'none', border: 'none' }}>✕</button>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginTop: '40px' }}>
-                        <div style={{ padding: '20px', background: '#F8FAFC', borderRadius: '16px' }}>
-                            <div style={{ fontWeight: '800', color: '#1A1265' }}>{user?.email}</div>
-                            <div style={{ fontSize: '12px', color: '#64748B' }}>Client NFCrafter</div>
-                        </div>
-                        <button onClick={() => navigate('/')} style={{ width: '100%', padding: '16px', borderRadius: '16px', background: '#F1F5F9', color: '#1A1265', border: 'none', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-                            🏠 Retour à l'accueil
-                        </button>
-                        <button onClick={() => { supabase.auth.signOut(); navigate('/login'); }} style={{ width: '100%', padding: '16px', borderRadius: '16px', background: '#FEF2F2', color: '#DC2626', border: 'none', fontWeight: '800', cursor: 'pointer' }}>Déconnexion</button>
-                    </div>
-                </div>
-            )}
-
             <main style={{ maxWidth: '1000px', margin: '0 auto', padding: '40px 24px' }}>
-                {!selectedCard ? (
-                    <div style={{ textAlign: 'center', padding: '80px 20px', background: 'white', borderRadius: '24px', border: '1px solid #E2E8F0' }}>
-                        <span style={{ fontSize: '48px' }}>🔍</span>
-                        <h2 style={{ fontSize: '24px', fontWeight: '900', color: '#1A1265', marginTop: '16px' }}>Aucune carte trouvée</h2>
-                        <p style={{ color: '#64748B', marginTop: '8px' }}>Vous n'avez pas encore de carte NFC activée sur votre compte.</p>
-                        <button onClick={() => navigate('/activate')} className="btn-primary" style={{ marginTop: '24px', padding: '12px 24px' }}>Activer une carte</button>
+                {showPaywall ? (
+                    <div className="animate-fade-in" style={{ textAlign: 'center', padding: '40px 0' }}>
+                        <div style={{ background: 'white', padding: '48px 32px', borderRadius: '32px', border: '1px solid #E2E8F0', boxShadow: '0 20px 40px rgba(0,0,0,0.03)' }}>
+                            <div style={{ fontSize: '64px', marginBottom: '24px' }}>🚀</div>
+                            <h1 style={{ fontSize: '32px', fontWeight: '900', color: '#1A1265', marginBottom: '16px' }}>Lancez votre Profil Digital</h1>
+                            <p style={{ color: '#64748B', fontSize: '18px', maxWidth: '500px', margin: '0 auto 32px' }}>Créez votre carte de visite intelligente pour seulement <strong>2.000f CFA</strong>.</p>
+                            <button onClick={handlePaymentAndCreate} disabled={saving} className="btn-primary" style={{ padding: '18px 48px', fontSize: '18px', borderRadius: '100px' }}>
+                                {saving ? 'Création...' : 'Créer mon premier profil (2.000f)'}
+                            </button>
+                        </div>
                     </div>
                 ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-                        {/* Title */}
-                        <div>
-                            <h1 style={{ fontSize: '32px', fontWeight: '900', color: '#1A1265', margin: 0 }}>Tableau de Bord</h1>
-                            <p style={{ color: '#64748B', marginTop: '4px' }}>Gérez votre profil digital et personnalisez votre expérience.</p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                        
+                        {/* Profile Switcher */}
+                        <div style={{ display: 'flex', gap: '12px', overflowX: 'auto', paddingBottom: '12px', scrollbarWidth: 'none' }}>
+                            {userCards.map((card, idx) => (
+                                <button 
+                                    key={card.card_id}
+                                    onClick={() => setSelectedCardId(card.card_id)}
+                                    style={{ 
+                                        padding: '12px 24px', 
+                                        borderRadius: '16px', 
+                                        border: 'none', 
+                                        background: selectedCardId === card.card_id ? '#1A1265' : 'white', 
+                                        color: selectedCardId === card.card_id ? 'white' : '#64748B',
+                                        fontWeight: '800',
+                                        whiteSpace: 'nowrap',
+                                        cursor: 'pointer',
+                                        boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
+                                        transition: '0.2s'
+                                    }}
+                                >
+                                    👤 {card.card_name || `Profil ${idx + 1}`}
+                                </button>
+                            ))}
+                            <button 
+                                onClick={handlePaymentAndCreate}
+                                disabled={saving}
+                                style={{ 
+                                    padding: '12px 24px', 
+                                    borderRadius: '16px', 
+                                    border: '2px dashed #CBD5E1', 
+                                    background: 'transparent', 
+                                    color: '#475569',
+                                    fontWeight: '800',
+                                    whiteSpace: 'nowrap',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                + Nouveau (2.000f)
+                            </button>
                         </div>
 
-                        {/* Public Link Box - Always visible */}
+                        {/* Physical Card Upsell */}
+                        <div style={{ background: 'linear-gradient(135deg, #1A1265 0%, #312E81 100%)', color: 'white', padding: '24px 32px', borderRadius: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
+                            <div>
+                                <h3 style={{ fontSize: '18px', fontWeight: '900', margin: 0 }}>Commander la carte physique 💳</h3>
+                                <p style={{ opacity: 0.8, fontSize: '13px', marginTop: '4px' }}>Pour le profil : {publicProfile.full_name || 'Sans nom'}</p>
+                            </div>
+                            <button 
+                                onClick={() => window.open(`https://wa.me/22991566846?text=${encodeURIComponent('Bonjour, je souhaite commander la carte physique pour mon profil : ' + publicUrl)}`, '_blank')} 
+                                style={{ background: 'white', color: '#1A1265', border: 'none', padding: '12px 20px', borderRadius: '12px', fontWeight: '900', cursor: 'pointer', fontSize: '14px' }}
+                            >
+                                Commander (WhatsApp)
+                            </button>
+                        </div>
+
+                        {/* Public Link & Actions */}
                         <div style={{ background: 'white', padding: '24px', borderRadius: '24px', border: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
                             <div style={{ flex: 1, minWidth: '200px' }}>
-                                <div style={{ fontSize: '12px', fontWeight: '800', color: '#94A3B8', marginBottom: '8px' }}>VOTRE LIEN PUBLIC</div>
-                                <div style={{ fontSize: '15px', fontWeight: '700', color: '#6366F1', wordBreak: 'break-all' }}>{publicUrl}</div>
+                                <div style={{ fontSize: '12px', fontWeight: '800', color: '#94A3B8', marginBottom: '8px' }}>LIEN DU PROFIL SÉLECTIONNÉ</div>
+                                <div style={{ fontSize: '15px', fontWeight: '700', color: '#6366F1' }}>{publicUrl}</div>
                             </div>
-                            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                                <button onClick={() => window.open(publicUrl, '_blank')} className="btn-ghost" style={{ padding: '12px 16px', fontSize: '14px' }}>👁️ Voir</button>
-                                <button onClick={() => { navigator.clipboard.writeText(publicUrl); toast('Lien copié !', 'success'); }} className="btn-ghost" style={{ padding: '12px 16px', fontSize: '14px', border: '1px solid #E2E8F0' }}>📋 Copier</button>
+                            <div style={{ display: 'flex', gap: '10px' }}>
+                                <button onClick={() => window.open(publicUrl, '_blank')} className="btn-ghost" style={{ padding: '12px 16px' }}>👁️ Voir</button>
                                 <button 
                                     onClick={async () => {
                                         if (navigator.share) {
-                                            try {
-                                                await navigator.share({
-                                                    title: 'Mon profil NFCrafter',
-                                                    text: 'Voici mes coordonnées professionnelles via NFCrafter :',
-                                                    url: publicUrl,
-                                                });
-                                            } catch (e) { console.log(e); }
-                                        } else {
-                                            window.open(`https://wa.me/?text=${encodeURIComponent('Voici mes coordonnées professionnelles : ' + publicUrl)}`, '_blank');
-                                        }
+                                            try { await navigator.share({ title: 'Mon Profil', url: publicUrl }); } catch (e) {}
+                                        } else { window.open(`https://wa.me/?text=${encodeURIComponent(publicUrl)}`, '_blank'); }
                                     }} 
                                     className="btn-primary" 
-                                    style={{ padding: '12px 20px', fontSize: '14px', background: 'linear-gradient(135deg, #25D366, #128C7E)', border: 'none' }}
+                                    style={{ padding: '12px 24px', background: 'linear-gradient(135deg, #25D366, #128C7E)', border: 'none' }}
                                 >
                                     📲 Partager
                                 </button>
                             </div>
                         </div>
 
-                        {/* Profile Section */}
-                        <div style={{ background: 'white', padding: '32px', borderRadius: '24px', border: '1px solid #E2E8F0', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+                        {/* Editor Section */}
+                        <div style={{ background: 'white', padding: '32px', borderRadius: '24px', border: '1px solid #E2E8F0' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-                                <h2 style={{ fontSize: '20px', fontWeight: '900', color: '#1A1265', margin: 0 }}>
-                                    {qrType === 'url' ? 'Lien de Redirection' : 'Votre Profil'}
-                                </h2>
+                                <h2 style={{ fontSize: '20px', fontWeight: '900', color: '#1A1265', margin: 0 }}>Éditer le profil</h2>
                                 <button 
                                     onClick={() => setViewMode(viewMode === 'view' ? 'edit' : 'view')}
                                     style={{ padding: '10px 20px', borderRadius: '12px', background: viewMode === 'edit' ? '#F1F5F9' : '#1A1265', color: viewMode === 'edit' ? '#1A1265' : 'white', border: 'none', fontWeight: '800', cursor: 'pointer' }}
                                 >
-                                    {viewMode === 'edit' ? 'Annuler' : 'Modifier'}
+                                    {viewMode === 'edit' ? 'Annuler' : '✏️ Modifier'}
                                 </button>
                             </div>
 
                             {viewMode === 'edit' ? (
                                 <>
-                                    {qrType === 'url' ? (
-                                        <div className="field">
-                                            <label>URL de destination</label>
-                                            <input 
-                                                type="url" 
-                                                value={publicProfile.url || ''} 
-                                                onChange={e => setPublicProfile({...publicProfile, url: e.target.value})} 
-                                                placeholder="https://votre-site.com" 
-                                                autoFocus
-                                            />
-                                            <p style={{ fontSize: 12, color: '#64748B', marginTop: 8 }}>Votre code QR redirigera directement vers cette adresse.</p>
-                                        </div>
-                                    ) : (
-                                        <ProfileForm
-                                            profile={publicProfile}
-                                            setProfile={setPublicProfile}
-                                            onUploadAvatar={(f) => uploadFile(f, 'avatars', (url) => setPublicProfile(p => ({...p, photo_url: url})), setUploadingAvatar)}
-                                            onUploadBanner={(f) => uploadFile(f, 'banners', (url) => setPublicProfile(p => ({...p, banner_url: url})), setUploadingBanner)}
-                                            uploadingAvatar={uploadingAvatar}
-                                            uploadingBanner={uploadingBanner}
-                                            toast={toast}
-                                        />
-                                    )}
+                                    <ProfileForm
+                                        profile={publicProfile}
+                                        setProfile={setPublicProfile}
+                                        onUploadAvatar={(f) => uploadFile(f, 'avatars', (url) => setPublicProfile(p => ({...p, photo_url: url})), setUploadingAvatar)}
+                                        onUploadBanner={(f) => uploadFile(f, 'banners', (url) => setPublicProfile(p => ({...p, banner_url: url})), setUploadingBanner)}
+                                        uploadingAvatar={uploadingAvatar}
+                                        uploadingBanner={uploadingBanner}
+                                        toast={toast}
+                                    />
                                     <div style={{ marginTop: '32px', borderTop: '1px solid #F1F5F9', paddingTop: '32px' }}>
                                         <button onClick={savePublicProfile} disabled={saving} className="btn-primary" style={{ width: '100%', padding: '16px', borderRadius: '16px' }}>
-                                            {saving ? 'Enregistrement...' : 'Enregistrer les modifications'}
+                                            {saving ? 'Enregistrement...' : '✅ Enregistrer les modifications'}
                                         </button>
                                     </div>
                                 </>
                             ) : (
-                                <div style={{ background: '#F8FAFC', padding: '24px', borderRadius: '20px', border: '1px solid #E2E8F0', textAlign: 'center' }}>
-                                    <p style={{ color: '#64748B', margin: 0 }}>
-                                        {qrType === 'url' 
-                                            ? `Redirection active vers : ${publicProfile.url || 'aucune URL'}`
-                                            : 'Cliquez sur le bouton pour modifier vos informations.'}
-                                    </p>
+                                <div style={{ textAlign: 'center', padding: '40px 0', background: '#F8FAFC', borderRadius: '20px' }}>
+                                    <p style={{ color: '#64748B', fontSize: '15px' }}>Ce profil est actif. Cliquez sur modifier pour le personnaliser.</p>
+                                    <button onClick={() => setViewMode('edit')} style={{ marginTop: '12px', background: 'transparent', color: '#1A1265', border: '1px solid #E2E8F0', padding: '8px 20px', borderRadius: '10px', fontWeight: '700', cursor: 'pointer' }}>Modifier les infos</button>
                                 </div>
                             )}
-                        </div>
-
-                        {/* Danger Zone / Info */}
-                        <div style={{ background: '#FFF5F5', padding: '24px', borderRadius: '20px', border: '1px solid #FCA5A5' }}>
-                            <h3 style={{ color: '#DC2626', fontWeight: '900', fontSize: '15px', margin: '0 0 8px 0' }}>Modification du design physique 🎨</h3>
-                            <p style={{ color: '#991B1B', fontSize: '13px', margin: '0 0 16px 0', lineHeight: '1.5' }}>
-                                Votre code QR a été imprimé ou encodé avec un design spécifique (couleurs, logo). Vous pouvez modifier le contenu à tout moment, mais pour changer le design du code lui-même, vous devez nous contacter.
-                            </p>
-                            <button onClick={requestDesignChange} style={{ background: 'white', color: '#DC2626', border: '1px solid #FCA5A5', padding: '12px 20px', borderRadius: '12px', fontWeight: '800', cursor: 'pointer' }}>
-                                Demander une modification via WhatsApp
-                            </button>
                         </div>
                     </div>
                 )}
             </main>
 
             <style>{`
-                @keyframes slideIn { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-                @keyframes spin { to { transform: rotate(360deg); } }
                 .loader { width: 32px; height: 32px; border: 3px solid #EEF2FF; border-top-color: #1A1265; border-radius: 50%; animation: spin 1s linear infinite; }
-                
-                @media (max-width: 968px) {
-                    .desktop-only { display: none !important; }
-                    .mobile-only { display: block !important; }
-                }
-                @media (min-width: 969px) {
-                    .mobile-only { display: none !important; }
-                }
+                @keyframes spin { to { transform: rotate(360deg); } }
+                .animate-fade-in { animation: fadeIn 0.4s ease-out; }
+                @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+                @media (max-width: 768px) { .desktop-only { display: none !important; } }
             `}</style>
         </div>
     );
