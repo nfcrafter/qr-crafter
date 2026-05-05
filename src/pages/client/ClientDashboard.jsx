@@ -67,43 +67,16 @@ export default function ClientDashboard() {
                     ...(card.admin_profile || {})
                 });
                 setViewMode('view');
-                setIsMobileMenuOpen(false); // Close menu on selection
+                setIsMobileMenuOpen(false);
             }
         }
     }, [selectedCardId]);
 
-    function handleFedaPay() {
-        if (!window.FedaPay) {
-            toast("Erreur : Système de paiement indisponible", "error");
-            return;
-        }
-
-        const widget = window.FedaPay.init({
-            public_key: 'pk_live_PQ6aE-xh4IH-8aYxhyD769DpD9D',
-            transaction: { amount: 2000, description: 'Création de profil NFCrafter' },
-            onComplete: async (data) => {
-                if (data.status === 'approved') { await createNewProfile(); }
-                else { toast("Paiement non validé.", "error"); }
-            }
-        });
-        widget.open();
-    }
-
-    async function createNewProfile() {
-        setSaving(true);
-        try {
-            const cardId = Math.random().toString(36).substring(2, 10).toUpperCase();
-            const newName = `Nouveau Profil ${userCards.length + 1}`;
-            const { error } = await supabase.from('cards').insert({
-                card_id: cardId, owner_id: user.id, card_name: newName, status: 'active',
-                admin_profile: { ...publicProfile, full_name: newName, socials: {}, customLinks: [] }
-            });
-            if (error) throw error;
-            toast('Profil créé !', 'success');
-            setSelectedCardId(cardId);
-            await loadUserData();
-        } catch (e) { toast(e.message, 'error'); }
-        finally { setSaving(false); }
+    function handleWhatsAppOrder(isNew = false) {
+        const message = isNew 
+            ? `Bonjour NFCrafter ! Je souhaite créer un NOUVEAU profil digital (2.000f). Mon email : ${user?.email}`
+            : `Bonjour NFCrafter ! Je souhaite ACTIVER mon premier profil digital (2.000f). Mon email : ${user?.email}`;
+        window.open(`https://wa.me/22991566846?text=${encodeURIComponent(message)}`, '_blank');
     }
 
     async function savePublicProfile() {
@@ -171,7 +144,7 @@ export default function ClientDashboard() {
                             <span>👤</span> {card.card_name || 'Sans titre'}
                         </button>
                     ))}
-                    <button onClick={handleFedaPay} style={{ width: '100%', marginTop: '24px', padding: '14px', borderRadius: '12px', border: '2px dashed #CBD5E1', background: 'white', color: '#1A1265', fontWeight: '800', cursor: 'pointer', fontSize: '13px' }}>
+                    <button onClick={() => handleWhatsAppOrder(true)} style={{ width: '100%', marginTop: '24px', padding: '14px', borderRadius: '12px', border: '2px dashed #25D366', background: 'white', color: '#128C7E', fontWeight: '800', cursor: 'pointer', fontSize: '13px' }}>
                         + Nouveau Profil (2000f)
                     </button>
                 </div>
@@ -187,8 +160,8 @@ export default function ClientDashboard() {
                     <div style={{ maxWidth: '600px', margin: '40px auto', textAlign: 'center', background: 'white', padding: '60px 40px', borderRadius: '32px', border: '1px solid #E2E8F0' }}>
                         <div style={{ fontSize: '64px', marginBottom: '24px' }}>👋</div>
                         <h1 style={{ fontSize: '28px', fontWeight: '900', color: '#1A1265', marginBottom: '16px' }}>Bienvenue</h1>
-                        <p style={{ color: '#64748B', lineHeight: '1.6', marginBottom: '32px' }}>Activez votre premier profil pour commencer.</p>
-                        <button onClick={handleFedaPay} className="btn-primary" style={{ padding: '16px 40px', borderRadius: '100px' }}>Activer (2000f)</button>
+                        <p style={{ color: '#64748B', lineHeight: '1.6', marginBottom: '32px' }}>Vous n'avez pas encore de profil actif. Cliquez ci-dessous pour commander votre premier profil digital.</p>
+                        <button onClick={() => handleWhatsAppOrder(false)} className="btn-primary" style={{ padding: '16px 40px', borderRadius: '100px', background: '#25D366', border: 'none' }}>🚀 Activer mon profil (2000f)</button>
                     </div>
                 ) : (
                     <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '32px' }}>
@@ -209,7 +182,7 @@ export default function ClientDashboard() {
                         <div style={{ background: 'linear-gradient(135deg, #1A1265 0%, #312E81 100%)', color: 'white', padding: '32px', borderRadius: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '24px' }}>
                             <div style={{ flex: 1 }}>
                                 <h3 style={{ fontSize: '20px', fontWeight: '900', marginBottom: '8px' }}>Carte physique 💳</h3>
-                                <p style={{ opacity: 0.8, fontSize: '14px' }}>Commandez votre carte NFC pour ce profil.</p>
+                                <p style={{ opacity: 0.8, fontSize: '14px' }}>Matérialisez votre profil avec une carte NFCrafter.</p>
                             </div>
                             <button onClick={() => window.open(`https://wa.me/22991566846?text=${encodeURIComponent('Commande carte : ' + publicUrl)}`, '_blank')} style={{ background: 'white', color: '#1A1265', border: 'none', padding: '14px 24px', borderRadius: '14px', fontWeight: '900', cursor: 'pointer' }}>Commander</button>
                         </div>
@@ -217,7 +190,7 @@ export default function ClientDashboard() {
                         {/* Editor */}
                         <div style={{ background: 'white', padding: '32px', borderRadius: '32px', border: '1px solid #E2E8F0' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', gap: '16px' }}>
-                                <h2 style={{ fontSize: '22px', fontWeight: '900', color: '#1A1265', margin: 0 }}>Éditer</h2>
+                                <h2 style={{ fontSize: '22px', fontWeight: '900', color: '#1A1265', margin: 0 }}>Personnaliser le profil</h2>
                                 <button onClick={() => setViewMode(viewMode === 'view' ? 'edit' : 'view')} style={{ padding: '10px 20px', borderRadius: '12px', background: viewMode === 'edit' ? '#F1F5F9' : '#1A1265', color: viewMode === 'edit' ? '#1A1265' : 'white', border: 'none', fontWeight: '800', cursor: 'pointer' }}>{viewMode === 'edit' ? 'Annuler' : '✏️ Modifier'}</button>
                             </div>
 
@@ -228,7 +201,7 @@ export default function ClientDashboard() {
                                 </div>
                             ) : (
                                 <div style={{ textAlign: 'center', padding: '40px 0', background: '#F8FAFC', borderRadius: '24px', border: '1px dashed #E2E8F0' }}>
-                                    <p style={{ color: '#64748B' }}>Profil actif et prêt.</p>
+                                    <p style={{ color: '#64748B' }}>Votre profil est actif.</p>
                                     <button onClick={() => setViewMode('edit')} style={{ marginTop: '16px', background: 'transparent', color: '#1A1265', border: '1px solid #E2E8F0', padding: '10px 24px', borderRadius: '12px', fontWeight: '700', cursor: 'pointer' }}>✏️ Éditer</button>
                                 </div>
                             )}
