@@ -76,7 +76,7 @@ export default function ClientDashboard() {
         const message = isNew 
             ? `Bonjour NFCrafter ! Je souhaite créer un NOUVEAU profil digital (2.000f). Mon email : ${user?.email}`
             : `Bonjour NFCrafter ! Je souhaite ACTIVER mon premier profil digital (2.000f). Mon email : ${user?.email}`;
-        window.open(`https://wa.me/22991566846?text=${encodeURIComponent(message)}`, '_blank');
+        window.open(`https://wa.me/22969473921?text=${encodeURIComponent(message)}`, '_blank');
     }
 
     async function savePublicProfile() {
@@ -184,7 +184,7 @@ export default function ClientDashboard() {
                                 <h3 style={{ fontSize: '20px', fontWeight: '900', marginBottom: '8px' }}>Carte physique 💳</h3>
                                 <p style={{ opacity: 0.8, fontSize: '14px' }}>Matérialisez votre profil avec une carte NFCrafter.</p>
                             </div>
-                            <button onClick={() => window.open(`https://wa.me/22991566846?text=${encodeURIComponent('Commande carte : ' + publicUrl)}`, '_blank')} style={{ background: 'white', color: '#1A1265', border: 'none', padding: '14px 24px', borderRadius: '14px', fontWeight: '900', cursor: 'pointer' }}>Commander</button>
+                            <button onClick={() => window.open(`https://wa.me/22969473921?text=${encodeURIComponent('Commande carte : ' + publicUrl)}`, '_blank')} style={{ background: 'white', color: '#1A1265', border: 'none', padding: '14px 24px', borderRadius: '14px', fontWeight: '900', cursor: 'pointer' }}>Commander</button>
                         </div>
 
                         {/* Editor */}
