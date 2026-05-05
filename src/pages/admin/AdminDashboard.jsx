@@ -572,7 +572,20 @@ function CardListItem({ card, scanCount, navigate, toast, onResolve }) {
                 <div style={{ fontSize: '9px', color: '#94A3B8', fontWeight: '900' }}>SCANS</div>
             </div>
 
-            <div className="card-actions-group">
+            <div className="card-actions-group" style={{ display: 'flex', gap: '8px' }}>
+                {!card.owner_id && (
+                    <button 
+                        onClick={() => {
+                            const url = `${window.location.origin}/activate?card=${card.card_id}&token=${card.activation_token}`;
+                            navigator.clipboard.writeText(url);
+                            toast('Lien d\'activation copié !', 'success');
+                        }} 
+                        style={{ background: '#F1F5F9', color: '#475569', padding: '10px 16px', borderRadius: '10px', border: '1px solid #E2E8F0', fontWeight: '800', cursor: 'pointer', fontSize: '13px' }}
+                        title="Copier le lien d'activation pour le client"
+                    >
+                        🔑 Lien
+                    </button>
+                )}
                 {isPendingRequest ? (
                     <button onClick={onResolve} style={{ background: '#10B981', color: 'white', padding: '10px 16px', borderRadius: '10px', border: 'none', fontWeight: '800', cursor: 'pointer', fontSize: '13px' }}>Fait</button>
                 ) : (
