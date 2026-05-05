@@ -223,9 +223,28 @@ export default function ClientDashboard() {
                                 <div style={{ fontSize: '12px', fontWeight: '800', color: '#94A3B8', marginBottom: '8px' }}>VOTRE LIEN PUBLIC</div>
                                 <div style={{ fontSize: '15px', fontWeight: '700', color: '#6366F1', wordBreak: 'break-all' }}>{publicUrl}</div>
                             </div>
-                            <div style={{ display: 'flex', gap: '12px' }}>
-                                <button onClick={() => window.open(publicUrl, '_blank')} className="btn-ghost" style={{ padding: '12px 20px' }}>👁️ Voir ma page</button>
-                                <button onClick={() => { navigator.clipboard.writeText(publicUrl); toast('Lien copié !', 'success'); }} className="btn-primary" style={{ padding: '12px 24px' }}>Copier le lien</button>
+                            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                                <button onClick={() => window.open(publicUrl, '_blank')} className="btn-ghost" style={{ padding: '12px 16px', fontSize: '14px' }}>👁️ Voir</button>
+                                <button onClick={() => { navigator.clipboard.writeText(publicUrl); toast('Lien copié !', 'success'); }} className="btn-ghost" style={{ padding: '12px 16px', fontSize: '14px', border: '1px solid #E2E8F0' }}>📋 Copier</button>
+                                <button 
+                                    onClick={async () => {
+                                        if (navigator.share) {
+                                            try {
+                                                await navigator.share({
+                                                    title: 'Mon profil NFCrafter',
+                                                    text: 'Voici mes coordonnées professionnelles via NFCrafter :',
+                                                    url: publicUrl,
+                                                });
+                                            } catch (e) { console.log(e); }
+                                        } else {
+                                            window.open(`https://wa.me/?text=${encodeURIComponent('Voici mes coordonnées professionnelles : ' + publicUrl)}`, '_blank');
+                                        }
+                                    }} 
+                                    className="btn-primary" 
+                                    style={{ padding: '12px 20px', fontSize: '14px', background: 'linear-gradient(135deg, #25D366, #128C7E)', border: 'none' }}
+                                >
+                                    📲 Partager
+                                </button>
                             </div>
                         </div>
 

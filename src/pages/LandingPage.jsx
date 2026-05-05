@@ -250,8 +250,13 @@ export default function LandingPage() {
                     display: flex; flex-direction: column; position: relative;
                 }
                 .price-card.featured { 
-                    background: #111827; color: white; border: 1px solid #374151; 
-                    box-shadow: 0 20px 60px rgba(17, 24, 39, 0.3);
+                    background: white; color: #111827; border: 2px solid #4F46E5; 
+                    box-shadow: 0 20px 60px rgba(79, 70, 229, 0.1);
+                }
+                .price-card.premium {
+                    background: linear-gradient(135deg, #F8FAFC 0%, #EFF6FF 100%);
+                    border: 2px solid #3B82F6;
+                    box-shadow: 0 20px 60px rgba(59, 130, 246, 0.15);
                 }
                 .price-list { list-style: none; padding: 0; margin: 0 0 40px 0; display: flex; flex-direction: column; gap: 16px; }
                 .price-list li { display: flex; align-items: center; gap: 12px; font-size: 15px; font-weight: 500; }
@@ -777,56 +782,68 @@ export default function LandingPage() {
                 <div className="container">
                     <div style={{ textAlign: 'center', marginBottom: '64px' }}>
                         <h2 style={{ fontSize: '44px', fontWeight: '900', fontFamily: 'Outfit', color: '#111827', letterSpacing: '-0.02em', marginBottom: '16px' }}>Nos Solutions</h2>
-                        <p style={{ color: '#4B5563', fontSize: '18px' }}>Un investissement unique, pas d'abonnement.</p>
+                        <p style={{ color: '#4B5563', fontSize: '18px' }}>Un investissement pour la vie, un abonnement pour l'excellence.</p>
                     </div>
 
-                    <div className="pricing-grid">
+                    <div className="pricing-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', maxWidth: '1100px' }}>
                         {/* Digital Pack */}
                         <div className="glass-panel price-card">
-                            <div style={{ background: 'rgba(255,255,255,0.8)', color: '#4B5563', padding: '8px 20px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', alignSelf: 'flex-start', marginBottom: '24px', border: '1px solid rgba(0,0,0,0.05)' }}>L'essentiel</div>
-                            <h3 style={{ fontSize: '32px', fontWeight: '900', marginBottom: '8px', fontFamily: 'Outfit' }}>Pack Digital</h3>
+                            <div style={{ background: '#F3F4F6', color: '#4B5563', padding: '8px 20px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', alignSelf: 'flex-start', marginBottom: '24px', border: '1px solid rgba(0,0,0,0.05)' }}>L'essentiel</div>
+                            <h3 style={{ fontSize: '28px', fontWeight: '900', marginBottom: '8px', fontFamily: 'Outfit' }}>Pack Digital</h3>
                             <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '32px' }}>
-                                <div style={{ fontSize: '48px', fontWeight: '900', fontFamily: 'Outfit', letterSpacing: '-0.03em' }}>5.000<small style={{ fontSize: '18px', fontWeight: '600', color: '#6B7280' }}>f CFA</small></div>
-                                <div style={{ fontSize: '20px', fontWeight: '700', color: '#9CA3AF', textDecoration: 'line-through' }}>7.500f</div>
+                                <div style={{ fontSize: '40px', fontWeight: '900', fontFamily: 'Outfit', letterSpacing: '-0.03em' }}>5.000<small style={{ fontSize: '16px', fontWeight: '600', color: '#6B7280' }}>f CFA</small></div>
                             </div>
 
                             <ul className="price-list">
-                                <li><span style={{ color: '#111827', fontWeight: '900' }}>✓</span> Création du profil digital complet</li>
-                                <li><span style={{ color: '#111827', fontWeight: '900' }}>✓</span> QR Code personnalisé </li>
-                                <li><span style={{ color: '#111827', fontWeight: '900' }}>✓</span> Liens sociaux et contacts illimités</li>
-                                <li><span style={{ color: '#111827', fontWeight: '900' }}>✓</span> Accès au tableau de bord</li>
+                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> Profil digital de base inclus</li>
+                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> QR Code personnalisé</li>
+                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> Liens sociaux illimités</li>
+                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> Partage rapide (Dashboard)</li>
                                 <li style={{ color: '#9CA3AF' }}><span style={{ color: '#D1D5DB', fontWeight: '900' }}>✕</span> Pas de carte physique</li>
                             </ul>
 
-                            <button onClick={() => window.open(getWhatsAppUrl('digital'), '_blank')} className="btn-secondary" style={{ width: '100%', marginTop: 'auto', background: '#111827', color: '#D1D5DB' }}>Commander le Digital</button>
+                            <button onClick={() => window.open(getWhatsAppUrl('digital'), '_blank')} className="btn-secondary" style={{ width: '100%', marginTop: 'auto', background: '#F3F4F6', color: '#1F2937', border: '1px solid #E5E7EB' }}>Choisir le Digital</button>
                         </div>
 
                         {/* Physical Pack */}
                         <div className="glass-panel price-card featured">
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', width: '100%', flexWrap: 'wrap', gap: '12px' }}>
-                                <div style={{ background: 'rgba(255,255,255,0.1)', color: 'white', padding: '8px 20px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', backdropFilter: 'blur(10px)' }}>Le Complet</div>
-                                <div style={{ background: '#EF4444', color: 'white', padding: '6px 12px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', animation: 'pulseBadge 2s infinite' }}>🔥 Offre de Lancement</div>
+                                <div style={{ background: '#EEF2FF', color: '#4F46E5', padding: '8px 20px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Le Complet</div>
+                                <div style={{ background: '#EF4444', color: 'white', padding: '6px 12px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', animation: 'pulseBadge 2s infinite' }}>🔥 Populaire</div>
                             </div>
-                            <h3 style={{ color: 'white', fontSize: '32px', fontWeight: '900', marginBottom: '8px', fontFamily: 'Outfit' }}>Pack Physique</h3>
+                            <h3 style={{ fontSize: '28px', fontWeight: '900', marginBottom: '8px', fontFamily: 'Outfit' }}>Pack Physique</h3>
                             <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '32px' }}>
-                                <div style={{ fontSize: '48px', fontWeight: '900', fontFamily: 'Outfit', letterSpacing: '-0.03em' }}>10.000<small style={{ fontSize: '18px', fontWeight: '600', color: '#9CA3AF' }}>f CFA</small></div>
-                                <div style={{ fontSize: '24px', fontWeight: '700', color: '#6B7280', textDecoration: 'line-through' }}>15.000f</div>
+                                <div style={{ fontSize: '40px', fontWeight: '900', fontFamily: 'Outfit', letterSpacing: '-0.03em' }}>10.000<small style={{ fontSize: '16px', fontWeight: '600', color: '#6B7280' }}>f CFA</small></div>
                             </div>
 
                             <ul className="price-list">
-                                <li><span style={{ color: 'white', fontWeight: '900' }}>✓</span> Carte physique NFC Premium</li>
-                                <li><span style={{ color: 'white', fontWeight: '900' }}>✓</span> Design avec votre nom/photo/logo</li>
-                                <li><span style={{ color: 'white', fontWeight: '900' }}>✓</span> Profil digital et QR code inclus</li>
-                                <li><span style={{ color: 'white', fontWeight: '900' }}>✓</span> Liens sociaux et contacts illimités</li>
-                                <li><span style={{ color: 'white', fontWeight: '900' }}>✓</span> Accès au tableau de bord</li>
-                                <li><span style={{ color: 'white', fontWeight: '900' }}>✓</span> Livraison rapide et sécurisée</li>
+                                <li><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> <strong>Carte physique NFC Premium</strong></li>
+                                <li><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Design sur-mesure inclus</li>
+                                <li><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Profil digital & QR inclus</li>
+                                <li><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Partage rapide (Dashboard)</li>
+                                <li><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Livraison 24-48h</li>
                             </ul>
 
-                            <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary" style={{ width: '100%', background: 'white', color: '#111827', marginTop: 'auto', marginBottom: '16px' }}>Commander la Carte</button>
-                            
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#9CA3AF', justifyContent: 'center' }}>
-                                <span style={{ fontSize: '14px' }}>🛡️</span> <span><strong>Sécurité garantie.</strong> Contrôlez l'accès à vos données.</span>
+                            <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary" style={{ width: '100%', marginTop: 'auto' }}>Commander la Carte</button>
+                        </div>
+
+                        {/* Pro Pack - New! */}
+                        <div className="glass-panel price-card premium">
+                            <div style={{ background: '#DBEAFE', color: '#1E40AF', padding: '8px 20px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', alignSelf: 'flex-start', marginBottom: '24px' }}>L'excellence</div>
+                            <h3 style={{ fontSize: '28px', fontWeight: '900', marginBottom: '8px', fontFamily: 'Outfit', color: '#1E3A8A' }}>Pack Pro</h3>
+                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '32px' }}>
+                                <div style={{ fontSize: '40px', fontWeight: '900', fontFamily: 'Outfit', letterSpacing: '-0.03em', color: '#1E3A8A' }}>1.000<small style={{ fontSize: '16px', fontWeight: '600', color: '#1E40AF' }}>f CFA / mois</small></div>
                             </div>
+
+                            <ul className="price-list">
+                                <li><span style={{ color: '#3B82F6', fontWeight: '900' }}>✦</span> <strong>Nom personnalisé</strong> (marc.nfcrafter.com)</li>
+                                <li><span style={{ color: '#3B82F6', fontWeight: '900' }}>✦</span> Bouton <strong>vCard</strong> (Enregistrer contact)</li>
+                                <li><span style={{ color: '#3B82F6', fontWeight: '900' }}>✦</span> <strong>Badge 'Vérifié'</strong> bleu sur le profil</li>
+                                <li><span style={{ color: '#3B82F6', fontWeight: '900' }}>✦</span> <strong>Zéro publicité</strong> NFCrafter</li>
+                                <li><span style={{ color: '#3B82F6', fontWeight: '900' }}>✦</span> Thèmes animés & Vidéos</li>
+                            </ul>
+
+                            <button onClick={() => window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Bonjour, je souhaite activer le Pack Pro à 1000f/mois pour mon profil.')}`, '_blank')} className="btn-primary" style={{ width: '100%', marginTop: 'auto', background: 'linear-gradient(135deg, #2563EB, #1D4ED8)' }}>Activer le Pack Pro</button>
                         </div>
                     </div>
                 </div>
@@ -1005,9 +1022,9 @@ export default function LandingPage() {
                         </details>
 
                         <details>
-                            <summary>Y a-t-il un abonnement caché à payer ?</summary>
+                            <summary>Y a-t-il un abonnement à payer ?</summary>
                             <div className="faq-content">
-                                Non, c'est un paiement unique ! Vous payez une seule fois votre Pack Digital (5.000f) ou votre Pack Physique (10.000f) et vous en profitez à vie. Vous pouvez modifier vos informations à l'infini depuis votre espace client gratuit.
+                                L'utilisation de base de votre profil est <strong>gratuite à vie</strong> après l'achat de votre pack. Cependant, nous proposons une <strong>Option Pack Pro à 1000f/mois</strong> pour ceux qui veulent des fonctionnalités avancées : nom personnalisé (ex: marc.nfcrafter.com), bouton d'enregistrement de contact direct, badge vérifié et thèmes premium.
                             </div>
                         </details>
 
