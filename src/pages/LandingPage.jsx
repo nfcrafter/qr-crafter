@@ -844,32 +844,6 @@ export default function LandingPage() {
                             <h2 style={{ fontSize: '48px', fontWeight: '900', fontFamily: 'Outfit', color: '#111827', letterSpacing: '-0.02em', marginBottom: '24px', lineHeight: '1.1' }}>
                                 Centralisez toute votre présence digitale.
                             </h2>
-
-                            <div className="animate-fade-up delay-1" style={{ order: 1, position: 'relative' }}>
-                                <div style={{ position: 'relative', width: '100%', maxWidth: '500px', margin: '0 auto' }}>
-                                    {/* Big Visual */}
-                                    <img
-                                        src="/social-links.png"
-                                        alt="Centralisation liens"
-                                        style={{
-                                            width: '100%',
-                                            filter: 'drop-shadow(0 30px 60px rgba(0,0,0,0.12))',
-                                            animation: 'floatSlow 8s ease-in-out infinite',
-                                            mixBlendMode: 'multiply'
-                                        }}
-                                    />
-                                    {/* Floating Badges */}
-                                    <div style={{ position: 'absolute', top: '10%', left: '-20px', background: 'white', padding: '12px 20px', borderRadius: '16px', boxShadow: '0 10px 25px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', gap: '10px', animation: 'floatMed 5s ease-in-out infinite', zIndex: 10 }}>
-                                        <span style={{ fontSize: '20px' }}>✨</span>
-                                        <span style={{ fontWeight: '800', fontSize: '14px', color: '#111827' }}>Effet Waouh</span>
-                                    </div>
-                                    <div style={{ position: 'absolute', bottom: '20%', right: '-30px', background: 'white', padding: '12px 20px', borderRadius: '16px', boxShadow: '0 10px 25px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', gap: '10px', animation: 'floatMed 6s ease-in-out infinite 1s', zIndex: 10 }}>
-                                        <span style={{ fontSize: '20px' }}>⚡</span>
-                                        <span style={{ fontWeight: '800', fontSize: '14px', color: '#111827' }}>Vitesse éclair</span>
-                                    </div>
-                                </div>
-                            </div>
-                            
                             <p style={{ color: '#4B5563', fontSize: '19px', marginBottom: '32px', lineHeight: '1.6' }}>
                                 Ne forcez plus vos clients à vous chercher. Rassemblez vos réseaux sociaux, vos moyens de paiement, vos documents et vos liens pro en un seul endroit élégant et accessible.
                             </p>
@@ -878,7 +852,7 @@ export default function LandingPage() {
                                 {[
                                     { emoji: "📱", title: "Réseaux Sociaux", sub: "Instagram, TikTok, LinkedIn..." },
                                     { emoji: "📅", title: "Rendez-vous", sub: "Calendly, Doctolib, WhatsApp..." },
-                                    { emoji: "📄", title: "Documents", sub: "Catalogue PDF,CV, Menus, Devis..." }
+                                    { emoji: "📄", title: "Documents", sub: "Catalogue PDF, CV, Menus, Devis..." }
                                 ].map((item, i) => (
                                     <div key={i} style={{ display: 'flex', gap: '12px' }}>
                                         <span style={{ fontSize: '24px' }}>{item.emoji}</span>
@@ -891,7 +865,30 @@ export default function LandingPage() {
                             </div>
                         </div>
 
-                        
+                        <div className="animate-fade-up delay-1" style={{ order: 1, position: 'relative' }}>
+                            <div style={{ position: 'relative', width: '100%', maxWidth: '500px', margin: '0 auto' }}>
+                                {/* Big Visual */}
+                                <img 
+                                    src="/social-links.png" 
+                                    alt="Centralisation liens" 
+                                    style={{ 
+                                        width: '100%', 
+                                        filter: 'drop-shadow(0 30px 60px rgba(0,0,0,0.12))',
+                                        animation: 'floatSlow 8s ease-in-out infinite',
+                                        mixBlendMode: 'multiply'
+                                    }} 
+                                />
+                                {/* Floating Badges */}
+                                <div style={{ position: 'absolute', top: '10%', left: '-20px', background: 'white', padding: '12px 20px', borderRadius: '16px', boxShadow: '0 10px 25px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', gap: '10px', animation: 'floatMed 5s ease-in-out infinite', zIndex: 10 }}>
+                                    <span style={{ fontSize: '20px' }}>✨</span>
+                                    <span style={{ fontWeight: '800', fontSize: '14px', color: '#111827' }}>Effet Waouh</span>
+                                </div>
+                                <div style={{ position: 'absolute', bottom: '20%', right: '-30px', background: 'white', padding: '12px 20px', borderRadius: '16px', boxShadow: '0 10px 25px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', gap: '10px', animation: 'floatMed 6s ease-in-out infinite 1s', zIndex: 10 }}>
+                                    <span style={{ fontSize: '20px' }}>⚡</span>
+                                    <span style={{ fontWeight: '800', fontSize: '14px', color: '#111827' }}>Vitesse éclair</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
