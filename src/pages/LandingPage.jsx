@@ -569,7 +569,7 @@ export default function LandingPage() {
                 <div className="container">
                     <div style={{ textAlign: 'center', marginBottom: '64px' }}>
                         <h2 style={{ fontSize: '44px', fontWeight: '900', fontFamily: 'Outfit', color: '#111827', letterSpacing: '-0.02em', marginBottom: '16px' }}>Nos Solutions</h2>
-                        <p style={{ color: '#4B5563', fontSize: '18px' }}>Un investissement unique, pas d'abonnement caché.</p>
+                        <p style={{ color: '#4B5563', fontSize: '18px' }}>Un investissement unique, pour une utilisation durable.</p>
                     </div>
 
                     <div className="pricing-grid">
@@ -584,8 +584,8 @@ export default function LandingPage() {
                             <ul className="price-list">
                                 <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> Profil digital complet & personnalisable</li>
                                 <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> QR Code dynamique haute définition</li>
-                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> <strong>Possibilité d'intégrer un</strong> PDF</li>
-                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> <strong>Statistiques de scans</strong> en temps réel</li>
+                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> <strong>Possibilité d'intégrer un</strong>PDF</li>
+                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> <strong>Statistiques de scans</strong>en temps réel</li>
                                 <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> <strong>Mode Sombre</strong> (Dark Mode) inclus</li>
                                 <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> 20+ réseaux sociaux (Facebook, X, Instagram, TikTok, etc...)</li>
                                 <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> Modifiable à vie</li>
