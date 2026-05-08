@@ -624,7 +624,7 @@ export default function LandingPage() {
                 <div className="container">
                     <div style={{ textAlign: 'center', marginBottom: '64px' }} className="animate-fade-up">
                         <h2 style={{ fontSize: '44px', fontWeight: '900', fontFamily: 'Outfit', color: '#111827', letterSpacing: '-0.02em', marginBottom: '16px' }}>À qui s'adresse NFCrafter ?</h2>
-                        <p style={{ color: '#4B5563', fontSize: '18px', maxWidth: '600px', margin: '0 auto' }}>Absolument tout le monde ! C'est l'outil ultime pour toutes vos prises de contact rapides, pro ou perso.</p>
+                        <p style={{ color: '#4B5563', fontSize: '18px', maxWidth: '600px', margin: '0 auto' }}>Absolument tout le monde ! C'est l'outil ultime pour toutes vos prises de contact rapides.</p>
                     </div>
 
                     <div className="pricing-grid">
@@ -676,7 +676,7 @@ export default function LandingPage() {
                                 </li>
                                 <li style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
                                     <div style={{ background: 'rgba(255,255,255,0.1)', color: 'white', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px', fontWeight: 'bold' }}>✓</div>
-                                    <span style={{ color: '#D1D5DB', lineHeight: '1.6', fontSize: '16px' }}><strong>Networking, Meetings & Étudiants</strong> : Faites le show ! Marquez les esprits lors de vos conférences ou événements en donnant vos contacts, vos réseaux sociaux ou portfolio en un clic.</span>
+                                    <span style={{ color: '#D1D5DB', lineHeight: '1.6', fontSize: '16px' }}><strong>Networking, Meetings & Conférences</strong> : Marquez les esprits lors de vos conférences ou événements en donnant vos contacts, vos réseaux sociaux ou portfolio en un clic.</span>
                                 </li>
                             </ul>
                         </div>
