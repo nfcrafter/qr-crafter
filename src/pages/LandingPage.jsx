@@ -564,6 +564,61 @@ export default function LandingPage() {
                 </div>
             </section>
 
+            {/* Pricing Section */}
+            <section id="tarifs" className="section">
+                <div className="container">
+                    <div style={{ textAlign: 'center', marginBottom: '64px' }}>
+                        <h2 style={{ fontSize: '44px', fontWeight: '900', fontFamily: 'Outfit', color: '#111827', letterSpacing: '-0.02em', marginBottom: '16px' }}>Nos Solutions</h2>
+                        <p style={{ color: '#4B5563', fontSize: '18px' }}>Un investissement unique, pas d'abonnement caché.</p>
+                    </div>
+
+                    <div className="pricing-grid">
+                        {/* Digital Pack */}
+                        <div className="glass-panel price-card">
+                            <div style={{ background: '#F3F4F6', color: '#4B5563', padding: '8px 20px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', alignSelf: 'flex-start', marginBottom: '24px', border: '1px solid rgba(0,0,0,0.05)' }}>L'essentiel</div>
+                            <h3 style={{ fontSize: '32px', fontWeight: '900', marginBottom: '8px', fontFamily: 'Outfit' }}>Pack Digital</h3>
+                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '32px' }}>
+                                <div style={{ fontSize: '48px', fontWeight: '900', fontFamily: 'Outfit', letterSpacing: '-0.03em' }}>5.000<small style={{ fontSize: '18px', fontWeight: '600', color: '#6B7280' }}>f CFA</small></div>
+                            </div>
+
+                            <ul className="price-list">
+                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> Profil digital complet & personnalisable</li>
+                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> QR Code dynamique haute définition</li>
+                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> <strong>Catalogue / Menu PDF</strong> intégré</li>
+                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> <strong>Statistiques de scans</strong> en temps réel</li>
+                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> <strong>Mode Sombre</strong> (Dark Mode) inclus</li>
+                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> 20+ réseaux sociaux (Google Reviews...)</li>
+                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> Modifiable à vie, sans abonnement</li>
+                            </ul>
+
+                            <button onClick={() => window.open(getWhatsAppUrl('digital'), '_blank')} className="btn-secondary" style={{ width: '100%', marginTop: 'auto', background: '#F3F4F6', color: '#1F2937', border: '1px solid #E5E7EB' }}>Commander le Digital</button>
+                        </div>
+
+                        {/* Physical Pack */}
+                        <div className="glass-panel price-card featured">
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', width: '100%', flexWrap: 'wrap', gap: '12px' }}>
+                                <div style={{ background: '#EEF2FF', color: '#4F46E5', padding: '8px 20px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Le Complet</div>
+                                <div style={{ background: '#EF4444', color: 'white', padding: '6px 12px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', animation: 'pulseBadge 2s infinite' }}>🔥 Offre de Lancement</div>
+                            </div>
+                            <h3 style={{ fontSize: '32px', fontWeight: '900', marginBottom: '8px', fontFamily: 'Outfit' }}>Pack Physique</h3>
+                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '32px' }}>
+                                <div style={{ fontSize: '48px', fontWeight: '900', fontFamily: 'Outfit', letterSpacing: '-0.03em' }}>10.000<small style={{ fontSize: '18px', fontWeight: '600', color: '#6B7280' }}>f CFA</small></div>
+                            </div>
+
+                            <ul className="price-list">
+                                <li style={{ color: '#4F46E5' }}><span style={{ fontWeight: '900' }}>✓</span> <strong>Carte Physique NFC Premium</strong></li>
+                                <li><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Design avec votre nom/photo/logo</li>
+                                <li style={{ fontWeight: '800' }}><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Inclus : TOUT le Pack Digital</li>
+                                <li><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> PDF, Stats & Mode Sombre activés</li>
+                                <li><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Livraison rapide (24-48h)</li>
+                            </ul>
+
+                            <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary" style={{ width: '100%', marginTop: 'auto' }}>Commander la Carte</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* Target Audience Section */}
             <section className="section">
                 <div className="container">
@@ -839,60 +894,6 @@ export default function LandingPage() {
                 </div>
             </section>
 
-            {/* Pricing Section */}
-            <section id="tarifs" className="section">
-                <div className="container">
-                    <div style={{ textAlign: 'center', marginBottom: '64px' }}>
-                        <h2 style={{ fontSize: '44px', fontWeight: '900', fontFamily: 'Outfit', color: '#111827', letterSpacing: '-0.02em', marginBottom: '16px' }}>Nos Solutions</h2>
-                        <p style={{ color: '#4B5563', fontSize: '18px' }}>Un investissement unique, pas d'abonnement caché.</p>
-                    </div>
-
-                    <div className="pricing-grid">
-                        {/* Digital Pack */}
-                        <div className="glass-panel price-card">
-                            <div style={{ background: '#F3F4F6', color: '#4B5563', padding: '8px 20px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', alignSelf: 'flex-start', marginBottom: '24px', border: '1px solid rgba(0,0,0,0.05)' }}>L'essentiel</div>
-                            <h3 style={{ fontSize: '32px', fontWeight: '900', marginBottom: '8px', fontFamily: 'Outfit' }}>Pack Digital</h3>
-                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '32px' }}>
-                                <div style={{ fontSize: '48px', fontWeight: '900', fontFamily: 'Outfit', letterSpacing: '-0.03em' }}>5.000<small style={{ fontSize: '18px', fontWeight: '600', color: '#6B7280' }}>f CFA</small></div>
-                            </div>
-
-                            <ul className="price-list">
-                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> Profil digital complet & personnalisable</li>
-                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> QR Code dynamique haute définition</li>
-                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> <strong>Catalogue / Menu PDF</strong> intégré</li>
-                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> <strong>Statistiques de scans</strong> en temps réel</li>
-                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> <strong>Mode Sombre</strong> (Dark Mode) inclus</li>
-                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> 20+ réseaux sociaux (Google Reviews...)</li>
-                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> Modifiable à vie, sans abonnement</li>
-                            </ul>
-
-                            <button onClick={() => window.open(getWhatsAppUrl('digital'), '_blank')} className="btn-secondary" style={{ width: '100%', marginTop: 'auto', background: '#F3F4F6', color: '#1F2937', border: '1px solid #E5E7EB' }}>Commander le Digital</button>
-                        </div>
-
-                        {/* Physical Pack */}
-                        <div className="glass-panel price-card featured">
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', width: '100%', flexWrap: 'wrap', gap: '12px' }}>
-                                <div style={{ background: '#EEF2FF', color: '#4F46E5', padding: '8px 20px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Le Complet</div>
-                                <div style={{ background: '#EF4444', color: 'white', padding: '6px 12px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', animation: 'pulseBadge 2s infinite' }}>🔥 Offre de Lancement</div>
-                            </div>
-                            <h3 style={{ fontSize: '32px', fontWeight: '900', marginBottom: '8px', fontFamily: 'Outfit' }}>Pack Physique</h3>
-                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '32px' }}>
-                                <div style={{ fontSize: '48px', fontWeight: '900', fontFamily: 'Outfit', letterSpacing: '-0.03em' }}>10.000<small style={{ fontSize: '18px', fontWeight: '600', color: '#6B7280' }}>f CFA</small></div>
-                            </div>
-
-                            <ul className="price-list">
-                                <li style={{ color: '#4F46E5' }}><span style={{ fontWeight: '900' }}>✓</span> <strong>Carte Physique NFC Premium</strong></li>
-                                <li><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Design avec votre nom/photo/logo</li>
-                                <li style={{ fontWeight: '800' }}><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Inclus : TOUT le Pack Digital</li>
-                                <li><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> PDF, Stats & Mode Sombre activés</li>
-                                <li><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Livraison rapide (24-48h)</li>
-                            </ul>
-
-                            <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary" style={{ width: '100%', marginTop: 'auto' }}>Commander la Carte</button>
-                        </div>
-                    </div>
-                </div>
-            </section>
 
             {/* Premium Web Design Service Section */}
             <section className="section" style={{ background: '#111827', color: 'white', position: 'relative', overflow: 'hidden' }}>
