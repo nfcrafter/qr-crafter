@@ -7,6 +7,7 @@ export default function ProfileForm({
     setProfile,
     onUploadAvatar,
     onUploadBanner,
+    onUploadPDF,
     uploadingAvatar = false,
     uploadingBanner = false,
     toast
@@ -269,9 +270,7 @@ export default function ProfileForm({
                             <button onClick={() => document.getElementById('pdf-upload').click()} style={{ padding: '0 16px', borderRadius: 12, background: '#1A1265', color: 'white', border: 'none', fontWeight: 700, cursor: 'pointer', fontSize: 13 }}>{profile.pdf_url ? 'Changer' : 'Uploader'}</button>
                             <input id="pdf-upload" type="file" accept=".pdf" hidden onChange={e => {
                                 if (e.target.files[0]) {
-                                    // We reuse the same onUploadAvatar/Banner logic but for PDF
-                                    // For simplicity, let's assume onUploadBanner can handle any file or we pass a generic uploader
-                                    onUploadBanner(e.target.files[0], 'pdfs', (url) => setProfile(p => ({...p, pdf_url: url})));
+                                    onUploadPDF(e.target.files[0]);
                                 }
                             }} />
                         </div>

@@ -115,12 +115,26 @@ export default function ClientDashboard() {
         const isFunc = typeof setUploading === 'function';
         if (isFunc) setUploading(true);
         try {
+            // Check if bucket is pdfs, if not default to banners/avatars
+            const targetBucket = bucket || 'banners';
             const fileName = `${Math.random()}.${file.name.split('.').pop()}`;
-            const { error: uploadError } = await supabase.storage.from(bucket).upload(fileName, file);
+            
+            const { error: uploadError } = await supabase.storage
+                .from(targetBucket)
+                .upload(fileName, file, {
+                    contentType: file.type, // Explicitly set content type
+                    upsert: true
+                });
+
             if (uploadError) throw uploadError;
-            const { data: { publicUrl } } = supabase.storage.from(bucket).getPublicUrl(fileName);
+            
+            const { data: { publicUrl } } = supabase.storage.from(targetBucket).getPublicUrl(fileName);
             onUrl(publicUrl);
-        } catch (e) { toast(e.message, 'error'); }
+            toast('Fichier téléchargé !', 'success');
+        } catch (e) { 
+            console.error('Upload error:', e);
+            toast('Erreur upload : ' + e.message, 'error'); 
+        }
         finally { if (isFunc) setUploading(false); }
     }
 
@@ -162,29 +176,37 @@ export default function ClientDashboard() {
             )}
 
             {/* Sidebar (Left) */}
-            <aside className={`sidebar ${isMobileMenuOpen ? 'open' : ''}`} style={{ width: '280px', background: 'white', borderRight: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', position: 'fixed', height: '100vh', zIndex: 200, transition: 'transform 0.3s ease' }}>
-                <div style={{ padding: '32px 24px', borderBottom: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <img src="/logo.png" alt="Logo" style={{ height: '32px' }} />
-                        <span style={{ fontWeight: '900', fontSize: '18px', color: '#1A1265' }}>NFCrafter</span>
+            <aside className={`sidebar ${isMobileMenuOpen ? 'open' : ''}`} style={{ width: '300px', background: 'white', borderRight: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', position: 'fixed', height: '100vh', zIndex: 200, transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)', boxShadow: '10px 0 30px rgba(0,0,0,0.02)' }}>
+                <div style={{ padding: '40px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                        <div style={{ width: '40px', height: '40px', background: '#1A1265', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 16px rgba(26,18,101,0.2)' }}>
+                            <img src="/logo.png" alt="Logo" style={{ height: '20px', filter: 'brightness(0) invert(1)' }} />
+                        </div>
+                        <span style={{ fontWeight: '900', fontSize: '20px', color: '#1A1265', letterSpacing: '-0.5px' }}>NFCrafter</span>
                     </div>
-                    <button onClick={() => setIsMobileMenuOpen(false)} className="mobile-only" style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer' }}>✕</button>
+                    <button onClick={() => setIsMobileMenuOpen(false)} className="mobile-only" style={{ background: '#F1F5F9', border: 'none', width: '32px', height: '32px', borderRadius: '50%', display: 'none', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>✕</button>
                 </div>
 
-                <div style={{ flex: 1, overflowY: 'auto', padding: '24px 16px' }}>
-                    <div style={{ fontSize: '11px', fontWeight: '800', color: '#94A3B8', textTransform: 'uppercase', marginBottom: '16px', letterSpacing: '1px' }}>Mes Profils</div>
-                    {userCards.map(card => (
-                        <button key={card.card_id} onClick={() => setSelectedCardId(card.card_id)} style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: 'none', textAlign: 'left', marginBottom: '8px', cursor: 'pointer', background: selectedCardId === card.card_id ? '#1A1265' : 'transparent', color: selectedCardId === card.card_id ? 'white' : '#475569', fontWeight: '700', transition: '0.2s', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <span>👤</span> {card.card_name || 'Sans titre'}
-                        </button>
-                    ))}
-                    <button onClick={() => handleWhatsAppOrder(true)} style={{ width: '100%', marginTop: '24px', padding: '14px', borderRadius: '12px', border: '2px dashed #25D366', background: 'white', color: '#128C7E', fontWeight: '800', cursor: 'pointer', fontSize: '13px' }}>
-                        + Nouveau Profil (2000f)
+                <div style={{ flex: 1, overflowY: 'auto', padding: '0 16px' }}>
+                    <div style={{ fontSize: '11px', fontWeight: '800', color: '#94A3B8', textTransform: 'uppercase', marginBottom: '16px', paddingLeft: '16px', letterSpacing: '1.5px' }}>Tableau de bord</div>
+                    
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        {userCards.map(card => (
+                            <button key={card.card_id} onClick={() => setSelectedCardId(card.card_id)} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', textAlign: 'left', cursor: 'pointer', background: selectedCardId === card.card_id ? '#F5F3FF' : 'transparent', color: selectedCardId === card.card_id ? '#7C3AED' : '#64748B', fontWeight: '700', transition: '0.2s', display: 'flex', alignItems: 'center', gap: '12px', position: 'relative' }}>
+                                {selectedCardId === card.card_id && <div style={{ position: 'absolute', left: 0, top: '20%', bottom: '20%', width: '4px', background: '#7C3AED', borderRadius: '0 4px 4px 0' }} />}
+                                <span style={{ fontSize: '18px', opacity: selectedCardId === card.card_id ? 1 : 0.6 }}>{selectedCardId === card.card_id ? '💎' : '👤'}</span> 
+                                <span style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{card.card_name || 'Mon Profil'}</span>
+                            </button>
+                        ))}
+                    </div>
+
+                    <button onClick={() => handleWhatsAppOrder(true)} style={{ width: 'calc(100% - 32px)', margin: '24px 16px', padding: '16px', borderRadius: '16px', border: '2px dashed #E2E8F0', background: 'transparent', color: '#64748B', fontWeight: '800', cursor: 'pointer', fontSize: '13px', transition: '0.2s' }} onMouseOver={e => e.currentTarget.style.borderColor = '#1A1265'} onMouseOut={e => e.currentTarget.style.borderColor = '#E2E8F0'}>
+                        + Ajouter un profil (5000f)
                     </button>
                 </div>
 
-                <div style={{ padding: '24px', borderTop: '1px solid #F1F5F9' }}>
-                    <button onClick={() => { supabase.auth.signOut(); navigate('/login'); }} style={{ width: '100%', padding: '12px', borderRadius: '10px', background: '#FEF2F2', color: '#DC2626', border: 'none', fontWeight: '800', cursor: 'pointer', fontSize: '13px' }}>Déconnexion</button>
+                <div style={{ padding: '24px', background: '#F8FAFC' }}>
+                    <button onClick={() => { supabase.auth.signOut(); navigate('/login'); }} style={{ width: '100%', padding: '14px', borderRadius: '14px', background: 'white', color: '#EF4444', border: '1px solid #FEE2E2', fontWeight: '800', cursor: 'pointer', fontSize: '13px', boxShadow: '0 4px 6px rgba(239, 68, 68, 0.05)' }}>Déconnexion</button>
                 </div>
             </aside>
 
@@ -230,31 +252,49 @@ export default function ClientDashboard() {
                             </div>
                         </div>
 
-                        {/* Banner */}
-                        <div style={{ background: 'linear-gradient(135deg, #1A1265 0%, #312E81 100%)', color: 'white', padding: '32px', borderRadius: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '24px', boxShadow: '0 10px 30px rgba(26,18,101,0.2)' }}>
-                            <div style={{ flex: 1 }}>
-                                <h3 style={{ fontSize: '20px', fontWeight: '900', marginBottom: '8px' }}>Carte physique 💳</h3>
-                                <p style={{ opacity: 0.8, fontSize: '14px' }}>Matérialisez votre profil avec une carte NFCrafter.</p>
+                        {/* Banner - Physical Card - CORRECTION COULEURS */}
+                        <div style={{ background: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)', color: 'white', padding: '40px', borderRadius: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '32px', boxShadow: '0 20px 40px rgba(79,70,229,0.15)', position: 'relative', overflow: 'hidden' }}>
+                            <div style={{ position: 'absolute', right: '-20px', top: '-20px', fontSize: '120px', opacity: 0.1, pointerEvents: 'none' }}>💳</div>
+                            <div style={{ flex: 1, position: 'relative', zIndex: 1 }}>
+                                <h3 style={{ fontSize: '24px', fontWeight: '900', marginBottom: '12px', color: 'white' }}>Commandez votre Carte Physique 💳</h3>
+                                <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '16px', lineHeight: '1.6', maxWidth: '400px' }}>Transformez votre profil digital en un objet premium. Puce NFC intégrée et design personnalisé.</p>
                             </div>
-                            <button onClick={() => window.open(`https://wa.me/22969473921?text=${encodeURIComponent('Commande carte : ' + publicUrl)}`, '_blank')} style={{ background: 'white', color: '#1A1265', border: 'none', padding: '14px 24px', borderRadius: '14px', fontWeight: '900', cursor: 'pointer', boxShadow: '0 4px 12px rgba(255,255,255,0.2)' }}>Commander</button>
+                            <button onClick={() => window.open(`https://wa.me/22969473921?text=${encodeURIComponent('Commande carte : ' + publicUrl)}`, '_blank')} style={{ background: 'white', color: '#4F46E5', border: 'none', padding: '18px 32px', borderRadius: '18px', fontWeight: '900', cursor: 'pointer', boxShadow: '0 10px 20px rgba(0,0,0,0.1)', transition: '0.2s', fontSize: '15px' }} onMouseOver={e => e.currentTarget.style.transform = 'translateY(-2px)'} onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}>Commander la carte</button>
                         </div>
 
                         {/* Editor */}
-                        <div style={{ background: 'white', padding: '32px', borderRadius: '32px', border: '1px solid #E2E8F0' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', gap: '16px' }}>
-                                <h2 style={{ fontSize: '22px', fontWeight: '900', color: '#1A1265', margin: 0 }}>Personnaliser le profil</h2>
-                                <button onClick={() => setViewMode(viewMode === 'view' ? 'edit' : 'view')} style={{ padding: '10px 20px', borderRadius: '12px', background: viewMode === 'edit' ? '#F1F5F9' : '#1A1265', color: viewMode === 'edit' ? '#1A1265' : 'white', border: 'none', fontWeight: '800', cursor: 'pointer' }}>{viewMode === 'edit' ? 'Annuler' : '✏️ Modifier'}</button>
+                        <div style={{ background: 'white', padding: '40px', borderRadius: '32px', border: '1px solid #E2E8F0', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px', gap: '16px', flexWrap: 'wrap' }}>
+                                <div>
+                                    <h2 style={{ fontSize: '26px', fontWeight: '900', color: '#1A1265', margin: '0 0 8px 0' }}>Configuration</h2>
+                                    <p style={{ color: '#64748B', fontSize: '14px', margin: 0 }}>Personnalisez l'apparence et les liens de votre profil.</p>
+                                </div>
+                                <button onClick={() => setViewMode(viewMode === 'view' ? 'edit' : 'view')} style={{ padding: '12px 28px', borderRadius: '16px', background: viewMode === 'edit' ? '#F1F5F9' : '#1A1265', color: viewMode === 'edit' ? '#1A1265' : 'white', border: 'none', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', transition: '0.2s' }}>
+                                    {viewMode === 'edit' ? 'Annuler' : '✏️ Modifier le profil'}
+                                </button>
                             </div>
 
                             {viewMode === 'edit' ? (
                                 <div className="animate-fade-in">
-                                    <ProfileForm profile={publicProfile} setProfile={setPublicProfile} onUploadAvatar={(f) => uploadFile(f, 'avatars', (url) => setPublicProfile(p => ({...p, photo_url: url})), setUploadingAvatar)} onUploadBanner={(f) => uploadFile(f, 'banners', (url) => setPublicProfile(p => ({...p, banner_url: url})), setUploadingBanner)} uploadingAvatar={uploadingAvatar} uploadingBanner={uploadingBanner} toast={toast} />
-                                    <button onClick={savePublicProfile} disabled={saving} className="btn-primary" style={{ width: '100%', padding: '16px', borderRadius: '16px', marginTop: '32px' }}>{saving ? '...' : '✅ Enregistrer'}</button>
+                                    <ProfileForm 
+                                        profile={publicProfile} 
+                                        setProfile={setPublicProfile} 
+                                        onUploadAvatar={(f) => uploadFile(f, 'avatars', (url) => setPublicProfile(p => ({...p, photo_url: url})), setUploadingAvatar)} 
+                                        onUploadBanner={(f) => uploadFile(f, 'banners', (url) => setPublicProfile(p => ({...p, banner_url: url})), setUploadingBanner)} 
+                                        onUploadPDF={(f) => uploadFile(f, 'pdfs', (url) => setPublicProfile(p => ({...p, pdf_url: url})), (v) => {})} 
+                                        uploadingAvatar={uploadingAvatar} 
+                                        uploadingBanner={uploadingBanner} 
+                                        toast={toast} 
+                                    />
+                                    <button onClick={savePublicProfile} disabled={saving} className="btn-primary" style={{ width: '100%', padding: '18px', borderRadius: '20px', marginTop: '40px', background: '#1A1265', fontSize: '16px', boxShadow: '0 10px 20px rgba(26,18,101,0.15)' }}>
+                                        {saving ? 'Enregistrement...' : '✅ Enregistrer les modifications'}
+                                    </button>
                                 </div>
                             ) : (
-                                <div style={{ textAlign: 'center', padding: '40px 0', background: '#F8FAFC', borderRadius: '24px', border: '1px dashed #E2E8F0' }}>
-                                    <p style={{ color: '#64748B' }}>Votre profil est actif.</p>
-                                    <button onClick={() => setViewMode('edit')} style={{ marginTop: '16px', background: 'transparent', color: '#1A1265', border: '1px solid #E2E8F0', padding: '10px 24px', borderRadius: '12px', fontWeight: '700', cursor: 'pointer' }}>✏️ Éditer</button>
+                                <div style={{ textAlign: 'center', padding: '60px 0', background: '#F8FAFC', borderRadius: '28px', border: '2px dashed #E2E8F0' }}>
+                                    <div style={{ fontSize: '48px', marginBottom: '16px' }}>✨</div>
+                                    <p style={{ color: '#64748B', fontWeight: '500', marginBottom: '24px' }}>Votre profil est en ligne et prêt à être partagé.</p>
+                                    <button onClick={() => setViewMode('edit')} style={{ background: 'white', color: '#1A1265', border: '1px solid #E2E8F0', padding: '14px 32px', borderRadius: '16px', fontWeight: '800', cursor: 'pointer', boxShadow: '0 4px 6px rgba(0,0,0,0.02)' }}>✏️ Éditer les informations</button>
                                 </div>
                             )}
                         </div>

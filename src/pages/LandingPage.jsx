@@ -549,25 +549,10 @@ export default function LandingPage() {
                                 </li>
                             </ul>
                             
-                            <div className="pack-images-row" style={{ position: 'relative' }}>
+                            <div className="pack-images-row">
                                 <img src="/placeholder-public-profile.jpg" alt="Capture profil public" className="pack-profile-img" onError={(e) => e.target.src='https://placehold.co/400x700/f8fafc/1a1265?text=Page+Profil'} />
                                 <div className="pack-plus">+</div>
-                                <div style={{ position: 'relative' }}>
-                                    <img src="/placeholder-qr-custom.jpg" alt="QR Code personnalisé" className="pack-qr-img" onError={(e) => e.target.src='https://placehold.co/400x400/f1f5f9/1a1265?text=QR+Code'} />
-                                    {/* Illustration flottante Premium générée */}
-                                    <img 
-                                        src="/social-links.png" 
-                                        alt="Social links" 
-                                        style={{ 
-                                            position: 'absolute', top: '-70px', right: '-50px', width: '160px', 
-                                            filter: 'drop-shadow(0 15px 30px rgba(0,0,0,0.1))',
-                                            animation: 'floatMed 6s ease-in-out infinite',
-                                            pointerEvents: 'none',
-                                            mixBlendMode: 'multiply'
-                                        }} 
-                                        onError={(e) => e.target.style.display = 'none'}
-                                    />
-                                </div>
+                                <img src="/placeholder-qr-custom.jpg" alt="QR Code personnalisé" className="pack-qr-img" onError={(e) => e.target.src='https://placehold.co/400x400/f1f5f9/1a1265?text=QR+Code'} />
                             </div>
 
 
@@ -786,6 +771,67 @@ export default function LandingPage() {
                                 <div>
                                     <div style={{ fontWeight: '800', color: '#111827' }}>Emmanuel T.</div>
                                     <div style={{ fontSize: '13px', color: '#6B7280' }}>Directeur d'Agence</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            {/* New Dedicated "Centralize All" Section */}
+            <section className="section" style={{ background: '#F9FAFB', overflow: 'hidden', position: 'relative', borderTop: '1px solid #E5E7EB', borderBottom: '1px solid #E5E7EB' }}>
+                <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '60vw', height: '60vw', background: 'radial-gradient(circle, rgba(79,70,229,0.05) 0%, transparent 70%)', pointerEvents: 'none' }}></div>
+                
+                <div className="container">
+                    <div className="hero-grid" style={{ minHeight: 'unset', gap: '80px', alignItems: 'center' }}>
+                        <div className="animate-fade-up" style={{ order: 2 }}>
+                            <div style={{ display: 'inline-block', background: '#F5F3FF', color: '#7C3AED', padding: '8px 20px', borderRadius: '100px', fontSize: '13px', fontWeight: '800', marginBottom: '24px' }}>UN SEUL LIEN, TOUTES VOS INFOS</div>
+                            <h2 style={{ fontSize: '48px', fontWeight: '900', fontFamily: 'Outfit', color: '#111827', letterSpacing: '-0.02em', marginBottom: '24px', lineHeight: '1.1' }}>
+                                Centralisez toute votre présence digitale.
+                            </h2>
+                            <p style={{ color: '#4B5563', fontSize: '19px', marginBottom: '32px', lineHeight: '1.6' }}>
+                                Ne forcez plus vos clients à vous chercher. Rassemblez vos réseaux sociaux, vos moyens de paiement, vos documents et vos liens pro en un seul endroit élégant et accessible.
+                            </p>
+                            
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                                {[
+                                    { emoji: "📱", title: "Réseaux Sociaux", sub: "Instagram, TikTok, LinkedIn..." },
+                                    { emoji: "📅", title: "Rendez-vous", sub: "Calendly, Doctolib, WhatsApp..." },
+                                    { emoji: "💳", title: "Paiements", sub: "PayPal, Orange Money, Moov..." },
+                                    { emoji: "📄", title: "Documents", sub: "Catalogue PDF, Menus, Devis..." }
+                                ].map((item, i) => (
+                                    <div key={i} style={{ display: 'flex', gap: '12px' }}>
+                                        <span style={{ fontSize: '24px' }}>{item.emoji}</span>
+                                        <div>
+                                            <div style={{ fontWeight: '800', color: '#111827', fontSize: '15px' }}>{item.title}</div>
+                                            <div style={{ fontSize: '13px', color: '#6B7280' }}>{item.sub}</div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="animate-fade-up delay-1" style={{ order: 1, position: 'relative' }}>
+                            <div style={{ position: 'relative', width: '100%', maxWidth: '500px', margin: '0 auto' }}>
+                                {/* Big Visual */}
+                                <img 
+                                    src="/social-links.png" 
+                                    alt="Centralisation liens" 
+                                    style={{ 
+                                        width: '100%', 
+                                        filter: 'drop-shadow(0 30px 60px rgba(0,0,0,0.12))',
+                                        animation: 'floatSlow 8s ease-in-out infinite',
+                                        mixBlendMode: 'multiply'
+                                    }} 
+                                />
+                                {/* Floating Badges */}
+                                <div style={{ position: 'absolute', top: '10%', left: '-20px', background: 'white', padding: '12px 20px', borderRadius: '16px', boxShadow: '0 10px 25px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', gap: '10px', animation: 'floatMed 5s ease-in-out infinite', zIndex: 10 }}>
+                                    <span style={{ fontSize: '20px' }}>✨</span>
+                                    <span style={{ fontWeight: '800', fontSize: '14px', color: '#111827' }}>Effet Waouh</span>
+                                </div>
+                                <div style={{ position: 'absolute', bottom: '20%', right: '-30px', background: 'white', padding: '12px 20px', borderRadius: '16px', boxShadow: '0 10px 25px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', gap: '10px', animation: 'floatMed 6s ease-in-out infinite 1s', zIndex: 10 }}>
+                                    <span style={{ fontSize: '20px' }}>⚡</span>
+                                    <span style={{ fontWeight: '800', fontSize: '14px', color: '#111827' }}>Vitesse éclair</span>
                                 </div>
                             </div>
                         </div>
