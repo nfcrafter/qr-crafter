@@ -584,11 +584,11 @@ export default function LandingPage() {
                             <ul className="price-list">
                                 <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> Profil digital complet & personnalisable</li>
                                 <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> QR Code dynamique haute définition</li>
-                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> <strong>Catalogue / Menu PDF</strong> intégré</li>
+                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> <strong>Possibilité d'intégrer un</strong> PDF</li>
                                 <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> <strong>Statistiques de scans</strong> en temps réel</li>
                                 <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> <strong>Mode Sombre</strong> (Dark Mode) inclus</li>
-                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> 20+ réseaux sociaux (Google Reviews...)</li>
-                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> Modifiable à vie, sans abonnement</li>
+                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> 20+ réseaux sociaux (Facebook, X, Instagram, TikTok, etc...)</li>
+                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> Modifiable à vie</li>
                             </ul>
 
                             <button onClick={() => window.open(getWhatsAppUrl('digital'), '_blank')} className="btn-secondary" style={{ width: '100%', marginTop: 'auto', background: '#F3F4F6', color: '#1F2937', border: '1px solid #E5E7EB' }}>Commander le Digital</button>
