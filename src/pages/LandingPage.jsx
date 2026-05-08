@@ -915,7 +915,7 @@ export default function LandingPage() {
                             </h2>
                             
                             <p style={{ color: '#D1D5DB', fontSize: '18px', marginBottom: '24px', lineHeight: '1.6' }}>
-                                La carte NFC est parfaite pour le contact physique. Mais pour exister en ligne et digitaliser votre business, il vous faut un site web sur-mesure à intégrer dans votre profil digital NFCrafter ainsi que dans votre carte physique NFC. Confiez-nous votre projet.
+                                La carte NFC est parfaite pour le contact physique. Mais pour exister en ligne et digitaliser votre business, il vous faut un site web sur-mesure à intégrer dans votre profil digital NFCrafter. Confiez-nous votre projet.
                             </p>
 
                             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', background: 'linear-gradient(90deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.2))', border: '1px solid rgba(16, 185, 129, 0.3)', padding: '12px 24px', borderRadius: '12px', marginBottom: '40px' }}>
