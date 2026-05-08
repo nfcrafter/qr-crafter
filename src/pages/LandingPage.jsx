@@ -791,15 +791,17 @@ export default function LandingPage() {
                             <div style={{ background: '#F3F4F6', color: '#4B5563', padding: '8px 20px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', alignSelf: 'flex-start', marginBottom: '24px', border: '1px solid rgba(0,0,0,0.05)' }}>L'essentiel</div>
                             <h3 style={{ fontSize: '32px', fontWeight: '900', marginBottom: '8px', fontFamily: 'Outfit' }}>Pack Digital</h3>
                             <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '32px' }}>
-                                <div style={{ fontSize: '48px', fontWeight: '900', fontFamily: 'Outfit', letterSpacing: '-0.03em' }}>2.000<small style={{ fontSize: '18px', fontWeight: '600', color: '#6B7280' }}>f CFA</small></div>
+                                <div style={{ fontSize: '48px', fontWeight: '900', fontFamily: 'Outfit', letterSpacing: '-0.03em' }}>5.000<small style={{ fontSize: '18px', fontWeight: '600', color: '#6B7280' }}>f CFA</small></div>
                             </div>
 
                             <ul className="price-list">
-                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> Création du profil digital complet</li>
-                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> QR Code personnalisé</li>
-                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> Liens sociaux illimités</li>
-                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> Partage rapide (Dashboard)</li>
-                                <li style={{ color: '#9CA3AF' }}><span style={{ color: '#D1D5DB', fontWeight: '900' }}>✕</span> Pas de carte physique</li>
+                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> Profil digital complet & personnalisable</li>
+                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> QR Code dynamique haute définition</li>
+                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> <strong>Nouveau :</strong> Catalogue / Menu PDF intégré</li>
+                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> <strong>Nouveau :</strong> Statistiques de scans en temps réel</li>
+                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> <strong>Nouveau :</strong> Mode Sombre (Dark Mode) inclus</li>
+                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> Plus de 20 réseaux sociaux (Google Reviews, Calendly, etc.)</li>
+                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> Modifiable à vie, sans abonnement</li>
                             </ul>
 
                             <button onClick={() => window.open(getWhatsAppUrl('digital'), '_blank')} className="btn-secondary" style={{ width: '100%', marginTop: 'auto', background: '#F3F4F6', color: '#1F2937', border: '1px solid #E5E7EB' }}>Commander le Digital</button>
@@ -817,10 +819,10 @@ export default function LandingPage() {
                             </div>
 
                             <ul className="price-list">
-                                <li><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Carte physique NFC Premium</li>
+                                <li style={{ color: '#4F46E5' }}><span style={{ fontWeight: '900' }}>✓</span> <strong>Carte Physique NFC Premium</strong></li>
                                 <li><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Design avec votre nom/photo/logo</li>
-                                <li><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Profil digital & QR inclus</li>
-                                <li><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Partage rapide (Dashboard)</li>
+                                <li><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Toutes les options du Pack Digital</li>
+                                <li><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Catalogue PDF & Statistiques inclus</li>
                                 <li><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Livraison rapide (24-48h)</li>
                             </ul>
 

@@ -19,11 +19,13 @@ export default function ClientDashboard() {
     const [saving, setSaving] = useState(false);
     const [uploadingAvatar, setUploadingAvatar] = useState(false);
     const [uploadingBanner, setUploadingBanner] = useState(false);
+    const [scanCount, setScanCount] = useState(0);
 
     const [publicProfile, setPublicProfile] = useState({
         banner_url: '', photo_url: '', full_name: '', job_title: '', bio: '',
         phone: '', email: '', primaryColor: '#1A1265',
-        socials: {}, customLinks: [], url: '', qr_type: 'profile'
+        socials: {}, customLinks: [], url: '', qr_type: 'profile',
+        isDark: false, pdf_url: ''
     });
 
     useEffect(() => { loadUserData(); }, []);
@@ -50,8 +52,16 @@ export default function ClientDashboard() {
                 banner_url: '', photo_url: '', full_name: '', job_title: '', bio: '',
                 phone: '', email: '', primaryColor: '#1A1265',
                 socials: {}, customLinks: [], url: '', qr_type: 'profile',
+                isDark: false, pdf_url: '',
                 ...(card.admin_profile || {})
             });
+
+            // Load scan count
+            const { count } = await supabase
+                .from('scan_logs')
+                .select('*', { count: 'exact', head: true })
+                .eq('card_id', card.card_id);
+            setScanCount(count || 0);
         }
         setLoading(false);
     }
@@ -64,8 +74,17 @@ export default function ClientDashboard() {
                     banner_url: '', photo_url: '', full_name: '', job_title: '', bio: '',
                     phone: '', email: '', primaryColor: '#1A1265',
                     socials: {}, customLinks: [], url: '', qr_type: 'profile',
+                    isDark: false, pdf_url: '',
                     ...(card.admin_profile || {})
                 });
+
+                // Update scan count when card changes
+                supabase
+                    .from('scan_logs')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('card_id', selectedCardId)
+                    .then(({ count }) => setScanCount(count || 0));
+
                 setViewMode('view');
                 setIsMobileMenuOpen(false);
             }
@@ -74,8 +93,8 @@ export default function ClientDashboard() {
 
     function handleWhatsAppOrder(isNew = false) {
         const message = isNew 
-            ? `Bonjour NFCrafter ! Je souhaite créer un NOUVEAU profil digital (2.000f). Mon email : ${user?.email}`
-            : `Bonjour NFCrafter ! Je souhaite ACTIVER mon premier profil digital (2.000f). Mon email : ${user?.email}`;
+            ? `Bonjour NFCrafter ! Je souhaite créer un NOUVEAU profil digital (5.000f). Mon email : ${user?.email}`
+            : `Bonjour NFCrafter ! Je souhaite ACTIVER mon premier profil digital (5.000f). Mon email : ${user?.email}`;
         window.open(`https://wa.me/22969473921?text=${encodeURIComponent(message)}`, '_blank');
     }
 
@@ -93,7 +112,8 @@ export default function ClientDashboard() {
     }
 
     async function uploadFile(file, bucket, onUrl, setUploading) {
-        setUploading(true);
+        const isFunc = typeof setUploading === 'function';
+        if (isFunc) setUploading(true);
         try {
             const fileName = `${Math.random()}.${file.name.split('.').pop()}`;
             const { error: uploadError } = await supabase.storage.from(bucket).upload(fileName, file);
@@ -101,8 +121,22 @@ export default function ClientDashboard() {
             const { data: { publicUrl } } = supabase.storage.from(bucket).getPublicUrl(fileName);
             onUrl(publicUrl);
         } catch (e) { toast(e.message, 'error'); }
-        finally { setUploading(false); }
+        finally { if (isFunc) setUploading(false); }
     }
+
+    const downloadQR = () => {
+        import('qr-code-styling').then(QRCodeStyling => {
+            const qrCode = new QRCodeStyling.default({
+                width: 1000,
+                height: 1000,
+                data: `${window.location.origin}/u/${selectedCardId}`,
+                dotsOptions: { color: "#1A1265", type: "rounded" },
+                cornersSquareOptions: { color: "#1A1265", type: "extra-rounded" },
+                backgroundOptions: { color: "#FFFFFF" }
+            });
+            qrCode.download({ name: `nfcrafter-qr-${selectedCardId}`, extension: "png" });
+        });
+    };
 
     if (loading) return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="loader"></div></div>;
 
@@ -167,24 +201,42 @@ export default function ClientDashboard() {
                     <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '32px' }}>
                         
                         {/* Link Box */}
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'white', padding: '20px 24px', borderRadius: '24px', border: '1px solid #E2E8F0', flexWrap: 'wrap', gap: '16px' }}>
-                            <div style={{ flex: 1, minWidth: '200px' }}>
-                                <div style={{ fontSize: '11px', fontWeight: '800', color: '#94A3B8', marginBottom: '4px' }}>LIEN DU PROFIL</div>
-                                <div style={{ fontSize: '15px', fontWeight: '700', color: '#6366F1' }}>{publicUrl}</div>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
+                            <div style={{ background: 'white', padding: '24px', borderRadius: '24px', border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                <div>
+                                    <div style={{ fontSize: '11px', fontWeight: '800', color: '#94A3B8', marginBottom: '4px', textTransform: 'uppercase' }}>LIEN DU PROFIL</div>
+                                    <div style={{ fontSize: '15px', fontWeight: '700', color: '#6366F1', wordBreak: 'break-all' }}>{publicUrl}</div>
+                                </div>
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                    <button onClick={() => window.open(publicUrl, '_blank')} style={{ flex: 1, padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '700', cursor: 'pointer', fontSize: '13px' }}>👁️ Voir</button>
+                                    <button onClick={async () => { if (navigator.share) { try { await navigator.share({ title: 'NFCrafter', url: publicUrl }); } catch (e) {} } else { window.open(`https://wa.me/?text=${encodeURIComponent(publicUrl)}`, '_blank'); } }} style={{ flex: 1, padding: '12px', borderRadius: '12px', background: '#25D366', color: 'white', border: 'none', fontWeight: '700', cursor: 'pointer', fontSize: '13px' }}>📲 Partager</button>
+                                </div>
                             </div>
-                            <div style={{ display: 'flex', gap: '8px' }}>
-                                <button onClick={() => window.open(publicUrl, '_blank')} style={{ padding: '10px 16px', borderRadius: '10px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '700', cursor: 'pointer' }}>👁️ Voir</button>
-                                <button onClick={async () => { if (navigator.share) { try { await navigator.share({ title: 'NFCrafter', url: publicUrl }); } catch (e) {} } else { window.open(`https://wa.me/?text=${encodeURIComponent(publicUrl)}`, '_blank'); } }} style={{ padding: '10px 16px', borderRadius: '10px', background: '#25D366', color: 'white', border: 'none', fontWeight: '700', cursor: 'pointer' }}>📲 Partager</button>
+
+                            <div style={{ background: 'white', padding: '24px', borderRadius: '24px', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <div>
+                                    <div style={{ fontSize: '11px', fontWeight: '800', color: '#94A3B8', marginBottom: '4px', textTransform: 'uppercase' }}>Vues (Scans)</div>
+                                    <div style={{ fontSize: '32px', fontWeight: '900', color: '#1A1265' }}>{scanCount}</div>
+                                </div>
+                                <div style={{ width: '50px', height: '50px', borderRadius: '14px', background: '#F0F9FF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px' }}>📊</div>
+                            </div>
+
+                            <div style={{ background: 'white', padding: '24px', borderRadius: '24px', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <div>
+                                    <div style={{ fontSize: '11px', fontWeight: '800', color: '#94A3B8', marginBottom: '4px', textTransform: 'uppercase' }}>Votre QR Code</div>
+                                    <button onClick={downloadQR} style={{ background: '#F1F5F9', border: 'none', padding: '8px 16px', borderRadius: '10px', color: '#475569', fontWeight: '800', cursor: 'pointer', fontSize: '12px', marginTop: '4px' }}>📥 Télécharger PNG</button>
+                                </div>
+                                <div style={{ width: '50px', height: '50px', borderRadius: '14px', background: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', border: '1px solid #E2E8F0' }}>🔳</div>
                             </div>
                         </div>
 
                         {/* Banner */}
-                        <div style={{ background: 'linear-gradient(135deg, #1A1265 0%, #312E81 100%)', color: 'white', padding: '32px', borderRadius: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '24px' }}>
+                        <div style={{ background: 'linear-gradient(135deg, #1A1265 0%, #312E81 100%)', color: 'white', padding: '32px', borderRadius: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '24px', boxShadow: '0 10px 30px rgba(26,18,101,0.2)' }}>
                             <div style={{ flex: 1 }}>
                                 <h3 style={{ fontSize: '20px', fontWeight: '900', marginBottom: '8px' }}>Carte physique 💳</h3>
                                 <p style={{ opacity: 0.8, fontSize: '14px' }}>Matérialisez votre profil avec une carte NFCrafter.</p>
                             </div>
-                            <button onClick={() => window.open(`https://wa.me/22969473921?text=${encodeURIComponent('Commande carte : ' + publicUrl)}`, '_blank')} style={{ background: 'white', color: '#1A1265', border: 'none', padding: '14px 24px', borderRadius: '14px', fontWeight: '900', cursor: 'pointer' }}>Commander</button>
+                            <button onClick={() => window.open(`https://wa.me/22969473921?text=${encodeURIComponent('Commande carte : ' + publicUrl)}`, '_blank')} style={{ background: 'white', color: '#1A1265', border: 'none', padding: '14px 24px', borderRadius: '14px', fontWeight: '900', cursor: 'pointer', boxShadow: '0 4px 12px rgba(255,255,255,0.2)' }}>Commander</button>
                         </div>
 
                         {/* Editor */}

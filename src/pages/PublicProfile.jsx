@@ -125,6 +125,7 @@ export default function PublicProfile() {
   )
 
   const themeColor = profile?.theme_color || profile?.primaryColor || '#1A1265'
+  const isDark = profile?.isDark || false
 
   const activeLinks = SOCIAL_NETWORKS.filter(s => {
     if (s.id === 'phone' || s.id === 'email') return false;
@@ -137,12 +138,17 @@ export default function PublicProfile() {
   const activeCustomLinks = customLinks.filter(l => l.url)
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f0f2f5', fontFamily: "'Inter', 'Outfit', sans-serif" }}>
+    <div style={{ 
+        minHeight: '100vh', 
+        background: isDark ? '#0F172A' : '#f0f2f5', 
+        fontFamily: "'Inter', 'Outfit', sans-serif",
+        transition: 'background 0.3s ease'
+    }}>
       <style>{`
         @keyframes fadeUp { from { opacity:0;transform:translateY(16px) } to { opacity:1;transform:translateY(0) } }
         .pl { transition: transform .18s, box-shadow .18s; }
-        .pl:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.10) !important; }
-        .sb:hover { filter: brightness(1.08); transform: translateY(-1px); }
+        .pl:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important; }
+        .sb:hover { filter: brightness(1.1); transform: translateY(-1px); }
       `}</style>
 
       {/* Banner */}
@@ -156,13 +162,19 @@ export default function PublicProfile() {
       <div style={{ maxWidth: 560, margin: '0 auto', padding: '0 16px 48px' }}>
 
         {/* Profile card */}
-        <div style={{ background: 'white', borderRadius: 20, marginTop: -24, marginBottom: 14, boxShadow: '0 4px 28px rgba(0,0,0,0.09)', animation: 'fadeUp .4s ease', position: 'relative', zIndex: 10 }}>
+        <div style={{ 
+            background: isDark ? '#1E293B' : 'white', 
+            borderRadius: 24, marginTop: -24, marginBottom: 16, 
+            boxShadow: isDark ? '0 10px 40px rgba(0,0,0,0.3)' : '0 4px 28px rgba(0,0,0,0.09)', 
+            animation: 'fadeUp .4s ease', position: 'relative', zIndex: 10,
+            border: isDark ? '1px solid rgba(255,255,255,0.05)' : 'none'
+        }}>
           {/* Avatar */}
           <div style={{ padding: '0 20px', height: 52, position: 'relative' }}>
             <div style={{
               position: 'absolute', top: -44, left: 20,
               width: 88, height: 88, borderRadius: '50%',
-              border: '4px solid white', overflow: 'hidden',
+              border: isDark ? `4px solid #1E293B` : '4px solid white', overflow: 'hidden',
               background: profile?.photo_url ? 'transparent' : themeColor,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: 32, boxShadow: '0 4px 16px rgba(0,0,0,0.18)', zIndex: 10
@@ -175,9 +187,9 @@ export default function PublicProfile() {
 
           {/* Info */}
           <div style={{ padding: '4px 20px 16px' }}>
-            <h1 style={{ fontSize: 22, fontWeight: 800, color: '#111', marginBottom: 2 }}>{profile?.full_name || 'Nom complet'}</h1>
+            <h1 style={{ fontSize: 22, fontWeight: 800, color: isDark ? '#F8FAFC' : '#111', marginBottom: 2 }}>{profile?.full_name || 'Nom complet'}</h1>
             {(profile?.title || profile?.job_title) && <p style={{ fontSize: 13, color: themeColor, fontWeight: 700, marginBottom: 6 }}>{profile.title || profile.job_title}</p>}
-            {profile?.bio && <p style={{ fontSize: 14, color: '#555', lineHeight: 1.65 }}>{profile.bio}</p>}
+            {profile?.bio && <p style={{ fontSize: 14, color: isDark ? '#94A3B8' : '#555', lineHeight: 1.65 }}>{profile.bio}</p>}
           </div>
 
           {/* Save contact */}
@@ -198,16 +210,27 @@ export default function PublicProfile() {
           {(profile?.phone || profile?.email) && (
             <div style={{ display: 'flex', gap: 10 }}>
               {profile?.phone && (
-                <a className="pl" href={`tel:${profile.phone.toString().replace(/\s+/g, '')}`} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '13px', background: 'white', borderRadius: 16, textDecoration: 'none', color: '#111', boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.05)', fontWeight: 700, fontSize: 14 }}>
+                <a className="pl" href={`tel:${profile.phone.toString().replace(/\s+/g, '')}`} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '13px', background: isDark ? '#1E293B' : 'white', borderRadius: 16, textDecoration: 'none', color: isDark ? '#F1F5F9' : '#111', boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)', fontWeight: 700, fontSize: 14 }}>
                   <span style={{ fontSize: 16 }}>📞</span> Appeler
                 </a>
               )}
               {profile?.email && (
-                <a className="pl" href={`mailto:${profile.email}`} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '13px', background: 'white', borderRadius: 16, textDecoration: 'none', color: '#111', boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.05)', fontWeight: 700, fontSize: 14 }}>
+                <a className="pl" href={`mailto:${profile.email}`} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '13px', background: isDark ? '#1E293B' : 'white', borderRadius: 16, textDecoration: 'none', color: isDark ? '#F1F5F9' : '#111', boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)', fontWeight: 700, fontSize: 14 }}>
                   <span style={{ fontSize: 16 }}>✉️</span> Email
                 </a>
               )}
             </div>
+          )}
+
+          {profile?.pdf_url && (
+            <a className="pl sb" href={profile.pdf_url} target="_blank" rel="noopener noreferrer" style={{ 
+                width: '100%', padding: '15px 20px', background: '#EF4444', color: 'white',
+                border: 'none', borderRadius: 16, cursor: 'pointer', fontSize: 15, fontWeight: 700,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                textDecoration: 'none', boxShadow: '0 8px 24px rgba(239, 68, 68, 0.3)', transition: 'all .18s'
+            }}>
+              <span style={{ fontSize: 18 }}>📄</span> Télécharger le Catalogue / Menu
+            </a>
           )}
 
           {activeLinks.map(link => {
@@ -222,18 +245,18 @@ export default function PublicProfile() {
                 href={link.getUrl(linkValue)}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 18px', background: 'white', borderRadius: 16, textDecoration: 'none', color: '#111', boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.05)' }}>
+                style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 18px', background: isDark ? '#1E293B' : 'white', borderRadius: 16, textDecoration: 'none', color: isDark ? '#F1F5F9' : '#111', boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)' }}>
                 <div style={{
                   width: 44, height: 44, borderRadius: 12, flexShrink: 0,
-                  background: link.id === 'snapchat' ? link.color : link.color + '18',
+                  background: link.id === 'snapchat' ? link.color : (isDark ? 'rgba(255,255,255,0.05)' : link.color + '18'),
                   display: 'flex', alignItems: 'center', justifyContent: 'center'
                 }}
                   dangerouslySetInnerHTML={{ __html: `<div style="width:22px;height:22px;color:${link.id === 'snapchat' ? '#000000' : (link.iconColor || link.color)}">${link.svg}</div>` }} />
                 <div style={{ flex: 1, overflow: 'hidden' }}>
                   <div style={{ fontWeight: 700, fontSize: 15 }}>{link.label}</div>
-                  {subText && <div style={{ fontSize: 12, color: '#64748B', marginTop: 2 }}>{subText}</div>}
+                  {subText && <div style={{ fontSize: 12, color: isDark ? '#94A3B8' : '#64748B', marginTop: 2 }}>{subText}</div>}
                 </div>
-                <span style={{ color: '#CBD5E1', fontSize: 18 }}>→</span>
+                <span style={{ color: isDark ? '#475569' : '#CBD5E1', fontSize: 18 }}>→</span>
               </a>
             )
           })}
@@ -246,12 +269,12 @@ export default function PublicProfile() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {activeCustomLinks.map(link => (
                   <a key={link.id} className="pl" href={link.url} target="_blank" rel="noopener noreferrer"
-                    style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 18px', background: 'white', borderRadius: 16, textDecoration: 'none', color: '#111', boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.05)' }}>
-                    <div style={{ width: 44, height: 44, borderRadius: 12, flexShrink: 0, background: '#F8FAFC', border: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>
+                    style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 18px', background: isDark ? '#1E293B' : 'white', borderRadius: 16, textDecoration: 'none', color: isDark ? '#F1F5F9' : '#111', boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)' }}>
+                    <div style={{ width: 44, height: 44, borderRadius: 12, flexShrink: 0, background: isDark ? 'rgba(255,255,255,0.05)' : '#F8FAFC', border: isDark ? 'none' : '1px solid #F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>
                       {link.emoji || link.icon || '🔗'}
                     </div>
                     <span style={{ fontWeight: 700, fontSize: 15, flex: 1 }}>{link.label || link.title}</span>
-                    <span style={{ color: '#CBD5E1', fontSize: 18 }}>→</span>
+                    <span style={{ color: isDark ? '#475569' : '#CBD5E1', fontSize: 18 }}>→</span>
                   </a>
                 ))}
               </div>
