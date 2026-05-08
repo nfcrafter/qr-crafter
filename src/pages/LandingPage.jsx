@@ -549,11 +549,27 @@ export default function LandingPage() {
                                 </li>
                             </ul>
                             
-                            <div className="pack-images-row">
+                            <div className="pack-images-row" style={{ position: 'relative' }}>
                                 <img src="/placeholder-public-profile.jpg" alt="Capture profil public" className="pack-profile-img" onError={(e) => e.target.src='https://placehold.co/400x700/f8fafc/1a1265?text=Page+Profil'} />
                                 <div className="pack-plus">+</div>
-                                <img src="/placeholder-qr-custom.jpg" alt="QR Code personnalisé" className="pack-qr-img" onError={(e) => e.target.src='https://placehold.co/400x400/f1f5f9/1a1265?text=QR+Code'} />
+                                <div style={{ position: 'relative' }}>
+                                    <img src="/placeholder-qr-custom.jpg" alt="QR Code personnalisé" className="pack-qr-img" onError={(e) => e.target.src='https://placehold.co/400x400/f1f5f9/1a1265?text=QR+Code'} />
+                                    {/* Illustration flottante Premium générée */}
+                                    <img 
+                                        src="/social-links.png" 
+                                        alt="Social links" 
+                                        style={{ 
+                                            position: 'absolute', top: '-70px', right: '-50px', width: '160px', 
+                                            filter: 'drop-shadow(0 15px 30px rgba(0,0,0,0.1))',
+                                            animation: 'floatMed 6s ease-in-out infinite',
+                                            pointerEvents: 'none',
+                                            mixBlendMode: 'multiply'
+                                        }} 
+                                        onError={(e) => e.target.style.display = 'none'}
+                                    />
+                                </div>
                             </div>
+
 
                             <button onClick={() => window.open(getWhatsAppUrl('digital'), '_blank')} className="btn-primary" style={{ margin: '0 auto' }}>
                                 Commander le Pack Digital
@@ -797,10 +813,10 @@ export default function LandingPage() {
                             <ul className="price-list">
                                 <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> Profil digital complet & personnalisable</li>
                                 <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> QR Code dynamique haute définition</li>
-                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> <strong>Nouveau :</strong> Catalogue / Menu PDF intégré</li>
-                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> <strong>Nouveau :</strong> Statistiques de scans en temps réel</li>
-                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> <strong>Nouveau :</strong> Mode Sombre (Dark Mode) inclus</li>
-                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> Plus de 20 réseaux sociaux (Google Reviews, Calendly, etc.)</li>
+                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> <strong>Catalogue / Menu PDF</strong> intégré</li>
+                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> <strong>Statistiques de scans</strong> en temps réel</li>
+                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> <strong>Mode Sombre</strong> (Dark Mode) inclus</li>
+                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> 20+ réseaux sociaux (Google Reviews...)</li>
                                 <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> Modifiable à vie, sans abonnement</li>
                             </ul>
 
@@ -821,8 +837,8 @@ export default function LandingPage() {
                             <ul className="price-list">
                                 <li style={{ color: '#4F46E5' }}><span style={{ fontWeight: '900' }}>✓</span> <strong>Carte Physique NFC Premium</strong></li>
                                 <li><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Design avec votre nom/photo/logo</li>
-                                <li><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Toutes les options du Pack Digital</li>
-                                <li><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Catalogue PDF & Statistiques inclus</li>
+                                <li style={{ fontWeight: '800' }}><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Inclus : TOUT le Pack Digital</li>
+                                <li><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> PDF, Stats & Mode Sombre activés</li>
                                 <li><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Livraison rapide (24-48h)</li>
                             </ul>
 
