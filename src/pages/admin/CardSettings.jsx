@@ -493,13 +493,13 @@ export default function CardSettings() {
                     style={{ 
                         position: 'fixed', bottom: '24px', right: '24px', 
                         background: '#1A1265', color: 'white', border: 'none', 
-                        width: '60px', height: '60px', borderRadius: '50%', 
+                        padding: '12px 24px', borderRadius: '30px', 
                         boxShadow: '0 10px 25px rgba(26,18,101,0.4)', 
-                        zIndex: 900, cursor: 'pointer', fontSize: '24px',
-                        display: 'none'
+                        zIndex: 900, cursor: 'pointer', fontSize: '14px',
+                        fontWeight: '800', display: 'none', alignItems: 'center', gap: '10px'
                     }}
                 >
-                    📱
+                    <span style={{ fontSize: '18px' }}>📱</span> Aperçu en direct
                 </button>
             </div>
 
