@@ -125,8 +125,20 @@ export default function PublicProfile() {
     </div>
   )
 
+  const getBrightness = (hex) => {
+    if (!hex || hex[0] !== '#') return 255;
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return (r * 299 + g * 587 + b * 114) / 1000;
+  };
+  
   const themeColor = profile?.theme_color || profile?.primaryColor || '#1A1265'
-  const isDark = false // Dark mode removed as requested
+  const bgColor = profile?.backgroundColor || '#f0f2f5'
+  const isDark = getBrightness(bgColor) < 128;
+  const cardBg = isDark ? 'rgba(255,255,255,0.08)' : 'white';
+  const textColor = isDark ? '#F8FAFC' : '#111';
+  const subTextColor = isDark ? '#94A3B8' : '#64748B';
 
   const activeLinks = SOCIAL_NETWORKS.filter(s => {
     if (s.id === 'phone' || s.id === 'email') return false;
@@ -141,9 +153,10 @@ export default function PublicProfile() {
   return (
     <div style={{ 
         minHeight: '100vh', 
-        background: isDark ? '#0F172A' : '#f0f2f5', 
+        background: bgColor, 
         fontFamily: "'Inter', 'Outfit', sans-serif",
-        transition: 'background 0.3s ease'
+        transition: 'all 0.3s ease',
+        color: textColor
     }}>
       <style>{`
         @keyframes fadeUp { from { opacity:0;transform:translateY(16px) } to { opacity:1;transform:translateY(0) } }
@@ -164,11 +177,12 @@ export default function PublicProfile() {
 
         {/* Profile card */}
         <div style={{ 
-            background: isDark ? '#1E293B' : 'white', 
+            background: cardBg, 
             borderRadius: 24, marginTop: -24, marginBottom: 16, 
-            boxShadow: isDark ? '0 10px 40px rgba(0,0,0,0.3)' : '0 4px 28px rgba(0,0,0,0.09)', 
+            boxShadow: isDark ? '0 10px 40px rgba(0,0,0,0.3)' : '0 4px 28px rgba(0,0,0,0.06)', 
             animation: 'fadeUp .4s ease', position: 'relative', zIndex: 10,
-            border: isDark ? '1px solid rgba(255,255,255,0.05)' : 'none'
+            border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(255,255,255,0.7)',
+            backdropFilter: isDark ? 'blur(10px)' : 'none'
         }}>
           {/* Avatar */}
           <div style={{ padding: '0 20px', height: 52, position: 'relative' }}>
@@ -182,23 +196,23 @@ export default function PublicProfile() {
             }}>
               {profile?.photo_url
                 ? <img src={profile.photo_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
-                : '👤'}
+                : <span style={{ color: isDark ? 'white' : 'white' }}>👤</span>}
             </div>
           </div>
 
           {/* Info */}
           <div style={{ padding: '4px 20px 16px' }}>
-            <h1 style={{ fontSize: 22, fontWeight: 800, color: isDark ? '#F8FAFC' : '#111', marginBottom: 2 }}>{profile?.full_name || 'Nom complet'}</h1>
+            <h1 style={{ fontSize: 22, fontWeight: 800, color: textColor, marginBottom: 2 }}>{profile?.full_name || 'Nom complet'}</h1>
             {(profile?.title || profile?.job_title) && <p style={{ fontSize: 13, color: themeColor, fontWeight: 700, marginBottom: 12 }}>{profile.title || profile.job_title}</p>}
             
             {profile?.bio && (
               <div style={{ 
-                background: isDark ? 'rgba(255,255,255,0.03)' : '#F8FAFC',
+                background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
                 borderRadius: 16,
                 padding: '14px',
-                border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid #F1F5F9',
+                border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.03)',
                 fontSize: 14,
-                color: isDark ? '#94A3B8' : '#444',
+                color: textColor,
                 lineHeight: 1.6,
                 position: 'relative',
                 overflow: 'hidden',
@@ -280,12 +294,12 @@ export default function PublicProfile() {
           {(profile?.phone || profile?.email) && (
             <div style={{ display: 'flex', gap: 10 }}>
               {profile?.phone && (
-                <a className="pl" href={`tel:${profile.phone.toString().replace(/\s+/g, '')}`} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '13px', background: isDark ? '#1E293B' : 'white', borderRadius: 16, textDecoration: 'none', color: isDark ? '#F1F5F9' : '#111', boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)', fontWeight: 700, fontSize: 14 }}>
+                <a className="pl" href={`tel:${profile.phone.toString().replace(/\s+/g, '')}`} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '13px', background: cardBg, borderRadius: 16, textDecoration: 'none', color: textColor, boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)', fontWeight: 700, fontSize: 14 }}>
                   <span style={{ fontSize: 16 }}>📞</span> Appeler
                 </a>
               )}
               {profile?.email && (
-                <a className="pl" href={`mailto:${profile.email}`} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '13px', background: isDark ? '#1E293B' : 'white', borderRadius: 16, textDecoration: 'none', color: isDark ? '#F1F5F9' : '#111', boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)', fontWeight: 700, fontSize: 14 }}>
+                <a className="pl" href={`mailto:${profile.email}`} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '13px', background: cardBg, borderRadius: 16, textDecoration: 'none', color: textColor, boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)', fontWeight: 700, fontSize: 14 }}>
                   <span style={{ fontSize: 16 }}>✉️</span> Email
                 </a>
               )}
@@ -306,7 +320,7 @@ export default function PublicProfile() {
                 href={link.getUrl(linkValue)}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 18px', background: isDark ? '#1E293B' : 'white', borderRadius: 16, textDecoration: 'none', color: isDark ? '#F1F5F9' : '#111', boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)' }}>
+                style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 18px', background: cardBg, borderRadius: 16, textDecoration: 'none', color: textColor, boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)' }}>
                 <div style={{
                   width: 44, height: 44, borderRadius: 12, flexShrink: 0,
                   background: link.id === 'snapchat' ? link.color : (isDark ? 'rgba(255,255,255,0.05)' : link.color + '18'),
@@ -314,8 +328,8 @@ export default function PublicProfile() {
                 }}
                   dangerouslySetInnerHTML={{ __html: `<div style="width:22px;height:22px;color:${link.id === 'snapchat' ? '#000000' : (link.iconColor || link.color)}">${link.svg}</div>` }} />
                 <div style={{ flex: 1, overflow: 'hidden' }}>
-                  <div style={{ fontWeight: 700, fontSize: 15 }}>{link.label}</div>
-                  {subText && <div style={{ fontSize: 12, color: isDark ? '#94A3B8' : '#64748B', marginTop: 2 }}>{subText}</div>}
+                  <div style={{ fontWeight: 700, fontSize: 15, color: textColor }}>{link.label}</div>
+                  {subText && <div style={{ fontSize: 12, color: subTextColor, marginTop: 2 }}>{subText}</div>}
                 </div>
                 <span style={{ color: isDark ? '#475569' : '#CBD5E1', fontSize: 18 }}>→</span>
               </a>
@@ -324,13 +338,13 @@ export default function PublicProfile() {
 
           {activeCustomLinks.length > 0 && (
             <div style={{ marginTop: 8 }}>
-              <h3 style={{ fontSize: 13, fontWeight: 800, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12, paddingLeft: 4, display: 'block', width: '100%' }}>
+              <h3 style={{ fontSize: 13, fontWeight: 800, color: subTextColor, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12, paddingLeft: 4, display: 'block', width: '100%' }}>
                 Autres liens
               </h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {activeCustomLinks.map(link => (
                   <a key={link.id} className="pl" href={link.url} target="_blank" rel="noopener noreferrer"
-                    style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 18px', background: isDark ? '#1E293B' : 'white', borderRadius: 16, textDecoration: 'none', color: isDark ? '#F1F5F9' : '#111', boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)' }}>
+                    style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 18px', background: cardBg, borderRadius: 16, textDecoration: 'none', color: textColor, boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)' }}>
                     <div style={{ width: 44, height: 44, borderRadius: 12, flexShrink: 0, background: isDark ? 'rgba(255,255,255,0.05)' : '#F8FAFC', border: isDark ? 'none' : '1px solid #F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>
                       {link.emoji || link.icon || '🔗'}
                     </div>

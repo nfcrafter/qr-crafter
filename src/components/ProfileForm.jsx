@@ -87,6 +87,59 @@ export default function ProfileForm({
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            {/* SECTION APPARENCE */}
+            {acc('design', '🎨', 'Apparence & Design', 'Couleurs, thèmes et style.', (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                        <div className="field">
+                            <label>Couleur principale</label>
+                            <div style={{ display: 'flex', gap: 8 }}>
+                                <input type="color" value={profile.primaryColor || '#1A1265'} onChange={e => setProfile({ ...profile, primaryColor: e.target.value })} style={{ width: 44, height: 44, padding: 0, border: 'none', borderRadius: 10, cursor: 'pointer' }} />
+                                <input type="text" value={profile.primaryColor || '#1A1265'} onChange={e => setProfile({ ...profile, primaryColor: e.target.value })} style={{ flex: 1, fontSize: 13 }} />
+                            </div>
+                        </div>
+                        <div className="field">
+                            <label>Couleur du fond</label>
+                            <div style={{ display: 'flex', gap: 8 }}>
+                                <input type="color" value={profile.backgroundColor || '#f0f2f5'} onChange={e => setProfile({ ...profile, backgroundColor: e.target.value })} style={{ width: 44, height: 44, padding: 0, border: 'none', borderRadius: 10, cursor: 'pointer' }} />
+                                <input type="text" value={profile.backgroundColor || '#f0f2f5'} onChange={e => setProfile({ ...profile, backgroundColor: e.target.value })} style={{ flex: 1, fontSize: 13 }} />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label style={{ fontSize: 13, fontWeight: 700, color: '#1A1265', marginBottom: 12, display: 'block' }}>Thèmes rapides</label>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
+                            {[
+                                { name: 'Classique', primary: '#1A1265', bg: '#f0f2f5' },
+                                { name: 'Sombre', primary: '#6366F1', bg: '#0F172A' },
+                                { name: 'Nature', primary: '#059669', bg: '#F0FDF4' },
+                                { name: 'Doux', primary: '#DB2777', bg: '#FDF2F8' },
+                                { name: 'Océan', primary: '#0284C7', bg: '#F0F9FF' },
+                                { name: 'Luxe', primary: '#B45309', bg: '#FFFBEB' }
+                            ].map(t => (
+                                <button 
+                                    key={t.name}
+                                    onClick={() => setProfile({ ...profile, primaryColor: t.primary, backgroundColor: t.bg })}
+                                    style={{ 
+                                        padding: '10px', borderRadius: 12, border: '1px solid #E2E8F0', background: 'white', cursor: 'pointer',
+                                        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, transition: '0.2s'
+                                    }}
+                                    onMouseOver={e => e.currentTarget.style.borderColor = t.primary}
+                                    onMouseOut={e => e.currentTarget.style.borderColor = '#E2E8F0'}
+                                >
+                                    <div style={{ display: 'flex', gap: 4 }}>
+                                        <div style={{ width: 14, height: 14, borderRadius: '50%', background: t.primary }} />
+                                        <div style={{ width: 14, height: 14, borderRadius: '50%', background: t.bg, border: '1px solid #E2E8F0' }} />
+                                    </div>
+                                    <span style={{ fontSize: 11, fontWeight: 700, color: '#475569' }}>{t.name}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            ))}
+
             {/* SECTION INFOS */}
             {acc('info', '👤', 'Informations du profil', 'Nom, bio, photo, bannière.', (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -152,13 +205,6 @@ export default function ProfileForm({
                         </div>
                     </div>
 
-                    <div className="field">
-                        <label>Couleur principale</label>
-                        <div style={{ display: 'flex', gap: 10 }}>
-                            <input type="color" value={profile.primaryColor || '#1A1265'} onChange={e => setProfile({ ...profile, primaryColor: e.target.value })} style={{ width: 50, height: 40, padding: 0, border: 'none', borderRadius: 8, cursor: 'pointer' }} />
-                            <input type="text" value={profile.primaryColor || '#1A1265'} onChange={e => setProfile({ ...profile, primaryColor: e.target.value })} style={{ flex: 1 }} />
-                        </div>
-                    </div>
                 </div>
             ))}
 
