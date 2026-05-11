@@ -458,7 +458,11 @@ export default function CardSettings() {
                                     <ColorField label="Couleur de fond" value={qrStyle.bgColor} onChange={v => setQrStyle({ ...qrStyle, bgColor: v })} />
                                     <ImageUpload label="Logo central du QR (Image)" value={qrStyle.logo_url} onChange={v => setQrStyle({ ...qrStyle, logo_url: v })} bucket="qr-logos" shape="circle" />
                                 </div>
-                                  {/* Phone Preview Column (Desktop) */}
+                            ), true)}
+                        </div>
+                    </div>
+
+                    {/* Phone Preview Column (Desktop) */}
                     <div className="desktop-preview" style={{ position: 'sticky', top: '100px' }}>
                         <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
                             <button onClick={() => setPreviewMode('page')} style={{ flex: 1, padding: 10, borderRadius: 20, border: 'none', background: previewMode === 'page' ? '#1A1265' : 'white', color: previewMode === 'page' ? 'white' : '#64748B', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>Aperçu Page</button>
