@@ -11,6 +11,7 @@ export default function PublicProfile() {
   const [customLinks, setCustomLinks] = useState([])
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
+  const [isBioExpanded, setIsBioExpanded] = useState(false)
 
   useEffect(() => { loadProfile() }, [cardId])
 
@@ -188,8 +189,77 @@ export default function PublicProfile() {
           {/* Info */}
           <div style={{ padding: '4px 20px 16px' }}>
             <h1 style={{ fontSize: 22, fontWeight: 800, color: isDark ? '#F8FAFC' : '#111', marginBottom: 2 }}>{profile?.full_name || 'Nom complet'}</h1>
-            {(profile?.title || profile?.job_title) && <p style={{ fontSize: 13, color: themeColor, fontWeight: 700, marginBottom: 6 }}>{profile.title || profile.job_title}</p>}
-            {profile?.bio && <p style={{ fontSize: 14, color: isDark ? '#94A3B8' : '#555', lineHeight: 1.65 }}>{profile.bio}</p>}
+            {(profile?.title || profile?.job_title) && <p style={{ fontSize: 13, color: themeColor, fontWeight: 700, marginBottom: 12 }}>{profile.title || profile.job_title}</p>}
+            
+            {profile?.bio && (
+              <div style={{ 
+                background: isDark ? 'rgba(255,255,255,0.03)' : '#F8FAFC',
+                borderRadius: 16,
+                padding: '14px',
+                border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid #F1F5F9',
+                fontSize: 14,
+                color: isDark ? '#94A3B8' : '#444',
+                lineHeight: 1.6,
+                position: 'relative',
+                overflow: 'hidden',
+                maxHeight: isBioExpanded ? 'none' : '100px'
+              }}>
+                {profile.bio.split('\n').map((line, i) => {
+                  const isList = line.trim().startsWith('-');
+                  return (
+                    <div key={i} style={{ 
+                      marginBottom: 8, 
+                      fontWeight: (i === 0 && !isList) ? 600 : 400,
+                      display: isList ? 'flex' : 'block',
+                      gap: isList ? '8px' : '0',
+                      color: (i === 0 && !isList) ? (isDark ? '#F8FAFC' : '#1A1265') : 'inherit'
+                    }}>
+                      {isList && <span style={{ color: themeColor, fontWeight: 900 }}>•</span>}
+                      <span>
+                        {isList ? line.trim().substring(1).trim().split(/(https?:\/\/[^\s]+)/g).map((part, index) => {
+                          if (part.match(/https?:\/\/[^\s]+/)) return <a key={index} href={part} target="_blank" rel="noreferrer" style={{ color: themeColor, textDecoration: 'underline' }}>{part}</a>;
+                          return part;
+                        }) : line.split(/(https?:\/\/[^\s]+)/g).map((part, index) => {
+                          if (part.match(/https?:\/\/[^\s]+/)) return <a key={index} href={part} target="_blank" rel="noreferrer" style={{ color: themeColor, textDecoration: 'underline' }}>{part}</a>;
+                          return part;
+                        })}
+                      </span>
+                    </div>
+                  );
+                })}
+                
+                {!isBioExpanded && profile.bio.length > 150 && (
+                  <div style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: '40px',
+                    background: `linear-gradient(transparent, ${isDark ? '#1E293B' : '#F8FAFC'})`,
+                    display: 'flex',
+                    alignItems: 'flex-end',
+                    justifyContent: 'center',
+                    paddingBottom: '4px'
+                  }}>
+                    <button 
+                      onClick={() => setIsBioExpanded(true)}
+                      style={{ 
+                        background: 'none', 
+                        border: 'none', 
+                        color: themeColor, 
+                        fontSize: 11, 
+                        fontWeight: 800, 
+                        cursor: 'pointer',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.5px'
+                      }}
+                    >
+                      Lire la suite ↓
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Save contact */}

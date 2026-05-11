@@ -101,6 +101,10 @@ export default function ProfileForm({
                     <div className="field">
                         <label>Description (Bio)</label>
                         <textarea rows={3} value={profile.bio || ''} onChange={e => setProfile({ ...profile, bio: e.target.value })} placeholder="Parlez-nous de vous..." />
+                        <div style={{ marginTop: 6, fontSize: 11, color: '#64748B', display: 'flex', gap: 4, alignItems: 'center' }}>
+                            <span>💡</span>
+                            <span>Astuce : Commencez une ligne par <b>"-"</b> pour créer une liste à puces automatique.</span>
+                        </div>
                     </div>
                     
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
