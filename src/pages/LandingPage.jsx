@@ -584,9 +584,7 @@ export default function LandingPage() {
                             <ul className="price-list">
                                 <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> Profil digital complet & personnalisable</li>
                                 <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> QR Code dynamique haute définition</li>
-                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> <strong>Possibilité d'intégrer un</strong>PDF</li>
                                 <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> <strong>Statistiques de scans</strong>en temps réel</li>
-                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> <strong>Mode Sombre</strong> (Dark Mode) inclus</li>
                                 <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> 20+ réseaux sociaux (Facebook, X, Instagram, TikTok, etc...)</li>
                                 <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> Modifiable à vie</li>
                             </ul>
@@ -609,7 +607,7 @@ export default function LandingPage() {
                                 <li style={{ color: '#4F46E5' }}><span style={{ fontWeight: '900' }}>✓</span> <strong>Carte Physique NFC Premium</strong></li>
                                 <li><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Design avec votre nom/photo/logo</li>
                                 <li style={{ fontWeight: '800' }}><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Inclus : TOUT le Pack Digital</li>
-                                <li><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> PDF, Stats & Mode Sombre activés</li>
+                                <li><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Stats & Réseaux sociaux activés</li>
                                 <li><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Livraison rapide (24-48h)</li>
                             </ul>
 

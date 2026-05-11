@@ -244,42 +244,8 @@ export default function ProfileForm({
                 </div>
             ))}
 
-            {/* SECTION AVANCÉE */}
-            {acc('advanced', '⚙️', 'Apparence & Fichiers', 'Mode sombre, catalogue PDF.', (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', background: '#F8FAFC', borderRadius: 16, border: '1px solid #E2E8F0' }}>
-                        <div>
-                            <div style={{ fontWeight: 700, color: '#1A1265', fontSize: 14 }}>Mode Sombre</div>
-                            <div style={{ fontSize: 12, color: '#94A3B8' }}>Utiliser un thème noir pour votre profil.</div>
-                        </div>
-                        <div 
-                            onClick={() => setProfile({ ...profile, isDark: !profile.isDark })}
-                            style={{ 
-                                width: 48, height: 26, borderRadius: 20, background: profile.isDark ? '#10B981' : '#CBD5E1', 
-                                position: 'relative', cursor: 'pointer', transition: '0.3s' 
-                            }}
-                        >
-                            <div style={{ position: 'absolute', top: 3, left: profile.isDark ? 25 : 3, width: 20, height: 20, background: 'white', borderRadius: '50%', transition: '0.3s', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }} />
-                        </div>
-                    </div>
+            {/* SECTION AVANCÉE SUPPRIMÉE */}
 
-                    <div className="field">
-                        <label>Catalogue ou Menu PDF</label>
-                        <div style={{ display: 'flex', gap: 10 }}>
-                            <input type="text" value={profile.pdf_url || ''} readOnly placeholder="Aucun fichier" style={{ flex: 1, background: '#F8FAFC' }} />
-                            <button onClick={() => document.getElementById('pdf-upload').click()} style={{ padding: '0 16px', borderRadius: 12, background: '#1A1265', color: 'white', border: 'none', fontWeight: 700, cursor: 'pointer', fontSize: 13 }}>{profile.pdf_url ? 'Changer' : 'Uploader'}</button>
-                            <input id="pdf-upload" type="file" accept=".pdf" hidden onChange={e => {
-                                if (e.target.files[0]) {
-                                    onUploadPDF(e.target.files[0]);
-                                }
-                            }} />
-                        </div>
-                        {profile.pdf_url && (
-                            <button onClick={() => setProfile({ ...profile, pdf_url: '' })} style={{ background: 'none', border: 'none', color: '#EF4444', fontSize: 11, fontWeight: 700, marginTop: 4, cursor: 'pointer' }}>Supprimer le fichier</button>
-                        )}
-                    </div>
-                </div>
-            ))}
 
         </div>
     );

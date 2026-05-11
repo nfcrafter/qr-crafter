@@ -24,8 +24,7 @@ export default function ClientDashboard() {
     const [publicProfile, setPublicProfile] = useState({
         banner_url: '', photo_url: '', full_name: '', job_title: '', bio: '',
         phone: '', email: '', primaryColor: '#1A1265',
-        socials: {}, customLinks: [], url: '', qr_type: 'profile',
-        isDark: false, pdf_url: ''
+        socials: {}, customLinks: [], url: '', qr_type: 'profile'
     });
 
     useEffect(() => { loadUserData(); }, []);
@@ -52,7 +51,6 @@ export default function ClientDashboard() {
                 banner_url: '', photo_url: '', full_name: '', job_title: '', bio: '',
                 phone: '', email: '', primaryColor: '#1A1265',
                 socials: {}, customLinks: [], url: '', qr_type: 'profile',
-                isDark: false, pdf_url: '',
                 ...(card.admin_profile || {})
             });
 
@@ -74,7 +72,6 @@ export default function ClientDashboard() {
                     banner_url: '', photo_url: '', full_name: '', job_title: '', bio: '',
                     phone: '', email: '', primaryColor: '#1A1265',
                     socials: {}, customLinks: [], url: '', qr_type: 'profile',
-                    isDark: false, pdf_url: '',
                     ...(card.admin_profile || {})
                 });
 
@@ -281,7 +278,6 @@ export default function ClientDashboard() {
                                         setProfile={setPublicProfile} 
                                         onUploadAvatar={(f) => uploadFile(f, 'avatars', (url) => setPublicProfile(p => ({...p, photo_url: url})), setUploadingAvatar)} 
                                         onUploadBanner={(f) => uploadFile(f, 'banners', (url) => setPublicProfile(p => ({...p, banner_url: url})), setUploadingBanner)} 
-                                        onUploadPDF={(f) => uploadFile(f, 'pdfs', (url) => setPublicProfile(p => ({...p, pdf_url: url})), (v) => {})} 
                                         uploadingAvatar={uploadingAvatar} 
                                         uploadingBanner={uploadingBanner} 
                                         toast={toast} 

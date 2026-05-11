@@ -125,7 +125,7 @@ export default function PublicProfile() {
   )
 
   const themeColor = profile?.theme_color || profile?.primaryColor || '#1A1265'
-  const isDark = profile?.isDark || false
+  const isDark = false // Dark mode removed as requested
 
   const activeLinks = SOCIAL_NETWORKS.filter(s => {
     if (s.id === 'phone' || s.id === 'email') return false;
@@ -222,16 +222,7 @@ export default function PublicProfile() {
             </div>
           )}
 
-          {profile?.pdf_url && (
-            <a className="pl sb" href={profile.pdf_url} target="_blank" rel="noopener noreferrer" style={{ 
-                width: '100%', padding: '15px 20px', background: '#EF4444', color: 'white',
-                border: 'none', borderRadius: 16, cursor: 'pointer', fontSize: 15, fontWeight: 700,
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-                textDecoration: 'none', boxShadow: '0 8px 24px rgba(239, 68, 68, 0.3)', transition: 'all .18s'
-            }}>
-              <span style={{ fontSize: 18 }}>📄</span> Télécharger le Catalogue / Menu
-            </a>
-          )}
+
 
           {activeLinks.map(link => {
             const rawValue = profile[link.id] || profile?.socials?.[link.id];
