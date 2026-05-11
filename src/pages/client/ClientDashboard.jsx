@@ -4,6 +4,8 @@ import { supabase } from '../../lib/supabase.js';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../../components/Toast.jsx';
 import ProfileForm from '../../components/ProfileForm.jsx';
+import PhonePreview from '../../components/PhonePreview.jsx';
+import { SOCIAL_NETWORKS } from '../../constants/socials.js';
 
 export default function ClientDashboard() {
     const navigate = useNavigate();
@@ -20,6 +22,7 @@ export default function ClientDashboard() {
     const [uploadingAvatar, setUploadingAvatar] = useState(false);
     const [uploadingBanner, setUploadingBanner] = useState(false);
     const [scanCount, setScanCount] = useState(0);
+    const [showMobilePreview, setShowMobilePreview] = useState(false);
 
     const [publicProfile, setPublicProfile] = useState({
         banner_url: '', photo_url: '', full_name: '', job_title: '', bio: '',
@@ -153,6 +156,19 @@ export default function ClientDashboard() {
 
     const publicUrl = selectedCardId ? `${window.location.origin}/u/${selectedCardId}` : '';
 
+    const getBrightness = (hex) => {
+        if (!hex || hex[0] !== '#') return 255;
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return (r * 299 + g * 587 + b * 114) / 1000;
+    };
+
+    const isDark = getBrightness(publicProfile.backgroundColor || '#f0f2f5') < 128;
+    const textColor = isDark ? '#F8FAFC' : '#111';
+    const subTextColor = isDark ? '#94A3B8' : '#64748B';
+    const cardBg = isDark ? 'rgba(255,255,255,0.08)' : 'white';
+
     return (
         <div style={{ display: 'flex', minHeight: '100vh', background: '#F8FAFC' }}>
             
@@ -217,84 +233,113 @@ export default function ClientDashboard() {
                         <button onClick={() => handleWhatsAppOrder(false)} className="btn-primary" style={{ padding: '16px 40px', borderRadius: '100px', background: '#25D366', border: 'none' }}>🚀 Activer mon profil (2000f)</button>
                     </div>
                 ) : (
-                    <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '32px' }}>
+                    <div className="dashboard-grid" style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 340px', gap: '40px', alignItems: 'start' }}>
                         
-                        {/* Link Box */}
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
-                            <div style={{ background: 'white', padding: '24px', borderRadius: '24px', border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                                <div>
-                                    <div style={{ fontSize: '11px', fontWeight: '800', color: '#94A3B8', marginBottom: '4px', textTransform: 'uppercase' }}>LIEN DU PROFIL</div>
-                                    <div style={{ fontSize: '15px', fontWeight: '700', color: '#6366F1', wordBreak: 'break-all' }}>{publicUrl}</div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+                            {/* Link Box */}
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
+                                <div style={{ background: 'white', padding: '24px', borderRadius: '24px', border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                    <div>
+                                        <div style={{ fontSize: '11px', fontWeight: '800', color: '#94A3B8', marginBottom: '4px', textTransform: 'uppercase' }}>LIEN DU PROFIL</div>
+                                        <div style={{ fontSize: '15px', fontWeight: '700', color: '#6366F1', wordBreak: 'break-all' }}>{publicUrl}</div>
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                        <button onClick={() => window.open(publicUrl, '_blank')} style={{ flex: 1, padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '700', cursor: 'pointer', fontSize: '13px' }}>👁️ Voir</button>
+                                        <button onClick={async () => { if (navigator.share) { try { await navigator.share({ title: 'NFCrafter', url: publicUrl }); } catch (e) {} } else { window.open(`https://wa.me/?text=${encodeURIComponent(publicUrl)}`, '_blank'); } }} style={{ flex: 1, padding: '12px', borderRadius: '12px', background: '#25D366', color: 'white', border: 'none', fontWeight: '700', cursor: 'pointer', fontSize: '13px' }}>📲 Partager</button>
+                                    </div>
                                 </div>
-                                <div style={{ display: 'flex', gap: '8px' }}>
-                                    <button onClick={() => window.open(publicUrl, '_blank')} style={{ flex: 1, padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '700', cursor: 'pointer', fontSize: '13px' }}>👁️ Voir</button>
-                                    <button onClick={async () => { if (navigator.share) { try { await navigator.share({ title: 'NFCrafter', url: publicUrl }); } catch (e) {} } else { window.open(`https://wa.me/?text=${encodeURIComponent(publicUrl)}`, '_blank'); } }} style={{ flex: 1, padding: '12px', borderRadius: '12px', background: '#25D366', color: 'white', border: 'none', fontWeight: '700', cursor: 'pointer', fontSize: '13px' }}>📲 Partager</button>
+
+                                <div style={{ background: 'white', padding: '24px', borderRadius: '24px', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                    <div>
+                                        <div style={{ fontSize: '11px', fontWeight: '800', color: '#94A3B8', marginBottom: '4px', textTransform: 'uppercase' }}>Vues (Scans)</div>
+                                        <div style={{ fontSize: '32px', fontWeight: '900', color: '#1A1265' }}>{scanCount}</div>
+                                    </div>
+                                    <div style={{ width: '50px', height: '50px', borderRadius: '14px', background: '#F0F9FF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px' }}>📊</div>
                                 </div>
                             </div>
 
-                            <div style={{ background: 'white', padding: '24px', borderRadius: '24px', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                <div>
-                                    <div style={{ fontSize: '11px', fontWeight: '800', color: '#94A3B8', marginBottom: '4px', textTransform: 'uppercase' }}>Vues (Scans)</div>
-                                    <div style={{ fontSize: '32px', fontWeight: '900', color: '#1A1265' }}>{scanCount}</div>
+                            {/* Banner - Physical Card */}
+                            <div style={{ background: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)', color: 'white', padding: '30px', borderRadius: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px', boxShadow: '0 20px 40px rgba(79,70,229,0.15)', position: 'relative', overflow: 'hidden' }}>
+                                <div style={{ flex: 1, position: 'relative', zIndex: 1 }}>
+                                    <h3 style={{ fontSize: '18px', fontWeight: '900', marginBottom: '8px', color: 'white' }}>Carte Physique 💳</h3>
+                                    <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '13px', lineHeight: '1.5', maxWidth: '300px' }}>Commandez votre carte NFC premium personnalisée.</p>
                                 </div>
-                                <div style={{ width: '50px', height: '50px', borderRadius: '14px', background: '#F0F9FF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px' }}>📊</div>
+                                <button onClick={() => window.open(`https://wa.me/22969473921?text=${encodeURIComponent('Commande carte : ' + publicUrl)}`, '_blank')} style={{ background: 'white', color: '#4F46E5', border: 'none', padding: '12px 24px', borderRadius: '14px', fontWeight: '900', cursor: 'pointer', fontSize: '13px' }}>Commander</button>
                             </div>
 
-                            <div style={{ background: 'white', padding: '24px', borderRadius: '24px', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                <div>
-                                    <div style={{ fontSize: '11px', fontWeight: '800', color: '#94A3B8', marginBottom: '4px', textTransform: 'uppercase' }}>Votre QR Code</div>
-                                    <button onClick={downloadQR} style={{ background: '#F1F5F9', border: 'none', padding: '8px 16px', borderRadius: '10px', color: '#475569', fontWeight: '800', cursor: 'pointer', fontSize: '12px', marginTop: '4px' }}>📥 Télécharger PNG</button>
-                                </div>
-                                <div style={{ width: '50px', height: '50px', borderRadius: '14px', background: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', border: '1px solid #E2E8F0' }}>🔳</div>
-                            </div>
-                        </div>
-
-                        {/* Banner - Physical Card - CORRECTION COULEURS */}
-                        <div style={{ background: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)', color: 'white', padding: '40px', borderRadius: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '32px', boxShadow: '0 20px 40px rgba(79,70,229,0.15)', position: 'relative', overflow: 'hidden' }}>
-                            <div style={{ position: 'absolute', right: '-20px', top: '-20px', fontSize: '120px', opacity: 0.1, pointerEvents: 'none' }}>💳</div>
-                            <div style={{ flex: 1, position: 'relative', zIndex: 1 }}>
-                                <h3 style={{ fontSize: '24px', fontWeight: '900', marginBottom: '12px', color: 'white' }}>Commandez votre Carte Physique 💳</h3>
-                                <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '16px', lineHeight: '1.6', maxWidth: '400px' }}>Transformez votre profil digital en un objet premium. Puce NFC intégrée et design personnalisé.</p>
-                            </div>
-                            <button onClick={() => window.open(`https://wa.me/22969473921?text=${encodeURIComponent('Commande carte : ' + publicUrl)}`, '_blank')} style={{ background: 'white', color: '#4F46E5', border: 'none', padding: '18px 32px', borderRadius: '18px', fontWeight: '900', cursor: 'pointer', boxShadow: '0 10px 20px rgba(0,0,0,0.1)', transition: '0.2s', fontSize: '15px' }} onMouseOver={e => e.currentTarget.style.transform = 'translateY(-2px)'} onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}>Commander la carte</button>
-                        </div>
-
-                        {/* Editor */}
-                        <div style={{ background: 'white', padding: '40px', borderRadius: '32px', border: '1px solid #E2E8F0', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px', gap: '16px', flexWrap: 'wrap' }}>
-                                <div>
-                                    <h2 style={{ fontSize: '26px', fontWeight: '900', color: '#1A1265', margin: '0 0 8px 0' }}>Configuration</h2>
-                                    <p style={{ color: '#64748B', fontSize: '14px', margin: 0 }}>Personnalisez l'apparence et les liens de votre profil.</p>
-                                </div>
-                                <button onClick={() => setViewMode(viewMode === 'view' ? 'edit' : 'view')} style={{ padding: '12px 28px', borderRadius: '16px', background: viewMode === 'edit' ? '#F1F5F9' : '#1A1265', color: viewMode === 'edit' ? '#1A1265' : 'white', border: 'none', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', transition: '0.2s' }}>
-                                    {viewMode === 'edit' ? 'Annuler' : '✏️ Modifier le profil'}
-                                </button>
-                            </div>
-
-                            {viewMode === 'edit' ? (
-                                <div className="animate-fade-in">
-                                    <ProfileForm 
-                                        profile={publicProfile} 
-                                        setProfile={setPublicProfile} 
-                                        onUploadAvatar={(f) => uploadFile(f, 'avatars', (url) => setPublicProfile(p => ({...p, photo_url: url})), setUploadingAvatar)} 
-                                        onUploadBanner={(f) => uploadFile(f, 'banners', (url) => setPublicProfile(p => ({...p, banner_url: url})), setUploadingBanner)} 
-                                        uploadingAvatar={uploadingAvatar} 
-                                        uploadingBanner={uploadingBanner} 
-                                        toast={toast} 
-                                    />
-                                    <button onClick={savePublicProfile} disabled={saving} className="btn-primary" style={{ width: '100%', padding: '18px', borderRadius: '20px', marginTop: '40px', background: '#1A1265', fontSize: '16px', boxShadow: '0 10px 20px rgba(26,18,101,0.15)' }}>
-                                        {saving ? 'Enregistrement...' : '✅ Enregistrer les modifications'}
+                            {/* Editor */}
+                            <div style={{ background: 'white', padding: '40px', borderRadius: '32px', border: '1px solid #E2E8F0', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px', gap: '16px', flexWrap: 'wrap' }}>
+                                    <div>
+                                        <h2 style={{ fontSize: '26px', fontWeight: '900', color: '#1A1265', margin: '0 0 8px 0' }}>Configuration</h2>
+                                        <p style={{ color: '#64748B', fontSize: '14px', margin: 0 }}>Personnalisez l'apparence de votre profil.</p>
+                                    </div>
+                                    <button onClick={() => setViewMode(viewMode === 'view' ? 'edit' : 'view')} style={{ padding: '12px 28px', borderRadius: '16px', background: viewMode === 'edit' ? '#F1F5F9' : '#1A1265', color: viewMode === 'edit' ? '#1A1265' : 'white', border: 'none', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', transition: '0.2s' }}>
+                                        {viewMode === 'edit' ? 'Annuler' : '✏️ Modifier le profil'}
                                     </button>
                                 </div>
-                            ) : (
-                                <div style={{ textAlign: 'center', padding: '60px 0', background: '#F8FAFC', borderRadius: '28px', border: '2px dashed #E2E8F0' }}>
-                                    <div style={{ fontSize: '48px', marginBottom: '16px' }}>✨</div>
-                                    <p style={{ color: '#64748B', fontWeight: '500', marginBottom: '24px' }}>Votre profil est en ligne et prêt à être partagé.</p>
-                                    <button onClick={() => setViewMode('edit')} style={{ background: 'white', color: '#1A1265', border: '1px solid #E2E8F0', padding: '14px 32px', borderRadius: '16px', fontWeight: '800', cursor: 'pointer', boxShadow: '0 4px 6px rgba(0,0,0,0.02)' }}>✏️ Éditer les informations</button>
-                                </div>
-                            )}
+
+                                {viewMode === 'edit' ? (
+                                    <div className="animate-fade-in">
+                                        <ProfileForm 
+                                            profile={publicProfile} 
+                                            setProfile={setPublicProfile} 
+                                            onUploadAvatar={(f) => uploadFile(f, 'avatars', (url) => setPublicProfile(p => ({...p, photo_url: url})), setUploadingAvatar)} 
+                                            onUploadBanner={(f) => uploadFile(f, 'banners', (url) => setPublicProfile(p => ({...p, banner_url: url})), setUploadingBanner)} 
+                                            uploadingAvatar={uploadingAvatar} 
+                                            uploadingBanner={uploadingBanner} 
+                                            toast={toast} 
+                                        />
+                                        <button onClick={savePublicProfile} disabled={saving} className="btn-primary" style={{ width: '100%', padding: '18px', borderRadius: '20px', marginTop: '40px', background: '#1A1265', fontSize: '16px', boxShadow: '0 10px 20px rgba(26,18,101,0.15)' }}>
+                                            {saving ? 'Enregistrement...' : '✅ Enregistrer les modifications'}
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div style={{ textAlign: 'center', padding: '60px 0', background: '#F8FAFC', borderRadius: '28px', border: '2px dashed #E2E8F0' }}>
+                                        <div style={{ fontSize: '48px', marginBottom: '16px' }}>✨</div>
+                                        <p style={{ color: '#64748B', fontWeight: '500', marginBottom: '24px' }}>Votre profil est en ligne et prêt à être partagé.</p>
+                                        <button onClick={() => setViewMode('edit')} style={{ background: 'white', color: '#1A1265', border: '1px solid #E2E8F0', padding: '14px 32px', borderRadius: '16px', fontWeight: '800', cursor: 'pointer', boxShadow: '0 4px 6px rgba(0,0,0,0.02)' }}>✏️ Éditer les informations</button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* iPhone Preview Column (Desktop) */}
+                        <div className="desktop-preview" style={{ position: 'sticky', top: '100px' }}>
+                            <div style={{ textAlign: 'center', marginBottom: '16px' }}>
+                                <span style={{ fontSize: '12px', fontWeight: '800', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '1px' }}>Aperçu en direct</span>
+                            </div>
+                            <DashboardPhonePreview profile={publicProfile} isDark={isDark} textColor={textColor} subTextColor={subTextColor} cardBg={cardBg} />
                         </div>
                     </div>
+                )}
+
+                {/* Mobile Preview Overlay */}
+                {showMobilePreview && (
+                    <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.9)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(8px)', padding: '20px' }}>
+                        <button onClick={() => setShowMobilePreview(false)} style={{ position: 'absolute', top: '20px', right: '20px', background: 'white', border: 'none', width: '44px', height: '44px', borderRadius: '50%', fontSize: '20px', fontWeight: '900', cursor: 'pointer', zIndex: 1001, boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>✕</button>
+                        <div style={{ transform: 'scale(0.85)', transformOrigin: 'center' }}>
+                            <DashboardPhonePreview profile={publicProfile} isDark={isDark} textColor={textColor} subTextColor={subTextColor} cardBg={cardBg} />
+                        </div>
+                    </div>
+                )}
+
+                {/* Mobile Floating Preview Button */}
+                {userCards.length > 0 && (
+                    <button 
+                        onClick={() => setShowMobilePreview(true)} 
+                        className="mobile-preview-btn"
+                        style={{ 
+                            position: 'fixed', bottom: '24px', right: '24px', 
+                            background: '#1A1265', color: 'white', border: 'none', 
+                            width: '60px', height: '60px', borderRadius: '50%', 
+                            boxShadow: '0 10px 25px rgba(26,18,101,0.4)', 
+                            zIndex: 900, cursor: 'pointer', fontSize: '24px',
+                            display: 'none'
+                        }}
+                    >
+                        📱
+                    </button>
                 )}
             </main>
 
@@ -304,6 +349,12 @@ export default function ClientDashboard() {
                 .animate-fade-in { animation: fadeIn 0.4s ease-out; }
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
                 
+                @media (max-width: 1100px) {
+                    .dashboard-grid { grid-template-columns: 1fr !important; }
+                    .desktop-preview { display: none !important; }
+                    .mobile-preview-btn { display: flex !important; align-items: center; justify-content: center; }
+                }
+
                 @media (max-width: 968px) {
                     .desktop-only { display: none !important; }
                     .mobile-only { display: block !important; }
@@ -314,5 +365,86 @@ export default function ClientDashboard() {
                 }
             `}</style>
         </div>
+    );
+}
+
+function DashboardPhonePreview({ profile, isDark, textColor, subTextColor, cardBg }) {
+    return (
+        <PhonePreview>
+            <div style={{ 
+                background: profile.backgroundColor || '#f0f2f5', 
+                minHeight: '100%',
+                color: textColor,
+                fontFamily: "'Inter', sans-serif"
+            }}>
+                {/* Banner */}
+                <div style={{ height: 110, background: profile.primaryColor || '#1A1265', overflow: 'hidden', position: 'relative' }}>
+                    {profile.banner_url && <img src={profile.banner_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />}
+                </div>
+                
+                <div style={{ padding: '0 16px 24px' }}>
+                    {/* Avatar */}
+                    <div style={{ 
+                        width: 72, height: 72, borderRadius: 16, 
+                        border: isDark ? '3px solid rgba(255,255,255,0.1)' : '3px solid white', 
+                        background: '#EEF2FF', marginTop: -36, overflow: 'hidden', 
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)', position: 'relative', zIndex: 10 
+                    }}>
+                        {profile.photo_url ? <img src={profile.photo_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" /> : <span style={{fontSize: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%'}}>👤</span>}
+                    </div>
+
+                    <h3 style={{ marginTop: 12, fontWeight: 800, color: textColor, fontSize: 18, marginBottom: 2 }}>{profile.full_name || 'Votre Nom'}</h3>
+                    {profile.job_title && <p style={{ fontSize: 12, color: profile.primaryColor, fontWeight: 700, marginBottom: 12 }}>{profile.job_title}</p>}
+                    
+                    {/* Bio Magazine Style Preview */}
+                    {profile.bio && (
+                        <div style={{ 
+                            marginTop: 12, padding: 12, borderRadius: 14, fontSize: 12, lineHeight: 1.6,
+                            background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
+                            border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.02)',
+                            color: textColor
+                        }}>
+                            {profile.bio.split('\n')[0].substring(0, 80)}...
+                        </div>
+                    )}
+
+                    <button style={{ width: '100%', marginTop: 16, padding: '12px', borderRadius: 12, background: profile.primaryColor || '#1A1265', color: 'white', border: 'none', fontWeight: 700, fontSize: 13 }}>Enregistrer le contact</button>
+                    
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 20 }}>
+                        {(profile.phone || profile.email) && (
+                            <div style={{ display: 'flex', gap: 8 }}>
+                                {profile.phone && <div style={{ flex: 1, height: 40, background: cardBg, borderRadius: 12, border: '1px solid rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700 }}>📞 Appeler</div>}
+                                {profile.email && <div style={{ flex: 1, height: 40, background: cardBg, borderRadius: 12, border: '1px solid rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700 }}>✉️ Email</div>}
+                            </div>
+                        )}
+                        
+                        {Object.keys(profile.socials || {}).map(key => {
+                            const net = SOCIAL_NETWORKS.find(n => n.id === key);
+                            if (!net || !profile.socials[key]?.value) return null;
+                            return (
+                                <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', background: cardBg, borderRadius: 14, border: '1px solid rgba(0,0,0,0.05)' }}>
+                                    <div style={{ width: 32, height: 32, borderRadius: 10, background: net.color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                        <div style={{ width: 16, height: 16, color: net.iconColor || net.color }} dangerouslySetInnerHTML={{ __html: net.svg }} />
+                                    </div>
+                                    <div style={{ flex: 1, fontWeight: 700, fontSize: 13, color: textColor }}>{net.label}</div>
+                                    <span style={{ color: '#CBD5E1', fontSize: 14 }}>→</span>
+                                </div>
+                            );
+                        })}
+
+                        {(profile.customLinks || []).map((link, i) => {
+                            if (!link.url) return null;
+                            return (
+                                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', background: cardBg, borderRadius: 14, border: '1px solid rgba(0,0,0,0.05)' }}>
+                                    <div style={{ width: 32, height: 32, borderRadius: 10, background: 'rgba(0,0,0,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>{link.emoji || '🔗'}</div>
+                                    <div style={{ flex: 1, fontWeight: 700, fontSize: 13, color: textColor }}>{link.label || 'Lien'}</div>
+                                    <span style={{ color: '#CBD5E1', fontSize: 14 }}>→</span>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            </div>
+        </PhonePreview>
     );
 }

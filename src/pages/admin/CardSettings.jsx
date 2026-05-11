@@ -46,6 +46,7 @@ export default function CardSettings() {
     const [activeSocialInput, setActiveSocialInput] = useState(null);
     const [qrType, setQrType] = useState('profile');
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [showMobilePreview, setShowMobilePreview] = useState(false);
 
     const [profile, setProfile] = useState({
         banner_url: '', photo_url: '', full_name: '', job_title: '', bio: '',
@@ -140,6 +141,11 @@ export default function CardSettings() {
         }
     }, [qrStyle, loading]);
 
+    const isDark = (parseInt((profile.backgroundColor || '#f0f2f5').slice(1, 3), 16) * 299 + parseInt((profile.backgroundColor || '#f0f2f5').slice(3, 5), 16) * 587 + parseInt((profile.backgroundColor || '#f0f2f5').slice(5, 7), 16) * 114) / 1000 < 128;
+    const textColor = isDark ? '#F8FAFC' : '#111';
+    const subTextColor = isDark ? '#94A3B8' : '#64748B';
+    const cardBg = isDark ? 'rgba(255,255,255,0.08)' : 'white';
+
     const toggleSocial = (id) => {
         const newSocials = { ...profile.socials };
         if (newSocials[id] !== undefined) {
@@ -229,7 +235,7 @@ export default function CardSettings() {
                     </div>
                 </header>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 48, alignItems: 'start' }}>
+                <div className="admin-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 48, alignItems: 'start' }}>
                     <div>
                         {/* APPEARANCE SECTION */}
                         {acc('design', '🎨', 'Apparence & Design', 'Couleurs, thèmes et style.', (
@@ -452,82 +458,55 @@ export default function CardSettings() {
                                     <ColorField label="Couleur de fond" value={qrStyle.bgColor} onChange={v => setQrStyle({ ...qrStyle, bgColor: v })} />
                                     <ImageUpload label="Logo central du QR (Image)" value={qrStyle.logo_url} onChange={v => setQrStyle({ ...qrStyle, logo_url: v })} bucket="qr-logos" shape="circle" />
                                 </div>
-                            ), true)}
-                        </div>
-                    </div>
-
-                    {/* Phone Preview */}
-                    <div className="phone-preview-container">
+                                  {/* Phone Preview Column (Desktop) */}
+                    <div className="desktop-preview" style={{ position: 'sticky', top: '100px' }}>
                         <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
                             <button onClick={() => setPreviewMode('page')} style={{ flex: 1, padding: 10, borderRadius: 20, border: 'none', background: previewMode === 'page' ? '#1A1265' : 'white', color: previewMode === 'page' ? 'white' : '#64748B', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>Aperçu Page</button>
                             <button onClick={() => setPreviewMode('qr')} style={{ flex: 1, padding: 10, borderRadius: 20, border: 'none', background: previewMode === 'qr' ? '#1A1265' : 'white', color: previewMode === 'qr' ? 'white' : '#64748B', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>Aperçu QR</button>
                         </div>
-                        <PhonePreview>
-                            {previewMode === 'qr' ? (
-                                <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 20, background: '#F0F2F5' }}>
-                                    <div style={{ background: qrStyle.bgColor || 'white', padding: 16, borderRadius: 20, boxShadow: '0 8px 32px rgba(0,0,0,0.12)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-                                        <div ref={qrRef} />
-                                    </div>
-                                    <p style={{ marginTop: 12, fontSize: 10, color: '#94A3B8', textAlign: 'center', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>Lien permanent — ne change jamais</p>
-                                </div>
-                            ) : (
-                                <div style={{ 
-                                    background: profile.backgroundColor || '#F0F2F5', 
-                                    minHeight: '100%',
-                                    color: (parseInt((profile.backgroundColor || '#f0f2f5').slice(1, 3), 16) * 299 + parseInt((profile.backgroundColor || '#f0f2f5').slice(3, 5), 16) * 587 + parseInt((profile.backgroundColor || '#f0f2f5').slice(5, 7), 16) * 114) / 1000 < 128 ? '#F8FAFC' : '#111'
-                                }}>
-                                    <div style={{ height: 110, background: profile.primaryColor || '#1A1265', overflow: 'hidden', position: 'relative' }}>
-                                        {profile.banner_url && <img src={profile.banner_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />}
-                                    </div>
-                                    <div style={{ padding: '0 16px 20px' }}>
-                                        <div style={{ 
-                                            width: 64, height: 64, borderRadius: 16, 
-                                            border: (parseInt((profile.backgroundColor || '#f0f2f5').slice(1, 3), 16) * 299 + parseInt((profile.backgroundColor || '#f0f2f5').slice(3, 5), 16) * 587 + parseInt((profile.backgroundColor || '#f0f2f5').slice(5, 7), 16) * 114) / 1000 < 128 ? '3px solid rgba(255,255,255,0.1)' : '3px solid white', 
-                                            background: '#EEF2FF', marginTop: -32, overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', position: 'relative', zIndex: 10 
-                                        }}>
-                                            {profile.photo_url && <img src={profile.photo_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />}
-                                        </div>
-                                        <h3 style={{ marginTop: 8, fontWeight: 900, color: (parseInt((profile.backgroundColor || '#f0f2f5').slice(1, 3), 16) * 299 + parseInt((profile.backgroundColor || '#f0f2f5').slice(3, 5), 16) * 587 + parseInt((profile.backgroundColor || '#f0f2f5').slice(5, 7), 16) * 114) / 1000 < 128 ? '#F8FAFC' : '#1A1265', fontSize: 15 }}>{profile.full_name || 'Votre Nom'}</h3>
-                                        <p style={{ fontSize: 11, color: (parseInt((profile.backgroundColor || '#f0f2f5').slice(1, 3), 16) * 299 + parseInt((profile.backgroundColor || '#f0f2f5').slice(3, 5), 16) * 587 + parseInt((profile.backgroundColor || '#f0f2f5').slice(5, 7), 16) * 114) / 1000 < 128 ? '#94A3B8' : '#64748B' }}>{profile.job_title || 'Profession'}</p>
-                                        
-                                        {/* Preview Bio */}
-                                        {profile.bio && (
-                                            <div style={{ 
-                                                marginTop: 12, padding: 10, borderRadius: 12, fontSize: 11, lineHeight: 1.5,
-                                                background: (parseInt((profile.backgroundColor || '#f0f2f5').slice(1, 3), 16) * 299 + parseInt((profile.backgroundColor || '#f0f2f5').slice(3, 5), 16) * 587 + parseInt((profile.backgroundColor || '#f0f2f5').slice(5, 7), 16) * 114) / 1000 < 128 ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
-                                                border: (parseInt((profile.backgroundColor || '#f0f2f5').slice(1, 3), 16) * 299 + parseInt((profile.backgroundColor || '#f0f2f5').slice(3, 5), 16) * 587 + parseInt((profile.backgroundColor || '#f0f2f5').slice(5, 7), 16) * 114) / 1000 < 128 ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.03)',
-                                                color: (parseInt((profile.backgroundColor || '#f0f2f5').slice(1, 3), 16) * 299 + parseInt((profile.backgroundColor || '#f0f2f5').slice(3, 5), 16) * 587 + parseInt((profile.backgroundColor || '#f0f2f5').slice(5, 7), 16) * 114) / 1000 < 128 ? '#F8FAFC' : '#444'
-                                            }}>
-                                                {profile.bio.split('\n')[0]}...
-                                            </div>
-                                        )}
+                        <AdminPhonePreview profile={profile} qrStyle={qrStyle} qrRef={qrRef} previewMode={previewMode} isDark={isDark} textColor={textColor} subTextColor={subTextColor} cardBg={cardBg} />
+                    </div>
+                </div>
 
-                                        <button style={{ width: '100%', marginTop: 12, padding: 10, borderRadius: 12, background: profile.primaryColor || '#1A1265', color: 'white', border: 'none', fontWeight: 700, fontSize: 12 }}>Enregistrer le contact</button>
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 16 }}>
-                                            {(profile.phone || profile.email) && (
-                                                <div style={{ display: 'flex', gap: 6 }}>
-                                                    {profile.phone && (
-                                                        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, padding: '8px', background: (parseInt((profile.backgroundColor || '#f0f2f5').slice(1, 3), 16) * 299 + parseInt((profile.backgroundColor || '#f0f2f5').slice(3, 5), 16) * 587 + parseInt((profile.backgroundColor || '#f0f2f5').slice(5, 7), 16) * 114) / 1000 < 128 ? 'rgba(255,255,255,0.08)' : 'white', borderRadius: 10, border: '1px solid rgba(0,0,0,0.05)', fontWeight: 700, fontSize: 10, color: (parseInt((profile.backgroundColor || '#f0f2f5').slice(1, 3), 16) * 299 + parseInt((profile.backgroundColor || '#f0f2f5').slice(3, 5), 16) * 587 + parseInt((profile.backgroundColor || '#f0f2f5').slice(5, 7), 16) * 114) / 1000 < 128 ? '#F8FAFC' : '#111' }}>
-                                                            <span>📞</span> Appeler
-                                                        </div>
-                                                    )}
-                                                    {profile.email && (
-                                                        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, padding: '8px', background: (parseInt((profile.backgroundColor || '#f0f2f5').slice(1, 3), 16) * 299 + parseInt((profile.backgroundColor || '#f0f2f5').slice(3, 5), 16) * 587 + parseInt((profile.backgroundColor || '#f0f2f5').slice(5, 7), 16) * 114) / 1000 < 128 ? 'rgba(255,255,255,0.08)' : 'white', borderRadius: 10, border: '1px solid rgba(0,0,0,0.05)', fontWeight: 700, fontSize: 10, color: (parseInt((profile.backgroundColor || '#f0f2f5').slice(1, 3), 16) * 299 + parseInt((profile.backgroundColor || '#f0f2f5').slice(3, 5), 16) * 587 + parseInt((profile.backgroundColor || '#f0f2f5').slice(5, 7), 16) * 114) / 1000 < 128 ? '#F8FAFC' : '#111' }}>
-                                                            <span>✉️</span> Email
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            )}
-                                            {Object.keys(profile.socials || {}).filter(k => k !== 'phone' && k !== 'email').map(key => (
-                                                <PreviewLink key={key} id={key} isSocial />
-                                            ))}
-                                            {(profile.customLinks || []).map((link, i) => (
-                                                <PreviewLink key={i} data={link} />
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
+                {/* Mobile Preview Overlay */}
+                {showMobilePreview && (
+                    <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.9)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(8px)', padding: '20px' }}>
+                        <button onClick={() => setShowMobilePreview(false)} style={{ position: 'absolute', top: '20px', right: '20px', background: 'white', border: 'none', width: '44px', height: '44px', borderRadius: '50%', fontSize: '20px', fontWeight: '900', cursor: 'pointer', zIndex: 1001, boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>✕</button>
+                        <div style={{ transform: 'scale(0.85)', transformOrigin: 'center' }}>
+                            <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+                                <button onClick={() => setPreviewMode('page')} style={{ flex: 1, padding: 10, borderRadius: 20, border: 'none', background: previewMode === 'page' ? '#1A1265' : 'white', color: previewMode === 'page' ? 'white' : '#64748B', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>Page</button>
+                                <button onClick={() => setPreviewMode('qr')} style={{ flex: 1, padding: 10, borderRadius: 20, border: 'none', background: previewMode === 'qr' ? '#1A1265' : 'white', color: previewMode === 'qr' ? 'white' : '#64748B', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>QR</button>
+                            </div>
+                            <AdminPhonePreview profile={profile} qrStyle={qrStyle} qrRef={qrRef} previewMode={previewMode} isDark={isDark} textColor={textColor} subTextColor={subTextColor} cardBg={cardBg} />
+                        </div>
+                    </div>
+                )}
+
+                {/* Mobile Floating Preview Button */}
+                <button 
+                    onClick={() => setShowMobilePreview(true)} 
+                    className="mobile-preview-btn"
+                    style={{ 
+                        position: 'fixed', bottom: '24px', right: '24px', 
+                        background: '#1A1265', color: 'white', border: 'none', 
+                        width: '60px', height: '60px', borderRadius: '50%', 
+                        boxShadow: '0 10px 25px rgba(26,18,101,0.4)', 
+                        zIndex: 900, cursor: 'pointer', fontSize: '24px',
+                        display: 'none'
+                    }}
+                >
+                    📱
+                </button>
+            </div>
+
+            <style>{`
+                @media (max-width: 1100px) {
+                    .admin-grid { grid-template-columns: 1fr !important; }
+                    .desktop-preview { display: none !important; }
+                    .mobile-preview-btn { display: flex !important; align-items: center; justify-content: center; }
+                }
+            `}</style>
+}
                         </PhonePreview>
 
                     </div>
@@ -551,42 +530,102 @@ export default function CardSettings() {
                     }}>🗑️</div>
                     <p style={{ margin: 0, fontSize: 16, color: '#1A1265', fontWeight: 700 }}>Êtes-vous absolument sûr ?</p>
                     <p style={{ marginTop: 8, fontSize: 14, color: '#64748B' }}>
-                        Cette action supprimera définitivement le QR Code <strong>{cardName || cardId}</strong> et toutes ses statistiques.
-                    </p>
+                        Cette action supprimera définitivement le QR Code <strong>{cardName || cardId}</strong> et toutes ses statis            </div>
+        );
+    }
+}
+
+function AdminPhonePreview({ profile, qrStyle, qrRef, previewMode, isDark, textColor, subTextColor, cardBg }) {
+    return (
+        <PhonePreview>
+            {previewMode === 'qr' ? (
+                <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 20, background: '#F0F2F5' }}>
+                    <div style={{ background: qrStyle.bgColor || 'white', padding: 16, borderRadius: 20, boxShadow: '0 8px 32px rgba(0,0,0,0.12)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div ref={qrRef} />
+                    </div>
+                    <p style={{ marginTop: 12, fontSize: 10, color: '#94A3B8', textAlign: 'center', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>Lien permanent — ne change jamais</p>
                 </div>
-            </Modal>
-        </div>
+            ) : (
+                <div style={{ 
+                    background: profile.backgroundColor || '#F0F2F5', 
+                    minHeight: '100%',
+                    color: textColor
+                }}>
+                    <div style={{ height: 110, background: profile.primaryColor || '#1A1265', overflow: 'hidden', position: 'relative' }}>
+                        {profile.banner_url && <img src={profile.banner_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />}
+                    </div>
+                    <div style={{ padding: '0 16px 20px' }}>
+                        <div style={{ 
+                            width: 64, height: 64, borderRadius: 16, 
+                            border: isDark ? '3px solid rgba(255,255,255,0.1)' : '3px solid white', 
+                            background: '#EEF2FF', marginTop: -32, overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', position: 'relative', zIndex: 10 
+                        }}>
+                            {profile.photo_url && <img src={profile.photo_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />}
+                        </div>
+                        <h3 style={{ marginTop: 8, fontWeight: 900, color: textColor, fontSize: 15 }}>{profile.full_name || 'Votre Nom'}</h3>
+                        <p style={{ fontSize: 11, color: subTextColor }}>{profile.job_title || 'Profession'}</p>
+                        
+                        {profile.bio && (
+                            <div style={{ 
+                                marginTop: 12, padding: 10, borderRadius: 12, fontSize: 11, lineHeight: 1.5,
+                                background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
+                                border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.03)',
+                                color: textColor
+                            }}>
+                                {profile.bio.split('\n')[0]}...
+                            </div>
+                        )}
+
+                        <button style={{ width: '100%', marginTop: 12, padding: 10, borderRadius: 12, background: profile.primaryColor || '#1A1265', color: 'white', border: 'none', fontWeight: 700, fontSize: 12 }}>Enregistrer le contact</button>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 16 }}>
+                            {(profile.phone || profile.email) && (
+                                <div style={{ display: 'flex', gap: 6 }}>
+                                    {profile.phone && (
+                                        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, padding: '8px', background: cardBg, borderRadius: 10, border: '1px solid rgba(0,0,0,0.05)', fontWeight: 700, fontSize: 10, color: textColor }}>
+                                            <span>📞</span> Appeler
+                                        </div>
+                                    )}
+                                    {profile.email && (
+                                        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, padding: '8px', background: cardBg, borderRadius: 10, border: '1px solid rgba(0,0,0,0.05)', fontWeight: 700, fontSize: 10, color: textColor }}>
+                                            <span>✉️</span> Email
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                            {Object.keys(profile.socials || {}).filter(k => k !== 'phone' && k !== 'email').map(key => {
+                                const net = SOCIAL_NETWORKS.find(n => n.id === key);
+                                if (!net) return null;
+                                return (
+                                    <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: cardBg, borderRadius: 12, border: '1px solid rgba(0,0,0,0.05)', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                                        <div style={{ width: 28, height: 28, borderRadius: 8, background: net.color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                            <div style={{ width: 14, height: 14, color: net.iconColor || net.color }} dangerouslySetInnerHTML={{ __html: net.svg }} />
+                                        </div>
+                                        <div style={{ flex: 1, overflow: 'hidden' }}>
+                                            <div style={{ fontWeight: 700, fontSize: 11, color: textColor }}>{net.label}</div>
+                                        </div>
+                                        <span style={{ color: '#CBD5E1', fontSize: 12 }}>→</span>
+                                    </div>
+                                );
+                            })}
+                            {(profile.customLinks || []).map((link, i) => (
+                                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: cardBg, borderRadius: 12, border: '1px solid rgba(0,0,0,0.05)', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                                    <div style={{ width: 28, height: 28, borderRadius: 8, background: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                        <span style={{ fontSize: 14 }}>{link.emoji || '🔗'}</span>
+                                    </div>
+                                    <div style={{ flex: 1, overflow: 'hidden' }}>
+                                        <div style={{ fontWeight: 700, fontSize: 11, color: textColor }}>{link.label || 'Lien'}</div>
+                                    </div>
+                                    <span style={{ color: '#CBD5E1', fontSize: 12 }}>→</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+        </PhonePreview>
     );
-
-    function PreviewLink({ id, isSocial, data }) {
-        const net = isSocial ? SOCIAL_NETWORKS.find(n => n.id === id) : null;
-        if (isSocial && !net) return null;
-        if (!isSocial && !data?.label) return null;
-
-        const label = isSocial ? net.label : data.label;
-        const sub = isSocial ? (typeof profile.socials[id] === 'object' ? profile.socials[id].subtitle : '') : '';
-        const color = isSocial ? net.color : '#1A1265';
-        const icon = isSocial ? net.svg : null;
-        const emoji = !isSocial ? data.emoji : null;
-
-        return (
-            <div style={{ 
-                display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', 
-                background: (parseInt((profile.backgroundColor || '#f0f2f5').slice(1, 3), 16) * 299 + parseInt((profile.backgroundColor || '#f0f2f5').slice(3, 5), 16) * 587 + parseInt((profile.backgroundColor || '#f0f2f5').slice(5, 7), 16) * 114) / 1000 < 128 ? 'rgba(255,255,255,0.08)' : 'white', 
-                borderRadius: 12, border: '1px solid rgba(0,0,0,0.05)', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' 
-            }}>
-                <div style={{ width: 28, height: 28, borderRadius: 8, background: isSocial ? color + '15' : '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    {isSocial ? (
-                        <div style={{ width: 14, height: 14, color: net.iconColor || color }} dangerouslySetInnerHTML={{ __html: icon }} />
-                    ) : (
-                        <span style={{ fontSize: 14 }}>{emoji || '🔗'}</span>
-                    )}
-                </div>
-                <div style={{ flex: 1, overflow: 'hidden' }}>
-                    <div style={{ fontWeight: 700, fontSize: 11, color: (parseInt((profile.backgroundColor || '#f0f2f5').slice(1, 3), 16) * 299 + parseInt((profile.backgroundColor || '#f0f2f5').slice(3, 5), 16) * 587 + parseInt((profile.backgroundColor || '#f0f2f5').slice(5, 7), 16) * 114) / 1000 < 128 ? '#F8FAFC' : '#0F172A' }}>{label}</div>
-                    {sub && <div style={{ fontSize: 9, color: (parseInt((profile.backgroundColor || '#f0f2f5').slice(1, 3), 16) * 299 + parseInt((profile.backgroundColor || '#f0f2f5').slice(3, 5), 16) * 587 + parseInt((profile.backgroundColor || '#f0f2f5').slice(5, 7), 16) * 114) / 1000 < 128 ? '#94A3B8' : '#64748B', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{sub}</div>}
-                </div>
-                <span style={{ color: (parseInt((profile.backgroundColor || '#f0f2f5').slice(1, 3), 16) * 299 + parseInt((profile.backgroundColor || '#f0f2f5').slice(3, 5), 16) * 587 + parseInt((profile.backgroundColor || '#f0f2f5').slice(5, 7), 16) * 114) / 1000 < 128 ? '#475569' : '#CBD5E1', fontSize: 12 }}>→</span>
+}
+ 114) / 1000 < 128 ? '#475569' : '#CBD5E1', fontSize: 12 }}>→</span>
             </div>
         );
     }
