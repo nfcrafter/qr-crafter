@@ -49,7 +49,7 @@ export default function CardSettings() {
 
     const [profile, setProfile] = useState({
         banner_url: '', photo_url: '', full_name: '', job_title: '', bio: '',
-        phone: '', email: '', primaryColor: '#1A1265',
+        phone: '', email: '', primaryColor: '#1A1265', backgroundColor: '#f0f2f5',
         socials: {}, customLinks: [], url: ''
     });
 
@@ -231,6 +231,47 @@ export default function CardSettings() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 48, alignItems: 'start' }}>
                     <div>
+                        {/* APPEARANCE SECTION */}
+                        {acc('design', '🎨', 'Apparence & Design', 'Couleurs, thèmes et style.', (
+                            <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 20 }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                                    <ColorField label="Couleur principale" value={profile.primaryColor || '#1A1265'} onChange={v => setProfile({ ...profile, primaryColor: v })} />
+                                    <ColorField label="Couleur du fond" value={profile.backgroundColor || '#f0f2f5'} onChange={v => setProfile({ ...profile, backgroundColor: v })} />
+                                </div>
+                                
+                                <div>
+                                    <label style={{ fontSize: 13, fontWeight: 700, color: '#1A1265', marginBottom: 12, display: 'block' }}>Thèmes rapides</label>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))', gap: 10 }}>
+                                        {[
+                                            { name: 'Classique', primary: '#1A1265', bg: '#f0f2f5' },
+                                            { name: 'Sombre', primary: '#6366F1', bg: '#0F172A' },
+                                            { name: 'Nature', primary: '#059669', bg: '#F0FDF4' },
+                                            { name: 'Doux', primary: '#DB2777', bg: '#FDF2F8' },
+                                            { name: 'Océan', primary: '#0284C7', bg: '#F0F9FF' },
+                                            { name: 'Luxe', primary: '#B45309', bg: '#FFFBEB' }
+                                        ].map(t => (
+                                            <button 
+                                                key={t.name}
+                                                onClick={() => setProfile({ ...profile, primaryColor: t.primary, backgroundColor: t.bg })}
+                                                style={{ 
+                                                    padding: '10px', borderRadius: 12, border: '1px solid #E2E8F0', background: 'white', cursor: 'pointer',
+                                                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, transition: '0.2s'
+                                                }}
+                                                onMouseOver={e => e.currentTarget.style.borderColor = t.primary}
+                                                onMouseOut={e => e.currentTarget.style.borderColor = '#E2E8F0'}
+                                            >
+                                                <div style={{ display: 'flex', gap: 4 }}>
+                                                    <div style={{ width: 14, height: 14, borderRadius: '50%', background: t.primary }} />
+                                                    <div style={{ width: 14, height: 14, borderRadius: '50%', background: t.bg, border: '1px solid #E2E8F0' }} />
+                                                </div>
+                                                <span style={{ fontSize: 11, fontWeight: 700, color: '#475569' }}>{t.name}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+
                         {/* LINKS SECTION */}
                         {acc('share', '🚀', 'Partage & Activation', 'Liens à envoyer à votre client.', (
                             <div style={{ marginTop: 16, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 20 }}>
@@ -271,12 +312,11 @@ export default function CardSettings() {
                                 <div style={{ marginTop: 16 }}>
                                     <div className="field"><label>Nom complet</label><input type="text" value={profile.full_name} onChange={e => setProfile({ ...profile, full_name: e.target.value })} /></div>
                                     <div className="field"><label>Profession / Titre</label><input type="text" value={profile.job_title} onChange={e => setProfile({ ...profile, job_title: e.target.value })} /></div>
-                                    <div className="field"><label>Description</label><textarea rows={3} value={profile.bio} onChange={e => setProfile({ ...profile, bio: e.target.value })} /></div>
+                                    <div className="field"><label>Description (Bio)</label><textarea rows={3} value={profile.bio} onChange={e => setProfile({ ...profile, bio: e.target.value })} placeholder="Astuce : Utilisez '-' pour les listes" /></div>
                                     <div className="field"><label>Téléphone</label><input type="tel" value={profile.phone || ''} onChange={e => setProfile({ ...profile, phone: e.target.value })} /></div>
                                     <div className="field"><label>Email</label><input type="email" value={profile.email || ''} onChange={e => setProfile({ ...profile, email: e.target.value })} /></div>
                                     <ImageUpload label="Photo de profil" value={profile.photo_url} onChange={v => setProfile({ ...profile, photo_url: v })} bucket="avatars" shape="circle" />
                                     <ImageUpload label="Bannière" value={profile.banner_url} onChange={v => setProfile({ ...profile, banner_url: v })} bucket="banners" shape="rect" />
-                                    <ColorField label="Couleur principale" value={profile.primaryColor || '#1A1265'} onChange={v => setProfile({ ...profile, primaryColor: v })} />
                                 </div>
                             ))}
 
@@ -431,27 +471,48 @@ export default function CardSettings() {
                                     <p style={{ marginTop: 12, fontSize: 10, color: '#94A3B8', textAlign: 'center', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>Lien permanent — ne change jamais</p>
                                 </div>
                             ) : (
-                                <div>
+                                <div style={{ 
+                                    background: profile.backgroundColor || '#F0F2F5', 
+                                    minHeight: '100%',
+                                    color: (parseInt((profile.backgroundColor || '#f0f2f5').slice(1, 3), 16) * 299 + parseInt((profile.backgroundColor || '#f0f2f5').slice(3, 5), 16) * 587 + parseInt((profile.backgroundColor || '#f0f2f5').slice(5, 7), 16) * 114) / 1000 < 128 ? '#F8FAFC' : '#111'
+                                }}>
                                     <div style={{ height: 110, background: profile.primaryColor || '#1A1265', overflow: 'hidden', position: 'relative' }}>
                                         {profile.banner_url && <img src={profile.banner_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />}
                                     </div>
                                     <div style={{ padding: '0 16px 20px' }}>
-                                        <div style={{ width: 64, height: 64, borderRadius: 16, border: '3px solid white', background: '#EEF2FF', marginTop: -32, overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', position: 'relative', zIndex: 10 }}>
+                                        <div style={{ 
+                                            width: 64, height: 64, borderRadius: 16, 
+                                            border: (parseInt((profile.backgroundColor || '#f0f2f5').slice(1, 3), 16) * 299 + parseInt((profile.backgroundColor || '#f0f2f5').slice(3, 5), 16) * 587 + parseInt((profile.backgroundColor || '#f0f2f5').slice(5, 7), 16) * 114) / 1000 < 128 ? '3px solid rgba(255,255,255,0.1)' : '3px solid white', 
+                                            background: '#EEF2FF', marginTop: -32, overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', position: 'relative', zIndex: 10 
+                                        }}>
                                             {profile.photo_url && <img src={profile.photo_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />}
                                         </div>
-                                        <h3 style={{ marginTop: 8, fontWeight: 900, color: '#1A1265', fontSize: 15 }}>{profile.full_name || 'Votre Nom'}</h3>
-                                        <p style={{ fontSize: 11, color: '#64748B' }}>{profile.job_title || 'Profession'}</p>
+                                        <h3 style={{ marginTop: 8, fontWeight: 900, color: (parseInt((profile.backgroundColor || '#f0f2f5').slice(1, 3), 16) * 299 + parseInt((profile.backgroundColor || '#f0f2f5').slice(3, 5), 16) * 587 + parseInt((profile.backgroundColor || '#f0f2f5').slice(5, 7), 16) * 114) / 1000 < 128 ? '#F8FAFC' : '#1A1265', fontSize: 15 }}>{profile.full_name || 'Votre Nom'}</h3>
+                                        <p style={{ fontSize: 11, color: (parseInt((profile.backgroundColor || '#f0f2f5').slice(1, 3), 16) * 299 + parseInt((profile.backgroundColor || '#f0f2f5').slice(3, 5), 16) * 587 + parseInt((profile.backgroundColor || '#f0f2f5').slice(5, 7), 16) * 114) / 1000 < 128 ? '#94A3B8' : '#64748B' }}>{profile.job_title || 'Profession'}</p>
+                                        
+                                        {/* Preview Bio */}
+                                        {profile.bio && (
+                                            <div style={{ 
+                                                marginTop: 12, padding: 10, borderRadius: 12, fontSize: 11, lineHeight: 1.5,
+                                                background: (parseInt((profile.backgroundColor || '#f0f2f5').slice(1, 3), 16) * 299 + parseInt((profile.backgroundColor || '#f0f2f5').slice(3, 5), 16) * 587 + parseInt((profile.backgroundColor || '#f0f2f5').slice(5, 7), 16) * 114) / 1000 < 128 ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
+                                                border: (parseInt((profile.backgroundColor || '#f0f2f5').slice(1, 3), 16) * 299 + parseInt((profile.backgroundColor || '#f0f2f5').slice(3, 5), 16) * 587 + parseInt((profile.backgroundColor || '#f0f2f5').slice(5, 7), 16) * 114) / 1000 < 128 ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.03)',
+                                                color: (parseInt((profile.backgroundColor || '#f0f2f5').slice(1, 3), 16) * 299 + parseInt((profile.backgroundColor || '#f0f2f5').slice(3, 5), 16) * 587 + parseInt((profile.backgroundColor || '#f0f2f5').slice(5, 7), 16) * 114) / 1000 < 128 ? '#F8FAFC' : '#444'
+                                            }}>
+                                                {profile.bio.split('\n')[0]}...
+                                            </div>
+                                        )}
+
                                         <button style={{ width: '100%', marginTop: 12, padding: 10, borderRadius: 12, background: profile.primaryColor || '#1A1265', color: 'white', border: 'none', fontWeight: 700, fontSize: 12 }}>Enregistrer le contact</button>
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 16 }}>
                                             {(profile.phone || profile.email) && (
                                                 <div style={{ display: 'flex', gap: 6 }}>
                                                     {profile.phone && (
-                                                        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, padding: '8px', background: 'white', borderRadius: 10, border: '1px solid #F1F5F9', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', fontWeight: 700, fontSize: 10 }}>
+                                                        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, padding: '8px', background: (parseInt((profile.backgroundColor || '#f0f2f5').slice(1, 3), 16) * 299 + parseInt((profile.backgroundColor || '#f0f2f5').slice(3, 5), 16) * 587 + parseInt((profile.backgroundColor || '#f0f2f5').slice(5, 7), 16) * 114) / 1000 < 128 ? 'rgba(255,255,255,0.08)' : 'white', borderRadius: 10, border: '1px solid rgba(0,0,0,0.05)', fontWeight: 700, fontSize: 10, color: (parseInt((profile.backgroundColor || '#f0f2f5').slice(1, 3), 16) * 299 + parseInt((profile.backgroundColor || '#f0f2f5').slice(3, 5), 16) * 587 + parseInt((profile.backgroundColor || '#f0f2f5').slice(5, 7), 16) * 114) / 1000 < 128 ? '#F8FAFC' : '#111' }}>
                                                             <span>📞</span> Appeler
                                                         </div>
                                                     )}
                                                     {profile.email && (
-                                                        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, padding: '8px', background: 'white', borderRadius: 10, border: '1px solid #F1F5F9', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', fontWeight: 700, fontSize: 10 }}>
+                                                        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, padding: '8px', background: (parseInt((profile.backgroundColor || '#f0f2f5').slice(1, 3), 16) * 299 + parseInt((profile.backgroundColor || '#f0f2f5').slice(3, 5), 16) * 587 + parseInt((profile.backgroundColor || '#f0f2f5').slice(5, 7), 16) * 114) / 1000 < 128 ? 'rgba(255,255,255,0.08)' : 'white', borderRadius: 10, border: '1px solid rgba(0,0,0,0.05)', fontWeight: 700, fontSize: 10, color: (parseInt((profile.backgroundColor || '#f0f2f5').slice(1, 3), 16) * 299 + parseInt((profile.backgroundColor || '#f0f2f5').slice(3, 5), 16) * 587 + parseInt((profile.backgroundColor || '#f0f2f5').slice(5, 7), 16) * 114) / 1000 < 128 ? '#F8FAFC' : '#111' }}>
                                                             <span>✉️</span> Email
                                                         </div>
                                                     )}
@@ -509,7 +570,11 @@ export default function CardSettings() {
         const emoji = !isSocial ? data.emoji : null;
 
         return (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: 'white', borderRadius: 12, border: '1px solid #F1F5F9', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+            <div style={{ 
+                display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', 
+                background: (parseInt((profile.backgroundColor || '#f0f2f5').slice(1, 3), 16) * 299 + parseInt((profile.backgroundColor || '#f0f2f5').slice(3, 5), 16) * 587 + parseInt((profile.backgroundColor || '#f0f2f5').slice(5, 7), 16) * 114) / 1000 < 128 ? 'rgba(255,255,255,0.08)' : 'white', 
+                borderRadius: 12, border: '1px solid rgba(0,0,0,0.05)', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' 
+            }}>
                 <div style={{ width: 28, height: 28, borderRadius: 8, background: isSocial ? color + '15' : '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     {isSocial ? (
                         <div style={{ width: 14, height: 14, color: net.iconColor || color }} dangerouslySetInnerHTML={{ __html: icon }} />
@@ -518,10 +583,10 @@ export default function CardSettings() {
                     )}
                 </div>
                 <div style={{ flex: 1, overflow: 'hidden' }}>
-                    <div style={{ fontWeight: 700, fontSize: 11, color: '#0F172A' }}>{label}</div>
-                    {sub && <div style={{ fontSize: 9, color: '#64748B', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{sub}</div>}
+                    <div style={{ fontWeight: 700, fontSize: 11, color: (parseInt((profile.backgroundColor || '#f0f2f5').slice(1, 3), 16) * 299 + parseInt((profile.backgroundColor || '#f0f2f5').slice(3, 5), 16) * 587 + parseInt((profile.backgroundColor || '#f0f2f5').slice(5, 7), 16) * 114) / 1000 < 128 ? '#F8FAFC' : '#0F172A' }}>{label}</div>
+                    {sub && <div style={{ fontSize: 9, color: (parseInt((profile.backgroundColor || '#f0f2f5').slice(1, 3), 16) * 299 + parseInt((profile.backgroundColor || '#f0f2f5').slice(3, 5), 16) * 587 + parseInt((profile.backgroundColor || '#f0f2f5').slice(5, 7), 16) * 114) / 1000 < 128 ? '#94A3B8' : '#64748B', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{sub}</div>}
                 </div>
-                <span style={{ color: '#CBD5E1', fontSize: 12 }}>→</span>
+                <span style={{ color: (parseInt((profile.backgroundColor || '#f0f2f5').slice(1, 3), 16) * 299 + parseInt((profile.backgroundColor || '#f0f2f5').slice(3, 5), 16) * 587 + parseInt((profile.backgroundColor || '#f0f2f5').slice(5, 7), 16) * 114) / 1000 < 128 ? '#475569' : '#CBD5E1', fontSize: 12 }}>→</span>
             </div>
         );
     }
