@@ -503,20 +503,6 @@ export default function CardSettings() {
                 </button>
             </div>
 
-            <style>{`
-                @media (max-width: 1100px) {
-                    .admin-grid { grid-template-columns: 1fr !important; }
-                    .desktop-preview { display: none !important; }
-                    .mobile-preview-btn { display: flex !important; align-items: center; justify-content: center; }
-                }
-            `}</style>
-}
-                        </PhonePreview>
-
-                    </div>
-                </div>
-            </div>
-
             <Modal 
                 isOpen={isDeleteModalOpen} 
                 title="Suppression définitive" 
@@ -534,9 +520,20 @@ export default function CardSettings() {
                     }}>🗑️</div>
                     <p style={{ margin: 0, fontSize: 16, color: '#1A1265', fontWeight: 700 }}>Êtes-vous absolument sûr ?</p>
                     <p style={{ marginTop: 8, fontSize: 14, color: '#64748B' }}>
-                        Cette action supprimera définitivement le QR Code <strong>{cardName || cardId}</strong> et toutes ses statis            </div>
-        );
-    }
+                        Cette action supprimera définitivement le QR Code <strong>{cardName || cardId}</strong> et toutes ses statistiques.
+                    </p>
+                </div>
+            </Modal>
+
+            <style>{`
+                @media (max-width: 1100px) {
+                    .admin-grid { grid-template-columns: 1fr !important; }
+                    .desktop-preview { display: none !important; }
+                    .mobile-preview-btn { display: flex !important; align-items: center; justify-content: center; }
+                }
+            `}</style>
+        </div>
+    );
 }
 
 function AdminPhonePreview({ profile, qrStyle, qrRef, previewMode, isDark, textColor, subTextColor, cardBg }) {
@@ -596,9 +593,9 @@ function AdminPhonePreview({ profile, qrStyle, qrRef, previewMode, isDark, textC
                                     )}
                                 </div>
                             )}
-                            {Object.keys(profile.socials || {}).filter(k => k !== 'phone' && k !== 'email').map(key => {
+                            {Object.keys(profile.socials || {}).map(key => {
                                 const net = SOCIAL_NETWORKS.find(n => n.id === key);
-                                if (!net) return null;
+                                if (!net || !profile.socials[key]?.value) return null;
                                 return (
                                     <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: cardBg, borderRadius: 12, border: '1px solid rgba(0,0,0,0.05)', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
                                         <div style={{ width: 28, height: 28, borderRadius: 8, background: net.color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -611,26 +608,24 @@ function AdminPhonePreview({ profile, qrStyle, qrRef, previewMode, isDark, textC
                                     </div>
                                 );
                             })}
-                            {(profile.customLinks || []).map((link, i) => (
-                                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: cardBg, borderRadius: 12, border: '1px solid rgba(0,0,0,0.05)', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-                                    <div style={{ width: 28, height: 28, borderRadius: 8, background: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                        <span style={{ fontSize: 14 }}>{link.emoji || '🔗'}</span>
+                            {(profile.customLinks || []).map((link, i) => {
+                                if (!link.url) return null;
+                                return (
+                                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: cardBg, borderRadius: 12, border: '1px solid rgba(0,0,0,0.05)', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                                        <div style={{ width: 28, height: 28, borderRadius: 8, background: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                            <span style={{ fontSize: 14 }}>{link.emoji || '🔗'}</span>
+                                        </div>
+                                        <div style={{ flex: 1, overflow: 'hidden' }}>
+                                            <div style={{ fontWeight: 700, fontSize: 11, color: textColor }}>{link.label || 'Lien'}</div>
+                                        </div>
+                                        <span style={{ color: '#CBD5E1', fontSize: 12 }}>→</span>
                                     </div>
-                                    <div style={{ flex: 1, overflow: 'hidden' }}>
-                                        <div style={{ fontWeight: 700, fontSize: 11, color: textColor }}>{link.label || 'Lien'}</div>
-                                    </div>
-                                    <span style={{ color: '#CBD5E1', fontSize: 12 }}>→</span>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     </div>
                 </div>
             )}
         </PhonePreview>
     );
-}
- 114) / 1000 < 128 ? '#475569' : '#CBD5E1', fontSize: 12 }}>→</span>
-            </div>
-        );
-    }
 }
