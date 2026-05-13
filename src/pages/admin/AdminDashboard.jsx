@@ -376,7 +376,9 @@ export default function AdminDashboard() {
                         </div>
                         <div style={{ display: 'flex', gap: '12px' }}>
                             {view === 'dashboard' && filterFolder && !isSubFolder && (<button onClick={() => openCreateFolderModal(true)} style={{ padding: '14px 24px', borderRadius: '14px', background: 'white', color: '#6366F1', border: '1px solid #6366F1', fontWeight: '700', cursor: 'pointer' }} className="desktop-only">+ Sous-dossier</button>)}
-                            <button onClick={() => navigate('/admin/create')} className="btn-primary" style={{ padding: '14px 20px', borderRadius: '14px', fontSize: '14px' }}>+ Nouveau QR</button>
+                            {view === 'dashboard' && (
+                                <button onClick={() => navigate('/admin/create')} className="btn-primary" style={{ padding: '14px 20px', borderRadius: '14px', fontSize: '14px' }}>+ Nouveau QR</button>
+                            )}
                         </div>
                     </header>
                     {(view === 'dashboard' || view === 'requests') && (
