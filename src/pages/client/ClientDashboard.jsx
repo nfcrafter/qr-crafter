@@ -201,6 +201,11 @@ export default function ClientDashboard() {
                 </div>
 
                 <div style={{ flex: 1, overflowY: 'auto', padding: '0 16px' }}>
+                    <button onClick={() => navigate('/')} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', textAlign: 'left', cursor: 'pointer', background: 'transparent', color: '#64748B', fontWeight: '700', transition: '0.2s', display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                        <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>` }} />
+                        Accueil
+                    </button>
+
                     <div style={{ fontSize: '11px', fontWeight: '800', color: '#94A3B8', textTransform: 'uppercase', marginBottom: '16px', paddingLeft: '16px', letterSpacing: '1.5px' }}>Tableau de bord</div>
                     
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
