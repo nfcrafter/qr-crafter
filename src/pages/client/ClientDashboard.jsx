@@ -368,15 +368,15 @@ export default function ClientDashboard() {
                         className="mobile-preview-btn"
                         style={{ 
                             position: 'fixed', bottom: '24px', right: '24px', 
-                            background: 'rgba(255, 255, 255, 0.85)', 
-                            backdropFilter: 'blur(12px)',
+                            background: 'rgba(255, 255, 255, 0.95)', 
+                            backdropFilter: 'blur(16px)',
                             color: '#1A1265', 
-                            border: '1px solid rgba(255, 255, 255, 0.5)', 
-                            padding: '12px 20px', borderRadius: '30px', 
-                            boxShadow: '0 10px 30px rgba(0,0,0,0.08)', 
-                            zIndex: 900, cursor: 'pointer', fontSize: '13px',
+                            border: '1px solid rgba(26, 18, 101, 0.2)', 
+                            padding: '12px 24px', borderRadius: '30px', 
+                            boxShadow: '0 12px 24px rgba(0,0,0,0.12)', 
+                            zIndex: 900, cursor: 'pointer', fontSize: '14px',
                             fontWeight: '800', display: 'none', alignItems: 'center', gap: '10px',
-                            transition: 'all 0.3s ease'
+                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
                         }}
                     >
                         <div style={{ width: '18px', height: '18px' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>` }} /> 
