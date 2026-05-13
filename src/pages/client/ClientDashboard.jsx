@@ -23,6 +23,16 @@ export default function ClientDashboard() {
     const [uploadingBanner, setUploadingBanner] = useState(false);
     const [scanCount, setScanCount] = useState(0);
     const [showMobilePreview, setShowMobilePreview] = useState(false);
+    
+    // Lock body scroll when mobile preview is open
+    useEffect(() => {
+        if (showMobilePreview) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        return () => { document.body.style.overflow = 'unset'; };
+    }, [showMobilePreview]);
 
     const [publicProfile, setPublicProfile] = useState({
         banner_url: '', photo_url: '', full_name: '', job_title: '', bio: '',
@@ -353,9 +363,9 @@ export default function ClientDashboard() {
 
                 {/* Mobile Preview Overlay */}
                 {showMobilePreview && (
-                    <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.9)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(8px)', padding: '20px' }}>
+                    <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.9)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(8px)', padding: '20px', touchAction: 'none' }}>
                         <button onClick={() => setShowMobilePreview(false)} style={{ position: 'absolute', top: '20px', right: '20px', background: 'white', border: 'none', width: '44px', height: '44px', borderRadius: '50%', fontSize: '20px', fontWeight: '900', cursor: 'pointer', zIndex: 1001, boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>✕</button>
-                        <div style={{ transform: 'scale(0.85)', transformOrigin: 'center' }}>
+                        <div style={{ transform: 'scale(0.85)', transformOrigin: 'center', pointerEvents: 'auto', touchAction: 'auto' }}>
                             <DashboardPhonePreview profile={publicProfile} isDark={isDark} textColor={textColor} subTextColor={subTextColor} cardBg={cardBg} />
                         </div>
                     </div>
@@ -455,8 +465,8 @@ function DashboardPhonePreview({ profile, isDark, textColor, subTextColor, cardB
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 20 }}>
                         {(profile.phone || profile.email) && (
                             <div style={{ display: 'flex', gap: 8 }}>
-                                <div style={{ flex: 1, height: 40, background: cardBg, borderRadius: 12, border: '1px solid rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, gap: '6px' }}><div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l2.27-2.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>` }} /> Appeler</div>
-                                <div style={{ flex: 1, height: 40, background: cardBg, borderRadius: 12, border: '1px solid rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, gap: '6px' }}><div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>` }} /> Email</div>
+                                <div style={{ flex: 1, height: 40, background: cardBg, borderRadius: 12, border: '1px solid rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, gap: '6px', color: textColor }}><div style={{ width: 14, height: 14, color: profile.primaryColor }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l2.27-2.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>` }} /> Appeler</div>
+                                <div style={{ flex: 1, height: 40, background: cardBg, borderRadius: 12, border: '1px solid rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, gap: '6px', color: textColor }}><div style={{ width: 14, height: 14, color: profile.primaryColor }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>` }} /> Email</div>
                             </div>
                         )}
                         
