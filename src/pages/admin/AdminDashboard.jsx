@@ -525,6 +525,12 @@ export default function AdminDashboard() {
                                         >
                                             {generatingBulk ? 'Génération...' : '+ Générer les cartes'}
                                         </button>
+                                        <button 
+                                            onClick={() => window.print()}
+                                            style={{ padding: '14px 28px', background: 'white', color: '#1A1265', border: '1px solid #E2E8F0', borderRadius: '12px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
+                                        >
+                                            <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>` }} /> Impression en masse
+                                        </button>
                                     </div>
                                 </div>
 
@@ -601,26 +607,43 @@ export default function AdminDashboard() {
                     .user-list-item { padding: 16px !important; }
                     .admin-filters { overflow-x: auto; white-space: nowrap; }
                 }
+
+                @media print {
+                    body * { visibility: hidden; }
+                    .print-section, .print-section * { visibility: visible; }
+                    .print-section { 
+                        position: absolute; left: 0; top: 0; width: 100%; 
+                        display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 20px !important; padding: 0 !important;
+                    }
+                    .admin-sidebar, main, header, .mobile-header, .mobile-preview-btn { display: none !important; }
+                }
             `}</style>
+            
+            {/* Hidden Print Section */}
+            <div className="print-section" style={{ display: 'none' }}>
+                {cards.filter(c => !c.owner_id).map(card => (
+                    <ProductionCard key={card.card_id} card={card} toast={toast} isPrintMode={true} />
+                ))}
+            </div>
         </div>
     );
 }
 
-function ProductionCard({ card, toast }) {
+function ProductionCard({ card, toast, isPrintMode = false }) {
     const qrRef = useRef(null);
     const activationUrl = `${window.location.origin}/activate?card=${card.card_id}&token=${card.activation_token}`;
 
     useEffect(() => {
         if (qrRef.current) {
             const qrCode = new QRCodeStyling({
-                width: 140, height: 140, data: activationUrl,
+                width: isPrintMode ? 180 : 140, height: isPrintMode ? 180 : 140, data: activationUrl,
                 dotsOptions: { color: "#1A1265", type: "rounded" },
                 cornersSquareOptions: { color: "#1A1265", type: "extra-rounded" },
                 backgroundOptions: { color: "#FFFFFF" }
             });
             qrRef.current.innerHTML = ''; qrCode.append(qrRef.current);
         }
-    }, [card]);
+    }, [card, isPrintMode]);
 
     const downloadQR = () => {
         const qrCode = new QRCodeStyling({
@@ -633,25 +656,27 @@ function ProductionCard({ card, toast }) {
     };
 
     return (
-        <div style={{ background: 'white', borderRadius: '20px', padding: '24px', border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-            <div style={{ fontWeight: '900', color: '#1A1265', fontSize: '14px', marginBottom: '16px' }}>ID: {card.card_id}</div>
+        <div style={{ background: 'white', borderRadius: '20px', padding: isPrintMode ? '10px' : '24px', border: isPrintMode ? 'none' : '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', breakInside: 'avoid' }}>
+            <div style={{ fontWeight: '900', color: '#1A1265', fontSize: isPrintMode ? '11px' : '14px', marginBottom: isPrintMode ? '8px' : '16px' }}>ID: {card.card_id}</div>
             
-            <div ref={qrRef} style={{ background: '#F8FAFC', padding: '12px', borderRadius: '16px', marginBottom: '16px', border: '1px solid #F1F5F9' }}></div>
+            <div ref={qrRef} style={{ background: '#F8FAFC', padding: '12px', borderRadius: '16px', marginBottom: isPrintMode ? '0' : '16px', border: '1px solid #F1F5F9' }}></div>
             
-            <div style={{ width: '100%', display: 'flex', gap: '8px' }}>
-                <button 
-                    onClick={() => { navigator.clipboard.writeText(activationUrl); toast('Lien copié !', 'success'); }} 
-                    style={{ flex: 1, padding: '10px', borderRadius: '10px', border: '1px solid #E2E8F0', background: 'white', color: '#1A1265', fontWeight: '800', cursor: 'pointer', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
-                >
-                    <div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>` }} /> Copier
-                </button>
-                <button 
-                    onClick={downloadQR} 
-                    style={{ flex: 1, padding: '10px', borderRadius: '10px', border: 'none', background: '#F1F5F9', color: '#1A1265', fontWeight: '800', cursor: 'pointer', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
-                >
-                    <div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>` }} /> QR
-                </button>
-            </div>
+            {!isPrintMode && (
+                <div style={{ width: '100%', display: 'flex', gap: '8px' }}>
+                    <button 
+                        onClick={() => { navigator.clipboard.writeText(activationUrl); toast('Lien copié !', 'success'); }} 
+                        style={{ flex: 1, padding: '10px', borderRadius: '10px', border: '1px solid #E2E8F0', background: 'white', color: '#1A1265', fontWeight: '800', cursor: 'pointer', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                    >
+                        <div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>` }} /> Copier
+                    </button>
+                    <button 
+                        onClick={downloadQR} 
+                        style={{ flex: 1, padding: '10px', borderRadius: '10px', border: 'none', background: '#F1F5F9', color: '#1A1265', fontWeight: '800', cursor: 'pointer', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                    >
+                        <div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>` }} /> QR
+                    </button>
+                </div>
+            )}
         </div>
     );
 }

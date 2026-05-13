@@ -1,6 +1,13 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../lib/supabase.js'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import QRCodeStyling from 'qr-code-styling'
+
+const TYPE_ICONS = {
+    url: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>`,
+    vcard: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`,
+    wifi: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>`
+};
 
 export default function Activate() {
     const navigate = useNavigate()
@@ -11,6 +18,21 @@ export default function Activate() {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
     const [verifying, setVerifying] = useState(true)
+    const qrRef = useRef(null)
+
+    useEffect(() => {
+        if (cardInfo && qrRef.current) {
+            const activationUrl = `${window.location.origin}/activate?card=${cardId}&token=${token}`;
+            const qrCode = new QRCodeStyling({
+                width: 180, height: 180, data: activationUrl,
+                dotsOptions: { color: "#1A1265", type: "rounded" },
+                cornersSquareOptions: { color: "#1A1265", type: "extra-rounded" },
+                backgroundOptions: { color: "transparent" }
+            });
+            qrRef.current.innerHTML = '';
+            qrCode.append(qrRef.current);
+        }
+    }, [cardInfo]);
 
     useEffect(() => { 
         console.log("Activation Attempt:", { cardId, token });
@@ -100,11 +122,14 @@ export default function Activate() {
                     <div style={{ padding: '40px 0' }}>Vérification en cours...</div>
                 ) : cardInfo ? (
                     <>
-                        <div style={{ margin: '24px 0', padding: '20px', background: '#EEF2FF', borderRadius: '16px', border: '1px solid #C7D2FE' }}>
-                            <div style={{ fontSize: '12px', color: '#6366F1', fontWeight: 800, textTransform: 'uppercase', marginBottom: 4 }}>Projet détecté</div>
-                            <div style={{ fontSize: '18px', color: '#1A1265', fontWeight: '800' }}>{cardInfo.card_name}</div>
-                            <div style={{ fontSize: '13px', color: '#64748B', marginTop: 4 }}>ID: {cardId}</div>
-                            <div style={{ margin: '16px auto 0', width: '48px', height: '48px', color: 'var(--accent)' }} dangerouslySetInnerHTML={{ __html: TYPE_ICONS[cardInfo.type] || TYPE_ICONS.url }} />
+                        <div style={{ margin: '24px 0', padding: '32px 24px', background: '#F8FAFC', borderRadius: '24px', border: '2px solid #E2E8F0' }}>
+                            <div style={{ fontSize: '12px', color: '#6366F1', fontWeight: 800, textTransform: 'uppercase', marginBottom: 16, letterSpacing: '2px' }}>ID DE LA CARTE</div>
+                            
+                            <div style={{ fontSize: '42px', color: '#1A1265', fontWeight: '1000', letterSpacing: '-1px', marginBottom: '8px', fontFamily: 'monospace' }}>
+                                {cardId}
+                            </div>
+
+                            <div style={{ fontSize: '16px', color: '#64748B', fontWeight: '700' }}>{cardInfo.card_name}</div>
                         </div>
 
                         {!user ? (
