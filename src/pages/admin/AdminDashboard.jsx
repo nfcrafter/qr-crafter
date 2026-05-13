@@ -611,17 +611,27 @@ export default function AdminDashboard() {
                 }
 
                 @media print {
-                    body * { visibility: hidden; }
-                    .print-section, .print-section * { visibility: visible; }
+                    @page { margin: 1cm; size: auto; }
+                    body { background: white !important; }
+                    .no-print, header, aside, main, .admin-filters, .mobile-header, .mobile-preview-btn { display: none !important; }
                     .print-section { 
-                        position: absolute; left: 0; top: 0; width: 100%; 
-                        display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 20px !important; padding: 0 !important;
+                        display: grid !important; 
+                        grid-template-columns: repeat(4, 1fr) !important; 
+                        gap: 15px !important; 
+                        visibility: visible !important;
+                        position: static !important;
+                        width: 100% !important;
                     }
-                    .admin-sidebar, main, header, .mobile-header, .mobile-preview-btn { display: none !important; }
+                    .print-section * { visibility: visible !important; }
+                    .print-card { 
+                        border: 1px solid #EEE !important; 
+                        padding: 10px !important; 
+                        break-inside: avoid !important;
+                    }
                 }
             `}</style>
             
-            {/* Hidden Print Section */}
+            {/* Print Section (Visible only during print) */}
             <div className="print-section" style={{ display: 'none' }}>
                 {cards.filter(c => !c.owner_id).map(card => (
                     <ProductionCard key={card.card_id} card={card} toast={toast} isPrintMode={true} />
@@ -637,31 +647,42 @@ function ProductionCard({ card, toast, isPrintMode = false }) {
 
     useEffect(() => {
         if (qrRef.current) {
+            const qrColor = card.admin_profile?.primaryColor || "#1A1265";
             const qrCode = new QRCodeStyling({
-                width: isPrintMode ? 180 : 140, height: isPrintMode ? 180 : 140, data: activationUrl,
-                dotsOptions: { color: "#1A1265", type: "rounded" },
-                cornersSquareOptions: { color: "#1A1265", type: "extra-rounded" },
-                backgroundOptions: { color: "#FFFFFF" }
+                width: isPrintMode ? 200 : 160, 
+                height: isPrintMode ? 200 : 160, 
+                data: activationUrl,
+                margin: 0,
+                dotsOptions: { color: "#FFFFFF", type: "rounded" },
+                cornersSquareOptions: { color: "#FFFFFF", type: "extra-rounded" },
+                cornersDotOptions: { color: "#FFFFFF", type: "dot" },
+                backgroundOptions: { color: qrColor }
             });
             qrRef.current.innerHTML = ''; qrCode.append(qrRef.current);
+            qrRef.current.style.borderRadius = "16px";
+            qrRef.current.style.overflow = "hidden";
+            qrRef.current.style.display = "inline-block";
         }
     }, [card, isPrintMode]);
 
     const downloadQR = () => {
+        const qrColor = card.admin_profile?.primaryColor || "#1A1265";
         const qrCode = new QRCodeStyling({
             width: 1000, height: 1000, data: activationUrl,
-            dotsOptions: { color: "#1A1265", type: "rounded" },
-            cornersSquareOptions: { color: "#1A1265", type: "extra-rounded" },
-            backgroundOptions: { color: "#FFFFFF" }
+            margin: 20,
+            dotsOptions: { color: "#FFFFFF", type: "rounded" },
+            cornersSquareOptions: { color: "#FFFFFF", type: "extra-rounded" },
+            cornersDotOptions: { color: "#FFFFFF", type: "dot" },
+            backgroundOptions: { color: qrColor }
         });
-        qrCode.download({ name: `activation-qr-${card.card_id}`, extension: "png" });
+        qrCode.download({ name: `dot-qr-${card.card_id}`, extension: "png" });
     };
 
     return (
-        <div style={{ background: 'white', borderRadius: '20px', padding: isPrintMode ? '10px' : '24px', border: isPrintMode ? 'none' : '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', breakInside: 'avoid' }}>
-            <div style={{ fontWeight: '900', color: '#1A1265', fontSize: isPrintMode ? '11px' : '14px', marginBottom: isPrintMode ? '8px' : '16px' }}>ID: {card.card_id}</div>
+        <div className={isPrintMode ? "print-card" : ""} style={{ background: 'white', borderRadius: isPrintMode ? '0' : '20px', padding: isPrintMode ? '20px' : '24px', border: isPrintMode ? 'none' : '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', breakInside: 'avoid' }}>
+            <div style={{ fontWeight: '1000', color: '#1A1265', fontSize: isPrintMode ? '18px' : '14px', marginBottom: isPrintMode ? '12px' : '16px', fontFamily: 'monospace' }}>{card.card_id}</div>
             
-            <div ref={qrRef} style={{ background: '#F8FAFC', padding: '12px', borderRadius: '16px', marginBottom: isPrintMode ? '0' : '16px', border: '1px solid #F1F5F9' }}></div>
+            <div ref={qrRef} style={{ padding: '0', borderRadius: '16px', marginBottom: isPrintMode ? '0' : '16px', border: 'none', overflow: 'hidden', boxShadow: '0 8px 20px rgba(0,0,0,0.1)' }}></div>
             
             {!isPrintMode && (
                 <div style={{ width: '100%', display: 'flex', gap: '8px' }}>
