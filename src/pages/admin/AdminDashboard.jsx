@@ -22,8 +22,10 @@ export default function AdminDashboard() {
     const [folders, setFolders] = useState([]);
     const [filterFolder, setFilterFolder] = useState('');
     const [expandedFolders, setExpandedFolders] = useState({});
-    const [view, setView] = useState('dashboard'); // 'dashboard' or 'users' or 'finance'
+    const [view, setView] = useState('dashboard'); // 'dashboard' or 'users' or 'finance' or 'production'
     const [users, setUsers] = useState([]);
+    const [bulkQty, setBulkQty] = useState(10);
+    const [generatingBulk, setGeneratingBulk] = useState(false);
     
     const [financeTransactions, setFinanceTransactions] = useState([]);
     
@@ -161,6 +163,38 @@ export default function AdminDashboard() {
         setLoading(false);
     }
 
+    async function handleBulkCreate() {
+        if (!bulkQty || bulkQty < 1 || bulkQty > 100) return toast("Quantité invalide (1-100)", "error");
+        setGeneratingBulk(true);
+        try {
+            const newCards = [];
+            for (let i = 0; i < bulkQty; i++) {
+                const cardId = Math.random().toString(36).substring(2, 10).toUpperCase();
+                const token = Math.random().toString(36).substring(2, 15);
+                newCards.push({
+                    card_id: cardId,
+                    activation_token: token,
+                    status: 'pending',
+                    card_name: `Carte Signature ${cardId}`,
+                    admin_profile: {
+                        qr_type: 'profile',
+                        primaryColor: '#1A1265',
+                        backgroundColor: '#F8FAFC'
+                    }
+                });
+            }
+            const { error } = await supabase.from('cards').insert(newCards);
+            if (error) throw error;
+            toast(`${bulkQty} cartes générées avec succès`, 'success');
+            loadData();
+        } catch (err) {
+            console.error(err);
+            toast("Erreur lors de la génération : " + err.message, "error");
+        } finally {
+            setGeneratingBulk(false);
+        }
+    }
+
     async function handleDeleteUser(userId) {
         if (!window.confirm("Supprimer cet utilisateur et TOUTES ses cartes ?")) return;
         setLoading(true);
@@ -280,8 +314,11 @@ export default function AdminDashboard() {
                     <button onClick={() => { setView('users'); setIsSidebarOpen(false); }} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'users' ? '#1A1265' : 'transparent', color: view === 'users' ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
                         <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>` }} /> Utilisateurs
                     </button>
-                    <button onClick={() => { setView('requests'); setIsSidebarOpen(false); }} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'requests' ? '#1A1265' : 'transparent', color: view === 'requests' ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+                    <button onClick={() => { setView('requests'); setIsSidebarOpen(false); }} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'requests' ? '#1A1265' : 'transparent', color: view === 'requests' ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
                         <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.5 1.5"></path><path d="M7.67 7.67L2 2"></path><path d="M2 2l1.5 7.5"></path></svg>` }} /> Demandes {requestsCount > 0 && <span style={{ background: '#EF4444', color: 'white', fontSize: '10px', padding: '2px 8px', borderRadius: '10px', marginLeft: 'auto' }}>{requestsCount}</span>}
+                    </button>
+                    <button onClick={() => { setView('production'); setIsSidebarOpen(false); }} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'production' ? '#1A1265' : 'transparent', color: view === 'production' ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+                        <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>` }} /> Production
                     </button>
                     
                     <div style={{ margin: '12px 16px', fontSize: '11px', fontWeight: '800', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '1px' }}>Dossiers</div>
@@ -330,10 +367,10 @@ export default function AdminDashboard() {
                             </button>
                             <div>
                                 <h1 style={{ fontSize: '26px', fontWeight: '900', color: '#1A1265' }}>
-                                    {view === 'users' ? 'Gestion des Utilisateurs' : (view === 'requests' ? 'Demandes de Design' : (view === 'finance' ? 'Finance & CA' : (filterFolder ? currentFolder?.name : 'Tableau de bord')))}
+                                    {view === 'users' ? 'Gestion des Utilisateurs' : (view === 'requests' ? 'Demandes de Design' : (view === 'finance' ? 'Finance & CA' : (view === 'production' ? 'Atelier Production' : (filterFolder ? currentFolder?.name : 'Tableau de bord'))))}
                                 </h1>
                                 <p style={{ color: '#64748B' }} className="desktop-only">
-                                    {view === 'users' ? 'Gérez les comptes et les profils de vos clients.' : (view === 'requests' ? 'Clients souhaitant modifier le design de leur QR.' : (view === 'finance' ? 'Suivez votre chiffre d\'affaires et vos bénéfices.' : (filterFolder ? (isSubFolder ? 'Contenu de ce sous-dossier' : 'Contenu de ce dossier') : 'Gérez l\'ensemble de vos projets QR.')))}
+                                    {view === 'users' ? 'Gérez les comptes et les profils de vos clients.' : (view === 'requests' ? 'Clients souhaitant modifier le design de leur QR.' : (view === 'finance' ? 'Suivez votre chiffre d\'affaires et vos bénéfices.' : (view === 'production' ? 'Générez des cartes en masse et préparez les supports physiques.' : (filterFolder ? (isSubFolder ? 'Contenu de ce sous-dossier' : 'Contenu de ce dossier') : 'Gérez l\'ensemble de vos projets QR.'))))}
                                 </p>
                             </div>
                         </div>
@@ -462,6 +499,44 @@ export default function AdminDashboard() {
                                     </div>
                                 </div>
                             </div>
+                        ) : view === 'production' ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+                                <div style={{ background: 'white', borderRadius: '24px', padding: '32px', border: '1px solid #E2E8F0' }}>
+                                    <h3 style={{ fontSize: '18px', fontWeight: '900', color: '#1A1265', marginBottom: '8px' }}>Génération en masse (Cartes Signature)</h3>
+                                    <p style={{ color: '#64748B', fontSize: '14px', marginBottom: '24px' }}>Créez plusieurs cartes vierges avec leurs jetons d'activation en un clic.</p>
+                                    
+                                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                                        <div style={{ flex: 1, position: 'relative' }}>
+                                            <input 
+                                                type="number" 
+                                                min="1" 
+                                                max="100" 
+                                                value={bulkQty} 
+                                                onChange={e => setBulkQty(Number(e.target.value))} 
+                                                placeholder="Quantité (ex: 20)" 
+                                                style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #E2E8F0', fontSize: '16px', fontWeight: '600' }} 
+                                            />
+                                            <span style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8', fontSize: '12px', fontWeight: '700' }}>CARTES</span>
+                                        </div>
+                                        <button 
+                                            onClick={handleBulkCreate} 
+                                            disabled={generatingBulk}
+                                            style={{ padding: '14px 28px', background: '#1A1265', color: 'white', border: 'none', borderRadius: '12px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', opacity: generatingBulk ? 0.7 : 1 }}
+                                        >
+                                            {generatingBulk ? 'Génération...' : '+ Générer les cartes'}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                    <h3 style={{ fontSize: '18px', fontWeight: '900', color: '#1A1265' }}>Cartes en attente d'activation ({cards.filter(c => !c.owner_id).length})</h3>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+                                        {cards.filter(c => !c.owner_id).map(card => (
+                                            <ProductionCard key={card.card_id} card={card} toast={toast} />
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
                         ) : view === 'users' ? (
                             users.map(user => (
                                 <div key={user.id} className="user-list-item" style={{ background: 'white', borderRadius: '20px', padding: '20px', display: 'flex', alignItems: 'center', gap: '20px', border: '1px solid #F1F5F9', boxShadow: '0 4px 12px rgba(0,0,0,0.01)' }}>
@@ -527,6 +602,56 @@ export default function AdminDashboard() {
                     .admin-filters { overflow-x: auto; white-space: nowrap; }
                 }
             `}</style>
+        </div>
+    );
+}
+
+function ProductionCard({ card, toast }) {
+    const qrRef = useRef(null);
+    const activationUrl = `${window.location.origin}/activate?card=${card.card_id}&token=${card.activation_token}`;
+
+    useEffect(() => {
+        if (qrRef.current) {
+            const qrCode = new QRCodeStyling({
+                width: 140, height: 140, data: activationUrl,
+                dotsOptions: { color: "#1A1265", type: "rounded" },
+                cornersSquareOptions: { color: "#1A1265", type: "extra-rounded" },
+                backgroundOptions: { color: "#FFFFFF" }
+            });
+            qrRef.current.innerHTML = ''; qrCode.append(qrRef.current);
+        }
+    }, [card]);
+
+    const downloadQR = () => {
+        const qrCode = new QRCodeStyling({
+            width: 1000, height: 1000, data: activationUrl,
+            dotsOptions: { color: "#1A1265", type: "rounded" },
+            cornersSquareOptions: { color: "#1A1265", type: "extra-rounded" },
+            backgroundOptions: { color: "#FFFFFF" }
+        });
+        qrCode.download({ name: `activation-qr-${card.card_id}`, extension: "png" });
+    };
+
+    return (
+        <div style={{ background: 'white', borderRadius: '20px', padding: '24px', border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+            <div style={{ fontWeight: '900', color: '#1A1265', fontSize: '14px', marginBottom: '16px' }}>ID: {card.card_id}</div>
+            
+            <div ref={qrRef} style={{ background: '#F8FAFC', padding: '12px', borderRadius: '16px', marginBottom: '16px', border: '1px solid #F1F5F9' }}></div>
+            
+            <div style={{ width: '100%', display: 'flex', gap: '8px' }}>
+                <button 
+                    onClick={() => { navigator.clipboard.writeText(activationUrl); toast('Lien copié !', 'success'); }} 
+                    style={{ flex: 1, padding: '10px', borderRadius: '10px', border: '1px solid #E2E8F0', background: 'white', color: '#1A1265', fontWeight: '800', cursor: 'pointer', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                >
+                    <div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>` }} /> Copier
+                </button>
+                <button 
+                    onClick={downloadQR} 
+                    style={{ flex: 1, padding: '10px', borderRadius: '10px', border: 'none', background: '#F1F5F9', color: '#1A1265', fontWeight: '800', cursor: 'pointer', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                >
+                    <div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>` }} /> QR
+                </button>
+            </div>
         </div>
     );
 }

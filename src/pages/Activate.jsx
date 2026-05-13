@@ -24,21 +24,30 @@ export default function Activate() {
     async function verifyCard() {
         setVerifying(true);
         try {
-            const { data, error: fetchError } = await supabase.from('cards')
+            // First, check if the card exists at all
+            const { data: existingCard, error: initialError } = await supabase.from('cards')
                 .select('*')
                 .eq('card_id', cardId)
-                .eq('activation_token', token)
-                .single()
-            
-            if (fetchError) {
-                if (fetchError.code === 'PGRST116') {
-                    setError("Lien invalide ou déjà utilisé. Ce QR code n'attend plus d'activation.");
-                } else {
-                    setError("Erreur technique lors de la vérification : " + fetchError.message);
-                }
-            } else {
-                setCardInfo(data);
+                .single();
+
+            if (initialError) {
+                setError("Cette carte n'existe pas dans notre système.");
+                return;
             }
+
+            // If the card is already activated (has an owner), redirect to public profile
+            if (existingCard.owner_id) {
+                navigate(`/u/${cardId}`);
+                return;
+            }
+
+            // If not activated, verify the token
+            if (existingCard.activation_token !== token) {
+                setError("Lien d'activation invalide ou corrompu.");
+                return;
+            }
+
+            setCardInfo(existingCard);
         } catch (e) {
             setError("Une erreur inattendue est survenue.");
         } finally {
