@@ -210,6 +210,24 @@ export default function AdminDashboard() {
         setLoading(false);
     }
 
+    async function handleMarkBatchStatus(batchCards, newStatus) {
+        setLoading(true);
+        try {
+            for (const card of batchCards) {
+                await supabase.from('cards')
+                    .update({ admin_profile: { ...(card.admin_profile || {}), print_status: newStatus } })
+                    .eq('card_id', card.card_id);
+            }
+            toast(`Lot marqué comme ${newStatus === 'printed' ? 'imprimé' : 'en attente'}`, 'success');
+            loadData();
+        } catch (err) {
+            console.error(err);
+            toast("Erreur lors de la mise à jour", "error");
+        } finally {
+            setLoading(false);
+        }
+    }
+
     async function handleBulkCreate() {
         if (!bulkQty || bulkQty < 1 || bulkQty > 100) return toast("Quantité invalide (1-100)", "error");
         setGeneratingBulk(true);
@@ -222,11 +240,12 @@ export default function AdminDashboard() {
                     card_id: cardId,
                     activation_token: token,
                     status: 'pending',
-                    card_name: `Carte Signature ${cardId}`,
+                    card_name: `Signature_${batchName || 'Sans_Nom'}_${i + 1}`,
                     admin_profile: {
                         qr_type: 'profile',
                         primaryColor: bulkColor,
-                        backgroundColor: bulkBgColor
+                        backgroundColor: bulkBgColor,
+                        print_status: 'pending'
                     }
                 });
             }
@@ -784,11 +803,64 @@ export default function AdminDashboard() {
                                         </div>
                                     )}
 
-                                    {/* Section 2: Série Signature (Batch) */}
+                                    {/* Section 2: Dossiers de Lots (Grouped) */}
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                            <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#1A1265' }}></div>
-                                            <h3 style={{ fontSize: '18px', fontWeight: '900', color: '#1A1265' }}>Série Signature (En attente d'activation) ({cards.filter(c => !c.owner_id && c.design_request !== 'pending').length})</h3>
+                                            <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#10B981' }}></div>
+                                            <h3 style={{ fontSize: '18px', fontWeight: '900', color: '#1A1265' }}>Lots de Production</h3>
+                                        </div>
+                                        
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '20px' }}>
+                                            {(() => {
+                                                const batchMap = {};
+                                                cards.filter(c => !c.owner_id && c.design_request !== 'pending' && c.card_name?.startsWith('Signature_')).forEach(card => {
+                                                    const parts = card.card_name.split('_');
+                                                    const name = parts.length >= 3 ? parts.slice(1, -1).join('_') : 'Lot_Sans_Nom';
+                                                    if (!batchMap[name]) batchMap[name] = { name, cards: [], status: 'pending' };
+                                                    batchMap[name].cards.push(card);
+                                                    if (card.admin_profile?.print_status === 'printed') batchMap[name].status = 'printed';
+                                                });
+                                                
+                                                return Object.values(batchMap).sort((a,b) => b.cards[0].created_at.localeCompare(a.cards[0].created_at)).map(batch => (
+                                                    <div key={batch.name} style={{ background: 'white', borderRadius: '24px', padding: '24px', border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', gap: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.02)', position: 'relative', overflow: 'hidden' }}>
+                                                        <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: batch.status === 'printed' ? '#10B981' : '#F59E0B' }}></div>
+                                                        
+                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                                            <div>
+                                                                <div style={{ fontSize: '11px', fontWeight: '900', color: '#94A3B8', textTransform: 'uppercase', marginBottom: '4px' }}>DOSSIER LOT</div>
+                                                                <h4 style={{ fontSize: '18px', fontWeight: '900', color: '#1A1265', margin: 0 }}>{batch.name}</h4>
+                                                                <div style={{ fontSize: '13px', color: '#64748B', marginTop: '4px', fontWeight: '600' }}>{batch.cards.length} cartes physiques</div>
+                                                            </div>
+                                                            <div style={{ background: batch.status === 'printed' ? '#DCFCE7' : '#FEF3C7', color: batch.status === 'printed' ? '#15803D' : '#92400E', padding: '4px 12px', borderRadius: '20px', fontSize: '11px', fontWeight: '900' }}>
+                                                                {batch.status === 'printed' ? 'IMPRIMÉ' : 'EN ATTENTE'}
+                                                            </div>
+                                                        </div>
+
+                                                        <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
+                                                            <button 
+                                                                onClick={() => handleDownloadAll(batch.cards.map(c => c.card_id))}
+                                                                style={{ flex: 1, padding: '12px', borderRadius: '12px', border: 'none', background: '#1A1265', color: 'white', fontWeight: '800', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                                                            >
+                                                                <div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>` }} /> ZIP
+                                                            </button>
+                                                            <button 
+                                                                onClick={() => handleMarkBatchStatus(batch.cards, batch.status === 'printed' ? 'pending' : 'printed')}
+                                                                style={{ flex: 1, padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', color: '#1A1265', fontWeight: '800', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                                                            >
+                                                                <div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>` }} /> {batch.status === 'printed' ? 'Réinitialiser' : 'Imprimé'}
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ));
+                                            })()}
+                                        </div>
+                                    </div>
+
+                                    {/* Section 3: Vue Détail (Unactivated cards not in batches or individual) */}
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                            <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#64748B' }}></div>
+                                            <h3 style={{ fontSize: '18px', fontWeight: '900', color: '#1A1265' }}>Toutes les cartes (Détails)</h3>
                                         </div>
                                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
                                             {cards.filter(c => !c.owner_id && c.design_request !== 'pending').map(card => (
