@@ -53,6 +53,7 @@ export default function AdminDashboard() {
     const [includeLogo, setIncludeLogo] = useState(true);
     const [generatingBulk, setGeneratingBulk] = useState(false);
     const [hideIdsInPrint, setHideIdsInPrint] = useState(false);
+    const [selectedCards, setSelectedCards] = useState([]);
     
     const [financeTransactions, setFinanceTransactions] = useState([]);
     
@@ -222,19 +223,22 @@ export default function AdminDashboard() {
         }
     }
 
-    const handleDownloadAll = async () => {
+    const handleDownloadAll = async (targetIds = null) => {
         const unactivated = cards.filter(c => !c.owner_id);
-        if (unactivated.length === 0) return toast("Aucune carte à télécharger", "info");
+        const toDownload = targetIds 
+            ? unactivated.filter(c => targetIds.includes(c.card_id))
+            : unactivated;
+
+        if (toDownload.length === 0) return toast("Aucune carte à télécharger", "info");
         
-        toast(`Génération du ZIP pour ${unactivated.length} cartes...`, 'info');
+        toast(`Génération du ZIP pour ${toDownload.length} cartes...`, 'info');
         const zip = new JSZip();
         const folder = zip.folder(batchName);
 
-        for (const card of unactivated) {
+        for (const card of toDownload) {
             const activationUrl = `${window.location.origin}/activate?card=${card.card_id}&token=${card.activation_token}`;
             const qrColor = card.admin_profile?.primaryColor || "#1A1265";
             
-            // Get tinted logo
             const tintedLogo = includeLogo ? await getTintedLogo(qrColor) : null;
 
             const qrCode = new QRCodeStyling({
@@ -260,6 +264,35 @@ export default function AdminDashboard() {
         const content = await zip.generateAsync({ type: "blob" });
         saveAs(content, `${batchName.replace(/\s+/g, '_')}.zip`);
         toast("Téléchargement du ZIP lancé !", "success");
+        setSelectedCards([]);
+    };
+
+    const handleBulkDelete = async () => {
+        if (selectedCards.length === 0) return;
+        if (!window.confirm(`Supprimer définitivement ${selectedCards.length} cartes ?`)) return;
+        
+        setLoading(true);
+        try {
+            const { error } = await supabase.from('cards').delete().in('card_id', selectedCards);
+            if (error) throw error;
+            toast(`${selectedCards.length} cartes supprimées`, 'success');
+            setSelectedCards([]);
+            loadData();
+        } catch (err) {
+            console.error(err);
+            toast("Erreur lors de la suppression", "error");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const toggleSelectAll = () => {
+        const unactivatedIds = cards.filter(c => !c.owner_id).map(c => c.card_id);
+        if (selectedCards.length === unactivatedIds.length) {
+            setSelectedCards([]);
+        } else {
+            setSelectedCards(unactivatedIds);
+        }
     };
 
     async function handleDeleteUser(userId) {
@@ -696,7 +729,16 @@ export default function AdminDashboard() {
                                     <h3 style={{ fontSize: '18px', fontWeight: '900', color: '#1A1265' }}>Cartes en attente d'activation ({cards.filter(c => !c.owner_id).length})</h3>
                                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
                                         {cards.filter(c => !c.owner_id).map(card => (
-                                            <ProductionCard key={card.card_id} card={card} toast={toast} includeLogo={includeLogo} />
+                                            <ProductionCard 
+                                                key={card.card_id} 
+                                                card={card} 
+                                                toast={toast} 
+                                                includeLogo={includeLogo}
+                                                isSelected={selectedCards.includes(card.card_id)}
+                                                onSelect={() => {
+                                                    setSelectedCards(prev => prev.includes(card.card_id) ? prev.filter(id => id !== card.card_id) : [...prev, card.card_id]);
+                                                }}
+                                            />
                                         ))}
                                     </div>
                                 </div>
@@ -789,6 +831,30 @@ export default function AdminDashboard() {
                 }
             `}</style>
             
+            {/* Floating Selection Bar */}
+            {selectedCards.length > 0 && view === 'production' && (
+                <div style={{ position: 'fixed', bottom: '30px', left: '50%', transform: 'translateX(-50%)', background: '#1A1265', padding: '12px 24px', borderRadius: '100px', display: 'flex', alignItems: 'center', gap: '24px', boxShadow: '0 10px 40px rgba(0,0,0,0.3)', zIndex: 1000, border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div onClick={toggleSelectAll} style={{ width: '20px', height: '20px', borderRadius: '6px', border: '2px solid white', background: selectedCards.length === cards.filter(c => !c.owner_id).length ? 'white' : 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            {selectedCards.length === cards.filter(c => !c.owner_id).length && <div style={{ width: '10px', height: '10px', background: '#1A1265', borderRadius: '2px' }}></div>}
+                        </div>
+                        <span style={{ color: 'white', fontWeight: '800', fontSize: '14px' }}>{selectedCards.length} sélectionnés</span>
+                    </div>
+                    
+                    <div style={{ width: '1px', height: '24px', background: 'rgba(255,255,255,0.2)' }}></div>
+                    
+                    <div style={{ display: 'flex', gap: '12px' }}>
+                        <button onClick={() => handleDownloadAll(selectedCards)} style={{ background: 'white', color: '#1A1265', border: 'none', padding: '8px 16px', borderRadius: '50px', fontWeight: '800', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>` }} /> ZIP
+                        </button>
+                        <button onClick={handleBulkDelete} style={{ background: '#EF4444', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '50px', fontWeight: '800', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>` }} /> Supprimer
+                        </button>
+                        <button onClick={() => setSelectedCards([])} style={{ background: 'transparent', color: 'rgba(255,255,255,0.6)', border: 'none', padding: '8px 8px', fontWeight: '700', fontSize: '13px', cursor: 'pointer' }}>Annuler</button>
+                    </div>
+                </div>
+            )}
+            
             {/* Print Section (Visible only during print) */}
             <div className="print-section" style={{ display: 'none' }}>
                 {cards.filter(c => !c.owner_id).map(card => (
@@ -799,7 +865,7 @@ export default function AdminDashboard() {
     );
 }
 
-function ProductionCard({ card, toast, isPrintMode = false, hideId = false, includeLogo = true }) {
+function ProductionCard({ card, toast, isPrintMode = false, hideId = false, includeLogo = true, isSelected = false, onSelect = null }) {
     const qrRef = useRef(null);
     const activationUrl = `${window.location.origin}/activate?card=${card.card_id}&token=${card.activation_token}`;
 
@@ -859,7 +925,17 @@ function ProductionCard({ card, toast, isPrintMode = false, hideId = false, incl
     };
 
     return (
-        <div className={isPrintMode ? "print-card" : ""} style={{ background: 'white', borderRadius: isPrintMode ? '0' : '20px', padding: isPrintMode ? '20px' : '24px', border: isPrintMode ? 'none' : '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', breakInside: 'avoid' }}>
+        <div className={isPrintMode ? "print-card" : ""} style={{ position: 'relative', background: 'white', borderRadius: isPrintMode ? '0' : '24px', padding: isPrintMode ? '20px' : '24px', border: isPrintMode ? 'none' : isSelected ? '2px solid #1A1265' : '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', breakInside: 'avoid', transition: 'all 0.2s', transform: isSelected ? 'scale(1.02)' : 'none', boxShadow: isSelected ? '0 12px 30px rgba(26,18,101,0.1)' : 'none' }}>
+            
+            {!isPrintMode && (
+                <div 
+                    onClick={onSelect}
+                    style={{ position: 'absolute', top: '16px', left: '16px', width: '24px', height: '24px', borderRadius: '8px', border: '2px solid #E2E8F0', background: isSelected ? '#1A1265' : 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s', zIndex: 10 }}
+                >
+                    {isSelected && <div style={{ width: '12px', height: '12px', background: 'white', borderRadius: '2px' }}></div>}
+                </div>
+            )}
+
             {(!hideId || !isPrintMode) && (
                 <div style={{ fontWeight: '1000', color: '#1A1265', fontSize: isPrintMode ? '18px' : '14px', marginBottom: isPrintMode ? '12px' : '16px', fontFamily: 'monospace' }}>{card.card_id}</div>
             )}
