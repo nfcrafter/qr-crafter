@@ -25,6 +25,7 @@ export default function AdminDashboard() {
     const [view, setView] = useState('dashboard'); // 'dashboard' or 'users' or 'finance' or 'production'
     const [users, setUsers] = useState([]);
     const [bulkQty, setBulkQty] = useState(10);
+    const [bulkColor, setBulkColor] = useState('#1A1265');
     const [generatingBulk, setGeneratingBulk] = useState(false);
     
     const [financeTransactions, setFinanceTransactions] = useState([]);
@@ -178,7 +179,7 @@ export default function AdminDashboard() {
                     card_name: `Carte Signature ${cardId}`,
                     admin_profile: {
                         qr_type: 'profile',
-                        primaryColor: '#1A1265',
+                        primaryColor: bulkColor,
                         backgroundColor: '#F8FAFC'
                     }
                 });
@@ -507,32 +508,58 @@ export default function AdminDashboard() {
                                     <h3 style={{ fontSize: '18px', fontWeight: '900', color: '#1A1265', marginBottom: '8px' }}>Génération en masse (Cartes Signature)</h3>
                                     <p style={{ color: '#64748B', fontSize: '14px', marginBottom: '24px' }}>Créez plusieurs cartes vierges avec leurs jetons d'activation en un clic.</p>
                                     
-                                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                                        <div style={{ flex: 1, position: 'relative' }}>
-                                            <input 
-                                                type="number" 
-                                                min="1" 
-                                                max="100" 
-                                                value={bulkQty} 
-                                                onChange={e => setBulkQty(Number(e.target.value))} 
-                                                placeholder="Quantité (ex: 20)" 
-                                                style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #E2E8F0', fontSize: '16px', fontWeight: '600' }} 
-                                            />
-                                            <span style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8', fontSize: '12px', fontWeight: '700' }}>CARTES</span>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                                            <div style={{ flex: 1, position: 'relative' }}>
+                                                <input 
+                                                    type="number" 
+                                                    min="1" 
+                                                    max="100" 
+                                                    value={bulkQty} 
+                                                    onChange={e => setBulkQty(Number(e.target.value))} 
+                                                    placeholder="Quantité (ex: 20)" 
+                                                    style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #E2E8F0', fontSize: '16px', fontWeight: '600' }} 
+                                                />
+                                                <span style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8', fontSize: '12px', fontWeight: '700' }}>CARTES</span>
+                                            </div>
+                                            <div style={{ flex: 1, display: 'flex', gap: '8px', alignItems: 'center', background: '#F8FAFC', padding: '8px 14px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                                                <input 
+                                                    type="color" 
+                                                    value={bulkColor} 
+                                                    onChange={e => setBulkColor(e.target.value)} 
+                                                    style={{ width: '32px', height: '32px', border: 'none', background: 'transparent', cursor: 'pointer' }} 
+                                                />
+                                                <input 
+                                                    type="text" 
+                                                    value={bulkColor} 
+                                                    onChange={e => setBulkColor(e.target.value)} 
+                                                    placeholder="#HEX"
+                                                    style={{ flex: 1, border: 'none', background: 'transparent', fontSize: '14px', fontWeight: '700', color: '#1A1265', outline: 'none' }}
+                                                />
+                                            </div>
                                         </div>
-                                        <button 
-                                            onClick={handleBulkCreate} 
-                                            disabled={generatingBulk}
-                                            style={{ padding: '14px 28px', background: '#1A1265', color: 'white', border: 'none', borderRadius: '12px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', opacity: generatingBulk ? 0.7 : 1 }}
-                                        >
-                                            {generatingBulk ? 'Génération...' : '+ Générer les cartes'}
-                                        </button>
-                                        <button 
-                                            onClick={() => window.print()}
-                                            style={{ padding: '14px 28px', background: 'white', color: '#1A1265', border: '1px solid #E2E8F0', borderRadius: '12px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
-                                        >
-                                            <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>` }} /> Impression en masse
-                                        </button>
+
+                                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                            {['#1A1265', '#10B981', '#6366F1', '#F59E0B', '#EF4444', '#000000'].map(c => (
+                                                <button key={c} onClick={() => setBulkColor(c)} style={{ width: '24px', height: '24px', borderRadius: '6px', background: c, border: bulkColor === c ? '2px solid #1A1265' : 'none', cursor: 'pointer', outline: bulkColor === c ? '2px solid white' : 'none' }} />
+                                            ))}
+                                        </div>
+
+                                        <div style={{ display: 'flex', gap: '12px' }}>
+                                            <button 
+                                                onClick={handleBulkCreate} 
+                                                disabled={generatingBulk}
+                                                style={{ flex: 1, padding: '14px 28px', background: '#1A1265', color: 'white', border: 'none', borderRadius: '12px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', opacity: generatingBulk ? 0.7 : 1 }}
+                                            >
+                                                {generatingBulk ? 'Génération...' : '+ Générer les cartes'}
+                                            </button>
+                                            <button 
+                                                onClick={() => window.print()}
+                                                style={{ padding: '14px 28px', background: 'white', color: '#1A1265', border: '1px solid #E2E8F0', borderRadius: '12px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
+                                            >
+                                                <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>` }} /> Impression
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -653,15 +680,16 @@ function ProductionCard({ card, toast, isPrintMode = false }) {
                 height: isPrintMode ? 200 : 160, 
                 data: activationUrl,
                 margin: 0,
-                dotsOptions: { color: "#FFFFFF", type: "rounded" },
-                cornersSquareOptions: { color: "#FFFFFF", type: "extra-rounded" },
-                cornersDotOptions: { color: "#FFFFFF", type: "dot" },
-                backgroundOptions: { color: qrColor }
+                dotsOptions: { color: qrColor, type: "rounded" },
+                cornersSquareOptions: { color: qrColor, type: "extra-rounded" },
+                cornersDotOptions: { color: qrColor, type: "dot" },
+                backgroundOptions: { color: isPrintMode ? "transparent" : "#FFFFFF" }
             });
             qrRef.current.innerHTML = ''; qrCode.append(qrRef.current);
             qrRef.current.style.borderRadius = "16px";
             qrRef.current.style.overflow = "hidden";
             qrRef.current.style.display = "inline-block";
+            if (!isPrintMode) qrRef.current.style.background = "white";
         }
     }, [card, isPrintMode]);
 
@@ -670,10 +698,10 @@ function ProductionCard({ card, toast, isPrintMode = false }) {
         const qrCode = new QRCodeStyling({
             width: 1000, height: 1000, data: activationUrl,
             margin: 20,
-            dotsOptions: { color: "#FFFFFF", type: "rounded" },
-            cornersSquareOptions: { color: "#FFFFFF", type: "extra-rounded" },
-            cornersDotOptions: { color: "#FFFFFF", type: "dot" },
-            backgroundOptions: { color: qrColor }
+            dotsOptions: { color: qrColor, type: "rounded" },
+            cornersSquareOptions: { color: qrColor, type: "extra-rounded" },
+            cornersDotOptions: { color: qrColor, type: "dot" },
+            backgroundOptions: { color: "#FFFFFF" }
         });
         qrCode.download({ name: `dot-qr-${card.card_id}`, extension: "png" });
     };
