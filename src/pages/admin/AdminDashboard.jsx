@@ -8,6 +8,26 @@ import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import Modal from '../../components/Modal.jsx';
 
+const getTintedLogo = async (color) => {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.src = "/logo.png";
+        img.onload = () => {
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+            ctx.globalCompositeOperation = "source-in";
+            ctx.fillStyle = color;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            resolve(canvas.toDataURL());
+        };
+        img.onerror = () => resolve("/logo.png");
+    });
+};
+
 export default function AdminDashboard() {
     const navigate = useNavigate();
     const toast = useToast();
@@ -201,31 +221,6 @@ export default function AdminDashboard() {
             setGeneratingBulk(false);
         }
     }
-
-    const getTintedLogo = async (color) => {
-        return new Promise((resolve) => {
-            const img = new Image();
-            img.crossOrigin = "anonymous";
-            img.src = "/logo.png";
-            img.onload = () => {
-                const canvas = document.createElement("canvas");
-                const ctx = canvas.getContext("2d");
-                canvas.width = img.width;
-                canvas.height = img.height;
-                
-                // Draw logo
-                ctx.drawImage(img, 0, 0);
-                
-                // Tint logo with 'source-in'
-                ctx.globalCompositeOperation = "source-in";
-                ctx.fillStyle = color;
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                
-                resolve(canvas.toDataURL());
-            };
-            img.onerror = () => resolve("/logo.png"); // Fallback
-        });
-    };
 
     const handleDownloadAll = async () => {
         const unactivated = cards.filter(c => !c.owner_id);
@@ -701,7 +696,7 @@ export default function AdminDashboard() {
                                     <h3 style={{ fontSize: '18px', fontWeight: '900', color: '#1A1265' }}>Cartes en attente d'activation ({cards.filter(c => !c.owner_id).length})</h3>
                                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
                                         {cards.filter(c => !c.owner_id).map(card => (
-                                            <ProductionCard key={card.card_id} card={card} toast={toast} />
+                                            <ProductionCard key={card.card_id} card={card} toast={toast} includeLogo={includeLogo} />
                                         ))}
                                     </div>
                                 </div>
@@ -797,49 +792,70 @@ export default function AdminDashboard() {
             {/* Print Section (Visible only during print) */}
             <div className="print-section" style={{ display: 'none' }}>
                 {cards.filter(c => !c.owner_id).map(card => (
-                    <ProductionCard key={card.card_id} card={card} toast={toast} isPrintMode={true} hideId={hideIdsInPrint} />
+                    <ProductionCard key={card.card_id} card={card} toast={toast} isPrintMode={true} hideId={hideIdsInPrint} includeLogo={includeLogo} />
                 ))}
             </div>
         </div>
     );
 }
 
-function ProductionCard({ card, toast, isPrintMode = false, hideId = false }) {
+function ProductionCard({ card, toast, isPrintMode = false, hideId = false, includeLogo = true }) {
     const qrRef = useRef(null);
     const activationUrl = `${window.location.origin}/activate?card=${card.card_id}&token=${card.activation_token}`;
 
     useEffect(() => {
-        if (qrRef.current) {
-            const qrColor = card.admin_profile?.primaryColor || "#1A1265";
-            const qrCode = new QRCodeStyling({
-                width: isPrintMode ? 200 : 160, 
-                height: isPrintMode ? 200 : 160, 
-                data: activationUrl,
-                margin: 0,
-                dotsOptions: { color: qrColor, type: "rounded" },
-                cornersSquareOptions: { color: qrColor, type: "extra-rounded" },
-                cornersDotOptions: { color: qrColor, type: "dot" },
-                backgroundOptions: { color: isPrintMode ? "transparent" : "#FFFFFF" }
-            });
-            qrRef.current.innerHTML = ''; qrCode.append(qrRef.current);
-            qrRef.current.style.borderRadius = "16px";
-            qrRef.current.style.overflow = "hidden";
-            qrRef.current.style.display = "inline-block";
-            if (!isPrintMode) qrRef.current.style.background = "white";
-        }
-    }, [card, isPrintMode]);
+        const updateQR = async () => {
+            if (qrRef.current) {
+                const qrColor = card.admin_profile?.primaryColor || "#1A1265";
+                const tintedLogo = includeLogo ? await getTintedLogo(qrColor) : null;
+                
+                const qrCode = new QRCodeStyling({
+                    width: isPrintMode ? 200 : 160, 
+                    height: isPrintMode ? 200 : 160, 
+                    data: activationUrl,
+                    margin: 5,
+                    dotsOptions: { color: qrColor, type: "rounded" },
+                    cornersSquareOptions: { color: qrColor, type: "extra-rounded" },
+                    cornersDotOptions: { color: qrColor, type: "dot" },
+                    backgroundOptions: { color: isPrintMode ? "transparent" : (card.admin_profile?.backgroundColor || "#FFFFFF") },
+                    image: tintedLogo,
+                    imageOptions: {
+                        crossOrigin: "anonymous",
+                        margin: 0,
+                        imageSize: 0.18,
+                        hideBackgroundDots: true
+                    }
+                });
+                qrRef.current.innerHTML = ''; qrCode.append(qrRef.current);
+                qrRef.current.style.borderRadius = "16px";
+                qrRef.current.style.overflow = "hidden";
+                qrRef.current.style.display = "inline-block";
+                if (!isPrintMode) qrRef.current.style.background = card.admin_profile?.backgroundColor || "white";
+            }
+        };
+        updateQR();
+    }, [card, isPrintMode, includeLogo]);
 
-    const downloadQR = () => {
+    const downloadQR = async () => {
         const qrColor = card.admin_profile?.primaryColor || "#1A1265";
+        const tintedLogo = includeLogo ? await getTintedLogo(qrColor) : null;
+        
         const qrCode = new QRCodeStyling({
             width: 1000, height: 1000, data: activationUrl,
-            margin: 20,
+            margin: 5,
             dotsOptions: { color: qrColor, type: "rounded" },
             cornersSquareOptions: { color: qrColor, type: "extra-rounded" },
             cornersDotOptions: { color: qrColor, type: "dot" },
-            backgroundOptions: { color: "#FFFFFF" }
+            backgroundOptions: { color: card.admin_profile?.backgroundColor || "#FFFFFF" },
+            image: tintedLogo,
+            imageOptions: {
+                crossOrigin: "anonymous",
+                margin: 0,
+                imageSize: 0.18,
+                hideBackgroundDots: true
+            }
         });
-        qrCode.download({ name: `dot-qr-${card.card_id}`, extension: "png" });
+        qrCode.download({ name: `QR-${card.card_id}`, extension: "png" });
     };
 
     return (
