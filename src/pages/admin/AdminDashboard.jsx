@@ -288,21 +288,38 @@ export default function AdminDashboard() {
 
     const handleBulkDelete = async () => {
         if (selectedCards.length === 0) return;
-        if (!window.confirm(`Supprimer définitivement ${selectedCards.length} cartes ?`)) return;
         
-        setLoading(true);
-        try {
-            const { error } = await supabase.from('cards').delete().in('card_id', selectedCards);
-            if (error) throw error;
-            toast(`${selectedCards.length} cartes supprimées`, 'success');
-            setSelectedCards([]);
-            loadData();
-        } catch (err) {
-            console.error(err);
-            toast("Erreur lors de la suppression", "error");
-        } finally {
-            setLoading(false);
-        }
+        setModalConfig({
+            isOpen: true,
+            title: 'Action irréversible',
+            type: 'warning',
+            confirmText: 'Supprimer tout',
+            children: (
+                <div>
+                    <p>Supprimer définitivement les <strong style={{ color: '#1A1265' }}>{selectedCards.length} éléments</strong> sélectionnés ?</p>
+                    <p style={{ marginTop: '10px', fontSize: '13px', color: '#64748B' }}>Cette action effacera les données des tables physiques et digitales.</p>
+                </div>
+            ),
+            onConfirm: async () => {
+                setLoading(true);
+                setModalConfig(prev => ({ ...prev, isOpen: false }));
+                try {
+                    const physicalIds = cards.filter(c => c._type === 'physical' && selectedCards.includes(c.card_id)).map(c => c.card_id);
+                    const digitalIds = cards.filter(c => c._type === 'digital' && selectedCards.includes(c.card_id)).map(c => c.card_id);
+
+                    if (physicalIds.length > 0) await supabase.from('cards').delete().in('card_id', physicalIds);
+                    if (digitalIds.length > 0) await supabase.from('qr_codes').delete().in('id', digitalIds);
+
+                    toast(`${selectedCards.length} éléments supprimés`, 'success');
+                    setSelectedCards([]);
+                    loadData();
+                } catch (err) {
+                    toast("Erreur lors de la suppression", "error");
+                } finally {
+                    setLoading(false);
+                }
+            }
+        });
     };
 
     const toggleSelectAll = () => {
@@ -800,7 +817,14 @@ export default function AdminDashboard() {
                                             <div style={{ color: '#94A3B8', fontSize: '12px' }}>{user.email}</div>
                                         </div>
                                         <button 
-                                            onClick={() => handleDeleteUser(user.id)}
+                                            onClick={() => {
+                                                setModalConfig({
+                                                    isOpen: true, title: 'Supprimer utilisateur', type: 'danger',
+                                                    children: <p>Voulez-vous vraiment supprimer cet utilisateur ?</p>,
+                                                    onConfirm: () => { handleDeleteUser(user.id); setModalConfig(p => ({...p, isOpen: false})); },
+                                                    confirmText: 'Supprimer'
+                                                })
+                                            }}
                                             disabled={user.email === 'nfcrafter@gmail.com'}
                                             style={{ background: '#FEF2F2', color: '#DC2626', border: '1px solid #FECACA', padding: '10px', borderRadius: '12px', fontWeight: '800', cursor: 'pointer', display: 'flex' }}
                                         >
