@@ -24,8 +24,10 @@ export default function AdminDashboard() {
     const [expandedFolders, setExpandedFolders] = useState({});
     const [view, setView] = useState('dashboard'); // 'dashboard' or 'users' or 'finance' or 'production'
     const [users, setUsers] = useState([]);
-    const [bulkQty, setBulkQty] = useState(10);
+    const [bulkQty, setBulkQty] = useState(20);
     const [bulkColor, setBulkColor] = useState('#1A1265');
+    const [bulkBgColor, setBulkBgColor] = useState('#FFFFFF');
+    const [includeLogo, setIncludeLogo] = useState(true);
     const [generatingBulk, setGeneratingBulk] = useState(false);
     const [hideIdsInPrint, setHideIdsInPrint] = useState(false);
     
@@ -181,7 +183,7 @@ export default function AdminDashboard() {
                     admin_profile: {
                         qr_type: 'profile',
                         primaryColor: bulkColor,
-                        backgroundColor: '#F8FAFC'
+                        backgroundColor: bulkBgColor
                     }
                 });
             }
@@ -212,7 +214,13 @@ export default function AdminDashboard() {
                 dotsOptions: { color: qrColor, type: "rounded" },
                 cornersSquareOptions: { color: qrColor, type: "extra-rounded" },
                 cornersDotOptions: { color: qrColor, type: "dot" },
-                backgroundOptions: { color: "#FFFFFF" }
+                backgroundOptions: { color: card.admin_profile?.backgroundColor || "#FFFFFF" },
+                image: includeLogo ? "/logo.png" : null,
+                imageOptions: {
+                    crossOrigin: "anonymous",
+                    margin: 10,
+                    imageSize: 0.3
+                }
             });
             await qrCode.download({ name: `QR-${card.card_id}-${qrColor.replace('#', '')}`, extension: "png" });
             // Small delay to prevent browser overwhelm
@@ -547,27 +555,58 @@ export default function AdminDashboard() {
                                                 />
                                                 <span style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8', fontSize: '12px', fontWeight: '700' }}>CARTES</span>
                                             </div>
-                                            <div style={{ flex: 1, display: 'flex', gap: '8px', alignItems: 'center', background: '#F8FAFC', padding: '8px 14px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
-                                                <input 
-                                                    type="color" 
-                                                    value={bulkColor} 
-                                                    onChange={e => setBulkColor(e.target.value)} 
-                                                    style={{ width: '32px', height: '32px', border: 'none', background: 'transparent', cursor: 'pointer' }} 
-                                                />
-                                                <input 
-                                                    type="text" 
-                                                    value={bulkColor} 
-                                                    onChange={e => setBulkColor(e.target.value)} 
-                                                    placeholder="#HEX"
-                                                    style={{ flex: 1, border: 'none', background: 'transparent', fontSize: '14px', fontWeight: '700', color: '#1A1265', outline: 'none' }}
-                                                />
+                                            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                                <label style={{ fontSize: '12px', fontWeight: '800', color: '#64748B' }}>COULEUR POINTS</label>
+                                                <div style={{ display: 'flex', gap: '8px', alignItems: 'center', background: '#F8FAFC', padding: '8px 14px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                                                    <input 
+                                                        type="color" 
+                                                        value={bulkColor} 
+                                                        onChange={e => setBulkColor(e.target.value)} 
+                                                        style={{ width: '32px', height: '32px', border: 'none', background: 'transparent', cursor: 'pointer' }} 
+                                                    />
+                                                    <input 
+                                                        type="text" 
+                                                        value={bulkColor} 
+                                                        onChange={e => setBulkColor(e.target.value)} 
+                                                        placeholder="#HEX"
+                                                        style={{ flex: 1, border: 'none', background: 'transparent', fontSize: '14px', fontWeight: '700', color: '#1A1265', outline: 'none' }}
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                                <label style={{ fontSize: '12px', fontWeight: '800', color: '#64748B' }}>COULEUR FOND</label>
+                                                <div style={{ display: 'flex', gap: '8px', alignItems: 'center', background: '#F8FAFC', padding: '8px 14px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                                                    <input 
+                                                        type="color" 
+                                                        value={bulkBgColor} 
+                                                        onChange={e => setBulkBgColor(e.target.value)} 
+                                                        style={{ width: '32px', height: '32px', border: 'none', background: 'transparent', cursor: 'pointer' }} 
+                                                    />
+                                                    <input 
+                                                        type="text" 
+                                                        value={bulkBgColor} 
+                                                        onChange={e => setBulkBgColor(e.target.value)} 
+                                                        placeholder="#HEX"
+                                                        style={{ flex: 1, border: 'none', background: 'transparent', fontSize: '14px', fontWeight: '700', color: '#1A1265', outline: 'none' }}
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
 
-                                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                                            {['#1A1265', '#10B981', '#6366F1', '#F59E0B', '#EF4444', '#000000'].map(c => (
-                                                <button key={c} onClick={() => setBulkColor(c)} style={{ width: '24px', height: '24px', borderRadius: '6px', background: c, border: bulkColor === c ? '2px solid #1A1265' : 'none', cursor: 'pointer', outline: bulkColor === c ? '2px solid white' : 'none' }} />
-                                            ))}
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                                {['#1A1265', '#10B981', '#6366F1', '#F59E0B', '#EF4444', '#000000'].map(c => (
+                                                    <button key={c} onClick={() => setBulkColor(c)} style={{ width: '24px', height: '24px', borderRadius: '6px', background: c, border: bulkColor === c ? '2px solid #1A1265' : 'none', cursor: 'pointer', outline: bulkColor === c ? '2px solid white' : 'none' }} />
+                                                ))}
+                                            </div>
+                                            
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }} onClick={() => setIncludeLogo(!includeLogo)}>
+                                                <div style={{ width: '18px', height: '18px', borderRadius: '4px', border: '2px solid #1A1265', background: includeLogo ? '#1A1265' : 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
+                                                    {includeLogo && <div style={{ width: '8px', height: '8px', background: 'white', borderRadius: '1px' }}></div>}
+                                                </div>
+                                                <span style={{ fontSize: '13px', fontWeight: '800', color: '#1A1265' }}>Inclure Logo NFC</span>
+                                            </div>
                                         </div>
 
                                         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
