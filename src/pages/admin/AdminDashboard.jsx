@@ -27,6 +27,7 @@ export default function AdminDashboard() {
     const [bulkQty, setBulkQty] = useState(10);
     const [bulkColor, setBulkColor] = useState('#1A1265');
     const [generatingBulk, setGeneratingBulk] = useState(false);
+    const [hideIdsInPrint, setHideIdsInPrint] = useState(false);
     
     const [financeTransactions, setFinanceTransactions] = useState([]);
     
@@ -545,7 +546,7 @@ export default function AdminDashboard() {
                                             ))}
                                         </div>
 
-                                        <div style={{ display: 'flex', gap: '12px' }}>
+                                        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                                             <button 
                                                 onClick={handleBulkCreate} 
                                                 disabled={generatingBulk}
@@ -559,6 +560,13 @@ export default function AdminDashboard() {
                                             >
                                                 <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>` }} /> Impression
                                             </button>
+                                        </div>
+
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }} onClick={() => setHideIdsInPrint(!hideIdsInPrint)}>
+                                            <div style={{ width: '20px', height: '20px', borderRadius: '6px', border: '2px solid #1A1265', background: hideIdsInPrint ? '#1A1265' : 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
+                                                {hideIdsInPrint && <div style={{ width: '10px', height: '10px', background: 'white', borderRadius: '2px' }}></div>}
+                                            </div>
+                                            <span style={{ fontSize: '14px', fontWeight: '700', color: '#1A1265' }}>Masquer les IDs à l'impression (Mode UV)</span>
                                         </div>
                                     </div>
                                 </div>
@@ -661,14 +669,14 @@ export default function AdminDashboard() {
             {/* Print Section (Visible only during print) */}
             <div className="print-section" style={{ display: 'none' }}>
                 {cards.filter(c => !c.owner_id).map(card => (
-                    <ProductionCard key={card.card_id} card={card} toast={toast} isPrintMode={true} />
+                    <ProductionCard key={card.card_id} card={card} toast={toast} isPrintMode={true} hideId={hideIdsInPrint} />
                 ))}
             </div>
         </div>
     );
 }
 
-function ProductionCard({ card, toast, isPrintMode = false }) {
+function ProductionCard({ card, toast, isPrintMode = false, hideId = false }) {
     const qrRef = useRef(null);
     const activationUrl = `${window.location.origin}/activate?card=${card.card_id}&token=${card.activation_token}`;
 
@@ -708,9 +716,11 @@ function ProductionCard({ card, toast, isPrintMode = false }) {
 
     return (
         <div className={isPrintMode ? "print-card" : ""} style={{ background: 'white', borderRadius: isPrintMode ? '0' : '20px', padding: isPrintMode ? '20px' : '24px', border: isPrintMode ? 'none' : '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', breakInside: 'avoid' }}>
-            <div style={{ fontWeight: '1000', color: '#1A1265', fontSize: isPrintMode ? '18px' : '14px', marginBottom: isPrintMode ? '12px' : '16px', fontFamily: 'monospace' }}>{card.card_id}</div>
+            {(!hideId || !isPrintMode) && (
+                <div style={{ fontWeight: '1000', color: '#1A1265', fontSize: isPrintMode ? '18px' : '14px', marginBottom: isPrintMode ? '12px' : '16px', fontFamily: 'monospace' }}>{card.card_id}</div>
+            )}
             
-            <div ref={qrRef} style={{ padding: '0', borderRadius: '16px', marginBottom: isPrintMode ? '0' : '16px', border: 'none', overflow: 'hidden', boxShadow: '0 8px 20px rgba(0,0,0,0.1)' }}></div>
+            <div ref={qrRef} style={{ padding: '0', borderRadius: '16px', marginBottom: isPrintMode ? '0' : '16px', border: 'none', overflow: 'hidden', boxShadow: isPrintMode ? 'none' : '0 8px 20px rgba(0,0,0,0.1)' }}></div>
             
             {!isPrintMode && (
                 <div style={{ width: '100%', display: 'flex', gap: '8px' }}>
