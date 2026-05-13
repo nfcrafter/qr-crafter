@@ -32,7 +32,7 @@ export default function ProfileForm({
                 }}
             >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <span style={{ fontSize: 20 }}>{icon}</span>
+                    <div style={{ width: 20, height: 20, display: 'flex' }} dangerouslySetInnerHTML={{ __html: icon }} />
                     <div>
                         <div style={{ fontWeight: 700, color: '#1A1265' }}>{title}</div>
                         <div style={{ fontSize: 12, color: '#94A3B8' }}>{sub}</div>
@@ -88,7 +88,7 @@ export default function ProfileForm({
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             {/* SECTION APPARENCE */}
-            {acc('design', '🎨', 'Apparence & Design', 'Couleurs, thèmes et style.', (
+            {acc('design', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>`, 'Apparence & Design', 'Couleurs, thèmes et style.', (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                         <div className="field">
@@ -141,7 +141,7 @@ export default function ProfileForm({
             ))}
 
             {/* SECTION INFOS */}
-            {acc('info', '👤', 'Informations du profil', 'Nom, bio, photo, bannière.', (
+            {acc('info', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`, 'Informations du profil', 'Nom, bio, photo, bannière.', (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
                     <div className="field">
                         <label>Nom complet</label>
@@ -154,8 +154,8 @@ export default function ProfileForm({
                     <div className="field">
                         <label>Description (Bio)</label>
                         <textarea rows={3} value={profile.bio || ''} onChange={e => setProfile({ ...profile, bio: e.target.value })} placeholder="Parlez-nous de vous..." />
-                        <div style={{ marginTop: 6, fontSize: 11, color: '#64748B', display: 'flex', gap: 4, alignItems: 'center' }}>
-                            <span>💡</span>
+                        <div style={{ marginTop: 6, fontSize: 11, color: '#64748B', display: 'flex', gap: 6, alignItems: 'center' }}>
+                            <div style={{ width: 14, height: 14, color: '#F59E0B' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></svg>` }} />
                             <span>Astuce : Commencez une ligne par <b>"-"</b> pour créer une liste à puces automatique.</span>
                         </div>
                     </div>
@@ -183,7 +183,7 @@ export default function ProfileForm({
                                     border: '2px dashed #CBD5E1', overflow: 'hidden', position: 'relative'
                                 }}
                             >
-                                {profile.photo_url ? <img src={profile.photo_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span>👤</span>}
+                                {profile.photo_url ? <img src={profile.photo_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ width: 28, height: 28, color: '#94A3B8' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>` }} />}
                                 {uploadingAvatar && <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="loader" style={{ width: 20, height: 20 }}></div></div>}
                             </div>
                             <input ref={avatarRef} type="file" hidden onChange={e => e.target.files[0] && onUploadAvatar(e.target.files[0])} />
@@ -198,7 +198,7 @@ export default function ProfileForm({
                                     border: '2px dashed #CBD5E1', overflow: 'hidden', position: 'relative'
                                 }}
                             >
-                                {profile.banner_url ? <img src={profile.banner_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span>🖼️</span>}
+                                {profile.banner_url ? <img src={profile.banner_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ width: 28, height: 28, color: '#94A3B8' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>` }} />}
                                 {uploadingBanner && <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="loader" style={{ width: 20, height: 20 }}></div></div>}
                             </div>
                             <input ref={bannerRef} type="file" hidden onChange={e => e.target.files[0] && onUploadBanner(e.target.files[0])} />
@@ -209,7 +209,7 @@ export default function ProfileForm({
             ))}
 
             {/* SECTION SOCIALS */}
-            {acc('socials', '📱', 'Réseaux Sociaux', 'Cliquez pour activer/désactiver.', (
+            {acc('socials', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>`, 'Réseaux Sociaux', 'Cliquez pour activer/désactiver.', (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
                         {SOCIAL_NETWORKS.map(net => {
@@ -265,7 +265,7 @@ export default function ProfileForm({
             ))}
 
             {/* SECTION CUSTOM LINKS */}
-            {acc('links', '🔗', 'Liens Personnalisés', 'Boutique, portfolio, autres liens.', (
+            {acc('links', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>`, 'Liens Personnalisés', 'Boutique, portfolio, autres liens.', (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                     {(profile.customLinks || []).map((link, idx) => (
                         <div key={idx} style={{ background: '#F8FAFC', borderRadius: 16, padding: 16, border: '1px solid #E2E8F0' }}>

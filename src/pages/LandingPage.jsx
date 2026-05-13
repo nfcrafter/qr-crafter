@@ -352,7 +352,7 @@ export default function LandingPage() {
                         onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-1px)'; }}
                         onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; }}
                     >
-                        <span style={{ fontSize: '14px' }}>{session ? '👤' : '🔒'}</span>
+                        <div style={{ width: '18px', height: '18px', display: 'flex' }} dangerouslySetInnerHTML={{ __html: session ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>` : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>` }} />
                         <span>{session ? 'Mon Espace' : 'Connexion'}</span>
                     </button>
                 </div>
@@ -378,7 +378,7 @@ export default function LandingPage() {
                                 </button>
                                 {/* ⚠️ Remplacer /p/demo par le slug d'un vrai profil client */}
                                 <a href="u/10j24wrb" className="btn-secondary" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                                    <span>👀 Tester un profil</span>
+                                    <div style={{ width: '20px', height: '20px', display: 'flex' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>` }} /> Tester un profil
                                     <span style={{ fontSize: '16px' }}>&#8594;</span>
                                 </a>
                             </div>
@@ -417,7 +417,7 @@ export default function LandingPage() {
                                 
                                 {/* Badge de statut flottant */}
                                 <div className="glass-panel" style={{ position: 'absolute', bottom: '-15px', right: '-15px', padding: '10px 18px', borderRadius: '100px', zIndex: 2, display: 'flex', alignItems: 'center', gap: '8px', animation: 'floatFast 4s ease-in-out infinite', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}>
-                                    <span style={{ fontSize: '18px' }}>🎬</span>
+                                    <div style={{ width: '20px', height: '20px', display: 'flex' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>` }} />
                                     <span style={{ fontWeight: '800', fontSize: '13px', color: '#111827' }}>Démonstration</span>
                                 </div>
                             </div>
@@ -446,17 +446,23 @@ export default function LandingPage() {
 
                     <div className="bento-grid">
                         <div className="glass-panel animate-fade-up delay-1">
-                            <div className="icon-circle">⚡</div>
+                            <div className="icon-circle">
+                                <div style={{ width: '24px', height: '24px', color: '#4F46E5', display: 'flex' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polyline></svg>` }} />
+                            </div>
                             <h3 style={{ fontWeight: '800', fontSize: '22px', marginBottom: '12px', fontFamily: 'Outfit' }}>Sans application</h3>
                             <p style={{ color: '#4B5563', lineHeight: '1.6' }}>Votre interlocuteur n'a rien à télécharger. Le profil s'ouvre directement dans son navigateur web par simple contact NFC ou scan de QR code.</p>
                         </div>
                         <div className="glass-panel animate-fade-up delay-2">
-                            <div className="icon-circle">🔄</div>
+                            <div className="icon-circle">
+                                <div style={{ width: 24, height: 24, color: '#4F46E5', display: 'flex' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"></path><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>` }} />
+                            </div>
                             <h3 style={{ fontWeight: '800', fontSize: '22px', marginBottom: '12px', fontFamily: 'Outfit' }}>Modifiable à l'infini</h3>
                             <p style={{ color: '#4B5563', lineHeight: '1.6' }}>Vous changez de numéro ou de réseau social ? Modifiez vos informations en temps réel depuis votre tableau de bord. La carte physique reste la même.</p>
                         </div>
                         <div className="glass-panel animate-fade-up delay-3">
-                            <div className="icon-circle">🌍</div>
+                            <div className="icon-circle">
+                                <div style={{ width: 24, height: 24, color: '#4F46E5', display: 'flex' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>` }} />
+                            </div>
                             <h3 style={{ fontWeight: '800', fontSize: '22px', marginBottom: '12px', fontFamily: 'Outfit' }}>Un seul achat à vie</h3>
                             <p style={{ color: '#4B5563', lineHeight: '1.6' }}>Plus besoin de réimprimer 500 cartes tous les 6 mois. Une seule carte NFC robuste suffit pour des années de rencontres.</p>
                         </div>
@@ -527,21 +533,27 @@ export default function LandingPage() {
                             
                             <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 40px 0', display: 'flex', flexDirection: 'column', gap: '24px', textAlign: 'left' }}>
                                 <li style={{ display: 'flex', gap: '16px' }}>
-                                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(255,255,255,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', flexShrink: 0, border: '1px solid rgba(255,255,255,0.9)', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>🔗</div>
+                                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(255,255,255,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid rgba(255,255,255,0.9)', boxShadow: '0 4px 10px rgba(0,0,0,0.05)', padding: 12 }}>
+                                        <div style={{ width: '100%', height: '100%', display: 'flex', color: '#4F46E5' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>` }} />
+                                    </div>
                                     <div>
                                         <h4 style={{ fontWeight: '800', fontSize: '18px', marginBottom: '6px' }}>Lien en bio (Instagram, TikTok,etc.)</h4>
                                         <p style={{ color: '#4B5563', fontSize: '15px', lineHeight: '1.5' }}>Un lien unique pour centraliser vos réseaux, portfolio et contacts. Vos abonnés ont accès à tout votre univers.</p>
                                     </div>
                                 </li>
                                 <li style={{ display: 'flex', gap: '16px' }}>
-                                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(255,255,255,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', flexShrink: 0, border: '1px solid rgba(255,255,255,0.9)', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>📅</div>
+                                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(255,255,255,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid rgba(255,255,255,0.9)', boxShadow: '0 4px 10px rgba(0,0,0,0.05)', padding: 12 }}>
+                                        <div style={{ width: '100%', height: '100%', display: 'flex', color: '#10B981' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>` }} />
+                                    </div>
                                     <div>
                                         <h4 style={{ fontWeight: '800', fontSize: '18px', marginBottom: '6px' }}>Prise de Rendez-vous simplifiée</h4>
                                         <p style={{ color: '#4B5563', fontSize: '15px', lineHeight: '1.5' }}>Médecins, artisans, salons : posez votre QR Code sur votre comptoir ou bureau. Vos clients y trouvent vos liens Doctolib, Calendly ou WhatsApp pour booker en 1 clic.</p>
                                     </div>
                                 </li>
                                 <li style={{ display: 'flex', gap: '16px' }}>
-                                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(255,255,255,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', flexShrink: 0, border: '1px solid rgba(255,255,255,0.9)', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>📱</div>
+                                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(255,255,255,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid rgba(255,255,255,0.9)', boxShadow: '0 4px 10px rgba(0,0,0,0.05)', padding: 12 }}>
+                                        <div style={{ width: '100%', height: '100%', display: 'flex', color: '#F59E0B' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>` }} />
+                                    </div>
                                     <div>
                                         <h4 style={{ fontWeight: '800', fontSize: '18px', marginBottom: '6px' }}>Votre code QR personnalisé</h4>
                                         <p style={{ color: '#4B5563', fontSize: '15px', lineHeight: '1.5' }}>Affichez-le sur vos flyers, menus ou cartes classiques. Idéal pour partager votre univers digital sans le moindre effort.</p>
@@ -596,7 +608,9 @@ export default function LandingPage() {
                         <div className="glass-panel price-card featured">
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', width: '100%', flexWrap: 'wrap', gap: '12px' }}>
                                 <div style={{ background: '#EEF2FF', color: '#4F46E5', padding: '8px 20px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Le Complet</div>
-                                <div style={{ background: '#EF4444', color: 'white', padding: '6px 12px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', animation: 'pulseBadge 2s infinite' }}>🔥 Offre de Lancement</div>
+                                <div style={{ background: '#EF4444', color: 'white', padding: '6px 12px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', animation: 'pulseBadge 2s infinite', display: 'flex', alignItems: 'center', gap: 6 }}>
+                                    <div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>` }} /> Offre de Lancement
+                                </div>
                             </div>
                             <h3 style={{ fontSize: '32px', fontWeight: '900', marginBottom: '8px', fontFamily: 'Outfit' }}>Pack Physique</h3>
                             <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '32px' }}>
@@ -628,7 +642,7 @@ export default function LandingPage() {
                     <div className="pricing-grid">
                         {/* Digital Audience */}
                         <div className="glass-panel animate-fade-up delay-1" style={{ padding: '40px', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
-                            <div style={{ position: 'absolute', top: '-20px', right: '-20px', fontSize: '150px', opacity: '0.05', pointerEvents: 'none' }}>🌐</div>
+                            <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '150px', height: '150px', opacity: '0.05', pointerEvents: 'none', display: 'flex' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>` }} />
                             <h3 style={{ fontSize: '28px', fontWeight: '900', fontFamily: 'Outfit', marginBottom: '12px', color: '#111827', position: 'relative', zIndex: 1 }}>Le Pack Digital</h3>
                             <div style={{ fontWeight: '700', color: '#4B5563', marginBottom: '32px', fontSize: '16px', position: 'relative', zIndex: 1 }}>L'identité 100% connectée :</div>
                             
@@ -650,12 +664,12 @@ export default function LandingPage() {
 
                         {/* Physical Audience */}
                         <div className="glass-panel animate-fade-up delay-2" style={{ padding: '40px', background: '#111827', color: 'white', border: '1px solid #374151', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
-                            <div style={{ position: 'absolute', top: '-20px', right: '-20px', fontSize: '150px', opacity: '0.05', pointerEvents: 'none' }}>💳</div>
+                            <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '150px', height: '150px', opacity: '0.05', pointerEvents: 'none', display: 'flex' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>` }} />
                             
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px', position: 'relative', zIndex: 1 }}>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                     <div style={{ background: 'linear-gradient(90deg, #F59E0B, #FBBF24)', color: '#111827', padding: '4px 12px', borderRadius: '100px', fontSize: '11px', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '4px', alignSelf: 'flex-start', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                                        <span>🌟</span> LE PLUS POPULAIRE
+                                        <div style={{ width: '12px', height: '12px', display: 'flex' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>` }} /> LE PLUS POPULAIRE
                                     </div>
                                     <h3 style={{ fontSize: '28px', fontWeight: '900', fontFamily: 'Outfit', margin: 0, color: 'white' }}>Le Pack Physique</h3>
                                 </div>
@@ -848,12 +862,12 @@ export default function LandingPage() {
                             
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                                 {[
-                                    { emoji: "📱", title: "Réseaux Sociaux", sub: "Instagram, TikTok, LinkedIn..." },
-                                    { emoji: "📅", title: "Rendez-vous", sub: "Calendly, Doctolib, WhatsApp..." },
-                                    { emoji: "📄", title: "Documents", sub: "Catalogue PDF, CV, Menus, Devis..." }
+                                    { icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>`, color: '#3B82F6', title: "Réseaux Sociaux", sub: "Instagram, TikTok, LinkedIn..." },
+                                    { icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>`, color: '#10B981', title: "Rendez-vous", sub: "Calendly, Doctolib, WhatsApp..." },
+                                    { icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>`, color: '#F59E0B', title: "Documents", sub: "Catalogue PDF, CV, Menus, Devis..." }
                                 ].map((item, i) => (
-                                    <div key={i} style={{ display: 'flex', gap: '12px' }}>
-                                        <span style={{ fontSize: '24px' }}>{item.emoji}</span>
+                                    <div key={i} style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                                        <div style={{ width: '32px', height: '32px', color: item.color }} dangerouslySetInnerHTML={{ __html: item.icon }} />
                                         <div>
                                             <div style={{ fontWeight: '800', color: '#111827', fontSize: '15px' }}>{item.title}</div>
                                             <div style={{ fontSize: '13px', color: '#6B7280' }}>{item.sub}</div>
@@ -878,11 +892,11 @@ export default function LandingPage() {
                                 />
                                 {/* Floating Badges */}
                                 <div style={{ position: 'absolute', top: '10%', left: '-20px', background: 'white', padding: '12px 20px', borderRadius: '16px', boxShadow: '0 10px 25px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', gap: '10px', animation: 'floatMed 5s ease-in-out infinite', zIndex: 10 }}>
-                                    <span style={{ fontSize: '20px' }}>✨</span>
+                                    <div style={{ width: '20px', height: '20px', color: '#FBBF24' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>` }} />
                                     <span style={{ fontWeight: '800', fontSize: '14px', color: '#111827' }}>Effet Waouh</span>
                                 </div>
                                 <div style={{ position: 'absolute', bottom: '20%', right: '-30px', background: 'white', padding: '12px 20px', borderRadius: '16px', boxShadow: '0 10px 25px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', gap: '10px', animation: 'floatMed 6s ease-in-out infinite 1s', zIndex: 10 }}>
-                                    <span style={{ fontSize: '20px' }}>⚡</span>
+                                    <div style={{ width: '20px', height: '20px', color: '#F59E0B' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polyline></svg>` }} />
                                     <span style={{ fontWeight: '800', fontSize: '14px', color: '#111827' }}>Vitesse éclair</span>
                                 </div>
                             </div>
@@ -915,22 +929,22 @@ export default function LandingPage() {
                                 La carte NFC est parfaite pour le contact physique. Mais pour exister en ligne et digitaliser votre business, il vous faut un site web sur-mesure à intégrer dans votre profil digital NFCrafter. Confiez-nous votre projet.
                             </p>
 
-                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', background: 'linear-gradient(90deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.2))', border: '1px solid rgba(16, 185, 129, 0.3)', padding: '12px 24px', borderRadius: '12px', marginBottom: '40px' }}>
-                                <span style={{ fontSize: '24px' }}>🎁</span>
-                                <span style={{ color: '#34D399', fontWeight: '800', fontSize: '16px', letterSpacing: '0.5px' }}>Un site commandé = Une carte personnalisée offerte !</span>
-                            </div>
+                             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', background: 'linear-gradient(90deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.2))', border: '1px solid rgba(16, 185, 129, 0.3)', padding: '12px 24px', borderRadius: '12px', marginBottom: '40px' }}>
+                                 <div style={{ width: '24px', height: '24px', color: '#34D399' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>` }} />
+                                 <span style={{ color: '#34D399', fontWeight: '800', fontSize: '16px', letterSpacing: '0.5px' }}>Un site commandé = Une carte personnalisée offerte !</span>
+                             </div>
 
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '40px' }}>
-                                <div style={{ background: 'rgba(255,255,255,0.05)', padding: '24px', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}>
-                                    <div style={{ fontSize: '32px', marginBottom: '16px' }}>💎</div>
-                                    <h4 style={{ fontSize: '18px', fontWeight: '800', fontFamily: 'Outfit', color: 'white', marginBottom: '8px' }}>Sites Vitrines</h4>
-                                    <p style={{ fontSize: '14px', color: '#9CA3AF', lineHeight: '1.5' }}>Présentez votre entreprise, vos services et attirez de nouveaux prospects.</p>
-                                </div>
-                                <div style={{ background: 'rgba(255,255,255,0.05)', padding: '24px', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}>
-                                    <div style={{ fontSize: '32px', marginBottom: '16px' }}>🛍️</div>
-                                    <h4 style={{ fontSize: '18px', fontWeight: '800', fontFamily: 'Outfit', color: 'white', marginBottom: '8px' }}>Boutiques E-commerce</h4>
-                                    <p style={{ fontSize: '14px', color: '#9CA3AF', lineHeight: '1.5' }}>Vendez vos produits en ligne avec des paiements sécurisés intégrés.</p>
-                                </div>
+                                 <div style={{ background: 'rgba(255,255,255,0.05)', padding: '24px', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}>
+                                     <div style={{ width: '32px', height: '32px', color: '#818CF8', marginBottom: '16px' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>` }} />
+                                     <h4 style={{ fontSize: '18px', fontWeight: '800', fontFamily: 'Outfit', color: 'white', marginBottom: '8px' }}>Sites Vitrines</h4>
+                                     <p style={{ fontSize: '14px', color: '#9CA3AF', lineHeight: '1.5' }}>Présentez votre entreprise, vos services et attirez de nouveaux prospects.</p>
+                                 </div>
+                                 <div style={{ background: 'rgba(255,255,255,0.05)', padding: '24px', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}>
+                                     <div style={{ width: '32px', height: '32px', color: '#38BDF8', marginBottom: '16px' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>` }} />
+                                     <h4 style={{ fontSize: '18px', fontWeight: '800', fontFamily: 'Outfit', color: 'white', marginBottom: '8px' }}>Boutiques E-commerce</h4>
+                                     <p style={{ fontSize: '14px', color: '#9CA3AF', lineHeight: '1.5' }}>Vendez vos produits en ligne avec des paiements sécurisés intégrés.</p>
+                                 </div>
                             </div>
 
                             <button onClick={() => window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Bonjour NFCrafter, je voudrais discuter de la création d\'un site internet professionnel pour mon entreprise. Pouvons-nous en parler ?')}`, '_blank')} className="btn-primary" style={{ background: 'white', color: '#111827', width: '100%', maxWidth: '400px', fontSize: '16px', padding: '20px 32px' }}>
@@ -1002,41 +1016,47 @@ export default function LandingPage() {
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
-                        <div className="glass-panel animate-fade-up delay-1" style={{ padding: '32px', background: '#F8FAFC', border: '1px solid #E2E8F0', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
-                            <div style={{ color: '#F59E0B', fontSize: '20px', marginBottom: '16px' }}>★★★★★</div>
-                            <p style={{ color: '#4B5563', fontSize: '16px', lineHeight: '1.6', marginBottom: '24px', fontStyle: 'italic' }}>"Je ne perds plus aucun contact après mes séminaires. Les gens scannent ma carte et j'ai directement un nouveau follower ou un message WhatsApp. C'est magique !"</p>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>👨🏾‍💼</div>
-                                <div>
-                                    <h4 style={{ fontWeight: '800', color: '#111827', fontSize: '15px' }}>Alain D.</h4>
-                                    <span style={{ color: '#64748B', fontSize: '13px' }}>Entrepreneur Web</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="glass-panel animate-fade-up delay-2" style={{ padding: '32px', background: '#F8FAFC', border: '1px solid #E2E8F0', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
-                            <div style={{ color: '#F59E0B', fontSize: '20px', marginBottom: '16px' }}>★★★★★</div>
-                            <p style={{ color: '#4B5563', fontSize: '16px', lineHeight: '1.6', marginBottom: '24px', fontStyle: 'italic' }}>"Mes clients au restaurant adorent ! Ils scannent la carte sur le comptoir, voient le menu (que j'ai commandé sur NFCrafter) et s'abonnent à notre page Instagram. C'est ultra pratique et pro."</p>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>👩🏾‍🍳</div>
-                                <div>
-                                    <h4 style={{ fontWeight: '800', color: '#111827', fontSize: '15px' }}>Sarah M.</h4>
-                                    <span style={{ color: '#64748B', fontSize: '13px' }}>Gérante de Restaurant</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="glass-panel animate-fade-up delay-3" style={{ padding: '32px', background: '#F8FAFC', border: '1px solid #E2E8F0', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
-                            <div style={{ color: '#F59E0B', fontSize: '20px', marginBottom: '16px' }}>★★★★★</div>
-                            <p style={{ color: '#4B5563', fontSize: '16px', lineHeight: '1.6', marginBottom: '24px', fontStyle: 'italic' }}>"La qualité de la carte est incroyable. Quand je la sors en rendez-vous client, ça crée direct l'effet waouh. C'est le meilleur investissement pour mon business."</p>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>🧑🏾‍💻</div>
-                                <div>
-                                    <h4 style={{ fontWeight: '800', color: '#111827', fontSize: '15px' }}>Marc K.</h4>
-                                    <span style={{ color: '#64748B', fontSize: '13px' }}>Freelance IT</span>
-                                </div>
-                            </div>
-                        </div>
+                         <div className="glass-panel animate-fade-up delay-1" style={{ padding: '32px', background: '#F8FAFC', border: '1px solid #E2E8F0', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
+                             <div style={{ color: '#F59E0B', fontSize: '20px', marginBottom: '16px' }}>★★★★★</div>
+                             <p style={{ color: '#4B5563', fontSize: '16px', lineHeight: '1.6', marginBottom: '24px', fontStyle: 'italic' }}>"Je ne perds plus aucun contact après mes séminaires. Les gens scannent ma carte et j'ai directement un nouveau follower ou un message WhatsApp. C'est magique !"</p>
+                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                 <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748B', padding: 12 }}>
+                                     <div style={{ width: '100%', height: '100%' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>` }} />
+                                 </div>
+                                 <div>
+                                     <h4 style={{ fontWeight: '800', color: '#111827', fontSize: '15px' }}>Alain D.</h4>
+                                     <span style={{ color: '#64748B', fontSize: '13px' }}>Entrepreneur Web</span>
+                                 </div>
+                             </div>
+                         </div>
+ 
+                         <div className="glass-panel animate-fade-up delay-2" style={{ padding: '32px', background: '#F8FAFC', border: '1px solid #E2E8F0', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
+                             <div style={{ color: '#F59E0B', fontSize: '20px', marginBottom: '16px' }}>★★★★★</div>
+                             <p style={{ color: '#4B5563', fontSize: '16px', lineHeight: '1.6', marginBottom: '24px', fontStyle: 'italic' }}>"Mes clients au restaurant adorent ! Ils scannent la carte sur le comptoir, voient le menu (que j'ai commandé sur NFCrafter) et s'abonnent à notre page Instagram. C'est ultra pratique et pro."</p>
+                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                 <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748B', padding: 12 }}>
+                                     <div style={{ width: '100%', height: '100%' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>` }} />
+                                 </div>
+                                 <div>
+                                     <h4 style={{ fontWeight: '800', color: '#111827', fontSize: '15px' }}>Sarah M.</h4>
+                                     <span style={{ color: '#64748B', fontSize: '13px' }}>Gérante de Restaurant</span>
+                                 </div>
+                             </div>
+                         </div>
+ 
+                         <div className="glass-panel animate-fade-up delay-3" style={{ padding: '32px', background: '#F8FAFC', border: '1px solid #E2E8F0', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
+                             <div style={{ color: '#F59E0B', fontSize: '20px', marginBottom: '16px' }}>★★★★★</div>
+                             <p style={{ color: '#4B5563', fontSize: '16px', lineHeight: '1.6', marginBottom: '24px', fontStyle: 'italic' }}>"La qualité de la carte est incroyable. Quand je la sors en rendez-vous client, ça crée direct l'effet waouh. C'est le meilleur investissement pour mon business."</p>
+                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                 <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748B', padding: 12 }}>
+                                     <div style={{ width: '100%', height: '100%' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>` }} />
+                                 </div>
+                                 <div>
+                                     <h4 style={{ fontWeight: '800', color: '#111827', fontSize: '15px' }}>Marc K.</h4>
+                                     <span style={{ color: '#64748B', fontSize: '13px' }}>Freelance IT</span>
+                                 </div>
+                             </div>
+                         </div>
                     </div>
                 </div>
             </section>

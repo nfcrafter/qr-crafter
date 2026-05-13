@@ -29,8 +29,8 @@ function ColorField({ label, value, onChange }) {
 }
 
 const QR_TYPES = [
-    { id: 'url', icon: '🌐', label: 'Lien URL', desc: 'Redirige vers un site web existant.' },
-    { id: 'profile', icon: '👤', label: 'Profil Personnel', desc: 'Page de contact digitale complète.' }
+    { id: 'url', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>`, label: 'Lien URL', desc: 'Redirige vers un site web existant.' },
+    { id: 'profile', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`, label: 'Profil Personnel', desc: 'Page de contact digitale complète.' }
 ];
 
 const DOT_STYLES = ['rounded', 'dots', 'classy', 'classy-rounded', 'square', 'extra-rounded'];
@@ -163,7 +163,7 @@ export default function CreateCardWizard() {
         <div className="accordion" key={id}>
             <div className="accordion-header" onClick={() => setOpenSection(openSection === id ? '' : id)}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <span style={{ fontSize: 20 }}>{icon}</span>
+                    <div style={{ width: 20, height: 20, display: 'flex' }} dangerouslySetInnerHTML={{ __html: icon }} />
                     <div>
                         <div style={{ fontWeight: 700, color: '#1A1265' }}>{title}</div>
                         <div style={{ fontSize: 12, color: '#94A3B8' }}>{sub}</div>
@@ -199,7 +199,7 @@ export default function CreateCardWizard() {
                                     {QR_TYPES.map(t => (
                                         <div key={t.id} className={`selection-card ${selectedType === t.id ? 'active' : ''}`}
                                             onClick={() => { setSelectedType(t.id); setStep(2); }}>
-                                            <i>{t.icon}</i><h3>{t.label}</h3><p>{t.desc}</p>
+                                            <i dangerouslySetInnerHTML={{ __html: t.icon }} /><h3>{t.label}</h3><p>{t.desc}</p>
                                         </div>
                                     ))}
                                 </div>
@@ -211,7 +211,7 @@ export default function CreateCardWizard() {
                             <div>
                                 <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 32 }}>Contenu</h2>
 
-                                {selectedType === 'url' && acc('url', '🌐', 'URL de destination', 'Lien vers lequel le QR redirige.', (
+                                {selectedType === 'url' && acc('url', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>`, 'URL de destination', 'Lien vers lequel le QR redirige.', (
                                     <div className="field" style={{ marginTop: 16 }}>
                                         <label>URL *</label>
                                         <input type="url" value={profile.url} onChange={e => setProfile({ ...profile, url: e.target.value })} placeholder="https://votresite.com" />
@@ -219,7 +219,7 @@ export default function CreateCardWizard() {
                                 ))}
 
                                 {selectedType === 'profile' && <>
-                                    {acc('info', '👤', 'Informations', 'Nom, bio, photo, bannière.', (
+                                    {acc('info', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`, 'Informations', 'Nom, bio, photo, bannière.', (
                                         <div style={{ marginTop: 16 }}>
                                             <div className="field"><label>Nom complet *</label><input type="text" value={profile.full_name} onChange={e => setProfile({ ...profile, full_name: e.target.value })} /></div>
                                             <div className="field"><label>Profession / Titre</label><input type="text" value={profile.job_title} onChange={e => setProfile({ ...profile, job_title: e.target.value })} /></div>
@@ -232,7 +232,7 @@ export default function CreateCardWizard() {
                                         </div>
                                     ))}
 
-                                    {acc('socials', '📱', 'Réseaux Sociaux', 'Cliquez sur un logo pour activer.', (
+                                    {acc('socials', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>`, 'Réseaux Sociaux', 'Cliquez sur un logo pour activer.', (
                                         <div style={{ marginTop: 16 }}>
                                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginBottom: 20 }}>
                                                 {SOCIAL_NETWORKS.map(net => {
@@ -269,7 +269,7 @@ export default function CreateCardWizard() {
                                         </div>
                                     ))}
 
-                                    {acc('links', '🔗', 'Liens Personnalisés', 'Boutique, portfolio, autres liens.', (
+                                    {acc('links', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>`, 'Liens Personnalisés', 'Boutique, portfolio, autres liens.', (
                                         <div style={{ marginTop: 16 }}>
                                             {profile.customLinks.map((link, idx) => (
                                                 <div key={idx} style={{ background: '#F8FAFC', borderRadius: 16, padding: '16px', marginBottom: 12, border: '1px solid #E2E8F0' }}>
@@ -294,7 +294,7 @@ export default function CreateCardWizard() {
                                     ))}
                                 </>}
 
-                                {acc('config', '⚙️', 'Organisation', 'Nom interne et dossier.', (
+                                {acc('config', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>`, 'Organisation', 'Nom interne et dossier.', (
                                     <div style={{ marginTop: 16 }}>
                                         <div className="field"><label>Nom interne</label><input type="text" value={cardName} onChange={e => setCardName(e.target.value)} /></div>
                                         <div className="field"><label>Dossier</label>
@@ -332,7 +332,7 @@ export default function CreateCardWizard() {
                             <div className="animate-fade-in" style={{ textAlign: 'center', padding: '40px 0' }}>
                                 <div style={{ position: 'relative', display: 'inline-block', marginBottom: 32 }}>
                                     <div style={{ position: 'absolute', inset: -20, background: 'var(--primary)', opacity: 0.1, borderRadius: '50%', animation: 'pulse 2s infinite' }} />
-                                    <div style={{ fontSize: 72 }}>✨</div>
+                                    <div style={{ width: 72, height: 72, color: '#6366F1', display: 'flex' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>` }} />
                                 </div>
                                 <h2 style={{ fontSize: 36, fontWeight: 900, color: '#1A1265', marginBottom: 16, letterSpacing: '-1px' }}>Félicitations !</h2>
                                 <p style={{ color: '#64748B', fontSize: 16, maxWidth: 500, margin: '0 auto 48px', lineHeight: 1.6 }}>
@@ -342,7 +342,9 @@ export default function CreateCardWizard() {
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32, marginBottom: 48 }}>
                                     <div className="premium-card" style={{ padding: 32, textAlign: 'left', border: '1px solid #E2E8F0', position: 'relative', overflow: 'hidden' }}>
                                         <div style={{ position: 'absolute', top: 0, right: 0, padding: '8px 16px', background: '#F1F5F9', fontSize: 10, fontWeight: 800, color: '#94A3B8', borderRadius: '0 0 0 12px' }}>PUBLIC</div>
-                                        <div style={{ width: 48, height: 48, borderRadius: 14, background: '#EEF2FF', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24, fontSize: 24 }}>🔗</div>
+                                        <div style={{ width: 48, height: 48, borderRadius: 14, background: '#EEF2FF', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24, padding: 12, color: '#6366F1' }}>
+                                            <div style={{ width: '100%', height: '100%', display: 'flex' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>` }} />
+                                        </div>
                                         <h3 style={{ fontSize: 18, fontWeight: 800, color: '#1A1265', marginBottom: 8 }}>Lien du Profil</h3>
                                         <p style={{ fontSize: 13, color: '#64748B', marginBottom: 20 }}>Le lien vers la page de destination finale du QR.</p>
                                         <div style={{ background: '#F8FAFC', padding: '16px', borderRadius: 14, fontSize: 12, fontWeight: 700, color: '#6366F1', wordBreak: 'break-all', border: '1px solid #E2E8F0', marginBottom: 20 }}>
@@ -353,7 +355,9 @@ export default function CreateCardWizard() {
 
                                     <div className="premium-card" style={{ padding: 32, textAlign: 'left', background: 'white', border: '2px solid #6366F1', position: 'relative', boxShadow: '0 20px 40px rgba(99, 102, 241, 0.1)' }}>
                                         <div style={{ position: 'absolute', top: 0, right: 0, padding: '8px 16px', background: '#6366F1', fontSize: 10, fontWeight: 800, color: 'white', borderRadius: '0 0 0 12px' }}>ACTION REQUISE</div>
-                                        <div style={{ width: 48, height: 48, borderRadius: 14, background: '#F5F3FF', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24, fontSize: 24 }}>🔑</div>
+                                        <div style={{ width: 48, height: 48, borderRadius: 14, background: '#F5F3FF', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24, padding: 12, color: '#1A1265' }}>
+                                            <div style={{ width: '100%', height: '100%', display: 'flex' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3L15.5 7.5z"></path></svg>` }} />
+                                        </div>
                                         <h3 style={{ fontSize: 18, fontWeight: 800, color: '#1A1265', marginBottom: 8 }}>Activation Client</h3>
                                         <p style={{ fontSize: 13, color: '#64748B', marginBottom: 20 }}>Envoyez ce lien au client pour qu'il crée son compte.</p>
                                         <div style={{ background: '#F5F3FF', padding: '16px', borderRadius: 14, fontSize: 12, fontWeight: 700, color: '#1A1265', wordBreak: 'break-all', border: '1px solid #DDD6FE', marginBottom: 20 }}>

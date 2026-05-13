@@ -62,9 +62,9 @@ export default function Redirect() {
     if (error) return (
         <div style={{
             minHeight: '100vh', display: 'flex', flexDirection: 'column',
-            alignItems: 'center', justifyContent: 'center', background: 'var(--bg)',
+            alignItems: 'center', justifyContent: 'center', background: '#F8FAFC', padding: 20, textAlign: 'center'
         }}>
-            <div style={{ fontSize: '48px', marginBottom: '16px' }}>😕</div>
+            <div style={{ width: 64, height: 64, color: '#94A3B8', marginBottom: 16 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M16 16s-1.5-2-4-2-4 2-4 2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>` }} />
             <h2 style={{ fontFamily: 'var(--font-display)', color: 'var(--accent)', marginBottom: '8px' }}>
                 QR Code introuvable
             </h2>
@@ -75,9 +75,10 @@ export default function Redirect() {
     return (
         <div style={{
             minHeight: '100vh', display: 'flex', flexDirection: 'column',
-            alignItems: 'center', justifyContent: 'center', background: 'var(--bg)',
+            alignItems: 'center', justifyContent: 'center', background: '#F8FAFC',
         }}>
-            <div style={{ fontSize: '48px', marginBottom: '16px' }}>⏳</div>
+            <div style={{ width: 48, height: 48, color: '#6366F1', marginBottom: 16, animation: 'spin 2s linear infinite' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>` }} />
+            <style>{`@keyframes spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }`}</style>
             <p style={{ color: 'var(--text-light)', fontFamily: 'var(--font-body)' }}>
                 Redirection en cours...
             </p>

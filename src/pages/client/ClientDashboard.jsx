@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from '../../components/Toast.jsx';
 import ProfileForm from '../../components/ProfileForm.jsx';
 import PhonePreview from '../../components/PhonePreview.jsx';
-import { SOCIAL_NETWORKS } from '../../constants/socials.js';
+import { SOCIAL_NETWORKS, LINK_ICONS } from '../../constants/socials.js';
 
 export default function ClientDashboard() {
     const navigate = useNavigate();
@@ -207,7 +207,7 @@ export default function ClientDashboard() {
                         {userCards.map(card => (
                             <button key={card.card_id} onClick={() => setSelectedCardId(card.card_id)} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', textAlign: 'left', cursor: 'pointer', background: selectedCardId === card.card_id ? '#F5F3FF' : 'transparent', color: selectedCardId === card.card_id ? '#7C3AED' : '#64748B', fontWeight: '700', transition: '0.2s', display: 'flex', alignItems: 'center', gap: '12px', position: 'relative' }}>
                                 {selectedCardId === card.card_id && <div style={{ position: 'absolute', left: 0, top: '20%', bottom: '20%', width: '4px', background: '#7C3AED', borderRadius: '0 4px 4px 0' }} />}
-                                <span style={{ fontSize: '18px', opacity: selectedCardId === card.card_id ? 1 : 0.6 }}>{selectedCardId === card.card_id ? '💎' : '👤'}</span> 
+                                <div style={{ width: 18, height: 18, opacity: selectedCardId === card.card_id ? 1 : 0.6 }} dangerouslySetInnerHTML={{ __html: selectedCardId === card.card_id ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l4 6-10 12L2 9z"></path><path d="M11 3v4"></path><path d="M15 3l-2 4"></path><path d="M9 3l2 4"></path><path d="M2 9h20"></path></svg>` : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>` }} /> 
                                 <span style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{card.card_name || 'Mon Profil'}</span>
                             </button>
                         ))}
@@ -227,7 +227,7 @@ export default function ClientDashboard() {
             <main className="main-content" style={{ flex: 1, marginLeft: '280px', padding: '40px' }}>
                 {userCards.length === 0 ? (
                     <div style={{ maxWidth: '600px', margin: '40px auto', textAlign: 'center', background: 'white', padding: '60px 40px', borderRadius: '32px', border: '1px solid #E2E8F0' }}>
-                        <div style={{ fontSize: '64px', marginBottom: '24px' }}>👋</div>
+                        <div style={{ width: '80px', height: '80px', margin: '0 auto 24px auto', color: '#1A1265' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a3 3 0 0 0-3-3H5a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V8Z"></path><path d="M10 12h.01"></path><path d="M16 2v2"></path><path d="M6 2v2"></path></svg>` }} />
                         <h1 style={{ fontSize: '28px', fontWeight: '900', color: '#1A1265', marginBottom: '16px' }}>Bienvenue</h1>
                         <p style={{ color: '#64748B', lineHeight: '1.6', marginBottom: '32px' }}>Vous n'avez pas encore de profil actif. Cliquez ci-dessous pour commander votre premier profil digital.</p>
                         <button onClick={() => handleWhatsAppOrder(false)} className="btn-primary" style={{ padding: '16px 40px', borderRadius: '100px', background: '#25D366', border: 'none' }}>🚀 Activer mon profil (2000f)</button>
@@ -244,8 +244,12 @@ export default function ClientDashboard() {
                                         <div style={{ fontSize: '15px', fontWeight: '700', color: '#6366F1', wordBreak: 'break-all' }}>{publicUrl}</div>
                                     </div>
                                     <div style={{ display: 'flex', gap: '8px' }}>
-                                        <button onClick={() => window.open(publicUrl, '_blank')} style={{ flex: 1, padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '700', cursor: 'pointer', fontSize: '13px' }}>👁️ Voir</button>
-                                        <button onClick={async () => { if (navigator.share) { try { await navigator.share({ title: 'NFCrafter', url: publicUrl }); } catch (e) {} } else { window.open(`https://wa.me/?text=${encodeURIComponent(publicUrl)}`, '_blank'); } }} style={{ flex: 1, padding: '12px', borderRadius: '12px', background: '#25D366', color: 'white', border: 'none', fontWeight: '700', cursor: 'pointer', fontSize: '13px' }}>📲 Partager</button>
+                                        <button onClick={() => window.open(publicUrl, '_blank')} style={{ flex: 1, padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '700', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                                            <div style={{ width: 16, height: 16 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>` }} /> Voir
+                                        </button>
+                                        <button onClick={async () => { if (navigator.share) { try { await navigator.share({ title: 'NFCrafter', url: publicUrl }); } catch (e) {} } else { window.open(`https://wa.me/?text=${encodeURIComponent(publicUrl)}`, '_blank'); } }} style={{ flex: 1, padding: '12px', borderRadius: '12px', background: '#25D366', color: 'white', border: 'none', fontWeight: '700', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                                            <div style={{ width: 16, height: 16 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>` }} /> Partager
+                                        </button>
                                     </div>
                                 </div>
 
@@ -254,14 +258,18 @@ export default function ClientDashboard() {
                                         <div style={{ fontSize: '11px', fontWeight: '800', color: '#94A3B8', marginBottom: '4px', textTransform: 'uppercase' }}>Vues (Scans)</div>
                                         <div style={{ fontSize: '32px', fontWeight: '900', color: '#1A1265' }}>{scanCount}</div>
                                     </div>
-                                    <div style={{ width: '50px', height: '50px', borderRadius: '14px', background: '#F0F9FF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px' }}>📊</div>
+                                    <div style={{ width: '50px', height: '50px', borderRadius: '14px', background: '#F0F9FF', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 12, color: '#0EA5E9' }}>
+                                        <div style={{ width: '100%', height: '100%' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>` }} />
+                                    </div>
                                 </div>
                             </div>
 
                             {/* Banner - Physical Card */}
                             <div style={{ background: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)', color: 'white', padding: '30px', borderRadius: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px', boxShadow: '0 20px 40px rgba(79,70,229,0.15)', position: 'relative', overflow: 'hidden' }}>
                                 <div style={{ flex: 1, position: 'relative', zIndex: 1 }}>
-                                    <h3 style={{ fontSize: '18px', fontWeight: '900', marginBottom: '8px', color: 'white' }}>Carte Physique 💳</h3>
+                                    <h3 style={{ fontSize: '18px', fontWeight: '900', marginBottom: '8px', color: 'white', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        Carte Physique <div style={{ width: 20, height: 20 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>` }} />
+                                    </h3>
                                     <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '13px', lineHeight: '1.5', maxWidth: '300px' }}>Commandez votre carte NFC premium personnalisée.</p>
                                 </div>
                                 <button onClick={() => window.open(`https://wa.me/22969473921?text=${encodeURIComponent('Commande carte : ' + publicUrl)}`, '_blank')} style={{ background: 'white', color: '#4F46E5', border: 'none', padding: '12px 24px', borderRadius: '14px', fontWeight: '900', cursor: 'pointer', fontSize: '13px' }}>Commander</button>
@@ -275,7 +283,13 @@ export default function ClientDashboard() {
                                         <p style={{ color: '#64748B', fontSize: '14px', margin: 0 }}>Personnalisez l'apparence de votre profil.</p>
                                     </div>
                                     <button onClick={() => setViewMode(viewMode === 'view' ? 'edit' : 'view')} style={{ padding: '12px 28px', borderRadius: '16px', background: viewMode === 'edit' ? '#F1F5F9' : '#1A1265', color: viewMode === 'edit' ? '#1A1265' : 'white', border: 'none', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', transition: '0.2s' }}>
-                                        {viewMode === 'edit' ? 'Annuler' : '✏️ Modifier le profil'}
+                                        {viewMode === 'edit' ? (
+                                            <>Annuler</>
+                                        ) : (
+                                            <>
+                                                <div style={{ width: 16, height: 16 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>` }} /> Modifier le profil
+                                            </>
+                                        )}
                                     </button>
                                 </div>
 
@@ -296,9 +310,11 @@ export default function ClientDashboard() {
                                     </div>
                                 ) : (
                                     <div style={{ textAlign: 'center', padding: '60px 0', background: '#F8FAFC', borderRadius: '28px', border: '2px dashed #E2E8F0' }}>
-                                        <div style={{ fontSize: '48px', marginBottom: '16px' }}>✨</div>
+                                        <div style={{ width: '48px', height: '48px', margin: '0 auto 16px auto', color: '#6366F1' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>` }} />
                                         <p style={{ color: '#64748B', fontWeight: '500', marginBottom: '24px' }}>Votre profil est en ligne et prêt à être partagé.</p>
-                                        <button onClick={() => setViewMode('edit')} style={{ background: 'white', color: '#1A1265', border: '1px solid #E2E8F0', padding: '14px 32px', borderRadius: '16px', fontWeight: '800', cursor: 'pointer', boxShadow: '0 4px 6px rgba(0,0,0,0.02)' }}>✏️ Éditer les informations</button>
+                                        <button onClick={() => setViewMode('edit')} style={{ background: 'white', color: '#1A1265', border: '1px solid #E2E8F0', padding: '14px 32px', borderRadius: '16px', fontWeight: '800', cursor: 'pointer', boxShadow: '0 4px 6px rgba(0,0,0,0.02)', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                                            <div style={{ width: 16, height: 16 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>` }} /> Éditer les informations
+                                        </button>
                                     </div>
                                 )}
                             </div>
@@ -338,7 +354,7 @@ export default function ClientDashboard() {
                             fontWeight: '800', display: 'none', alignItems: 'center', gap: '10px'
                         }}
                     >
-                        <span style={{ fontSize: '18px' }}>📱</span> Aperçu en direct
+                        <div style={{ width: '20px', height: '20px' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>` }} /> Aperçu en direct
                     </button>
                 )}
             </main>
@@ -390,7 +406,7 @@ function DashboardPhonePreview({ profile, isDark, textColor, subTextColor, cardB
                         background: '#EEF2FF', marginTop: -36, overflow: 'hidden', 
                         boxShadow: '0 4px 12px rgba(0,0,0,0.1)', position: 'relative', zIndex: 10 
                     }}>
-                        {profile.photo_url ? <img src={profile.photo_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" /> : <span style={{fontSize: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%'}}>👤</span>}
+                        {profile.photo_url ? <img src={profile.photo_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" /> : <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#94A3B8', padding: 20 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>` }} />}
                     </div>
 
                     <h3 style={{ marginTop: 12, fontWeight: 800, color: textColor, fontSize: 18, marginBottom: 2 }}>{profile.full_name || 'Votre Nom'}</h3>
@@ -413,8 +429,8 @@ function DashboardPhonePreview({ profile, isDark, textColor, subTextColor, cardB
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 20 }}>
                         {(profile.phone || profile.email) && (
                             <div style={{ display: 'flex', gap: 8 }}>
-                                {profile.phone && <div style={{ flex: 1, height: 40, background: cardBg, borderRadius: 12, border: '1px solid rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700 }}>📞 Appeler</div>}
-                                {profile.email && <div style={{ flex: 1, height: 40, background: cardBg, borderRadius: 12, border: '1px solid rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700 }}>✉️ Email</div>}
+                                <div style={{ flex: 1, height: 40, background: cardBg, borderRadius: 12, border: '1px solid rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, gap: '6px' }}><div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l2.27-2.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>` }} /> Appeler</div>
+                                <div style={{ flex: 1, height: 40, background: cardBg, borderRadius: 12, border: '1px solid rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, gap: '6px' }}><div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>` }} /> Email</div>
                             </div>
                         )}
                         

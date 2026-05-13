@@ -118,8 +118,8 @@ export default function PublicProfile() {
   )
 
   if (notFound) return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f0f2f5' }}>
-      <div style={{ fontSize: 64, marginBottom: 16 }}>😕</div>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f0f2f5', padding: 20, textAlign: 'center' }}>
+      <div style={{ width: 64, height: 64, color: '#94A3B8', marginBottom: 16 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M16 16s-1.5-2-4-2-4 2-4 2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>` }} />
       <h2 style={{ color: '#1A1265', marginBottom: 8 }}>Carte introuvable</h2>
       <p style={{ color: '#666' }}>Cette carte n'existe pas ou n'est pas encore activée.</p>
     </div>
@@ -196,7 +196,7 @@ export default function PublicProfile() {
             }}>
               {profile?.photo_url
                 ? <img src={profile.photo_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
-                : <span style={{ color: isDark ? 'white' : 'white' }}>👤</span>}
+                : <div style={{ width: 44, height: 44, color: 'white' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>` }} />}
             </div>
           </div>
 

@@ -134,7 +134,7 @@ export default function Register() {
                             fontSize: '14px', color: '#166534', fontWeight: '700',
                             border: '1px solid rgba(22, 163, 74, 0.2)', display: 'inline-flex', alignItems: 'center', gap: '8px'
                         }}>
-                            <span>✅</span> Carte #{cardId} reconnue
+                            <div style={{ width: 14, height: 14, color: '#166534' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>` }} /> Carte #{cardId} reconnue
                         </div>
                     )}
                     
@@ -145,7 +145,7 @@ export default function Register() {
                             fontSize: '14px', color: '#991B1B', fontWeight: '700',
                             border: '1px solid rgba(220, 38, 38, 0.2)', display: 'inline-flex', alignItems: 'center', gap: '8px'
                         }}>
-                            <span>⚠️</span> Lien invalide ou expiré
+                            <div style={{ width: 14, height: 14, color: '#991B1B' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>` }} /> Lien invalide ou expiré
                         </div>
                     )}
 
@@ -227,7 +227,7 @@ export default function Register() {
                             padding: '12px 16px', fontSize: '14px', marginBottom: '24px',
                             display: 'flex', alignItems: 'center', gap: '8px'
                         }}>
-                            <span>⚠️</span> {error}
+                            <div style={{ width: 14, height: 14, color: '#DC2626' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>` }} /> {error}
                         </div>
                     )}
 
@@ -241,7 +241,12 @@ export default function Register() {
                         onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 15px 35px rgba(79, 70, 229, 0.4)'; }}
                         onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 10px 25px rgba(79, 70, 229, 0.3)'; }}
                         disabled={loading}>
-                        {loading ? 'Création...' : cardId ? '🚀 Activer ma carte' : 'Créer mon compte'}
+                        {loading ? 'Création...' : cardId ? (
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+                                <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"></path><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"></path><path d="M9 12H4s.55-3.03 2-5c1.62-2.2 5-3 5-3"></path><path d="M12 15v5s3.03-.55 5-2c2.2-1.62 3-5 3-5"></path></svg>` }} />
+                                🚀 Activer ma carte
+                            </div>
+                        ) : 'Créer mon compte'}
                     </button>
                 </form>
 
@@ -259,7 +264,7 @@ export default function Register() {
                         onMouseOver={e => e.currentTarget.style.color = '#4B5563'}
                         onMouseOut={e => e.currentTarget.style.color = '#94A3B8'}
                     >
-                        <span>🏠</span> Retour à l'accueil
+                        <div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>` }} /> Retour à l'accueil
                     </button>
                 </div>
             </div>

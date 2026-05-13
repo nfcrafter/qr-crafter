@@ -120,7 +120,7 @@ export default function Login() {
                             padding: '12px 16px', fontSize: '14px', marginBottom: '24px',
                             display: 'flex', alignItems: 'center', gap: '8px'
                         }}>
-                            <span>⚠️</span> {error}
+                            <div style={{ width: 14, height: 14, color: '#DC2626' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>` }} /> {error}
                         </div>
                     )}
 
@@ -153,7 +153,7 @@ export default function Login() {
                         onMouseOver={e => e.currentTarget.style.color = '#4B5563'}
                         onMouseOut={e => e.currentTarget.style.color = '#94A3B8'}
                     >
-                        <span>🏠</span> Retour à l'accueil
+                        <div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>` }} /> Retour à l'accueil
                     </button>
                 </div>
             </div>

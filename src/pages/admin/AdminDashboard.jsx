@@ -268,11 +268,17 @@ export default function AdminDashboard() {
                 </div>
 
                 <nav style={{ flex: 1, overflowY: 'auto' }}>
-                    <button onClick={() => { setView('dashboard'); setFilterFolder(''); setIsSidebarOpen(false); }} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'dashboard' && !filterFolder ? '#1A1265' : 'transparent', color: view === 'dashboard' && !filterFolder ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>📊 Dashboard</button>
-                    <button onClick={() => { setView('finance'); setIsSidebarOpen(false); }} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'finance' ? '#1A1265' : 'transparent', color: view === 'finance' ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>💰 Finance & CA</button>
-                    <button onClick={() => { setView('users'); setIsSidebarOpen(false); }} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'users' ? '#1A1265' : 'transparent', color: view === 'users' ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>👥 Utilisateurs</button>
+                    <button onClick={() => { setView('dashboard'); setFilterFolder(''); setIsSidebarOpen(false); }} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'dashboard' && !filterFolder ? '#1A1265' : 'transparent', color: view === 'dashboard' && !filterFolder ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                        <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>` }} /> Dashboard
+                    </button>
+                    <button onClick={() => { setView('finance'); setIsSidebarOpen(false); }} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'finance' ? '#1A1265' : 'transparent', color: view === 'finance' ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                        <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>` }} /> Finance & CA
+                    </button>
+                    <button onClick={() => { setView('users'); setIsSidebarOpen(false); }} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'users' ? '#1A1265' : 'transparent', color: view === 'users' ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                        <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>` }} /> Utilisateurs
+                    </button>
                     <button onClick={() => { setView('requests'); setIsSidebarOpen(false); }} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'requests' ? '#1A1265' : 'transparent', color: view === 'requests' ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
-                        🎨 Demandes {requestsCount > 0 && <span style={{ background: '#EF4444', color: 'white', fontSize: '10px', padding: '2px 8px', borderRadius: '10px', marginLeft: 'auto' }}>{requestsCount}</span>}
+                        <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.5 1.5"></path><path d="M7.67 7.67L2 2"></path><path d="M2 2l1.5 7.5"></path></svg>` }} /> Demandes {requestsCount > 0 && <span style={{ background: '#EF4444', color: 'white', fontSize: '10px', padding: '2px 8px', borderRadius: '10px', marginLeft: 'auto' }}>{requestsCount}</span>}
                     </button>
                     
                     <div style={{ margin: '12px 16px', fontSize: '11px', fontWeight: '800', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '1px' }}>Dossiers</div>
@@ -289,12 +295,12 @@ export default function AdminDashboard() {
                                     <button onClick={() => { setView('dashboard'); setFilterFolder(f.id); setIsSidebarOpen(false); }} style={{ flex: 1, padding: '10px 12px', borderRadius: '12px', border: 'none', background: filterFolder === f.id ? '#F1F5F9' : 'transparent', color: filterFolder === f.id ? '#1A1265' : '#475569', fontWeight: '600', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}>
                                         <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: f.color }}></span> {f.name}
                                     </button>
-                                    <button onClick={(e) => openDeleteFolderModal(f.id, f.name, e)} style={{ padding: '8px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#94A3B8' }} className="trash-btn">🗑️</button>
+                                    <button onClick={(e) => openDeleteFolderModal(f.id, f.name, e)} style={{ padding: '8px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#94A3B8', display: 'flex' }} className="trash-btn"><div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>` }} /></button>
                                 </div>
                                 {isExpanded && subFolders.map(sub => (
                                     <div key={sub.id} style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: '32px' }}>
                                     <button onClick={() => { setView('dashboard'); setFilterFolder(sub.id); setIsSidebarOpen(false); }} style={{ flex: 1, padding: '8px 12px', borderRadius: '10px', border: 'none', background: filterFolder === sub.id ? '#F1F5F9' : 'transparent', color: filterFolder === sub.id ? '#1A1265' : '#475569', fontWeight: '600', textAlign: 'left', cursor: 'pointer', fontSize: '13px' }}>↳ {sub.name}</button>
-                                        <button onClick={(e) => openDeleteFolderModal(sub.id, sub.name, e)} style={{ padding: '6px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#CBD5E1' }} className="trash-btn-sub">🗑️</button>
+                                        <button onClick={(e) => openDeleteFolderModal(sub.id, sub.name, e)} style={{ padding: '6px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#CBD5E1', display: 'flex' }} className="trash-btn-sub"><div style={{ width: 12, height: 12 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>` }} /></button>
                                     </div>
                                 ))}
                             </div>
@@ -317,7 +323,7 @@ export default function AdminDashboard() {
                                 className="mobile-only"
                                 style={{ background: 'white', border: '1px solid #E2E8F0', padding: '10px', borderRadius: '12px', cursor: 'pointer', fontSize: '20px' }}
                             >
-                                ☰
+                                <div style={{ width: 24, height: 24 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>` }} />
                             </button>
                             <div>
                                 <h1 style={{ fontSize: '26px', fontWeight: '900', color: '#1A1265' }}>
@@ -335,7 +341,7 @@ export default function AdminDashboard() {
                     </header>
                     {(view === 'dashboard' || view === 'requests') && (
                         <div style={{ background: 'white', padding: '12px 20px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px', boxShadow: '0 4px 15px rgba(0,0,0,0.02)', border: '1px solid #F1F5F9' }} className="admin-filters">
-                            <div style={{ position: 'relative', flex: 1 }}><span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', opacity: 0.3 }}>🔍</span><input type="text" placeholder="Rechercher..." value={search} onChange={e => setSearch(e.target.value)} style={{ width: '100%', padding: '12px 12px 12px 40px', borderRadius: '12px', border: '1px solid #E2E8F0', background: '#F8FAFC' }} /></div>
+                            <div style={{ position: 'relative', flex: 1 }}><span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', opacity: 0.3, display: 'flex' }}><div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>` }} /></span><input type="text" placeholder="Rechercher..." value={search} onChange={e => setSearch(e.target.value)} style={{ width: '100%', padding: '12px 12px 12px 40px', borderRadius: '12px', border: '1px solid #E2E8F0', background: '#F8FAFC' }} /></div>
                             <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} style={{ padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '600' }} className="desktop-only"><option value="all">Statut</option><option value="active">Active</option><option value="pending">En attente</option></select>
                             <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)} style={{ padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '600' }} className="desktop-only"><option value="all">Type</option><option value="url">URL</option><option value="wifi">WiFi</option><option value="vcard">VCard</option></select>
                         </div>
@@ -432,8 +438,8 @@ export default function AdminDashboard() {
                                                 financeTransactions.map(t => (
                                                     <div key={t.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', borderRadius: '12px', background: '#F8FAFC', border: '1px solid #E2E8F0' }}>
                                                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                                            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: t.type === 'income' ? '#DCFCE7' : '#FEE2E2', color: t.type === 'income' ? '#15803D' : '#B91C1C', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>
-                                                                {t.type === 'income' ? '📈' : '📉'}
+                                                            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: t.type === 'income' ? '#DCFCE7' : '#FEE2E2', color: t.type === 'income' ? '#15803D' : '#B91C1C', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 10, flexShrink: 0 }}>
+                                                                <div style={{ width: '100%', height: '100%' }} dangerouslySetInnerHTML={{ __html: t.type === 'income' ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>` : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline><polyline points="17 18 23 18 23 12"></polyline></svg>` }} />
                                                             </div>
                                                             <div>
                                                                 <div style={{ fontWeight: '800', fontSize: '14px', color: '#1A1265' }}>{t.desc}</div>
@@ -444,7 +450,7 @@ export default function AdminDashboard() {
                                                             <div style={{ fontWeight: '900', fontSize: '15px', color: t.type === 'income' ? '#10B981' : '#EF4444' }}>
                                                                 {t.type === 'income' ? '+' : '-'}{t.amount.toLocaleString('fr-FR')} f
                                                             </div>
-                                                            <button onClick={() => handleDeleteTransaction(t.id)} style={{ border: 'none', background: 'transparent', color: '#CBD5E1', cursor: 'pointer', fontSize: '14px' }} className="trash-btn" title="Supprimer l'opération">🗑️</button>
+                                                            <button onClick={() => handleDeleteTransaction(t.id)} style={{ border: 'none', background: 'transparent', color: '#CBD5E1', cursor: 'pointer', display: 'flex' }} className="trash-btn" title="Supprimer l'opération"><div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>` }} /></button>
                                                         </div>
                                                     </div>
                                                 ))
@@ -456,8 +462,8 @@ export default function AdminDashboard() {
                         ) : view === 'users' ? (
                             users.map(user => (
                                 <div key={user.id} className="user-list-item" style={{ background: 'white', borderRadius: '20px', padding: '20px', display: 'flex', alignItems: 'center', gap: '20px', border: '1px solid #F1F5F9', boxShadow: '0 4px 12px rgba(0,0,0,0.01)' }}>
-                                    <div style={{ width: '50px', height: '50px', borderRadius: '14px', background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', flexShrink: 0 }}>
-                                        {user.photo_url ? <img src={user.photo_url} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '14px' }} /> : '👤'}
+                                    <div style={{ width: '50px', height: '50px', borderRadius: '14px', background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, padding: user.photo_url ? 0 : 12 }}>
+                                        {user.photo_url ? <img src={user.photo_url} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '14px' }} /> : <div style={{ width: '100%', height: '100%', color: '#94A3B8' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>` }} />}
                                     </div>
                                     <div style={{ flex: 1 }}>
                                         <div style={{ fontWeight: '900', fontSize: '16px', color: '#1A1265' }}>{user.full_name || 'Utilisateur sans nom'}</div>
@@ -466,9 +472,9 @@ export default function AdminDashboard() {
                                     <button 
                                         onClick={() => handleDeleteUser(user.id)}
                                         disabled={user.email === 'nfcrafter@gmail.com'}
-                                        style={{ background: '#FEF2F2', color: '#DC2626', border: '1px solid #FECACA', padding: '10px', borderRadius: '12px', fontWeight: '800', cursor: 'pointer', fontSize: '12px' }}
+                                        style={{ background: '#FEF2F2', color: '#DC2626', border: '1px solid #FECACA', padding: '10px', borderRadius: '12px', fontWeight: '800', cursor: 'pointer', display: 'flex' }}
                                     >
-                                        🗑️
+                                        <div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>` }} />
                                     </button>
                                 </div>
                             ))
@@ -486,7 +492,7 @@ export default function AdminDashboard() {
                                 ))
                             ) : (
                                 <div style={{ textAlign: 'center', padding: '60px', background: 'white', borderRadius: '24px', border: '1px dashed #E2E8F0', color: '#94A3B8', fontWeight: '600' }}>
-                                    {view === 'requests' ? 'Aucune demande de design en attente ✨' : 'Aucun QR trouvé'}
+                                    {view === 'requests' ? 'Aucune demande de design en attente' : 'Aucun QR trouvé'}
                                 </div>
                             )
                         )}
@@ -544,8 +550,8 @@ function CardListItem({ card, scanCount, navigate, toast, onResolve }) {
     return (
         <div className="card-list-item" style={{ background: 'white', borderRadius: '20px', padding: '24px 30px', display: 'flex', alignItems: 'center', gap: '24px', border: isPendingRequest ? '2px solid #6366F1' : '1px solid #F1F5F9', boxShadow: '0 4px 12px rgba(0,0,0,0.01)', position: 'relative' }}>
             {isPendingRequest && (
-                <div className="badge-pending" style={{ position: 'absolute', top: '-10px', left: '20px', background: '#6366F1', color: 'white', fontSize: '10px', fontWeight: '900', padding: '4px 12px', borderRadius: '20px', zIndex: 10 }}>
-                    DEMANDE DE DESIGN 🎨
+                <div className="badge-pending" style={{ position: 'absolute', top: '-10px', left: '20px', background: '#6366F1', color: 'white', fontSize: '10px', fontWeight: '900', padding: '4px 12px', borderRadius: '20px', zIndex: 10, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <div style={{ width: 10, height: 10 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5"></circle><circle cx="17.5" cy="10.5" r=".5"></circle><circle cx="8.5" cy="7.5" r=".5"></circle><circle cx="6.5" cy="12.5" r=".5"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.6-.5 2-1.2.3.7 1 1.2 1.9 1.2h.1c1.1 0 2-.9 2-2 0-.4-.1-.8-.3-1.2.7.4 1.5.7 2.3.7 1.1 0 2-.9 2-2 0-5.5-4.5-10-10-10z"></path></svg>` }} /> DEMANDE DE DESIGN
                 </div>
             )}
             
@@ -574,17 +580,17 @@ function CardListItem({ card, scanCount, navigate, toast, onResolve }) {
 
             <div className="card-actions-group" style={{ display: 'flex', gap: '8px' }}>
                 {!card.owner_id && (
-                    <button 
-                        onClick={() => {
-                            const url = `${window.location.origin}/activate?card=${card.card_id}&token=${card.activation_token}`;
-                            navigator.clipboard.writeText(url);
-                            toast('Lien d\'activation copié !', 'success');
-                        }} 
-                        style={{ background: '#F1F5F9', color: '#475569', padding: '10px 16px', borderRadius: '10px', border: '1px solid #E2E8F0', fontWeight: '800', cursor: 'pointer', fontSize: '13px' }}
-                        title="Copier le lien d'activation pour le client"
-                    >
-                        🔑 Lien
-                    </button>
+                        <button 
+                            onClick={() => {
+                                const url = `${window.location.origin}/activate?card=${card.card_id}&token=${card.activation_token}`;
+                                navigator.clipboard.writeText(url);
+                                toast('Lien d\'activation copié !', 'success');
+                            }} 
+                            style={{ background: '#F1F5F9', color: '#475569', padding: '10px 16px', borderRadius: '10px', border: '1px solid #E2E8F0', fontWeight: '800', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', gap: 6 }}
+                            title="Copier le lien d'activation pour le client"
+                        >
+                            <div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3L15.5 7.5z"></path></svg>` }} /> Lien
+                        </button>
                 )}
                 {isPendingRequest ? (
                     <button onClick={onResolve} style={{ background: '#10B981', color: 'white', padding: '10px 16px', borderRadius: '10px', border: 'none', fontWeight: '800', cursor: 'pointer', fontSize: '13px' }}>Fait</button>

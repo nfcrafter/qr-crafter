@@ -204,7 +204,7 @@ export default function CardSettings() {
         <div className="accordion" style={{ border: danger ? '1px solid #FECACA' : undefined }} key={id}>
             <div className="accordion-header" style={{ background: danger ? '#FFF5F5' : undefined }} onClick={() => setOpenSection(openSection === id ? '' : id)}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <span style={{ fontSize: 20 }}>{icon}</span>
+                    <div style={{ width: 20, height: 20, display: 'flex', color: danger ? '#DC2626' : '#1A1265' }} dangerouslySetInnerHTML={{ __html: icon }} />
                     <div>
                         <div style={{ fontWeight: 700, color: danger ? '#DC2626' : '#1A1265' }}>{title}</div>
                         <div style={{ fontSize: 12, color: danger ? '#EF4444' : '#94A3B8' }}>{sub}</div>
@@ -238,7 +238,7 @@ export default function CardSettings() {
                 <div className="admin-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 48, alignItems: 'start' }}>
                     <div>
                         {/* APPEARANCE SECTION */}
-                        {acc('design', '🎨', 'Apparence & Design', 'Couleurs, thèmes et style.', (
+                        {acc('design', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>`, 'Apparence & Design', 'Couleurs, thèmes et style.', (
                             <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 20 }}>
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                                     <ColorField label="Couleur principale" value={profile.primaryColor || '#1A1265'} onChange={v => setProfile({ ...profile, primaryColor: v })} />
@@ -279,10 +279,13 @@ export default function CardSettings() {
                         ))}
 
                         {/* LINKS SECTION */}
-                        {acc('share', '🚀', 'Partage & Activation', 'Liens à envoyer à votre client.', (
+                        {acc('share', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"></path><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"></path><path d="M9 12H4s.55-3.03 2-5c1.62-2.2 5-3 5-3"></path><path d="M12 15v5s3.03-.55 5-2c2.2-1.62 3-5 3-5"></path></svg>`, 'Partage & Activation', 'Liens à envoyer à votre client.', (
                             <div style={{ marginTop: 16, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 20 }}>
                                 <div className="premium-card" style={{ padding: 20, background: 'white' }}>
-                                    <h4 style={{ fontSize: 13, fontWeight: 800, color: '#1A1265', marginBottom: 10 }}>🔗 Lien Public</h4>
+                                    <h4 style={{ fontSize: 13, fontWeight: 800, color: '#1A1265', marginBottom: 10 }}>
+                                        <div style={{ width: 16, height: 16, display: 'inline-block', verticalAlign: 'middle', marginRight: 6 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>` }} />
+                                        Lien Public
+                                    </h4>
                                     <div style={{ background: '#F8FAFC', padding: 10, borderRadius: 10, fontSize: 11, fontWeight: 700, color: '#6366F1', wordBreak: 'break-all', border: '1px solid #E2E8F0', marginBottom: 12 }}>
                                         {`${window.location.origin}/u/${cardId}`}
                                     </div>
@@ -305,7 +308,7 @@ export default function CardSettings() {
                         ))}
 
                         {/* URL type */}
-                        {qrType === 'url' && acc('url', '🌐', 'URL de destination', 'Lien vers lequel le QR redirige.', (
+                        {qrType === 'url' && acc('url', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>`, 'URL de destination', 'Lien vers lequel le QR redirige.', (
                             <div className="field" style={{ marginTop: 16 }}>
                                 <label>URL</label>
                                 <input type="url" value={profile.url || ''} onChange={e => setProfile({ ...profile, url: e.target.value })} />
@@ -314,7 +317,7 @@ export default function CardSettings() {
 
                         {/* Profile type */}
                         {qrType === 'profile' && <>
-                            {acc('info', '👤', 'Informations du profil', 'Nom, bio, photo, bannière.', (
+                            {acc('info', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`, 'Informations du profil', 'Nom, bio, photo, bannière.', (
                                 <div style={{ marginTop: 16 }}>
                                     <div className="field"><label>Nom complet</label><input type="text" value={profile.full_name} onChange={e => setProfile({ ...profile, full_name: e.target.value })} /></div>
                                     <div className="field"><label>Profession / Titre</label><input type="text" value={profile.job_title} onChange={e => setProfile({ ...profile, job_title: e.target.value })} /></div>
@@ -326,7 +329,7 @@ export default function CardSettings() {
                                 </div>
                             ))}
 
-                            {acc('socials', '📱', 'Réseaux Sociaux', 'Cliquez pour activer/désactiver.', (
+                            {acc('socials', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>`, 'Réseaux Sociaux', 'Cliquez pour activer/désactiver.', (
                                 <div style={{ marginTop: 16 }}>
                                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginBottom: 20 }}>
                                         {SOCIAL_NETWORKS.map(net => {
@@ -361,7 +364,7 @@ export default function CardSettings() {
                                 </div>
                             ))}
 
-                            {acc('links', '🔗', 'Liens Personnalisés', 'Boutique, portfolio, autres liens.', (
+                            {acc('links', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>`, 'Liens Personnalisés', 'Boutique, portfolio, autres liens.', (
                                 <div style={{ marginTop: 16 }}>
                                     {(profile.customLinks || []).map((link, idx) => (
                                         <div key={idx} style={{ background: '#F8FAFC', borderRadius: 16, padding: 16, marginBottom: 12, border: '1px solid #E2E8F0' }}>
@@ -385,7 +388,7 @@ export default function CardSettings() {
                             ))}
                         </>}
 
-                        {acc('config', '⚙️', 'Organisation', 'Nom interne et dossier.', (
+                        {acc('config', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>`, 'Organisation', 'Nom interne et dossier.', (
                             <div style={{ marginTop: 16 }}>
                                 <div className="field"><label>Nom interne</label><input type="text" value={cardName} onChange={e => setCardName(e.target.value)} /></div>
                                 <div className="field"><label>Dossier</label>
@@ -401,7 +404,10 @@ export default function CardSettings() {
                         <div style={{ marginTop: 60, marginBottom: 40 }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 15, marginBottom: 20 }}>
                                 <div style={{ flex: 1, height: 1, background: 'linear-gradient(to right, transparent, #FECACA, transparent)' }} />
-                                <span style={{ fontSize: 12, fontWeight: 900, color: '#EF4444', letterSpacing: 3, textTransform: 'uppercase' }}>⚠️ Zone de Danger</span>
+                                <span style={{ fontSize: 12, fontWeight: 900, color: '#EF4444', letterSpacing: 3, textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 8 }}>
+                                    <div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>` }} />
+                                    Zone de Danger
+                                </span>
                                 <div style={{ flex: 1, height: 1, background: 'linear-gradient(to right, transparent, #FECACA, transparent)' }} />
                             </div>
                             <div style={{ 
@@ -446,7 +452,7 @@ export default function CardSettings() {
 
                         {/* DESIGN QR CODE */}
                         <div style={{ marginTop: 40 }}>
-                            {acc('qr-design', '🎨', 'Design du Code QR', 'Modifier le visuel uniquement — le lien reste permanent.', (
+                            {acc('qr-design', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>`, 'Design du Code QR', 'Modifier le visuel uniquement — le lien reste permanent.', (
                                 <div style={{ marginTop: 16 }}>
                                     <div className="field"><label>Style des points</label>
                                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
@@ -499,7 +505,7 @@ export default function CardSettings() {
                         fontWeight: '800', display: 'none', alignItems: 'center', gap: '10px'
                     }}
                 >
-                    <span style={{ fontSize: '18px' }}>📱</span> Aperçu en direct
+                    <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>` }} /> Aperçu en direct
                 </button>
             </div>
 
@@ -516,8 +522,10 @@ export default function CardSettings() {
                     <div style={{ 
                         width: 64, height: 64, background: '#FEF2F2', borderRadius: '50%', 
                         display: 'flex', alignItems: 'center', justifyContent: 'center', 
-                        fontSize: 32, margin: '0 auto 20px' 
-                    }}>🗑️</div>
+                        color: '#EF4444', margin: '0 auto 20px' 
+                    }}>
+                        <div style={{ width: 32, height: 32 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>` }} />
+                    </div>
                     <p style={{ margin: 0, fontSize: 16, color: '#1A1265', fontWeight: 700 }}>Êtes-vous absolument sûr ?</p>
                     <p style={{ marginTop: 8, fontSize: 14, color: '#64748B' }}>
                         Cette action supprimera définitivement le QR Code <strong>{cardName || cardId}</strong> et toutes ses statistiques.
