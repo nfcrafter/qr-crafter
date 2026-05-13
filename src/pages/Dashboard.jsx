@@ -12,8 +12,23 @@ export default function Dashboard() {
     const [filterType, setFilterType] = useState('')
 
     useEffect(() => {
-        loadQRCodes()
+        loadData()
     }, [])
+
+    async function loadData() {
+        setLoading(true)
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) return navigate('/login')
+
+        // Load profile for theme
+        const { data: profile } = await supabase.from('profiles').select('theme_color').eq('id', user.id).single()
+        if (profile?.theme_color) {
+            document.documentElement.style.setProperty('--accent', profile.theme_color)
+            document.documentElement.style.setProperty('--accent-light', profile.theme_color + '15')
+        }
+
+        await loadQRCodes()
+    }
 
     async function loadQRCodes() {
         setLoading(true)

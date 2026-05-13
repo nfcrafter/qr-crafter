@@ -102,11 +102,8 @@ export default function Activate() {
             return;
         }
 
-        const themeColor = cardInfo?.admin_profile?.primaryColor || "#1A1265";
-        
         await supabase.from('profiles').update({ 
-            card_id: cardId,
-            theme_color: themeColor 
+            card_id: cardId
         }).eq('id', user.id)
         
         await supabase.from('user_cards').upsert({ user_id: user.id, card_id: cardId })
