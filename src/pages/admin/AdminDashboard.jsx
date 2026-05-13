@@ -197,6 +197,30 @@ export default function AdminDashboard() {
         }
     }
 
+    const handleDownloadAll = async () => {
+        const unactivated = cards.filter(c => !c.owner_id);
+        if (unactivated.length === 0) return toast("Aucune carte à télécharger", "info");
+        
+        toast(`Préparation de ${unactivated.length} téléchargements...`, 'info');
+        
+        for (const card of unactivated) {
+            const activationUrl = `${window.location.origin}/activate?card=${card.card_id}&token=${card.activation_token}`;
+            const qrColor = card.admin_profile?.primaryColor || "#1A1265";
+            const qrCode = new QRCodeStyling({
+                width: 1000, height: 1000, data: activationUrl,
+                margin: 20,
+                dotsOptions: { color: qrColor, type: "rounded" },
+                cornersSquareOptions: { color: qrColor, type: "extra-rounded" },
+                cornersDotOptions: { color: qrColor, type: "dot" },
+                backgroundOptions: { color: "#FFFFFF" }
+            });
+            await qrCode.download({ name: `QR-${card.card_id}-${qrColor.replace('#', '')}`, extension: "png" });
+            // Small delay to prevent browser overwhelm
+            await new Promise(r => setTimeout(r, 300));
+        }
+        toast("Téléchargements terminés", "success");
+    };
+
     async function handleDeleteUser(userId) {
         if (!window.confirm("Supprimer cet utilisateur et TOUTES ses cartes ?")) return;
         setLoading(true);
@@ -556,10 +580,17 @@ export default function AdminDashboard() {
                                             </button>
                                             <button 
                                                 onClick={() => window.print()}
-                                                style={{ padding: '14px 28px', background: 'white', color: '#1A1265', border: '1px solid #E2E8F0', borderRadius: '12px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
+                                                style={{ padding: '14px 24px', background: 'white', color: '#1A1265', border: '1px solid #E2E8F0', borderRadius: '12px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
                                             >
                                                 <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>` }} /> Impression
                                             </button>
+                                            <button 
+                                                onClick={handleDownloadAll}
+                                                style={{ padding: '14px 24px', background: '#F8FAFC', color: '#1A1265', border: '1px solid #E2E8F0', borderRadius: '12px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
+                                            >
+                                                <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>` }} /> Tout télécharger
+                                            </button>
+                                        </div>
                                         </div>
 
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }} onClick={() => setHideIdsInPrint(!hideIdsInPrint)}>
