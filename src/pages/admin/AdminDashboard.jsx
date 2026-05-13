@@ -126,18 +126,37 @@ export default function AdminDashboard() {
 
     async function loadData() {
         setLoading(true);
-        let query = supabase.from('cards').select('*').order('created_at', { ascending: false });
-        if (filterFolder) query = query.eq('folder_id', filterFolder);
-        const { data: cardsData, error } = await query;
-        if (error) toast('Erreur de chargement', 'error');
-        else {
-            setCards(cardsData || []);
+        try {
+            // Load Cards
+            let cardsQuery = supabase.from('cards').select('*').order('created_at', { ascending: false });
+            if (filterFolder) cardsQuery = cardsQuery.eq('folder_id', filterFolder);
+            const { data: cardsData } = await cardsQuery;
+
+            // Load Digital QRs (The "missing" ones)
+            let qrsQuery = supabase.from('qr_codes').select('*').order('created_at', { ascending: false });
+            // Since qr_codes might not have folder_id in older versions, we check
+            if (filterFolder) qrsQuery = qrsQuery.eq('folder_id', filterFolder);
+            const { data: qrsData } = await qrsQuery;
+
+            // Merge them with a type tag
+            const merged = [
+                ...(cardsData || []).map(c => ({ ...c, _type: 'physical' })),
+                ...(qrsData || []).map(q => ({ ...q, _type: 'digital', card_id: q.id, card_name: q.name }))
+            ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+            setCards(merged);
+
+            // Load scans
             const { data: scansData } = await supabase.from('scan_logs').select('card_id');
             const counts = {};
             scansData?.forEach(s => { counts[s.card_id] = (counts[s.card_id] || 0) + 1; });
             setScans(counts);
+        } catch (e) {
+            console.error(e);
+            toast('Erreur de chargement', 'error');
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     }
 
     async function updateRequestsCount() {
@@ -725,21 +744,47 @@ export default function AdminDashboard() {
                                     </div>
                                 </div>
 
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                                    <h3 style={{ fontSize: '18px', fontWeight: '900', color: '#1A1265' }}>Cartes en attente d'activation ({cards.filter(c => !c.owner_id).length})</h3>
-                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
-                                        {cards.filter(c => !c.owner_id).map(card => (
-                                            <ProductionCard 
-                                                key={card.card_id} 
-                                                card={card} 
-                                                toast={toast} 
-                                                includeLogo={includeLogo}
-                                                isSelected={selectedCards.includes(card.card_id)}
-                                                onSelect={() => {
-                                                    setSelectedCards(prev => prev.includes(card.card_id) ? prev.filter(id => id !== card.card_id) : [...prev, card.card_id]);
-                                                }}
-                                            />
-                                        ))}
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
+                                    {/* Section 1: Demandes de Design (Custom) */}
+                                    {cards.filter(c => c.design_request === 'pending').length > 0 && (
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#F59E0B' }}></div>
+                                                <h3 style={{ fontSize: '18px', fontWeight: '900', color: '#1A1265' }}>Commandes Personnalisées ({cards.filter(c => c.design_request === 'pending').length})</h3>
+                                            </div>
+                                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+                                                {cards.filter(c => c.design_request === 'pending').map(card => (
+                                                    <ProductionCard 
+                                                        key={card.card_id} 
+                                                        card={card} 
+                                                        toast={toast} 
+                                                        includeLogo={includeLogo}
+                                                        isSelected={selectedCards.includes(card.card_id)}
+                                                        onSelect={() => setSelectedCards(prev => prev.includes(card.card_id) ? prev.filter(id => id !== card.card_id) : [...prev, card.card_id])}
+                                                    />
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Section 2: Série Signature (Batch) */}
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                            <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#1A1265' }}></div>
+                                            <h3 style={{ fontSize: '18px', fontWeight: '900', color: '#1A1265' }}>Série Signature (En attente d'activation) ({cards.filter(c => !c.owner_id && c.design_request !== 'pending').length})</h3>
+                                        </div>
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+                                            {cards.filter(c => !c.owner_id && c.design_request !== 'pending').map(card => (
+                                                <ProductionCard 
+                                                    key={card.card_id} 
+                                                    card={card} 
+                                                    toast={toast} 
+                                                    includeLogo={includeLogo}
+                                                    isSelected={selectedCards.includes(card.card_id)}
+                                                    onSelect={() => setSelectedCards(prev => prev.includes(card.card_id) ? prev.filter(id => id !== card.card_id) : [...prev, card.card_id])}
+                                                />
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -995,7 +1040,12 @@ function CardListItem({ card, scanCount, navigate, toast, onResolve }) {
                     <div style={{ fontSize: '10px', color: '#94A3B8', fontWeight: '700', letterSpacing: '0.5px' }}>ID: {card.card_id}</div>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                    <div style={{ color: '#6366F1', fontWeight: '800', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{card.admin_profile?.qr_type || 'URL'}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                        <span style={{ fontSize: '10px', fontWeight: '900', color: card._type === 'digital' ? '#10B981' : '#6366F1', background: card._type === 'digital' ? '#ECFDF5' : '#EEF2FF', padding: '2px 8px', borderRadius: '10px', textTransform: 'uppercase' }}>
+                            {card._type === 'digital' ? 'Digital QR' : 'Carte Physique'}
+                        </span>
+                        <div style={{ color: '#6366F1', fontWeight: '800', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{card.admin_profile?.qr_type || card.type || 'URL'}</div>
+                    </div>
                     <div style={{ fontWeight: '900', fontSize: '18px', color: '#1A1265', margin: '1px 0' }}>{card.card_name || 'Sans nom'}</div>
                     <div style={{ color: '#94A3B8', fontSize: '12px', fontWeight: '500' }}>
                         Modifié le {new Date(card.updated_at || card.created_at).toLocaleDateString('fr-FR')} à {new Date(card.updated_at || card.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
