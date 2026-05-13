@@ -202,6 +202,31 @@ export default function AdminDashboard() {
         }
     }
 
+    const getTintedLogo = async (color) => {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.crossOrigin = "anonymous";
+            img.src = "/logo.png";
+            img.onload = () => {
+                const canvas = document.createElement("canvas");
+                const ctx = canvas.getContext("2d");
+                canvas.width = img.width;
+                canvas.height = img.height;
+                
+                // Draw logo
+                ctx.drawImage(img, 0, 0);
+                
+                // Tint logo with 'source-in'
+                ctx.globalCompositeOperation = "source-in";
+                ctx.fillStyle = color;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                resolve(canvas.toDataURL());
+            };
+            img.onerror = () => resolve("/logo.png"); // Fallback
+        });
+    };
+
     const handleDownloadAll = async () => {
         const unactivated = cards.filter(c => !c.owner_id);
         if (unactivated.length === 0) return toast("Aucune carte à télécharger", "info");
@@ -213,18 +238,23 @@ export default function AdminDashboard() {
         for (const card of unactivated) {
             const activationUrl = `${window.location.origin}/activate?card=${card.card_id}&token=${card.activation_token}`;
             const qrColor = card.admin_profile?.primaryColor || "#1A1265";
+            
+            // Get tinted logo
+            const tintedLogo = includeLogo ? await getTintedLogo(qrColor) : null;
+
             const qrCode = new QRCodeStyling({
                 width: 1000, height: 1000, data: activationUrl,
-                margin: 20,
+                margin: 5,
                 dotsOptions: { color: qrColor, type: "rounded" },
                 cornersSquareOptions: { color: qrColor, type: "extra-rounded" },
                 cornersDotOptions: { color: qrColor, type: "dot" },
                 backgroundOptions: { color: card.admin_profile?.backgroundColor || "#FFFFFF" },
-                image: includeLogo ? "/logo.png" : null,
+                image: tintedLogo,
                 imageOptions: {
                     crossOrigin: "anonymous",
-                    margin: 10,
-                    imageSize: 0.3
+                    margin: 0,
+                    imageSize: 0.18,
+                    hideBackgroundDots: true
                 }
             });
             
@@ -615,18 +645,31 @@ export default function AdminDashboard() {
                                             </div>
                                         </div>
 
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                                                {['#1A1265', '#10B981', '#6366F1', '#F59E0B', '#EF4444', '#000000'].map(c => (
-                                                    <button key={c} onClick={() => setBulkColor(c)} style={{ width: '24px', height: '24px', borderRadius: '6px', background: c, border: bulkColor === c ? '2px solid #1A1265' : 'none', cursor: 'pointer', outline: bulkColor === c ? '2px solid white' : 'none' }} />
-                                                ))}
-                                            </div>
-                                            
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }} onClick={() => setIncludeLogo(!includeLogo)}>
-                                                <div style={{ width: '18px', height: '18px', borderRadius: '4px', border: '2px solid #1A1265', background: includeLogo ? '#1A1265' : 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
-                                                    {includeLogo && <div style={{ width: '8px', height: '8px', background: 'white', borderRadius: '1px' }}></div>}
+                                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                            {['#1A1265', '#10B981', '#6366F1', '#F59E0B', '#EF4444', '#000000'].map(c => (
+                                                <button key={c} onClick={() => setBulkColor(c)} style={{ width: '24px', height: '24px', borderRadius: '6px', background: c, border: bulkColor === c ? '2px solid #1A1265' : 'none', cursor: 'pointer', outline: bulkColor === c ? '2px solid white' : 'none' }} />
+                                            ))}
+                                        </div>
+
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                                            <div 
+                                                onClick={() => setIncludeLogo(!includeLogo)}
+                                                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#F8FAFC', padding: '12px 16px', borderRadius: '16px', border: '1px solid #E2E8F0', cursor: 'pointer', transition: 'all 0.2s' }}
+                                            >
+                                                <span style={{ fontSize: '13px', fontWeight: '800', color: '#1A1265' }}>Inclure Logo</span>
+                                                <div style={{ width: '40px', height: '22px', borderRadius: '11px', background: includeLogo ? '#1A1265' : '#CBD5E1', position: 'relative', transition: 'all 0.3s' }}>
+                                                    <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: 'white', position: 'absolute', top: '3px', left: includeLogo ? '21px' : '3px', transition: 'all 0.3s', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }} />
                                                 </div>
-                                                <span style={{ fontSize: '13px', fontWeight: '800', color: '#1A1265' }}>Inclure Logo NFC</span>
+                                            </div>
+
+                                            <div 
+                                                onClick={() => setHideIdsInPrint(!hideIdsInPrint)}
+                                                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#F8FAFC', padding: '12px 16px', borderRadius: '16px', border: '1px solid #E2E8F0', cursor: 'pointer', transition: 'all 0.2s' }}
+                                            >
+                                                <span style={{ fontSize: '13px', fontWeight: '800', color: '#1A1265' }}>Mode UV (Masquer IDs)</span>
+                                                <div style={{ width: '40px', height: '22px', borderRadius: '11px', background: hideIdsInPrint ? '#EF4444' : '#CBD5E1', position: 'relative', transition: 'all 0.3s' }}>
+                                                    <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: 'white', position: 'absolute', top: '3px', left: hideIdsInPrint ? '21px' : '3px', transition: 'all 0.3s', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }} />
+                                                </div>
                                             </div>
                                         </div>
 
@@ -650,13 +693,6 @@ export default function AdminDashboard() {
                                             >
                                                 <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>` }} /> Tout télécharger
                                             </button>
-                                        </div>
-
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }} onClick={() => setHideIdsInPrint(!hideIdsInPrint)}>
-                                            <div style={{ width: '20px', height: '20px', borderRadius: '6px', border: '2px solid #1A1265', background: hideIdsInPrint ? '#1A1265' : 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
-                                                {hideIdsInPrint && <div style={{ width: '10px', height: '10px', background: 'white', borderRadius: '2px' }}></div>}
-                                            </div>
-                                            <span style={{ fontSize: '14px', fontWeight: '700', color: '#1A1265' }}>Masquer les IDs à l'impression (Mode UV)</span>
                                         </div>
                                     </div>
                                 </div>
