@@ -406,8 +406,8 @@ export default function AdminDashboard() {
 
     const filtered = cards.filter(c => {
         const matchesSearch = !search || c.card_name?.toLowerCase().includes(search.toLowerCase()) || c.card_id?.toLowerCase().includes(search.toLowerCase());
-        const matchesStatus = statusFilter === 'all' || c.status === statusFilter;
-        const qrType = c.admin_profile?.qr_type || 'url';
+        const matchesStatus = statusFilter === 'all' || (c._type === 'digital' ? true : c.status === statusFilter);
+        const qrType = c.admin_profile?.qr_type || c.type || 'url';
         const matchesType = typeFilter === 'all' || qrType === typeFilter;
         return matchesSearch && matchesStatus && matchesType;
     }).sort((a, b) => {
@@ -850,6 +850,53 @@ export default function AdminDashboard() {
                                     {view === 'requests' ? 'Aucune demande de design en attente' : 'Aucun QR trouvé'}
                                 </div>
                             )
+                        )}
+
+                        {/* Pagination Section */}
+                        {totalPages > 1 && view === 'dashboard' && (
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '32px', paddingBottom: '40px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                    <span style={{ fontSize: '13px', color: '#64748B', fontWeight: '600' }}>Afficher</span>
+                                    <select 
+                                        value={quantity} 
+                                        onChange={(e) => setQuantity(Number(e.target.value))}
+                                        style={{ padding: '8px 12px', borderRadius: '10px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '700', color: '#1A1265', cursor: 'pointer' }}
+                                    >
+                                        <option value={10}>10</option>
+                                        <option value={20}>20</option>
+                                        <option value={50}>50</option>
+                                    </select>
+                                    <span style={{ fontSize: '13px', color: '#64748B', fontWeight: '600' }}>sur {filtered.length}</span>
+                                </div>
+
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <button 
+                                        disabled={currentPage === 1}
+                                        onClick={() => setCurrentPage(prev => prev - 1)}
+                                        style={{ padding: '10px 18px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', color: '#1A1265', fontWeight: '800', cursor: currentPage === 1 ? 'default' : 'pointer', opacity: currentPage === 1 ? 0.5 : 1, transition: 'all 0.2s' }}
+                                    >
+                                        Précédent
+                                    </button>
+                                    <div style={{ display: 'flex', gap: '6px' }}>
+                                        {[...Array(totalPages)].map((_, i) => (
+                                            <button 
+                                                key={i}
+                                                onClick={() => setCurrentPage(i + 1)}
+                                                style={{ width: '40px', height: '40px', borderRadius: '12px', border: 'none', background: currentPage === i + 1 ? '#1A1265' : 'white', color: currentPage === i + 1 ? 'white' : '#64748B', fontWeight: '800', cursor: 'pointer', transition: 'all 0.2s', border: currentPage === i + 1 ? 'none' : '1px solid #E2E8F0' }}
+                                            >
+                                                {i + 1}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <button 
+                                        disabled={currentPage === totalPages}
+                                        onClick={() => setCurrentPage(prev => prev + 1)}
+                                        style={{ padding: '10px 18px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', color: '#1A1265', fontWeight: '800', cursor: currentPage === totalPages ? 'default' : 'pointer', opacity: currentPage === totalPages ? 0.5 : 1, transition: 'all 0.2s' }}
+                                    >
+                                        Suivant
+                                    </button>
+                                </div>
+                            </div>
                         )}
                     </div>
                 </div>
