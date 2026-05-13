@@ -54,6 +54,7 @@ export default function AdminDashboard() {
     const [generatingBulk, setGeneratingBulk] = useState(false);
     const [hideIdsInPrint, setHideIdsInPrint] = useState(false);
     const [selectedCards, setSelectedCards] = useState([]);
+    const [expandedBatch, setExpandedBatch] = useState(null);
     
     const [financeTransactions, setFinanceTransactions] = useState([]);
     
@@ -821,38 +822,87 @@ export default function AdminDashboard() {
                                                     if (card.admin_profile?.print_status === 'printed') batchMap[name].status = 'printed';
                                                 });
                                                 
-                                                return Object.values(batchMap).sort((a,b) => b.cards[0].created_at.localeCompare(a.cards[0].created_at)).map(batch => (
-                                                    <div key={batch.name} style={{ background: 'white', borderRadius: '24px', padding: '24px', border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', gap: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.02)', position: 'relative', overflow: 'hidden' }}>
-                                                        <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: batch.status === 'printed' ? '#10B981' : '#F59E0B' }}></div>
-                                                        
-                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                                            <div>
-                                                                <div style={{ fontSize: '11px', fontWeight: '900', color: '#94A3B8', textTransform: 'uppercase', marginBottom: '4px' }}>DOSSIER LOT</div>
-                                                                <h4 style={{ fontSize: '18px', fontWeight: '900', color: '#1A1265', margin: 0 }}>{batch.name}</h4>
-                                                                <div style={{ fontSize: '13px', color: '#64748B', marginTop: '4px', fontWeight: '600' }}>{batch.cards.length} cartes physiques</div>
-                                                            </div>
-                                                            <div style={{ background: batch.status === 'printed' ? '#DCFCE7' : '#FEF3C7', color: batch.status === 'printed' ? '#15803D' : '#92400E', padding: '4px 12px', borderRadius: '20px', fontSize: '11px', fontWeight: '900' }}>
-                                                                {batch.status === 'printed' ? 'IMPRIMÉ' : 'EN ATTENTE'}
-                                                            </div>
-                                                        </div>
+                                                return Object.values(batchMap).sort((a,b) => b.cards[0].created_at.localeCompare(a.cards[0].created_at)).map(batch => {
+                                                    const isExpanded = expandedBatch === batch.name;
+                                                    return (
+                                                        <div key={batch.name} style={{ gridColumn: '1 / -1', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                                            <div 
+                                                                style={{ 
+                                                                    background: 'white', 
+                                                                    borderRadius: '24px', 
+                                                                    padding: '24px', 
+                                                                    border: isExpanded ? '2px solid #1A1265' : '1px solid #E2E8F0', 
+                                                                    display: 'flex', 
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'space-between',
+                                                                    boxShadow: '0 4px 12px rgba(0,0,0,0.02)', 
+                                                                    position: 'relative', 
+                                                                    overflow: 'hidden',
+                                                                    transition: 'all 0.3s ease'
+                                                                }}
+                                                            >
+                                                                <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: batch.status === 'printed' ? '#10B981' : '#F59E0B' }}></div>
+                                                                
+                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '24px', flex: 1 }}>
+                                                                    <div 
+                                                                        onClick={() => setExpandedBatch(isExpanded ? null : batch.name)}
+                                                                        style={{ width: '50px', height: '50px', borderRadius: '14px', background: isExpanded ? '#1A1265' : '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
+                                                                    >
+                                                                        <div style={{ width: 24, height: 24, color: isExpanded ? 'white' : '#1A1265' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>` }} />
+                                                                    </div>
+                                                                    
+                                                                    <div>
+                                                                        <h4 style={{ fontSize: '18px', fontWeight: '900', color: '#1A1265', margin: 0 }}>{batch.name}</h4>
+                                                                        <div style={{ fontSize: '13px', color: '#64748B', marginTop: '4px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                                            <span>{batch.cards.length} cartes</span>
+                                                                            <span style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#CBD5E1' }}></span>
+                                                                            <span style={{ color: batch.status === 'printed' ? '#10B981' : '#F59E0B' }}>{batch.status === 'printed' ? 'Imprimé' : 'En attente'}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
 
-                                                        <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
-                                                            <button 
-                                                                onClick={() => handleDownloadAll(batch.cards.map(c => c.card_id))}
-                                                                style={{ flex: 1, padding: '12px', borderRadius: '12px', border: 'none', background: '#1A1265', color: 'white', fontWeight: '800', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-                                                            >
-                                                                <div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>` }} /> ZIP
-                                                            </button>
-                                                            <button 
-                                                                onClick={() => handleMarkBatchStatus(batch.cards, batch.status === 'printed' ? 'pending' : 'printed')}
-                                                                style={{ flex: 1, padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', color: '#1A1265', fontWeight: '800', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-                                                            >
-                                                                <div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>` }} /> {batch.status === 'printed' ? 'Réinitialiser' : 'Imprimé'}
-                                                            </button>
+                                                                <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                                                                    <button 
+                                                                        onClick={() => handleDownloadAll(batch.cards.map(c => c.card_id))}
+                                                                        style={{ padding: '10px 16px', borderRadius: '12px', border: 'none', background: '#F1F5F9', color: '#1A1265', fontWeight: '800', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px' }}
+                                                                    >
+                                                                        ZIP
+                                                                    </button>
+                                                                    <button 
+                                                                        onClick={() => handleMarkBatchStatus(batch.cards, batch.status === 'printed' ? 'pending' : 'printed')}
+                                                                        style={{ padding: '10px 16px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', color: '#1A1265', fontWeight: '800', cursor: 'pointer', fontSize: '13px' }}
+                                                                    >
+                                                                        {batch.status === 'printed' ? 'Réinitialiser' : 'Marquer Imprimé'}
+                                                                    </button>
+                                                                    <button 
+                                                                        onClick={() => setExpandedBatch(isExpanded ? null : batch.name)}
+                                                                        style={{ padding: '10px 16px', borderRadius: '12px', border: 'none', background: isExpanded ? '#1A1265' : '#F8FAFC', color: isExpanded ? 'white' : '#1A1265', fontWeight: '800', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px' }}
+                                                                    >
+                                                                        {isExpanded ? 'Fermer' : 'Ouvrir'} {isExpanded ? '▲' : '▼'}
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+
+                                                            {isExpanded && (
+                                                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px', padding: '0 20px', animation: 'fadeIn 0.3s ease' }}>
+                                                                    {batch.cards.map(card => (
+                                                                        <ProductionCard 
+                                                                            key={card.card_id} 
+                                                                            card={card} 
+                                                                            toast={toast} 
+                                                                            includeLogo={includeLogo}
+                                                                            isSelected={selectedCards.includes(card.card_id)}
+                                                                            onSelect={() => setSelectedCards(prev => prev.includes(card.card_id) ? prev.filter(id => id !== card.card_id) : [...prev, card.card_id])}
+                                                                        />
+                                                                    ))}
+                                                                </div>
+                                                            )}
                                                         </div>
-                                                    </div>
-                                                ));
+                                                    );
+                                                });
                                             })()}
+                                        </div>
+                                    </div>
                                         </div>
                                     </div>
 
