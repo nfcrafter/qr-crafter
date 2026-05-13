@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase.js';
 import { useToast } from '../../components/Toast.jsx';
 import QRCodeStyling from 'qr-code-styling';
+import JSZip from "jszip";
+import { saveAs } from "file-saver";
 import Modal from '../../components/Modal.jsx';
 
 export default function AdminDashboard() {
@@ -25,6 +27,7 @@ export default function AdminDashboard() {
     const [view, setView] = useState('dashboard'); // 'dashboard' or 'users' or 'finance' or 'production'
     const [users, setUsers] = useState([]);
     const [bulkQty, setBulkQty] = useState(20);
+    const [batchName, setBatchName] = useState('Production_NFC');
     const [bulkColor, setBulkColor] = useState('#1A1265');
     const [bulkBgColor, setBulkBgColor] = useState('#FFFFFF');
     const [includeLogo, setIncludeLogo] = useState(true);
@@ -203,8 +206,10 @@ export default function AdminDashboard() {
         const unactivated = cards.filter(c => !c.owner_id);
         if (unactivated.length === 0) return toast("Aucune carte à télécharger", "info");
         
-        toast(`Préparation de ${unactivated.length} téléchargements...`, 'info');
-        
+        toast(`Génération du ZIP pour ${unactivated.length} cartes...`, 'info');
+        const zip = new JSZip();
+        const folder = zip.folder(batchName);
+
         for (const card of unactivated) {
             const activationUrl = `${window.location.origin}/activate?card=${card.card_id}&token=${card.activation_token}`;
             const qrColor = card.admin_profile?.primaryColor || "#1A1265";
@@ -222,11 +227,14 @@ export default function AdminDashboard() {
                     imageSize: 0.3
                 }
             });
-            await qrCode.download({ name: `QR-${card.card_id}-${qrColor.replace('#', '')}`, extension: "png" });
-            // Small delay to prevent browser overwhelm
-            await new Promise(r => setTimeout(r, 300));
+            
+            const blob = await qrCode.getRawData("png");
+            folder.file(`QR-${card.card_id}.png`, blob);
         }
-        toast("Téléchargements terminés", "success");
+        
+        const content = await zip.generateAsync({ type: "blob" });
+        saveAs(content, `${batchName.replace(/\s+/g, '_')}.zip`);
+        toast("Téléchargement du ZIP lancé !", "success");
     };
 
     async function handleDeleteUser(userId) {
@@ -542,19 +550,32 @@ export default function AdminDashboard() {
                                     <p style={{ color: '#64748B', fontSize: '14px', marginBottom: '24px' }}>Créez plusieurs cartes vierges avec leurs jetons d'activation en un clic.</p>
                                     
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                                        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                                            <div style={{ flex: 1, position: 'relative' }}>
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '16px' }}>
+                                            <div style={{ position: 'relative' }}>
+                                                <label style={{ fontSize: '12px', fontWeight: '800', color: '#64748B', marginBottom: '8px', display: 'block' }}>QUANTITÉ</label>
                                                 <input 
                                                     type="number" 
                                                     min="1" 
                                                     max="100" 
                                                     value={bulkQty} 
                                                     onChange={e => setBulkQty(Number(e.target.value))} 
-                                                    placeholder="Quantité (ex: 20)" 
+                                                    placeholder="20" 
                                                     style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #E2E8F0', fontSize: '16px', fontWeight: '600' }} 
                                                 />
-                                                <span style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8', fontSize: '12px', fontWeight: '700' }}>CARTES</span>
                                             </div>
+                                            <div>
+                                                <label style={{ fontSize: '12px', fontWeight: '800', color: '#64748B', marginBottom: '8px', display: 'block' }}>NOM DU LOT / DOSSIER</label>
+                                                <input 
+                                                    type="text" 
+                                                    value={batchName} 
+                                                    onChange={e => setBatchName(e.target.value)} 
+                                                    placeholder="Ex: Batch_NFC_Client_Alpha" 
+                                                    style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #E2E8F0', fontSize: '16px', fontWeight: '600' }} 
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                                             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                                 <label style={{ fontSize: '12px', fontWeight: '800', color: '#64748B' }}>COULEUR POINTS</label>
                                                 <div style={{ display: 'flex', gap: '8px', alignItems: 'center', background: '#F8FAFC', padding: '8px 14px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
