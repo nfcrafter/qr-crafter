@@ -23,10 +23,11 @@ export default function Activate() {
     useEffect(() => {
         if (cardInfo && qrRef.current) {
             const activationUrl = `${window.location.origin}/activate?card=${cardId}&token=${token}`;
+            const qrColor = cardInfo.admin_profile?.primaryColor || "#1A1265";
             const qrCode = new QRCodeStyling({
                 width: 180, height: 180, data: activationUrl,
-                dotsOptions: { color: "#1A1265", type: "rounded" },
-                cornersSquareOptions: { color: "#1A1265", type: "extra-rounded" },
+                dotsOptions: { color: qrColor, type: "rounded" },
+                cornersSquareOptions: { color: qrColor, type: "extra-rounded" },
                 backgroundOptions: { color: "transparent" }
             });
             qrRef.current.innerHTML = '';
@@ -101,7 +102,13 @@ export default function Activate() {
             return;
         }
 
-        await supabase.from('profiles').update({ card_id: cardId }).eq('id', user.id)
+        const themeColor = cardInfo?.admin_profile?.primaryColor || "#1A1265";
+        
+        await supabase.from('profiles').update({ 
+            card_id: cardId,
+            theme_color: themeColor 
+        }).eq('id', user.id)
+        
         await supabase.from('user_cards').upsert({ user_id: user.id, card_id: cardId })
 
         setLoading(false)
@@ -113,19 +120,21 @@ export default function Activate() {
         supabase.auth.getUser().then(({ data }) => setUser(data.user));
     }, []);
 
+    const themeColor = cardInfo?.admin_profile?.primaryColor || "#1A1265";
+
     return (
-        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #F8FAFC 0%, #EFF6FF 100%)', padding: '24px' }}>
-            <div className="premium-card" style={{ padding: '48px 40px', width: '100%', maxWidth: '440px', background: 'rgba(255, 255, 255, 0.8)', backdropFilter: 'blur(10px)', textAlign: 'center' }}>
-                <h1 style={{ fontSize: '28px', fontWeight: '800', letterSpacing: '-1px', color: '#1A1265', margin: '0 0 12px 0' }}>ACTIVATION</h1>
+        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: `linear-gradient(135deg, ${themeColor}10 0%, #F8FAFC 100%)`, padding: '24px' }}>
+            <div className="premium-card" style={{ padding: '48px 40px', width: '100%', maxWidth: '440px', background: 'rgba(255, 255, 255, 0.8)', backdropFilter: 'blur(10px)', textAlign: 'center', borderTop: `6px solid ${themeColor}` }}>
+                <h1 style={{ fontSize: '28px', fontWeight: '800', letterSpacing: '-1px', color: themeColor, margin: '0 0 12px 0' }}>ACTIVATION</h1>
                 
                 {verifying ? (
                     <div style={{ padding: '40px 0' }}>Vérification en cours...</div>
                 ) : cardInfo ? (
                     <>
-                        <div style={{ margin: '24px 0', padding: '32px 24px', background: '#F8FAFC', borderRadius: '24px', border: '2px solid #E2E8F0' }}>
-                            <div style={{ fontSize: '12px', color: '#6366F1', fontWeight: 800, textTransform: 'uppercase', marginBottom: 16, letterSpacing: '2px' }}>ID DE LA CARTE</div>
+                        <div style={{ margin: '24px 0', padding: '32px 24px', background: '#F8FAFC', borderRadius: '24px', border: `2px solid ${themeColor}20` }}>
+                            <div style={{ fontSize: '12px', color: themeColor, fontWeight: 800, textTransform: 'uppercase', marginBottom: 16, letterSpacing: '2px' }}>ID DE LA CARTE</div>
                             
-                            <div style={{ fontSize: '42px', color: '#1A1265', fontWeight: '1000', letterSpacing: '-1px', marginBottom: '8px', fontFamily: 'monospace' }}>
+                            <div style={{ fontSize: '42px', color: themeColor, fontWeight: '1000', letterSpacing: '-1px', marginBottom: '8px', fontFamily: 'monospace' }}>
                                 {cardId}
                             </div>
 
@@ -141,7 +150,7 @@ export default function Activate() {
                                     <button 
                                         onClick={() => navigate(`/register?card=${cardId}&token=${token}`)}
                                         className="btn-primary" 
-                                        style={{ width: '100%', padding: '16px', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}
+                                        style={{ width: '100%', padding: '16px', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, background: themeColor }}
                                     >
                                         <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" y1="8" x2="19" y2="14"></line><line x1="22" y1="11" x2="16" y2="11"></line></svg>` }} />
                                         Créer mon compte client
@@ -149,7 +158,7 @@ export default function Activate() {
                                     <button 
                                         onClick={() => navigate(`/login?card=${cardId}&token=${token}`)}
                                         className="btn-ghost" 
-                                        style={{ width: '100%', padding: '16px', fontSize: '16px' }}
+                                        style={{ width: '100%', padding: '16px', fontSize: '16px', color: themeColor }}
                                     >
                                         J'ai déjà un compte (Connexion)
                                     </button>
@@ -160,7 +169,7 @@ export default function Activate() {
                                 <p style={{ color: '#64748B', fontSize: '15px', marginBottom: '32px', lineHeight: 1.5 }}>
                                     Cette carte est prête à être activée. Elle sera liée à votre compte <strong>{user.email}</strong>.
                                 </p>
-                                <button className="btn-primary" onClick={activateCard} disabled={loading} style={{ width: '100%', padding: '16px', fontSize: '16px', boxShadow: '0 10px 20px rgba(26, 18, 101, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+                                 <button className="btn-primary" onClick={activateCard} disabled={loading} style={{ width: '100%', padding: '16px', fontSize: '16px', background: themeColor, boxShadow: `0 10px 20px ${themeColor}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
                                     {loading ? 'Activation...' : (
                                         <>
                                             <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>` }} />
