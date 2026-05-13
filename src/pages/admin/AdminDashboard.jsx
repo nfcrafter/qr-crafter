@@ -901,10 +901,8 @@ export default function AdminDashboard() {
                                                     );
                                                 });
                                             })()}
-                                        </div>
                                     </div>
-                                        </div>
-                                    </div>
+                                </div>
 
                                     {/* Section 3: Vue Détail (Unactivated cards not in batches or individual) */}
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
