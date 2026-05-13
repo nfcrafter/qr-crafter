@@ -178,8 +178,24 @@ export default function ClientDashboard() {
                     <img src="/logo.png" alt="Logo" style={{ height: '24px' }} />
                     <span style={{ fontWeight: '900', color: '#1A1265' }}>NFCrafter</span>
                 </div>
-                <button onClick={() => setIsMobileMenuOpen(true)} style={{ background: '#1A1265', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '8px', fontWeight: '800', fontSize: '13px' }}>
-                    Menu
+                <button 
+                    onClick={() => setIsMobileMenuOpen(true)} 
+                    style={{ 
+                        background: 'rgba(255, 255, 255, 0.7)', 
+                        backdropFilter: 'blur(10px)', 
+                        color: '#1A1265', 
+                        border: '1px solid rgba(226, 232, 240, 0.8)', 
+                        width: '44px', 
+                        height: '44px', 
+                        borderRadius: '12px', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.03)'
+                    }}
+                >
+                    <div style={{ width: 22, height: 22 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>` }} />
                 </button>
             </div>
 
@@ -352,14 +368,19 @@ export default function ClientDashboard() {
                         className="mobile-preview-btn"
                         style={{ 
                             position: 'fixed', bottom: '24px', right: '24px', 
-                            background: '#1A1265', color: 'white', border: 'none', 
-                            padding: '12px 24px', borderRadius: '30px', 
-                            boxShadow: '0 10px 25px rgba(26,18,101,0.4)', 
-                            zIndex: 900, cursor: 'pointer', fontSize: '14px',
-                            fontWeight: '800', display: 'none', alignItems: 'center', gap: '10px'
+                            background: 'rgba(255, 255, 255, 0.85)', 
+                            backdropFilter: 'blur(12px)',
+                            color: '#1A1265', 
+                            border: '1px solid rgba(255, 255, 255, 0.5)', 
+                            padding: '12px 20px', borderRadius: '30px', 
+                            boxShadow: '0 10px 30px rgba(0,0,0,0.08)', 
+                            zIndex: 900, cursor: 'pointer', fontSize: '13px',
+                            fontWeight: '800', display: 'none', alignItems: 'center', gap: '10px',
+                            transition: 'all 0.3s ease'
                         }}
                     >
-                        <div style={{ width: '20px', height: '20px' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>` }} /> Aperçu en direct
+                        <div style={{ width: '18px', height: '18px' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>` }} /> 
+                        <span>Aperçu</span>
                     </button>
                 )}
             </main>
