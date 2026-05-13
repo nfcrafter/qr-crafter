@@ -295,12 +295,12 @@ export default function PublicProfile() {
             <div style={{ display: 'flex', gap: 10 }}>
               {profile?.phone && (
                 <a className="pl" href={`tel:${profile.phone.toString().replace(/\s+/g, '')}`} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '13px', background: cardBg, borderRadius: 16, textDecoration: 'none', color: textColor, boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)', fontWeight: 700, fontSize: 14 }}>
-                  <span style={{ fontSize: 16 }}>📞</span> Appeler
+                  <span style={{ width: 18, height: 18, color: themeColor, display: 'flex' }} dangerouslySetInnerHTML={{ __html: LINK_ICONS.find(i => i.id === 'phone')?.svg }} /> Appeler
                 </a>
               )}
               {profile?.email && (
                 <a className="pl" href={`mailto:${profile.email}`} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '13px', background: cardBg, borderRadius: 16, textDecoration: 'none', color: textColor, boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)', fontWeight: 700, fontSize: 14 }}>
-                  <span style={{ fontSize: 16 }}>✉️</span> Email
+                  <span style={{ width: 18, height: 18, color: themeColor, display: 'flex' }} dangerouslySetInnerHTML={{ __html: LINK_ICONS.find(i => i.id === 'email')?.svg }} /> Email
                 </a>
               )}
             </div>
@@ -345,8 +345,8 @@ export default function PublicProfile() {
                 {activeCustomLinks.map(link => (
                   <a key={link.id} className="pl" href={link.url} target="_blank" rel="noopener noreferrer"
                     style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 18px', background: cardBg, borderRadius: 16, textDecoration: 'none', color: textColor, boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)' }}>
-                    <div style={{ width: 44, height: 44, borderRadius: 12, flexShrink: 0, background: isDark ? 'rgba(255,255,255,0.05)' : '#F8FAFC', border: isDark ? 'none' : '1px solid #F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>
-                      {link.emoji || link.icon || '🔗'}
+                    <div style={{ width: 44, height: 44, borderRadius: 12, flexShrink: 0, background: isDark ? 'rgba(255,255,255,0.05)' : '#F8FAFC', border: isDark ? 'none' : '1px solid #F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 10 }}>
+                      <div style={{ width: '100%', height: '100%', color: themeColor, display: 'flex' }} dangerouslySetInnerHTML={{ __html: LINK_ICONS.find(i => i.id === link.iconId || i.emoji === link.emoji)?.svg || LINK_ICONS[0].svg }} />
                     </div>
                     <span style={{ fontWeight: 700, fontSize: 15, flex: 1 }}>{link.label || link.title}</span>
                     <span style={{ color: isDark ? '#475569' : '#CBD5E1', fontSize: 18 }}>→</span>

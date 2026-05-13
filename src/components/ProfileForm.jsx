@@ -69,7 +69,7 @@ export default function ProfileForm({
 
     const addCustomLink = () => {
         const links = [...(profile.customLinks || [])];
-        links.push({ emoji: '🔗', label: '', url: '' });
+        links.push({ iconId: 'link', label: '', url: '' });
         setProfile({ ...profile, customLinks: links });
     };
 
@@ -272,9 +272,9 @@ export default function ProfileForm({
                             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12, alignItems: 'center' }}>
                                 <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', flex: 1 }}>
                                     {LINK_ICONS.map(li => (
-                                        <span key={li.emoji} onClick={() => updateCustomLink(idx, 'emoji', li.emoji)} title={li.label}
-                                            style={{ fontSize: 18, cursor: 'pointer', padding: '4px', borderRadius: 8, background: link.emoji === li.emoji ? '#EEF2FF' : 'transparent', border: link.emoji === li.emoji ? '1px solid #6366F1' : '1px solid transparent', transition: '0.2s' }}>
-                                            {li.emoji}
+                                        <span key={li.id} onClick={() => updateCustomLink(idx, 'iconId', li.id)} title={li.label}
+                                            style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: '5px', borderRadius: 8, background: link.iconId === li.id || (!link.iconId && link.emoji === li.emoji) ? '#EEF2FF' : 'transparent', border: link.iconId === li.id || (!link.iconId && link.emoji === li.emoji) ? '1px solid #6366F1' : '1px solid transparent', color: link.iconId === li.id || (!link.iconId && link.emoji === li.emoji) ? '#6366F1' : '#94A3B8', transition: '0.2s' }}>
+                                            <div style={{ width: '100%', height: '100%' }} dangerouslySetInnerHTML={{ __html: li.svg }} />
                                         </span>
                                     ))}
                                 </div>

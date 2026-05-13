@@ -159,7 +159,7 @@ export default function CardSettings() {
     };
 
     function addCustomLink() {
-        setProfile({ ...profile, customLinks: [...(profile.customLinks || []), { label: '', url: '', emoji: '🔗' }] });
+        setProfile({ ...profile, customLinks: [...(profile.customLinks || []), { label: '', url: '', iconId: 'link' }] });
     }
 
     function updateCustomLink(idx, field, val) {
@@ -368,9 +368,9 @@ export default function CardSettings() {
                                             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10, alignItems: 'center' }}>
                                                 <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', flex: 1 }}>
                                                     {LINK_ICONS.map(li => (
-                                                        <span key={li.emoji} onClick={() => updateCustomLink(idx, 'emoji', li.emoji)} title={li.label}
-                                                            style={{ fontSize: 20, cursor: 'pointer', padding: 3, borderRadius: 7, background: link.emoji === li.emoji ? '#EEF2FF' : 'transparent', border: link.emoji === li.emoji ? '1px solid #6366F1' : '1px solid transparent' }}>
-                                                            {li.emoji}
+                                                        <span key={li.id} onClick={() => updateCustomLink(idx, 'iconId', li.id)} title={li.label}
+                                                            style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 6, borderRadius: 8, background: link.iconId === li.id || (!link.iconId && link.emoji === li.emoji) ? '#EEF2FF' : 'transparent', border: link.iconId === li.id || (!link.iconId && link.emoji === li.emoji) ? '1px solid #6366F1' : '1px solid transparent', color: link.iconId === li.id || (!link.iconId && link.emoji === li.emoji) ? '#6366F1' : '#94A3B8' }}>
+                                                            <div style={{ width: '100%', height: '100%' }} dangerouslySetInnerHTML={{ __html: li.svg }} />
                                                         </span>
                                                     ))}
                                                 </div>
@@ -583,12 +583,12 @@ function AdminPhonePreview({ profile, qrStyle, qrRef, previewMode, isDark, textC
                                 <div style={{ display: 'flex', gap: 6 }}>
                                     {profile.phone && (
                                         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, padding: '8px', background: cardBg, borderRadius: 10, border: '1px solid rgba(0,0,0,0.05)', fontWeight: 700, fontSize: 10, color: textColor }}>
-                                            <span>📞</span> Appeler
+                                            <div style={{ width: 12, height: 12, color: profile.primaryColor || '#1A1265' }} dangerouslySetInnerHTML={{ __html: LINK_ICONS.find(i => i.id === 'phone')?.svg }} /> Appeler
                                         </div>
                                     )}
                                     {profile.email && (
                                         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, padding: '8px', background: cardBg, borderRadius: 10, border: '1px solid rgba(0,0,0,0.05)', fontWeight: 700, fontSize: 10, color: textColor }}>
-                                            <span>✉️</span> Email
+                                            <div style={{ width: 12, height: 12, color: profile.primaryColor || '#1A1265' }} dangerouslySetInnerHTML={{ __html: LINK_ICONS.find(i => i.id === 'email')?.svg }} /> Email
                                         </div>
                                     )}
                                 </div>
@@ -612,8 +612,8 @@ function AdminPhonePreview({ profile, qrStyle, qrRef, previewMode, isDark, textC
                                 if (!link.url) return null;
                                 return (
                                     <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: cardBg, borderRadius: 12, border: '1px solid rgba(0,0,0,0.05)', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-                                        <div style={{ width: 28, height: 28, borderRadius: 8, background: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                            <span style={{ fontSize: 14 }}>{link.emoji || '🔗'}</span>
+                                        <div style={{ width: 28, height: 28, borderRadius: 8, background: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, padding: 6 }}>
+                                            <div style={{ width: '100%', height: '100%', color: profile.primaryColor || '#1A1265' }} dangerouslySetInnerHTML={{ __html: LINK_ICONS.find(i => i.id === link.iconId || i.emoji === link.emoji)?.svg || LINK_ICONS[0].svg }} />
                                         </div>
                                         <div style={{ flex: 1, overflow: 'hidden' }}>
                                             <div style={{ fontWeight: 700, fontSize: 11, color: textColor }}>{link.label || 'Lien'}</div>

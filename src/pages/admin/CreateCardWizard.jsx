@@ -120,7 +120,7 @@ export default function CreateCardWizard() {
     }
 
     function addCustomLink() {
-        setProfile({ ...profile, customLinks: [...profile.customLinks, { label: '', url: '', emoji: '🔗' }] });
+        setProfile({ ...profile, customLinks: [...profile.customLinks, { label: '', url: '', iconId: 'link' }] });
     }
 
     function updateCustomLink(idx, field, val) {
@@ -276,10 +276,10 @@ export default function CreateCardWizard() {
                                                     <div style={{ display: 'flex', gap: 8, marginBottom: 10, alignItems: 'center' }}>
                                                         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', flex: 1 }}>
                                                             {LINK_ICONS.map(li => (
-                                                                <span key={li.emoji} onClick={() => updateCustomLink(idx, 'emoji', li.emoji)}
+                                                                <span key={li.id} onClick={() => updateCustomLink(idx, 'iconId', li.id)}
                                                                     title={li.label}
-                                                                    style={{ fontSize: 22, cursor: 'pointer', padding: 4, borderRadius: 8, background: link.emoji === li.emoji ? '#EEF2FF' : 'transparent', border: link.emoji === li.emoji ? '1px solid #6366F1' : '1px solid transparent' }}>
-                                                                    {li.emoji}
+                                                                    style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 6, borderRadius: 8, background: link.iconId === li.id || (!link.iconId && link.emoji === li.emoji) ? '#EEF2FF' : 'transparent', border: link.iconId === li.id || (!link.iconId && link.emoji === li.emoji) ? '1px solid #6366F1' : '1px solid transparent', color: link.iconId === li.id || (!link.iconId && link.emoji === li.emoji) ? '#6366F1' : '#94A3B8' }}>
+                                                                    <div style={{ width: '100%', height: '100%' }} dangerouslySetInnerHTML={{ __html: li.svg }} />
                                                                 </span>
                                                             ))}
                                                         </div>
@@ -440,12 +440,12 @@ export default function CreateCardWizard() {
                                                             <div style={{ display: 'flex', gap: 6 }}>
                                                                 {profile.phone && (
                                                                     <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, padding: '8px', background: 'white', borderRadius: 10, border: '1px solid #F1F5F9', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', fontWeight: 700, fontSize: 10 }}>
-                                                                        <span>📞</span> Appeler
+                                                                        <div style={{ width: 12, height: 12, color: profile.primaryColor || '#1A1265' }} dangerouslySetInnerHTML={{ __html: LINK_ICONS.find(i => i.id === 'phone')?.svg }} /> Appeler
                                                                     </div>
                                                                 )}
                                                                 {profile.email && (
                                                                     <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, padding: '8px', background: 'white', borderRadius: 10, border: '1px solid #F1F5F9', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', fontWeight: 700, fontSize: 10 }}>
-                                                                        <span>✉️</span> Email
+                                                                        <div style={{ width: 12, height: 12, color: profile.primaryColor || '#1A1265' }} dangerouslySetInnerHTML={{ __html: LINK_ICONS.find(i => i.id === 'email')?.svg }} /> Email
                                                                     </div>
                                                                 )}
                                                             </div>
@@ -469,7 +469,9 @@ export default function CreateCardWizard() {
                                                         })}
                                                         {(profile.customLinks || []).filter(l => l.label).map((link, i) => (
                                                             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: 'white', borderRadius: 12, border: '1px solid #F1F5F9', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-                                                                <div style={{ width: 28, height: 28, borderRadius: 8, background: '#F8FAFC', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>{link.emoji || '🔗'}</div>
+                                                                <div style={{ width: 28, height: 28, borderRadius: 8, background: '#F8FAFC', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 6 }}>
+                                                                    <div style={{ width: '100%', height: '100%', color: profile.primaryColor || '#1A1265' }} dangerouslySetInnerHTML={{ __html: LINK_ICONS.find(i => i.id === link.iconId || i.emoji === link.emoji)?.svg || LINK_ICONS[0].svg }} />
+                                                                </div>
                                                                 <span style={{ fontWeight: 700, fontSize: 11, flex: 1, color: '#0F172A' }}>{link.label}</span>
                                                                 <span style={{ color: '#CBD5E1', fontSize: 12 }}>→</span>
                                                             </div>
