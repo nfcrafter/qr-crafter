@@ -27,6 +27,7 @@ export default function ClientDashboard() {
     const [showMobilePreview, setShowMobilePreview] = useState(false);
     const [renamingCardId, setRenamingCardId] = useState(null);
     const [newName, setNewName] = useState('');
+    const editorRef = useRef(null);  // ← Must be here, BEFORE any early returns
     
     // Lock body scroll when mobile preview is open
     useEffect(() => {
@@ -226,8 +227,6 @@ export default function ClientDashboard() {
         (!publicProfile.phone && !publicProfile.email) ||
         Object.keys(publicProfile.socials || {}).length === 0
     );
-
-    const editorRef = useRef(null);
 
     return (
         <div style={{ display: 'flex', minHeight: '100vh', background: '#F8FAFC', maxWidth: '100vw', overflowX: 'hidden' }}>
