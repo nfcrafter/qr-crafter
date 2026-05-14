@@ -43,6 +43,7 @@ export default function AdminDashboard() {
     const [currentPage, setCurrentPage] = useState(1);
     const [folders, setFolders] = useState([]);
     const [filterFolder, setFilterFolder] = useState('');
+    const [categoryFilter, setCategoryFilter] = useState('all'); // 'all', 'physical', 'digital'
     const [expandedFolders, setExpandedFolders] = useState({});
     const [view, setView] = useState('dashboard'); // 'dashboard' or 'users' or 'finance' or 'production'
     const [users, setUsers] = useState([]);
@@ -424,12 +425,12 @@ export default function AdminDashboard() {
     const currentFolder = folders.find(f => f.id === filterFolder);
     const isSubFolder = currentFolder?.parent_id != null;
 
-    const filtered = cards.filter(c => {
-        const matchesSearch = !search || c.card_name?.toLowerCase().includes(search.toLowerCase()) || c.card_id?.toLowerCase().includes(search.toLowerCase());
-        const matchesStatus = statusFilter === 'all' || (c._type === 'digital' ? true : c.status === statusFilter);
-        const qrType = c.admin_profile?.qr_type || c.type || 'url';
-        const matchesType = typeFilter === 'all' || qrType === typeFilter;
-        return matchesSearch && matchesStatus && matchesType;
+    const filtered = cards.filter(card => {
+        const matchesSearch = (card.card_id?.toLowerCase().includes(search.toLowerCase())) || (card.card_name?.toLowerCase().includes(search.toLowerCase()));
+        const matchesStatus = statusFilter === 'all' || card.status === statusFilter;
+        const matchesType = typeFilter === 'all' || (card.admin_profile?.qr_type === typeFilter || card.type === typeFilter);
+        const matchesCategory = categoryFilter === 'all' || card._type === categoryFilter;
+        return matchesSearch && matchesStatus && matchesType && matchesCategory;
     }).sort((a, b) => {
         if (sortBy === 'newest') return new Date(b.created_at) - new Date(a.created_at);
         if (sortBy === 'modified') return new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at);
@@ -538,10 +539,33 @@ export default function AdminDashboard() {
                         </div>
                     </header>
                     {(view === 'dashboard' || view === 'requests') && (
-                        <div style={{ background: 'white', padding: '12px 20px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px', boxShadow: '0 4px 15px rgba(0,0,0,0.02)', border: '1px solid #F1F5F9' }} className="admin-filters">
-                            <div style={{ position: 'relative', flex: 1 }}><span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', opacity: 0.3, display: 'flex' }}><div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>` }} /></span><input type="text" placeholder="Rechercher..." value={search} onChange={e => setSearch(e.target.value)} style={{ width: '100%', padding: '12px 12px 12px 40px', borderRadius: '12px', border: '1px solid #E2E8F0', background: '#F8FAFC' }} /></div>
-                            <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} style={{ padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '600' }} className="desktop-only"><option value="all">Statut</option><option value="active">Active</option><option value="pending">En attente</option></select>
-                            <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)} style={{ padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '600' }} className="desktop-only"><option value="all">Type</option><option value="url">URL</option><option value="wifi">WiFi</option><option value="vcard">VCard</option></select>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                            <div style={{ display: 'flex', gap: '8px', background: '#F1F5F9', padding: '6px', borderRadius: '14px', width: 'fit-content' }}>
+                                <button 
+                                    onClick={() => setCategoryFilter('all')}
+                                    style={{ padding: '8px 20px', borderRadius: '10px', border: 'none', background: categoryFilter === 'all' ? 'white' : 'transparent', color: categoryFilter === 'all' ? '#1A1265' : '#64748B', fontWeight: '800', fontSize: '13px', cursor: 'pointer', boxShadow: categoryFilter === 'all' ? '0 4px 12px rgba(0,0,0,0.05)' : 'none', transition: 'all 0.2s' }}
+                                >
+                                    Tout ({cards.length})
+                                </button>
+                                <button 
+                                    onClick={() => setCategoryFilter('physical')}
+                                    style={{ padding: '8px 20px', borderRadius: '10px', border: 'none', background: categoryFilter === 'physical' ? 'white' : 'transparent', color: categoryFilter === 'physical' ? '#6366F1' : '#64748B', fontWeight: '800', fontSize: '13px', cursor: 'pointer', boxShadow: categoryFilter === 'physical' ? '0 4px 12px rgba(0,0,0,0.05)' : 'none', transition: 'all 0.2s' }}
+                                >
+                                    Signature ({cards.filter(c => c._type === 'physical').length})
+                                </button>
+                                <button 
+                                    onClick={() => setCategoryFilter('digital')}
+                                    style={{ padding: '8px 20px', borderRadius: '10px', border: 'none', background: categoryFilter === 'digital' ? 'white' : 'transparent', color: categoryFilter === 'digital' ? '#10B981' : '#64748B', fontWeight: '800', fontSize: '13px', cursor: 'pointer', boxShadow: categoryFilter === 'digital' ? '0 4px 12px rgba(0,0,0,0.05)' : 'none', transition: 'all 0.2s' }}
+                                >
+                                    Personnalisée ({cards.filter(c => c._type === 'digital').length})
+                                </button>
+                            </div>
+
+                            <div style={{ background: 'white', padding: '12px 20px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px', boxShadow: '0 4px 15px rgba(0,0,0,0.02)', border: '1px solid #F1F5F9' }} className="admin-filters">
+                                <div style={{ position: 'relative', flex: 1 }}><span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', opacity: 0.3, display: 'flex' }}><div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>` }} /></span><input type="text" placeholder="Rechercher..." value={search} onChange={e => setSearch(e.target.value)} style={{ width: '100%', padding: '12px 12px 12px 40px', borderRadius: '12px', border: '1px solid #E2E8F0', background: '#F8FAFC' }} /></div>
+                                <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} style={{ padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '600' }} className="desktop-only"><option value="all">Statut</option><option value="active">Active</option><option value="pending">En attente</option></select>
+                                <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)} style={{ padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '600' }} className="desktop-only"><option value="all">Type</option><option value="url">URL</option><option value="wifi">WiFi</option><option value="vcard">VCard</option></select>
+                            </div>
                         </div>
                     )}
                 </div>
@@ -1233,7 +1257,7 @@ function CardListItem({ card, scanCount, navigate, toast, onResolve }) {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                         <span style={{ fontSize: '10px', fontWeight: '900', color: card._type === 'digital' ? '#10B981' : '#6366F1', background: card._type === 'digital' ? '#ECFDF5' : '#EEF2FF', padding: '2px 8px', borderRadius: '10px', textTransform: 'uppercase' }}>
-                            {card._type === 'digital' ? 'Digital QR' : 'Carte Physique'}
+                            {card._type === 'digital' ? 'Personnalisée' : 'Carte Signature'}
                         </span>
                         <div style={{ color: '#6366F1', fontWeight: '800', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{card.admin_profile?.qr_type || card.type || 'URL'}</div>
                     </div>
