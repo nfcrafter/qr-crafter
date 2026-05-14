@@ -25,6 +25,8 @@ export default function ClientDashboard() {
     const [uploadingBanner, setUploadingBanner] = useState(false);
     const [scanCount, setScanCount] = useState(0);
     const [showMobilePreview, setShowMobilePreview] = useState(false);
+    const [renamingCardId, setRenamingCardId] = useState(null);
+    const [newName, setNewName] = useState('');
     
     // Lock body scroll when mobile preview is open
     useEffect(() => {
@@ -139,6 +141,23 @@ export default function ClientDashboard() {
     function handleWhatsAppOrder() {
         const message = `Bonjour NFCrafter ! Je souhaite commander une carte NFC personnalisée. Mon email : ${user?.email}`;
         window.open(`https://wa.me/22969473921?text=${encodeURIComponent(message)}`, '_blank');
+    }
+    
+    async function handleRenameCard(e, cardId) {
+        e.stopPropagation();
+        if (!newName.trim()) return setRenamingCardId(null);
+        
+        const { error } = await supabase
+            .from('cards')
+            .update({ card_name: newName.trim() })
+            .eq('card_id', cardId);
+            
+        if (error) toast('Erreur : ' + error.message, 'error');
+        else {
+            toast('Carte renommée !', 'success');
+            setUserCards(userCards.map(c => c.card_id === cardId ? { ...c, card_name: newName.trim() } : c));
+            setRenamingCardId(null);
+        }
     }
 
     async function savePublicProfile() {
@@ -279,11 +298,66 @@ export default function ClientDashboard() {
                     
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                         {userCards.map(card => (
-                            <button key={card.card_id} onClick={() => setSelectedCardId(card.card_id)} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', textAlign: 'left', cursor: 'pointer', background: selectedCardId === card.card_id ? '#F5F3FF' : 'transparent', color: selectedCardId === card.card_id ? '#7C3AED' : '#64748B', fontWeight: '700', transition: '0.2s', display: 'flex', alignItems: 'center', gap: '12px', position: 'relative' }}>
-                                {selectedCardId === card.card_id && <div style={{ position: 'absolute', left: 0, top: '20%', bottom: '20%', width: '4px', background: '#7C3AED', borderRadius: '0 4px 4px 0' }} />}
-                                <div style={{ width: 18, height: 18, opacity: selectedCardId === card.card_id ? 1 : 0.6 }} dangerouslySetInnerHTML={{ __html: selectedCardId === card.card_id ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l4 6-10 12L2 9z"></path><path d="M11 3v4"></path><path d="M15 3l-2 4"></path><path d="M9 3l2 4"></path><path d="M2 9h20"></path></svg>` : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>` }} /> 
-                                <span style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{card.card_name || 'Mon Profil'}</span>
-                            </button>
+                            <div key={card.card_id} style={{ position: 'relative', group: 'true' }}>
+                                <button 
+                                    onClick={() => setSelectedCardId(card.card_id)} 
+                                    style={{ 
+                                        width: '100%', 
+                                        padding: '14px 16px', 
+                                        borderRadius: '16px', 
+                                        border: 'none', 
+                                        textAlign: 'left', 
+                                        cursor: 'pointer', 
+                                        background: selectedCardId === card.card_id ? '#F5F3FF' : 'transparent', 
+                                        color: selectedCardId === card.card_id ? '#7C3AED' : '#64748B', 
+                                        fontWeight: '700', 
+                                        transition: '0.2s', 
+                                        display: 'flex', 
+                                        alignItems: 'center', 
+                                        gap: '12px', 
+                                        paddingRight: '40px' 
+                                    }}
+                                >
+                                    {selectedCardId === card.card_id && <div style={{ position: 'absolute', left: 0, top: '20%', bottom: '20%', width: '4px', background: '#7C3AED', borderRadius: '0 4px 4px 0' }} />}
+                                    <div style={{ width: 18, height: 18, opacity: selectedCardId === card.card_id ? 1 : 0.6 }} dangerouslySetInnerHTML={{ __html: selectedCardId === card.card_id ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l4 6-10 12L2 9z"></path><path d="M11 3v4"></path><path d="M15 3l-2 4"></path><path d="M9 3l2 4"></path><path d="M2 9h20"></path></svg>` : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>` }} /> 
+                                    
+                                    {renamingCardId === card.card_id ? (
+                                        <input 
+                                            autoFocus
+                                            value={newName}
+                                            onChange={e => setNewName(e.target.value)}
+                                            onKeyDown={e => { if(e.key === 'Enter') handleRenameCard(e, card.card_id); if(e.key === 'Escape') setRenamingCardId(null); }}
+                                            onBlur={e => handleRenameCard(e, card.card_id)}
+                                            onClick={e => e.stopPropagation()}
+                                            style={{ background: 'white', border: '1px solid #7C3AED', borderRadius: '6px', padding: '2px 8px', fontSize: '13px', width: '100%', outline: 'none' }}
+                                        />
+                                    ) : (
+                                        <span style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{card.card_name || 'Mon Profil'}</span>
+                                    )}
+                                </button>
+                                
+                                {renamingCardId !== card.card_id && (
+                                    <button 
+                                        onClick={(e) => { e.stopPropagation(); setRenamingCardId(card.card_id); setNewName(card.card_name || ''); }}
+                                        style={{ 
+                                            position: 'absolute', 
+                                            right: '12px', 
+                                            top: '50%', 
+                                            transform: 'translateY(-50%)', 
+                                            background: 'transparent', 
+                                            border: 'none', 
+                                            color: selectedCardId === card.card_id ? '#7C3AED' : '#94A3B8', 
+                                            cursor: 'pointer', 
+                                            padding: '4px',
+                                            display: 'flex',
+                                            opacity: selectedCardId === card.card_id ? 1 : 0
+                                        }}
+                                        className="rename-btn"
+                                    >
+                                        <div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>` }} />
+                                    </button>
+                                )}
+                            </div>
                         ))}
                     </div>
 
@@ -499,13 +573,13 @@ export default function ClientDashboard() {
                     .mobile-preview-btn { display: flex !important; align-items: center; justify-content: center; }
                 }
 
-                @media (max-width: 968px) {
-                    .desktop-only { display: none !important; }
-                    .mobile-only { display: block !important; }
-                    .mobile-header { display: flex !important; }
-                    .sidebar { width: 260px !important; transform: translateX(-100%); }
+                @media (max-width: 768px) {
+                    .sidebar { transform: translateX(-100%); }
                     .sidebar.open { transform: translateX(0); }
-                    .main-content { margin-left: 0 !important; padding: 100px 16px 40px !important; width: 100%; overflow-x: hidden; }
+                    .main-content { marginLeft: 0 !important; padding: 20px !important; marginTop: 70px !important; }
+                    .mobile-header { display: flex !important; }
+                    .desktop-only { display: none !important; }
+                    .mobile-only { display: flex !important; }
                 }
             `}</style>
         </div>
