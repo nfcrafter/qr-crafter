@@ -228,22 +228,63 @@ export default function Activate() {
                             </div>
                         ) : (
                             <>
-                                <div style={{ marginBottom: 24, textAlign: 'left', marginTop: 32 }}>
-                                    <label style={{ display: 'block', marginBottom: 8, fontSize: 13, fontWeight: 700, color: '#64748B' }}>DONNEZ UN NOM À CETTE CARTE</label>
+                                <div style={{ 
+                                    margin: '32px 0 24px 0', 
+                                    padding: '24px', 
+                                    background: `${themeColor}08`, 
+                                    borderRadius: '20px', 
+                                    border: `1px dashed ${themeColor}40`,
+                                    textAlign: 'left' 
+                                }}>
+                                    <label style={{ display: 'block', marginBottom: 12, fontSize: 12, fontWeight: 800, color: themeColor, letterSpacing: '1px' }}>
+                                        ÉTAPE FINALE : NOMMEZ VOTRE CARTE *
+                                    </label>
                                     <input 
                                         type="text" 
                                         value={customCardName} 
                                         onChange={e => setCustomCardName(e.target.value)}
-                                        placeholder="Ex: Profil Professionnel, Perso, etc."
-                                        style={{ width: '100%', padding: '14px', borderRadius: '12px', border: `1px solid ${themeColor}30`, fontSize: '15px', outline: 'none', background: 'white' }}
+                                        placeholder="Ex: Profil Business, Carte Perso..."
+                                        style={{ 
+                                            width: '100%', 
+                                            padding: '16px', 
+                                            borderRadius: '12px', 
+                                            border: `2px solid ${customCardName ? themeColor : '#E2E8F0'}`, 
+                                            fontSize: '16px', 
+                                            outline: 'none', 
+                                            background: 'white',
+                                            fontWeight: '600',
+                                            transition: 'all 0.2s'
+                                        }}
+                                        autoFocus
                                     />
+                                    <p style={{ marginTop: 12, fontSize: 12, color: '#64748B', lineHeight: 1.4 }}>
+                                        Ce nom vous aidera à distinguer vos différentes cartes dans votre tableau de bord.
+                                    </p>
                                 </div>
 
-                                 <button className="btn-primary" onClick={activateCard} disabled={loading} style={{ width: '100%', padding: '16px', fontSize: '16px', background: themeColor, boxShadow: `0 10px 20px ${themeColor}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
-                                    {loading ? 'Activation...' : (
+                                 <button 
+                                    className="btn-primary" 
+                                    onClick={activateCard} 
+                                    disabled={loading || !customCardName.trim()} 
+                                    style={{ 
+                                        width: '100%', 
+                                        padding: '18px', 
+                                        fontSize: '17px', 
+                                        fontWeight: '800',
+                                        background: customCardName.trim() ? themeColor : '#CBD5E1', 
+                                        boxShadow: customCardName.trim() ? `0 10px 25px ${themeColor}40` : 'none', 
+                                        display: 'flex', 
+                                        alignItems: 'center', 
+                                        justifyContent: 'center', 
+                                        gap: 12,
+                                        cursor: customCardName.trim() ? 'pointer' : 'not-allowed',
+                                        transition: 'all 0.3s'
+                                    }}
+                                >
+                                    {loading ? 'Activation en cours...' : (
                                         <>
-                                            <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>` }} />
-                                            Activer et continuer
+                                            <span>Activer ma carte maintenant</span>
+                                            <div style={{ width: 20, height: 20 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>` }} />
                                         </>
                                     )}
                                 </button>
