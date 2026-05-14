@@ -69,6 +69,7 @@ export default function PublicProfile() {
     if (profile.phone) vc += `TEL;TYPE=CELL:${profile.phone}\r\n`
     if (profile.email) vc += `EMAIL:${profile.email}\r\n`
     if (profile.photo_url) vc += `PHOTO;VALUE=URI:${profile.photo_url}\r\n`
+    let itemIndex = 1;
     SOCIAL_NETWORKS.forEach(s => {
       const rawVal = profile[s.id] || profile?.socials?.[s.id]
       const val = (typeof rawVal === 'object' && rawVal !== null) ? rawVal.value : rawVal
@@ -78,8 +79,11 @@ export default function PublicProfile() {
           const url = s.getUrl(val)
           if (s.id === 'website') {
             vc += `URL:${url}\r\n`
-          } else if (s.vcardField) {
-            vc += `${s.vcardField(url)}\r\n`
+          } else {
+            // High compatibility format for iOS/Android
+            vc += `item${itemIndex}.URL:${url}\r\n`
+            vc += `item${itemIndex}.X-ABLabel:${s.label}\r\n`
+            itemIndex++;
           }
         } catch (e) {
           console.error(`Error adding ${s.id} to vcard:`, e)
