@@ -1,7 +1,7 @@
 // src/pages/client/ClientDashboard.jsx
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase.js';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useToast } from '../../components/Toast.jsx';
 import ProfileForm from '../../components/ProfileForm.jsx';
 import PhonePreview from '../../components/PhonePreview.jsx';
@@ -9,6 +9,8 @@ import { SOCIAL_NETWORKS, LINK_ICONS } from '../../constants/socials.js';
 
 export default function ClientDashboard() {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const activatedId = searchParams.get('activated');
     const toast = useToast();
 
     const [viewMode, setViewMode] = useState('view');
@@ -52,12 +54,12 @@ export default function ClientDashboard() {
             .from('cards')
             .select('*')
             .eq('owner_id', authUser.id)
-            .order('created_at', { ascending: true });
+            .order('created_at', { ascending: false });
 
         setUserCards(cards || []);
         
         if (cards?.length > 0) {
-            const currentId = selectedCardId || cards[0].card_id;
+            const currentId = activatedId || selectedCardId || cards[0].card_id;
             const card = cards.find(c => c.card_id === currentId) || cards[0];
             setSelectedCardId(card.card_id);
             setPublicProfile({

@@ -95,7 +95,7 @@ export default function Register() {
         }
 
         setLoading(false)
-        navigate('/dashboard')
+        navigate(`/dashboard?activated=${cardId}`)
     }
 
     return (

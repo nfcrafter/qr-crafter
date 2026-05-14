@@ -102,14 +102,44 @@ export default function Activate() {
             return;
         }
 
+        // Fetch user profile to link contact info
+        const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single()
+
+        // Update the card with user's profile info
+        const updatedProfile = {
+            ...(cardInfo.admin_profile || {}),
+            full_name: profile?.full_name || cardInfo.admin_profile?.full_name,
+            email: profile?.email || cardInfo.admin_profile?.email,
+            phone: profile?.phone || cardInfo.admin_profile?.phone,
+            job_title: profile?.job_title || cardInfo.admin_profile?.job_title,
+            bio: profile?.bio || cardInfo.admin_profile?.bio,
+            photo_url: profile?.photo_url || cardInfo.admin_profile?.photo_url,
+            banner_url: profile?.banner_url || cardInfo.admin_profile?.banner_url,
+            primaryColor: profile?.primaryColor || cardInfo.admin_profile?.primaryColor,
+            backgroundColor: profile?.backgroundColor || cardInfo.admin_profile?.backgroundColor,
+            socials: profile?.socials || cardInfo.admin_profile?.socials || {},
+            customLinks: profile?.customLinks || cardInfo.admin_profile?.customLinks || [],
+        }
+
+        await supabase.from('cards')
+            .update({ 
+                admin_profile: updatedProfile,
+                card_name: profile?.full_name || cardInfo.card_name || 'Mon Profil'
+            })
+            .eq('card_id', cardId)
+
         await supabase.from('profiles').update({ 
             card_id: cardId
         }).eq('id', user.id)
         
-        await supabase.from('user_cards').upsert({ user_id: user.id, card_id: cardId })
+        await supabase.from('user_cards').upsert({ 
+            user_id: user.id, 
+            card_id: cardId,
+            profile_name: profile?.full_name || 'Mon Profil'
+        })
 
         setLoading(false)
-        navigate('/dashboard')
+        navigate(`/dashboard?activated=${cardId}`)
     }
 
     const [user, setUser] = useState(null);
