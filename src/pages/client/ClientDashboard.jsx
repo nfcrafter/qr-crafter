@@ -42,7 +42,10 @@ export default function ClientDashboard() {
         socials: {}, customLinks: [], url: '', qr_type: 'profile'
     });
 
-    useEffect(() => { loadUserData(); }, []);
+    useEffect(() => { 
+        console.log("Dashboard mount/update, activatedId:", activatedId);
+        loadUserData(); 
+    }, [activatedId]);
 
     async function loadUserData() {
         setLoading(true);
@@ -57,6 +60,7 @@ export default function ClientDashboard() {
             .order('created_at', { ascending: false });
 
         setUserCards(cards || []);
+        console.log("Fetched cards:", cards);
         
         if (cards?.length > 0) {
             const currentId = activatedId || selectedCardId || cards[0].card_id;
@@ -103,10 +107,8 @@ export default function ClientDashboard() {
         }
     }, [selectedCardId]);
 
-    function handleWhatsAppOrder(isNew = false) {
-        const message = isNew 
-            ? `Bonjour NFCrafter ! Je souhaite créer un NOUVEAU profil digital (5.000f). Mon email : ${user?.email}`
-            : `Bonjour NFCrafter ! Je souhaite ACTIVER mon premier profil digital (5.000f). Mon email : ${user?.email}`;
+    function handleWhatsAppOrder() {
+        const message = `Bonjour NFCrafter ! Je souhaite commander une carte NFC personnalisée. Mon email : ${user?.email}`;
         window.open(`https://wa.me/22969473921?text=${encodeURIComponent(message)}`, '_blank');
     }
 
@@ -246,9 +248,7 @@ export default function ClientDashboard() {
                         ))}
                     </div>
 
-                    <button onClick={() => handleWhatsAppOrder(true)} style={{ width: 'calc(100% - 32px)', margin: '24px 16px', padding: '16px', borderRadius: '16px', border: '2px dashed #E2E8F0', background: 'transparent', color: '#64748B', fontWeight: '800', cursor: 'pointer', fontSize: '13px', transition: '0.2s' }} onMouseOver={e => e.currentTarget.style.borderColor = '#1A1265'} onMouseOut={e => e.currentTarget.style.borderColor = '#E2E8F0'}>
-                        + Ajouter un profil (5000f)
-                    </button>
+
                 </div>
 
                 <div style={{ padding: '24px', background: '#F8FAFC' }}>
@@ -263,7 +263,7 @@ export default function ClientDashboard() {
                         <div style={{ width: '80px', height: '80px', margin: '0 auto 24px auto', color: '#1A1265' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a3 3 0 0 0-3-3H5a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V8Z"></path><path d="M10 12h.01"></path><path d="M16 2v2"></path><path d="M6 2v2"></path></svg>` }} />
                         <h1 style={{ fontSize: '28px', fontWeight: '900', color: '#1A1265', marginBottom: '16px' }}>Bienvenue</h1>
                         <p style={{ color: '#64748B', lineHeight: '1.6', marginBottom: '32px' }}>Vous n'avez pas encore de profil actif. Cliquez ci-dessous pour commander votre premier profil digital.</p>
-                        <button onClick={() => handleWhatsAppOrder(false)} className="btn-primary" style={{ padding: '16px 40px', borderRadius: '100px', background: '#25D366', border: 'none' }}>🚀 Activer mon profil (2000f)</button>
+                        <button onClick={() => handleWhatsAppOrder()} className="btn-primary" style={{ padding: '16px 40px', borderRadius: '100px', background: '#25D366', border: 'none' }}>🚀 Commander ma carte</button>
                     </div>
                 ) : (
                     <div className="dashboard-grid" style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 340px', gap: '40px', alignItems: 'start' }}>

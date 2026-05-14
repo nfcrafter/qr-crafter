@@ -79,67 +79,67 @@ export default function Activate() {
     }
 
     async function activateCard() {
-        setLoading(true)
-        const { data: { user } } = await supabase.auth.getUser()
+        setLoading(true);
+        setError('');
         
-        if (!user) { 
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) throw new Error("Vous devez être connecté.");
+
+            const normalizedId = cardId.toUpperCase();
+
+            // 1. Fetch user profile
+            const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+
+            // 2. Prepare card profile info
+            const updatedProfile = {
+                ...(cardInfo?.admin_profile || {}),
+                full_name: profile?.full_name || cardInfo?.admin_profile?.full_name,
+                email: profile?.email || cardInfo?.admin_profile?.email,
+                phone: profile?.phone || cardInfo?.admin_profile?.phone,
+                job_title: profile?.job_title || cardInfo?.admin_profile?.job_title,
+                bio: profile?.bio || cardInfo?.admin_profile?.bio,
+                photo_url: profile?.photo_url || cardInfo?.admin_profile?.photo_url,
+                banner_url: profile?.banner_url || cardInfo?.admin_profile?.banner_url,
+                primaryColor: profile?.primaryColor || cardInfo?.admin_profile?.primaryColor,
+                backgroundColor: profile?.backgroundColor || cardInfo?.admin_profile?.backgroundColor,
+                socials: profile?.socials || cardInfo?.admin_profile?.socials || {},
+                customLinks: profile?.customLinks || cardInfo?.admin_profile?.customLinks || [],
+            };
+
+            // 3. Perform atomic update on the card
+            const { data: updatedCard, error: updateError, count } = await supabase.from('cards')
+                .update({ 
+                    owner_id: user.id, 
+                    status: 'active',
+                    activation_token: null,
+                    admin_profile: updatedProfile,
+                    card_name: profile?.full_name || cardInfo?.card_name || 'Mon Profil'
+                })
+                .eq('card_id', normalizedId)
+                .eq('activation_token', token)
+                .select();
+
+            if (updateError) throw updateError;
+            if (!updatedCard || updatedCard.length === 0) {
+                throw new Error("Impossible d'activer cette carte. Elle a peut-être déjà été activée.");
+            }
+
+            // 4. Update secondary tables
+            await supabase.from('profiles').update({ card_id: normalizedId }).eq('id', user.id);
+            await supabase.from('user_cards').upsert({ 
+                user_id: user.id, 
+                card_id: normalizedId,
+                profile_name: profile?.full_name || 'Mon Profil'
+            });
+
             setLoading(false);
-            return;
-        }
-
-        const { error } = await supabase.from('cards')
-            .update({ 
-                owner_id: user.id, 
-                status: 'active',
-                activation_token: null 
-            })
-            .eq('card_id', cardId)
-            .eq('activation_token', token)
-
-        if (error) {
-            setError("L'activation a échoué : " + error.message);
+            navigate(`/dashboard?activated=${normalizedId}`);
+        } catch (e) {
+            console.error("Activation error:", e);
+            setError(e.message || "L'activation a échoué.");
             setLoading(false);
-            return;
         }
-
-        // Fetch user profile to link contact info
-        const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single()
-
-        // Update the card with user's profile info
-        const updatedProfile = {
-            ...(cardInfo.admin_profile || {}),
-            full_name: profile?.full_name || cardInfo.admin_profile?.full_name,
-            email: profile?.email || cardInfo.admin_profile?.email,
-            phone: profile?.phone || cardInfo.admin_profile?.phone,
-            job_title: profile?.job_title || cardInfo.admin_profile?.job_title,
-            bio: profile?.bio || cardInfo.admin_profile?.bio,
-            photo_url: profile?.photo_url || cardInfo.admin_profile?.photo_url,
-            banner_url: profile?.banner_url || cardInfo.admin_profile?.banner_url,
-            primaryColor: profile?.primaryColor || cardInfo.admin_profile?.primaryColor,
-            backgroundColor: profile?.backgroundColor || cardInfo.admin_profile?.backgroundColor,
-            socials: profile?.socials || cardInfo.admin_profile?.socials || {},
-            customLinks: profile?.customLinks || cardInfo.admin_profile?.customLinks || [],
-        }
-
-        await supabase.from('cards')
-            .update({ 
-                admin_profile: updatedProfile,
-                card_name: profile?.full_name || cardInfo.card_name || 'Mon Profil'
-            })
-            .eq('card_id', cardId)
-
-        await supabase.from('profiles').update({ 
-            card_id: cardId
-        }).eq('id', user.id)
-        
-        await supabase.from('user_cards').upsert({ 
-            user_id: user.id, 
-            card_id: cardId,
-            profile_name: profile?.full_name || 'Mon Profil'
-        })
-
-        setLoading(false)
-        navigate(`/dashboard?activated=${cardId}`)
     }
 
     const [user, setUser] = useState(null);
