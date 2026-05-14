@@ -142,7 +142,14 @@ export default function AdminDashboard() {
 
             // Merge them with a type tag
             const merged = [
-                ...(cardsData || []).map(c => ({ ...c, _type: 'physical' })),
+                ...(cardsData || []).map(c => {
+                    let type = 'physical'; // Default to Signature
+                    if (c.admin_profile?.creation_type === 'personalized') type = 'digital';
+                    else if (c.admin_profile?.creation_type === 'signature') type = 'physical';
+                    else if (c.card_name && !c.card_name.startsWith('Signature_') && c.status === 'active') type = 'digital';
+                    
+                    return { ...c, _type: type };
+                }),
                 ...(qrsData || []).map(q => ({ ...q, _type: 'digital', card_id: q.id, card_name: q.name }))
             ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
@@ -247,7 +254,8 @@ export default function AdminDashboard() {
                         qr_type: 'profile',
                         primaryColor: bulkColor,
                         backgroundColor: bulkBgColor,
-                        print_status: 'pending'
+                        print_status: 'pending',
+                        creation_type: 'signature'
                     }
                 });
             }

@@ -50,68 +50,78 @@ export default function ClientDashboard() {
     }, [activatedId]);
 
     async function loadUserData() {
-        setLoading(true);
-        const { data: { user: authUser } } = await supabase.auth.getUser();
-        if (!authUser) { navigate('/login'); return; }
-        setUser(authUser);
+        try {
+            setLoading(true);
+            const { data: { user: authUser } } = await supabase.auth.getUser();
+            if (!authUser) { navigate('/login'); return; }
+            setUser(authUser);
 
-        // 1. Fetch cards where owner_id is the user
-        const { data: ownedCards, error: ownedError } = await supabase
-            .from('cards')
-            .select('*')
-            .eq('owner_id', authUser.id)
-            .order('created_at', { ascending: false });
+            // 1. Fetch cards where owner_id is the user
+            const { data: ownedCards, error: ownedError } = await supabase
+                .from('cards')
+                .select('*')
+                .eq('owner_id', authUser.id)
+                .order('created_at', { ascending: false });
 
-        // 2. Fetch from user_cards as fallback/secondary link
-        const { data: userCardsLinks, error: linksError } = await supabase
-            .from('user_cards')
-            .select('card_id')
-            .eq('user_id', authUser.id);
+            if (ownedError) throw ownedError;
 
-        let finalCards = ownedCards || [];
+            // 2. Fetch from user_cards as fallback/secondary link
+            const { data: userCardsLinks, error: linksError } = await supabase
+                .from('user_cards')
+                .select('card_id')
+                .eq('user_id', authUser.id);
 
-        // 3. If there are linked cards in user_cards that aren't in ownedCards, fetch them
-        if (userCardsLinks && userCardsLinks.length > 0) {
-            const ownedIds = new Set(finalCards.map(c => c.card_id.toUpperCase()));
-            const missingIds = userCardsLinks
-                .map(l => l.card_id)
-                .filter(id => !ownedIds.has(id.toUpperCase()));
+            if (linksError) throw linksError;
 
-            if (missingIds.length > 0) {
-                console.log('Found missing cards in user_cards:', missingIds);
-                const { data: extraCards } = await supabase
-                    .from('cards')
-                    .select('*')
-                    .in('card_id', missingIds);
-                
-                if (extraCards) {
-                    finalCards = [...finalCards, ...extraCards];
+            let finalCards = ownedCards || [];
+
+            // 3. If there are linked cards in user_cards that aren't in ownedCards, fetch them
+            if (userCardsLinks && userCardsLinks.length > 0) {
+                const ownedIds = new Set(finalCards.map(c => c.card_id.toUpperCase()));
+                const missingIds = userCardsLinks
+                    .map(l => l.card_id)
+                    .filter(id => id && !ownedIds.has(id.toUpperCase()));
+
+                if (missingIds.length > 0) {
+                    const { data: extraCards, error: extraError } = await supabase
+                        .from('cards')
+                        .select('*')
+                        .in('card_id', missingIds);
+                    
+                    if (extraError) throw extraError;
+                    if (extraCards) {
+                        finalCards = [...finalCards, ...extraCards];
+                    }
                 }
             }
+
+            setUserCards(finalCards);
+
+            if (finalCards.length > 0) {
+                const currentId = activatedId || selectedCardId || finalCards[0].card_id;
+                const card = finalCards.find(c => c.card_id === currentId) || finalCards[0];
+                setSelectedCardId(card.card_id);
+                setPublicProfile({
+                    banner_url: '', photo_url: '', full_name: '', job_title: '', bio: '',
+                    phone: '', email: '', primaryColor: '#1A1265',
+                    socials: {}, customLinks: [], url: '', qr_type: 'profile',
+                    ...(card.admin_profile || {})
+                });
+
+                // Load scan count
+                const { count, error: countErr } = await supabase
+                    .from('scan_logs')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('card_id', card.card_id);
+                
+                if (!countErr) setScanCount(count || 0);
+            }
+        } catch (err) {
+            console.error("Dashboard Load Error:", err);
+            toast('Une erreur est survenue lors du chargement', 'error');
+        } finally {
+            setLoading(false);
         }
-
-        console.log('Final cards found for user:', finalCards.length, finalCards.map(c => c.card_id));
-        setUserCards(finalCards);
-
-        if (finalCards.length > 0) {
-            const currentId = activatedId || selectedCardId || finalCards[0].card_id;
-            const card = finalCards.find(c => c.card_id === currentId) || finalCards[0];
-            setSelectedCardId(card.card_id);
-            setPublicProfile({
-                banner_url: '', photo_url: '', full_name: '', job_title: '', bio: '',
-                phone: '', email: '', primaryColor: '#1A1265',
-                socials: {}, customLinks: [], url: '', qr_type: 'profile',
-                ...(card.admin_profile || {})
-            });
-
-            // Load scan count
-            const { count } = await supabase
-                .from('scan_logs')
-                .select('*', { count: 'exact', head: true })
-                .eq('card_id', card.card_id);
-            setScanCount(count || 0);
-        }
-        setLoading(false);
     }
 
     useEffect(() => {
@@ -214,7 +224,12 @@ export default function ClientDashboard() {
         });
     };
 
-    if (loading) return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="loader"></div></div>;
+    if (loading) return (
+        <div style={{ minHeight: '100vh', width: '100vw', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F8FAFC', position: 'fixed', top: 0, left: 0, zIndex: 9999 }}>
+            <div className="loader" style={{ width: 40, height: 40, border: '4px solid #EEF2FF', borderTopColor: '#1A1265', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+        </div>
+    );
 
     const publicUrl = selectedCardId ? `${window.location.origin}/u/${selectedCardId}` : '';
 
@@ -298,7 +313,7 @@ export default function ClientDashboard() {
                     
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                         {userCards.map(card => (
-                            <div key={card.card_id} style={{ position: 'relative', group: 'true' }}>
+                            <div key={card.card_id} style={{ position: 'relative' }}>
                                 <button 
                                     onClick={() => setSelectedCardId(card.card_id)} 
                                     style={{ 

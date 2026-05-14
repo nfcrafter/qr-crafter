@@ -144,7 +144,7 @@ export default function CreateCardWizard() {
                 card_name: cardName || profile.full_name || 'Sans titre',
                 folder_id: selectedFolderId || null,
                 qr_appearance: qrStyle,
-                admin_profile: { ...profile, qr_type: selectedType },
+                admin_profile: { ...profile, qr_type: selectedType, creation_type: 'personalized' },
                 status: 'active',
                 activation_token: activationToken // CRITICAL: Save the token!
             });
