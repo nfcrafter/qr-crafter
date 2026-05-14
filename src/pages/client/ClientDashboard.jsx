@@ -1,5 +1,5 @@
 // src/pages/client/ClientDashboard.jsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useToast } from '../../components/Toast.jsx';
@@ -220,6 +220,8 @@ export default function ClientDashboard() {
         Object.keys(publicProfile.socials || {}).length === 0
     );
 
+    const editorRef = useRef(null);
+
     return (
         <div style={{ display: 'flex', minHeight: '100vh', background: '#F8FAFC', maxWidth: '100vw', overflowX: 'hidden' }}>
             
@@ -331,7 +333,12 @@ export default function ClientDashboard() {
                                         </p>
                                     </div>
                                     <button 
-                                        onClick={() => setViewMode('edit')}
+                                        onClick={() => {
+                                            setViewMode('edit');
+                                            setTimeout(() => {
+                                                editorRef.current?.scrollIntoView({ behavior: 'smooth' });
+                                            }, 100);
+                                        }}
                                         style={{ 
                                             background: 'white', 
                                             color: '#1A1265', 
@@ -392,7 +399,7 @@ export default function ClientDashboard() {
                             </div>
 
                             {/* Editor */}
-                            <div style={{ background: 'white', padding: '40px', borderRadius: '32px', border: '1px solid #E2E8F0', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+                            <div ref={editorRef} style={{ background: 'white', padding: '40px', borderRadius: '32px', border: '1px solid #E2E8F0', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px', gap: '16px', flexWrap: 'wrap' }}>
                                     <div>
                                         <h2 style={{ fontSize: '26px', fontWeight: '900', color: '#1A1265', margin: '0 0 8px 0' }}>Configuration</h2>
