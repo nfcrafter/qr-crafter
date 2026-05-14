@@ -56,6 +56,7 @@ export default function AdminDashboard() {
     const [hideIdsInPrint, setHideIdsInPrint] = useState(false);
     const [selectedCards, setSelectedCards] = useState([]);
     const [expandedBatch, setExpandedBatch] = useState(null);
+    const [isProductionFormOpen, setIsProductionFormOpen] = useState(true);
     
     const [financeTransactions, setFinanceTransactions] = useState([]);
     
@@ -691,11 +692,32 @@ export default function AdminDashboard() {
                             </div>
                         ) : view === 'production' ? (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-                                <div style={{ background: 'white', borderRadius: '24px', padding: '32px', border: '1px solid #E2E8F0' }}>
-                                    <h3 style={{ fontSize: '18px', fontWeight: '900', color: '#1A1265', marginBottom: '8px' }}>Génération en masse (Cartes Signature)</h3>
-                                    <p style={{ color: '#64748B', fontSize: '14px', marginBottom: '24px' }}>Créez plusieurs cartes vierges avec leurs jetons d'activation en un clic.</p>
-                                    
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                {/* === COLLAPSIBLE GENERATION FORM === */}
+                                <div style={{ background: 'white', borderRadius: '24px', border: '1px solid #E2E8F0', overflow: 'hidden' }}>
+                                    {/* Accordion Header */}
+                                    <div 
+                                        onClick={() => setIsProductionFormOpen(o => !o)}
+                                        style={{ padding: '24px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', background: isProductionFormOpen ? '#F8FAFC' : 'white', transition: 'background 0.2s' }}
+                                    >
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                                            <div style={{ width: 40, height: 40, borderRadius: '12px', background: '#EEF2FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                <div style={{ width: 20, height: 20, color: '#1A1265' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>` }} />
+                                            </div>
+                                            <div>
+                                                <div style={{ fontSize: '16px', fontWeight: '900', color: '#1A1265' }}>Génération en masse — Cartes Signature</div>
+                                                <div style={{ fontSize: '13px', color: '#94A3B8', fontWeight: '500' }}>Créez plusieurs cartes vierges avec leurs jetons d'activation</div>
+                                            </div>
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                            <span style={{ fontSize: '12px', fontWeight: '800', color: '#94A3B8' }}>{isProductionFormOpen ? 'Réduire' : 'Ouvrir'}</span>
+                                            <span style={{ fontSize: '14px', color: '#94A3B8', transition: 'transform 0.3s', display: 'inline-block', transform: isProductionFormOpen ? 'rotate(180deg)' : 'none' }}>▼</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Accordion Body */}
+                                    {isProductionFormOpen && (
+                                    <div style={{ padding: '0 32px 32px', borderTop: '1px solid #F1F5F9' }}>
+                                    <div style={{ paddingTop: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
                                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '16px' }}>
                                             <div style={{ position: 'relative' }}>
                                                 <label style={{ fontSize: '12px', fontWeight: '800', color: '#64748B', marginBottom: '8px', display: 'block' }}>QUANTITÉ</label>
@@ -811,6 +833,8 @@ export default function AdminDashboard() {
                                             </button>
                                         </div>
                                     </div>
+                                    </div>
+                                    )}
                                 </div>
 
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
@@ -898,14 +922,41 @@ export default function AdminDashboard() {
                                                                         onClick={() => handleDownloadAll(batch.cards.map(c => c.card_id))}
                                                                         style={{ padding: '10px 16px', borderRadius: '12px', border: 'none', background: '#F1F5F9', color: '#1A1265', fontWeight: '800', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px' }}
                                                                     >
-                                                                        ZIP
+                                                                        <div style={{ width: 13, height: 13 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>` }} /> ZIP
                                                                     </button>
-                                                                    <button 
-                                                                        onClick={() => handleMarkBatchStatus(batch.cards, batch.status === 'printed' ? 'pending' : 'printed')}
-                                                                        style={{ padding: '10px 16px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', color: '#1A1265', fontWeight: '800', cursor: 'pointer', fontSize: '13px' }}
-                                                                    >
-                                                                        {batch.status === 'printed' ? 'Réinitialiser' : 'Marquer Imprimé'}
-                                                                    </button>
+
+                                                                    {/* ===== ANTI-DUPLICATE PRINT PROTECTION ===== */}
+                                                                    {batch.status === 'printed' ? (
+                                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 12px', borderRadius: '10px', background: '#DCFCE7', color: '#15803D', fontWeight: '800', fontSize: '12px' }}>
+                                                                                <div style={{ width: 13, height: 13 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>` }} />
+                                                                                Imprimé
+                                                                            </div>
+                                                                            <button 
+                                                                                onClick={() => setModalConfig({
+                                                                                    isOpen: true, 
+                                                                                    title: '⚠️ Déjà imprimé !', 
+                                                                                    type: 'danger',
+                                                                                    children: <div><p style={{marginBottom:8}}>Ce lot <strong>{batch.name}</strong> a déjà été marqué comme <strong>imprimé</strong>.</p><p style={{color:'#EF4444', fontWeight:700}}>Êtes-vous sûr de vouloir le réimprimer ? Cela risque de créer des doublons.</p></div>,
+                                                                                    onConfirm: () => { handleMarkBatchStatus(batch.cards, 'pending'); setModalConfig(p => ({...p, isOpen: false})); },
+                                                                                    confirmText: 'Oui, réinitialiser quand même'
+                                                                                })}
+                                                                                style={{ padding: '8px 12px', borderRadius: '10px', border: '1px solid #FECACA', background: 'white', color: '#EF4444', fontWeight: '800', cursor: 'pointer', fontSize: '12px' }}
+                                                                            >
+                                                                                Réinitialiser
+                                                                            </button>
+                                                                        </div>
+                                                                    ) : (
+                                                                        <button 
+                                                                            onClick={() => handleMarkBatchStatus(batch.cards, 'printed')}
+                                                                            style={{ padding: '10px 16px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', color: '#1A1265', fontWeight: '800', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}
+                                                                        >
+                                                                            <div style={{ width: 13, height: 13 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>` }} />
+                                                                            Marquer Imprimé
+                                                                        </button>
+                                                                    )}
+                                                                    {/* ===== END PROTECTION ===== */}
+
                                                                     <button 
                                                                         onClick={() => setExpandedBatch(isExpanded ? null : batch.name)}
                                                                         style={{ padding: '10px 16px', borderRadius: '12px', border: 'none', background: isExpanded ? '#1A1265' : '#F8FAFC', color: isExpanded ? 'white' : '#1A1265', fontWeight: '800', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px' }}
