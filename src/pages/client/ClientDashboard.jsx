@@ -53,18 +53,47 @@ export default function ClientDashboard() {
         if (!authUser) { navigate('/login'); return; }
         setUser(authUser);
 
-        const { data: cards } = await supabase
+        // 1. Fetch cards where owner_id is the user
+        const { data: ownedCards, error: ownedError } = await supabase
             .from('cards')
             .select('*')
             .eq('owner_id', authUser.id)
             .order('created_at', { ascending: false });
 
-        setUserCards(cards || []);
-        console.log("Fetched cards:", cards);
-        
-        if (cards?.length > 0) {
-            const currentId = activatedId || selectedCardId || cards[0].card_id;
-            const card = cards.find(c => c.card_id === currentId) || cards[0];
+        // 2. Fetch from user_cards as fallback/secondary link
+        const { data: userCardsLinks, error: linksError } = await supabase
+            .from('user_cards')
+            .select('card_id')
+            .eq('user_id', authUser.id);
+
+        let finalCards = ownedCards || [];
+
+        // 3. If there are linked cards in user_cards that aren't in ownedCards, fetch them
+        if (userCardsLinks && userCardsLinks.length > 0) {
+            const ownedIds = new Set(finalCards.map(c => c.card_id.toUpperCase()));
+            const missingIds = userCardsLinks
+                .map(l => l.card_id)
+                .filter(id => !ownedIds.has(id.toUpperCase()));
+
+            if (missingIds.length > 0) {
+                console.log('Found missing cards in user_cards:', missingIds);
+                const { data: extraCards } = await supabase
+                    .from('cards')
+                    .select('*')
+                    .in('card_id', missingIds);
+                
+                if (extraCards) {
+                    finalCards = [...finalCards, ...extraCards];
+                }
+            }
+        }
+
+        console.log('Final cards found for user:', finalCards.length, finalCards.map(c => c.card_id));
+        setUserCards(finalCards);
+
+        if (finalCards.length > 0) {
+            const currentId = activatedId || selectedCardId || finalCards[0].card_id;
+            const card = finalCards.find(c => c.card_id === currentId) || finalCards[0];
             setSelectedCardId(card.card_id);
             setPublicProfile({
                 banner_url: '', photo_url: '', full_name: '', job_title: '', bio: '',

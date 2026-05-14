@@ -108,7 +108,9 @@ export default function Activate() {
             };
 
             // 3. Perform atomic update on the card
-            const { data: updatedCard, error: updateError, count } = await supabase.from('cards')
+            console.log('Attempting to activate card:', normalizedId, 'with token:', token);
+            
+            const { data: updatedCard, error: updateError } = await supabase.from('cards')
                 .update({ 
                     owner_id: user.id, 
                     status: 'active',
@@ -116,14 +118,28 @@ export default function Activate() {
                     admin_profile: updatedProfile,
                     card_name: profile?.full_name || cardInfo?.card_name || 'Mon Profil'
                 })
-                .eq('card_id', normalizedId)
+                .ilike('card_id', normalizedId)
                 .eq('activation_token', token)
                 .select();
 
-            if (updateError) throw updateError;
-            if (!updatedCard || updatedCard.length === 0) {
-                throw new Error("Impossible d'activer cette carte. Elle a peut-être déjà été activée.");
+            if (updateError) {
+                console.error('Update error:', updateError);
+                throw updateError;
             }
+
+            if (!updatedCard || updatedCard.length === 0) {
+                console.warn('No card updated. Checking if card exists...');
+                const { data: checkCard } = await supabase.from('cards').select('card_id, status, activation_token').ilike('card_id', normalizedId).single();
+                console.log('Card state in DB:', checkCard);
+                
+                if (!checkCard) throw new Error("Cette carte n'existe pas.");
+                if (checkCard.status === 'active' && !checkCard.activation_token) {
+                    throw new Error("Cette carte est déjà activée.");
+                }
+                throw new Error("Impossible d'activer cette carte. Le jeton d'activation est peut-être invalide.");
+            }
+
+            console.log('Card activated successfully:', updatedCard[0]);
 
             // 4. Update secondary tables
             await supabase.from('profiles').update({ card_id: normalizedId }).eq('id', user.id);
