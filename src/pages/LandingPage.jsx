@@ -595,8 +595,8 @@ export default function LandingPage() {
 
                             <ul className="price-list">
                                 <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> Profil digital complet & personnalisable</li>
-                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> QR Code dynamique haute définition</li>
-                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> <strong>Statistiques de scans</strong>en temps réel</li>
+                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> <strong>QR Code Personnalisé</strong> haute définition</li>
+                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> <strong>Statistiques de scans</strong> en temps réel</li>
                                 <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> 20+ réseaux sociaux (Facebook, X, Instagram, TikTok, etc...)</li>
                                 <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> Modifiable à vie</li>
                             </ul>
@@ -618,9 +618,9 @@ export default function LandingPage() {
                             </div>
 
                             <ul className="price-list">
-                                <li style={{ color: '#4F46E5' }}><span style={{ fontWeight: '900' }}>✓</span> <strong>Carte Physique NFC Premium</strong></li>
+                                <li style={{ color: '#4F46E5' }}><span style={{ fontWeight: '900' }}>✓</span> <strong>Carte NFC Premium</strong></li>
                                 <li><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Design avec votre nom/photo/logo</li>
-                                <li style={{ fontWeight: '800' }}><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Inclus : TOUT le Pack Digital</li>
+                                <li style={{ fontWeight: '800' }}><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Inclus : <strong>QR Code Personnalisé</strong></li>
                                 <li><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Stats & Réseaux sociaux activés</li>
                                 <li><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Livraison rapide (24-48h)</li>
                             </ul>
@@ -758,29 +758,61 @@ export default function LandingPage() {
             </section>
             
 
-            {/* Steps Section */}
-            <section className="section">
+            {/* Steps Section - New Model */}
+            <section className="section" style={{ background: 'white', position: 'relative', overflow: 'hidden' }}>
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, transparent, rgba(0,0,0,0.05), transparent)' }}></div>
                 <div className="container">
-                    <div style={{ textAlign: 'center', marginBottom: '64px' }}>
-                        <h2 style={{ fontSize: '44px', fontWeight: '900', fontFamily: 'Outfit', color: '#111827', letterSpacing: '-0.02em' }}>Comment l'obtenir en 3 étapes</h2>
+                    <div style={{ textAlign: 'center', marginBottom: '80px' }} className="animate-fade-up">
+                        <div style={{ color: '#4F46E5', fontWeight: '800', fontSize: '14px', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '16px' }}>Le Processus</div>
+                        <h2 style={{ fontSize: '48px', fontWeight: '900', fontFamily: 'Outfit', color: '#111827', letterSpacing: '-0.02em', lineHeight: 1.1 }}>Prêt en quelques minutes</h2>
                     </div>
 
-                    <div className="bento-grid">
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '40px', position: 'relative' }}>
+                        {/* Connecting Line (Desktop) */}
+                        <div className="desktop-only" style={{ position: 'absolute', top: '120px', left: '100px', right: '100px', height: '2px', background: 'linear-gradient(90deg, #E0E7FF 0%, #E0E7FF 100%)', zIndex: 0, opacity: 0.5 }}></div>
+
                         {[
-                            { step: "1", title: "Commandez via WhatsApp", desc: "Choisissez votre pack digital ou physique. Contactez-nous et envoyez-nous vos informations personnelles." },
-                            { step: "2", title: "Reçu sous 24–48h", desc: "Nous préparons votre commande et vous envoyons un lien d'activation quelques minutes après pour le pack digital et sous 24 à 48 heures ouvrées pour le pack physique pour créer votre compte sur notre plateforme." },
-                            { step: "3", title: "Gérez votre profil", desc: "Connectez-vous à tout moment pour modifier vos informations en temps réel. Votre carte physique, elle, reste inchangée." }
+                            { 
+                                step: "01", 
+                                title: "Personnalisez votre Design", 
+                                desc: "Choisissez vos couleurs préférées, importez votre logo et définissez l'identité visuelle de votre future carte et de votre profil digital.",
+                                icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>`,
+                                color: "#4F46E5"
+                            },
+                            { 
+                                step: "02", 
+                                title: "Commandez sur WhatsApp", 
+                                desc: "Validez votre projet avec notre équipe sur WhatsApp. Nous lançons la préparation de votre solution (physique ou digitale) immédiatement.",
+                                icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 1 1-7.6-10.4 8.38 8.38 0 0 1 3.9.9L21 4.2Z"/></svg>`,
+                                color: "#10B981"
+                            },
+                            { 
+                                step: "03", 
+                                title: "Activez et Partagez", 
+                                desc: "Une fois votre carte reçue, activez votre profil en 1 minute. Touchez un téléphone pour partager vos infos. Modifiez vos liens à l'infini.",
+                                icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>`,
+                                color: "#F59E0B"
+                            }
                         ].map((item, i) => (
-                            <div key={i} className="glass-panel" style={{ position: 'relative', overflow: 'hidden' }}>
-                                <div style={{ position: 'absolute', top: '-10px', right: '-10px', fontSize: '140px', fontWeight: '900', color: 'rgba(255,255,255,0.8)', textShadow: '0 10px 30px rgba(0,0,0,0.02)', lineHeight: 1, zIndex: 0, pointerEvents: 'none', fontFamily: 'Outfit' }}>
-                                    {item.step}
-                                </div>
-                                <div style={{ position: 'relative', zIndex: 1 }}>
-                                    <h3 style={{ fontWeight: '800', fontSize: '24px', marginBottom: '16px', fontFamily: 'Outfit' }}>{item.title}</h3>
-                                    <p style={{ color: '#4B5563', lineHeight: '1.6', fontSize: '16px' }}>{item.desc}</p>
+                            <div key={i} className="animate-fade-up" style={{ animationDelay: `${i * 0.2}s`, position: 'relative', zIndex: 1 }}>
+                                <div style={{ background: 'white', padding: '48px 32px', borderRadius: '32px', border: '1px solid #F1F5F9', boxShadow: '0 20px 40px rgba(0,0,0,0.02)', textAlign: 'center', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                    <div style={{ width: '80px', height: '80px', borderRadius: '24px', background: `${item.color}10`, color: item.color, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '32px', position: 'relative' }}>
+                                        <div style={{ width: '32px', height: '32px' }} dangerouslySetInnerHTML={{ __html: item.icon }} />
+                                        <div style={{ position: 'absolute', top: '-10px', right: '-10px', width: '32px', height: '32px', borderRadius: '50%', background: item.color, color: 'white', fontSize: '12px', fontWeight: '900', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 4px 10px ${item.color}40` }}>
+                                            {item.step}
+                                        </div>
+                                    </div>
+                                    <h3 style={{ fontSize: '22px', fontWeight: '800', marginBottom: '16px', fontFamily: 'Outfit', color: '#111827' }}>{item.title}</h3>
+                                    <p style={{ color: '#64748B', lineHeight: '1.6', fontSize: '15px' }}>{item.desc}</p>
                                 </div>
                             </div>
                         ))}
+                    </div>
+
+                    <div style={{ marginTop: '60px', textAlign: 'center' }} className="animate-fade-up delay-3">
+                        <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary" style={{ padding: '20px 48px' }}>
+                            Démarrer mon projet maintenant
+                        </button>
                     </div>
                 </div>
             </section>
