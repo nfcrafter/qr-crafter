@@ -72,11 +72,7 @@ export default function App() {
             <Routes>
                 {/* Public Routes */}
                 <Route path="/" element={<LandingPage />} />
-                <Route path="/login" element={
-                    session ? (
-                        isAdmin ? <Navigate to="/admin" replace /> : <Navigate to="/dashboard" replace />
-                    ) : <Login />
-                } />
+                <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/u/:cardId" element={<PublicProfile />} />
                 <Route path="/activate" element={<Activate />} />

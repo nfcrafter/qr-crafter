@@ -59,9 +59,14 @@ export default function Activate() {
                 return;
             }
 
-            // If the card is already activated (has an owner), redirect to public profile
+            // If the card is already activated (has an owner), redirect to dashboard if it's the current user, else public profile
             if (existingCard.owner_id) {
-                navigate(`/u/${cardId}`);
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session?.user?.id === existingCard.owner_id) {
+                    navigate(`/dashboard?activated=${cardId}`);
+                } else {
+                    navigate(`/u/${cardId}`);
+                }
                 return;
             }
 
