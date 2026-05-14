@@ -54,8 +54,8 @@ export default function ClientDashboard() {
         if (!pending) return;
 
         try {
-            const { cardId, token } = JSON.parse(pending);
-            console.log("Found pending activation:", cardId);
+            const { cardId, token, customCardName } = JSON.parse(pending);
+            console.log("Found pending activation:", cardId, "Name:", customCardName);
             
             const { data: { user: authUser } } = await supabase.auth.getUser();
             if (!authUser) return;
@@ -76,7 +76,7 @@ export default function ClientDashboard() {
                     owner_id: authUser.id, 
                     status: 'active',
                     activation_token: null,
-                    card_name: profile?.full_name || card.card_name || 'Mon Profil'
+                    card_name: customCardName || profile?.full_name || card.card_name || 'Mon Profil'
                 })
                 .ilike('card_id', normalizedId)
                 .eq('activation_token', token);
@@ -86,7 +86,7 @@ export default function ClientDashboard() {
                 await supabase.from('user_cards').upsert({ 
                     user_id: authUser.id, 
                     card_id: normalizedId,
-                    profile_name: profile?.full_name || 'Mon Profil'
+                    profile_name: customCardName || profile?.full_name || 'Mon Profil'
                 });
                 
                 toast('Nouvelle carte liée avec succès !', 'success');

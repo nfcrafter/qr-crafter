@@ -18,6 +18,7 @@ export default function Activate() {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
     const [verifying, setVerifying] = useState(true)
+    const [customCardName, setCustomCardName] = useState('')
     const qrRef = useRef(null)
 
     useEffect(() => {
@@ -116,7 +117,7 @@ export default function Activate() {
                     status: 'active',
                     activation_token: null,
                     admin_profile: updatedProfile,
-                    card_name: profile?.full_name || cardInfo?.card_name || 'Mon Profil'
+                    card_name: customCardName || profile?.full_name || cardInfo?.card_name || 'Mon Profil'
                 })
                 .ilike('card_id', normalizedId)
                 .eq('activation_token', token)
@@ -146,7 +147,7 @@ export default function Activate() {
             await supabase.from('user_cards').upsert({ 
                 user_id: user.id, 
                 card_id: normalizedId,
-                profile_name: profile?.full_name || 'Mon Profil'
+                profile_name: customCardName || profile?.full_name || 'Mon Profil'
             });
 
             setLoading(false);
@@ -171,7 +172,7 @@ export default function Activate() {
             } else if (!currentUser && cardId && token) {
                 // Save for later if they navigate away to login/register
                 console.log("Saving pending activation for later");
-                localStorage.setItem('pending_activation', JSON.stringify({ cardId, token }));
+                localStorage.setItem('pending_activation', JSON.stringify({ cardId, token, customCardName }));
             }
         });
     }, [cardId, token]);
@@ -222,14 +223,22 @@ export default function Activate() {
                             </div>
                         ) : (
                             <>
-                                <p style={{ color: '#64748B', fontSize: '15px', marginBottom: '32px', lineHeight: 1.5 }}>
-                                    Cette carte est prête à être activée. Elle sera liée à votre compte <strong>{user.email}</strong>.
-                                </p>
+                                <div style={{ marginBottom: 24, textAlign: 'left' }}>
+                                    <label style={{ display: 'block', marginBottom: 8, fontSize: 13, fontWeight: 700, color: '#64748B' }}>DONNEZ UN NOM À CETTE CARTE</label>
+                                    <input 
+                                        type="text" 
+                                        value={customCardName} 
+                                        onChange={e => setCustomCardName(e.target.value)}
+                                        placeholder="Ex: Profil Professionnel, Perso, etc."
+                                        style={{ width: '100%', padding: '14px', borderRadius: '12px', border: `1px solid ${themeColor}30`, fontSize: '15px', outline: 'none' }}
+                                    />
+                                </div>
+
                                  <button className="btn-primary" onClick={activateCard} disabled={loading} style={{ width: '100%', padding: '16px', fontSize: '16px', background: themeColor, boxShadow: `0 10px 20px ${themeColor}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
                                     {loading ? 'Activation...' : (
                                         <>
                                             <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>` }} />
-                                            Activer ma carte
+                                            Activer et continuer
                                         </>
                                     )}
                                 </button>
