@@ -150,6 +150,7 @@ export default function Activate() {
             });
 
             setLoading(false);
+            localStorage.removeItem('pending_activation');
             navigate(`/dashboard?activated=${normalizedId}`);
         } catch (e) {
             console.error("Activation error:", e);
@@ -160,8 +161,20 @@ export default function Activate() {
 
     const [user, setUser] = useState(null);
     useEffect(() => {
-        supabase.auth.getUser().then(({ data }) => setUser(data.user));
-    }, []);
+        supabase.auth.getUser().then(({ data }) => {
+            const currentUser = data.user;
+            setUser(currentUser);
+            
+            // If user just logged in and we have a card to activate, it will be handled by verifyCard or activateCard
+            if (currentUser && cardId && token) {
+                console.log("User detected, proceeding with verification/activation info");
+            } else if (!currentUser && cardId && token) {
+                // Save for later if they navigate away to login/register
+                console.log("Saving pending activation for later");
+                localStorage.setItem('pending_activation', JSON.stringify({ cardId, token }));
+            }
+        });
+    }, [cardId, token]);
 
     const themeColor = cardInfo?.admin_profile?.primaryColor || "#1A1265";
 
