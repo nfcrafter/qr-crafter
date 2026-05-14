@@ -28,10 +28,8 @@ export default function LandingPage() {
 
     const whatsappNumber = "22969473921";
 
-    const getWhatsAppUrl = (pack) => {
-        const message = pack === 'physique'
-            ? "Bonjour NFCrafter, je souhaite commander le Pack Physique (Carte + Profil) à 10.000f."
-            : "Bonjour NFCrafter, je souhaite commander le Pack Digital (QR + Profil) à 5.000f.";
+    const getWhatsAppUrl = () => {
+        const message = "Bonjour NFCrafter, je souhaite commander ma Carte Signature NFC à 10.000f.";
         return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
     };
 
@@ -319,12 +317,12 @@ export default function LandingPage() {
                 <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                     
                     {/* Bouton WhatsApp (Desktop) */}
-                    <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary desktop-only" style={{ padding: '10px 16px', fontSize: '14px', whiteSpace: 'nowrap' }}>
+                    <button onClick={() => window.open(getWhatsAppUrl(), '_blank')} className="btn-primary desktop-only" style={{ padding: '10px 16px', fontSize: '14px', whiteSpace: 'nowrap' }}>
                         Commander
                     </button>
                     
                     {/* Bouton WhatsApp (Mobile) */}
-                    <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="mobile-only" style={{ background: '#25D366', border: 'none', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 10px rgba(37, 211, 102, 0.3)' }}>
+                    <button onClick={() => window.open(getWhatsAppUrl(), '_blank')} className="mobile-only" style={{ background: '#25D366', border: 'none', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 10px rgba(37, 211, 102, 0.3)' }}>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
                             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
                         </svg>
@@ -373,8 +371,8 @@ export default function LandingPage() {
                                 Échangez vos coordonnées, réseaux sociaux et bien plus en un seul geste. Plus besoin d'épeler votre nom ou votre numéro.
                             </p>
                             <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '24px' }}>
-                                <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary">
-                                    Créer ma carte maintenant
+                                <button onClick={() => window.open(getWhatsAppUrl(), '_blank')} className="btn-primary">
+                                    Commander ma carte maintenant
                                 </button>
                                 {/* ⚠️ Remplacer /p/demo par le slug d'un vrai profil client */}
                                 <a href="u/10j24wrb" className="btn-secondary" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
@@ -519,62 +517,7 @@ export default function LandingPage() {
                 </div>
             </section>
 
-            {/* Digital Pack Extra Features Section */}
-            <section className="section" style={{ background: 'rgba(255,255,255,0.4)', borderTop: '1px solid rgba(255,255,255,0.5)', borderBottom: '1px solid rgba(255,255,255,0.5)' }}>
-                <div className="container" style={{ textAlign: 'center' }}>
-                    <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-                        <div className="animate-fade-up">
-                            <h2 style={{ fontSize: '44px', fontWeight: '900', fontFamily: 'Outfit', color: '#111827', letterSpacing: '-0.02em', marginBottom: '24px' }}>
-                                Le Pack Digital : Votre identité partout
-                            </h2>
-                            <p style={{ color: '#4B5563', fontSize: '18px', marginBottom: '32px', lineHeight: '1.6' }}>
-                                Le Pack Digital est parfait pour booster votre visibilité en ligne. Commandez-le directement et transformez votre manière de communiquer, sans même avoir besoin de carte physique.
-                            </p>
-                            
-                            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 40px 0', display: 'flex', flexDirection: 'column', gap: '24px', textAlign: 'left' }}>
-                                <li style={{ display: 'flex', gap: '16px' }}>
-                                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(255,255,255,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid rgba(255,255,255,0.9)', boxShadow: '0 4px 10px rgba(0,0,0,0.05)', padding: 12 }}>
-                                        <div style={{ width: '100%', height: '100%', display: 'flex', color: '#4F46E5' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>` }} />
-                                    </div>
-                                    <div>
-                                        <h4 style={{ fontWeight: '800', fontSize: '18px', marginBottom: '6px' }}>Lien en bio (Instagram, TikTok,etc.)</h4>
-                                        <p style={{ color: '#4B5563', fontSize: '15px', lineHeight: '1.5' }}>Un lien unique pour centraliser vos réseaux, portfolio et contacts. Vos abonnés ont accès à tout votre univers.</p>
-                                    </div>
-                                </li>
-                                <li style={{ display: 'flex', gap: '16px' }}>
-                                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(255,255,255,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid rgba(255,255,255,0.9)', boxShadow: '0 4px 10px rgba(0,0,0,0.05)', padding: 12 }}>
-                                        <div style={{ width: '100%', height: '100%', display: 'flex', color: '#10B981' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>` }} />
-                                    </div>
-                                    <div>
-                                        <h4 style={{ fontWeight: '800', fontSize: '18px', marginBottom: '6px' }}>Prise de Rendez-vous simplifiée</h4>
-                                        <p style={{ color: '#4B5563', fontSize: '15px', lineHeight: '1.5' }}>Médecins, artisans, salons : posez votre QR Code sur votre comptoir ou bureau. Vos clients y trouvent vos liens Doctolib, Calendly ou WhatsApp pour booker en 1 clic.</p>
-                                    </div>
-                                </li>
-                                <li style={{ display: 'flex', gap: '16px' }}>
-                                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(255,255,255,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid rgba(255,255,255,0.9)', boxShadow: '0 4px 10px rgba(0,0,0,0.05)', padding: 12 }}>
-                                        <div style={{ width: '100%', height: '100%', display: 'flex', color: '#F59E0B' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>` }} />
-                                    </div>
-                                    <div>
-                                        <h4 style={{ fontWeight: '800', fontSize: '18px', marginBottom: '6px' }}>Votre code QR personnalisé</h4>
-                                        <p style={{ color: '#4B5563', fontSize: '15px', lineHeight: '1.5' }}>Affichez-le sur vos flyers, menus ou cartes classiques. Idéal pour partager votre univers digital sans le moindre effort.</p>
-                                    </div>
-                                </li>
-                            </ul>
-                            
-                            <div className="pack-images-row">
-                                <img src="/placeholder-public-profile.jpg" alt="Capture profil public" className="pack-profile-img" onError={(e) => e.target.src='https://placehold.co/400x700/f8fafc/1a1265?text=Page+Profil'} />
-                                <div className="pack-plus">+</div>
-                                <img src="/placeholder-qr-custom.jpg" alt="QR Code personnalisé" className="pack-qr-img" onError={(e) => e.target.src='https://placehold.co/400x400/f1f5f9/1a1265?text=QR+Code'} />
-                            </div>
 
-
-                            <button onClick={() => window.open(getWhatsAppUrl('digital'), '_blank')} className="btn-primary" style={{ margin: '0 auto' }}>
-                                Commander le Pack Digital
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </section>
 
             {/* Pricing Section */}
             <section id="tarifs" className="section">
@@ -584,48 +527,30 @@ export default function LandingPage() {
                         <p style={{ color: '#4B5563', fontSize: '18px' }}>Un investissement unique, pour une utilisation durable.</p>
                     </div>
 
-                    <div className="pricing-grid">
-                        {/* Digital Pack */}
-                        <div className="glass-panel price-card">
-                            <div style={{ background: '#F3F4F6', color: '#4B5563', padding: '8px 20px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', alignSelf: 'flex-start', marginBottom: '24px', border: '1px solid rgba(0,0,0,0.05)' }}>L'essentiel</div>
-                            <h3 style={{ fontSize: '32px', fontWeight: '900', marginBottom: '8px', fontFamily: 'Outfit' }}>Pack Digital</h3>
-                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '32px' }}>
-                                <div style={{ fontSize: '48px', fontWeight: '900', fontFamily: 'Outfit', letterSpacing: '-0.03em' }}>5.000<small style={{ fontSize: '18px', fontWeight: '600', color: '#6B7280' }}>f CFA</small></div>
-                            </div>
-
-                            <ul className="price-list">
-                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> Profil digital complet & personnalisable</li>
-                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> <strong>QR Code Personnalisé</strong> haute définition</li>
-                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> <strong>Statistiques de scans</strong> en temps réel</li>
-                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> 20+ réseaux sociaux (Facebook, X, Instagram, TikTok, etc...)</li>
-                                <li><span style={{ color: '#10B981', fontWeight: '900' }}>✓</span> Modifiable à vie</li>
-                            </ul>
-
-                            <button onClick={() => window.open(getWhatsAppUrl('digital'), '_blank')} className="btn-secondary" style={{ width: '100%', marginTop: 'auto', background: '#F3F4F6', color: '#1F2937', border: '1px solid #E5E7EB' }}>Commander le Digital</button>
-                        </div>
-
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
                         {/* Physical Pack */}
-                        <div className="glass-panel price-card featured">
+                        <div className="glass-panel price-card featured" style={{ maxWidth: '500px', width: '100%' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', width: '100%', flexWrap: 'wrap', gap: '12px' }}>
-                                <div style={{ background: '#EEF2FF', color: '#4F46E5', padding: '8px 20px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Le Complet</div>
+                                <div style={{ background: '#EEF2FF', color: '#4F46E5', padding: '8px 20px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Offre Unique</div>
                                 <div style={{ background: '#EF4444', color: 'white', padding: '6px 12px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', animation: 'pulseBadge 2s infinite', display: 'flex', alignItems: 'center', gap: 6 }}>
-                                    <div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>` }} /> Offre de Lancement
+                                    <div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>` }} /> Prix de lancement
                                 </div>
                             </div>
-                            <h3 style={{ fontSize: '32px', fontWeight: '900', marginBottom: '8px', fontFamily: 'Outfit' }}>Pack Physique</h3>
+                            <h3 style={{ fontSize: '32px', fontWeight: '900', marginBottom: '8px', fontFamily: 'Outfit' }}>Carte Signature NFC</h3>
                             <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '32px' }}>
                                 <div style={{ fontSize: '48px', fontWeight: '900', fontFamily: 'Outfit', letterSpacing: '-0.03em' }}>10.000<small style={{ fontSize: '18px', fontWeight: '600', color: '#6B7280' }}>f CFA</small></div>
                             </div>
 
                             <ul className="price-list">
-                                <li style={{ color: '#4F46E5' }}><span style={{ fontWeight: '900' }}>✓</span> <strong>Carte NFC Premium</strong></li>
-                                <li><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Design avec votre nom/photo/logo</li>
-                                <li style={{ fontWeight: '800' }}><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Inclus : <strong>QR Code Personnalisé</strong></li>
-                                <li><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Stats & Réseaux sociaux activés</li>
+                                <li style={{ color: '#4F46E5' }}><span style={{ fontWeight: '900' }}>✓</span> <strong>Carte Physique NFC Premium</strong></li>
+                                <li><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Design Signature au choix</li>
+                                <li><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Profil digital complet inclus</li>
+                                <li><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> QR Code de secours au verso</li>
                                 <li><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Livraison rapide (24-48h)</li>
+                                <li><span style={{ color: '#4F46E5', fontWeight: '900' }}>✓</span> Zéro abonnement, modifiable à vie</li>
                             </ul>
 
-                            <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary" style={{ width: '100%', marginTop: 'auto' }}>Commander la Carte</button>
+                            <button onClick={() => window.open(getWhatsAppUrl(), '_blank')} className="btn-primary" style={{ width: '100%', marginTop: 'auto' }}>Commander ma Carte</button>
                         </div>
                     </div>
                 </div>
@@ -639,56 +564,34 @@ export default function LandingPage() {
                         <p style={{ color: '#4B5563', fontSize: '18px', maxWidth: '600px', margin: '0 auto' }}>Absolument tout le monde ! C'est l'outil ultime pour toutes vos prises de contact rapides.</p>
                     </div>
 
-                    <div className="pricing-grid">
-                        {/* Digital Audience */}
-                        <div className="glass-panel animate-fade-up delay-1" style={{ padding: '40px', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
-                            <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '150px', height: '150px', opacity: '0.05', pointerEvents: 'none', display: 'flex' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>` }} />
-                            <h3 style={{ fontSize: '28px', fontWeight: '900', fontFamily: 'Outfit', marginBottom: '12px', color: '#111827', position: 'relative', zIndex: 1 }}>Le Pack Digital</h3>
-                            <div style={{ fontWeight: '700', color: '#4B5563', marginBottom: '32px', fontSize: '16px', position: 'relative', zIndex: 1 }}>L'identité 100% connectée :</div>
-                            
-                            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '20px', flex: 1, position: 'relative', zIndex: 1 }}>
-                                <li style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
-                                    <div style={{ background: '#E0E7FF', color: '#4F46E5', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px', fontWeight: 'bold' }}>✓</div>
-                                    <span style={{ color: '#374151', lineHeight: '1.6', fontSize: '16px' }}><strong>Créateurs & Freelances</strong> souhaitant un "Lien en bio" premium pour centraliser tous leurs réseaux et portfolios.</span>
-                                </li>
-                                <li style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
-                                    <div style={{ background: '#E0E7FF', color: '#4F46E5', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px', fontWeight: 'bold' }}>✓</div>
-                                    <span style={{ color: '#374151', lineHeight: '1.6', fontSize: '16px' }}><strong>Commerces & Boutiques</strong> désirant afficher un QR Code élégant à scanner sur leur comptoir ou menu.</span>
-                                </li>
-                                <li style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
-                                    <div style={{ background: '#E0E7FF', color: '#4F46E5', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px', fontWeight: 'bold' }}>✓</div>
-                                    <span style={{ color: '#374151', lineHeight: '1.6', fontSize: '16px' }}><strong>Pour tous au quotidien</strong> : Un lien unique à envoyer par message ou à mettre en bio pour donner toutes vos infos d'un coup.</span>
-                                </li>
-                            </ul>
-                        </div>
-
-                        {/* Physical Audience */}
-                        <div className="glass-panel animate-fade-up delay-2" style={{ padding: '40px', background: '#111827', color: 'white', border: '1px solid #374151', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        {/* Physical Audience Only */}
+                        <div className="glass-panel animate-fade-up delay-1" style={{ padding: '40px', background: '#111827', color: 'white', border: '1px solid #374151', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden', maxWidth: '800px' }}>
                             <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '150px', height: '150px', opacity: '0.05', pointerEvents: 'none', display: 'flex' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>` }} />
                             
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px', position: 'relative', zIndex: 1 }}>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                     <div style={{ background: 'linear-gradient(90deg, #F59E0B, #FBBF24)', color: '#111827', padding: '4px 12px', borderRadius: '100px', fontSize: '11px', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '4px', alignSelf: 'flex-start', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                                        <div style={{ width: '12px', height: '12px', display: 'flex' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>` }} /> LE PLUS POPULAIRE
+                                        <div style={{ width: '12px', height: '12px', display: 'flex' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>` }} /> LA CARTE INDISPENSABLE
                                     </div>
-                                    <h3 style={{ fontSize: '28px', fontWeight: '900', fontFamily: 'Outfit', margin: 0, color: 'white' }}>Le Pack Physique</h3>
+                                    <h3 style={{ fontSize: '28px', fontWeight: '900', fontFamily: 'Outfit', margin: 0, color: 'white' }}>La Carte NFCrafter</h3>
                                 </div>
                             </div>
                             
-                            <div style={{ fontWeight: '700', color: '#9CA3AF', marginBottom: '32px', fontSize: '16px', position: 'relative', zIndex: 1 }}>L'atout des rencontres en présentiel </div>
+                            <div style={{ fontWeight: '700', color: '#9CA3AF', marginBottom: '32px', fontSize: '16px', position: 'relative', zIndex: 1 }}>L'atout des rencontres en présentiel et digital</div>
                             
-                            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '20px', flex: 1, position: 'relative', zIndex: 1 }}>
+                            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', flex: 1, position: 'relative', zIndex: 1 }}>
                                 <li style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
                                     <div style={{ background: 'rgba(255,255,255,0.1)', color: 'white', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px', fontWeight: 'bold' }}>✓</div>
-                                    <span style={{ color: '#D1D5DB', lineHeight: '1.6', fontSize: '16px' }}><strong>En Soirée, Concerts & Festivals</strong> : La musique est trop forte ? Sortez votre carte et partagez vos coordonnées en un "tap".</span>
+                                    <span style={{ color: '#D1D5DB', lineHeight: '1.6', fontSize: '16px' }}><strong>Soirées & Événements</strong> : Partagez vos coordonnées en un "tap" même dans le bruit.</span>
                                 </li>
                                 <li style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
                                     <div style={{ background: 'rgba(255,255,255,0.1)', color: 'white', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px', fontWeight: 'bold' }}>✓</div>
-                                    <span style={{ color: '#D1D5DB', lineHeight: '1.6', fontSize: '16px' }}><strong>Dans la rue & en Voyage</strong> : Une rencontre inattendue ? Plus besoin de dicter les chiffres ou d'épeler votre nom.</span>
+                                    <span style={{ color: '#D1D5DB', lineHeight: '1.6', fontSize: '16px' }}><strong>Networking Pro</strong> : Marquez les esprits lors de meetings ou conférences.</span>
                                 </li>
                                 <li style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
                                     <div style={{ background: 'rgba(255,255,255,0.1)', color: 'white', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px', fontWeight: 'bold' }}>✓</div>
-                                    <span style={{ color: '#D1D5DB', lineHeight: '1.6', fontSize: '16px' }}><strong>Networking, Meetings & Conférences</strong> : Marquez les esprits lors de vos conférences ou événements en donnant vos contacts, vos réseaux sociaux ou portfolio en un clic.</span>
+                                    <span style={{ color: '#D1D5DB', lineHeight: '1.6', fontSize: '16px' }}><strong>Vie Quotidienne</strong> : Fini la dictée de numéros, une rencontre inattendue devient un contact enregistré.</span>
                                 </li>
                             </ul>
                         </div>
@@ -750,8 +653,8 @@ export default function LandingPage() {
 
                 {/* CTA */}
                 <div style={{ textAlign: 'center', marginTop: '40px', position: 'relative', zIndex: 2 }}>
-                    <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary" style={{ background: 'white', color: '#111827', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.35)', fontSize: '16px', padding: '18px 40px' }}>
-                        ✦ Je veux ma carte personnalisée
+                    <button onClick={() => window.open(getWhatsAppUrl(), '_blank')} className="btn-primary" style={{ background: 'white', color: '#111827', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.35)', fontSize: '16px', padding: '18px 40px' }}>
+                        ✦ Je veux ma carte Signature
                     </button>
                     <p style={{ color: '#4B5563', fontSize: '13px', marginTop: '16px', fontWeight: '600' }}>Design inclus — Livraison sous 24-48h</p>
                 </div>
@@ -774,23 +677,23 @@ export default function LandingPage() {
                         {[
                             { 
                                 step: "01", 
-                                title: "Personnalisez votre Design", 
-                                desc: "Choisissez vos couleurs préférées, importez votre logo et définissez l'identité visuelle de votre future carte et de votre profil digital.",
-                                icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>`,
+                                title: "Choisissez votre Modèle", 
+                                desc: "Parcourez nos modèles déjà prêts et choisissez la couleur ou le style qui vous correspond le mieux.",
+                                icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>`,
                                 color: "#4F46E5"
                             },
                             { 
                                 step: "02", 
-                                title: "Commandez sur WhatsApp", 
-                                desc: "Validez votre projet avec notre équipe sur WhatsApp. Nous lançons la préparation de votre solution (physique ou digitale) immédiatement.",
+                                title: "Commandez & Recevez", 
+                                desc: "Validez votre commande sur WhatsApp. Recevez votre carte physique chez vous sous 24h à 48h.",
                                 icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 1 1-7.6-10.4 8.38 8.38 0 0 1 3.9.9L21 4.2Z"/></svg>`,
                                 color: "#10B981"
                             },
                             { 
                                 step: "03", 
-                                title: "Activez et Partagez", 
-                                desc: "Une fois votre carte reçue, activez votre profil en 1 minute. Touchez un téléphone pour partager vos infos. Modifiez vos liens à l'infini.",
-                                icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>`,
+                                title: "Activez & Personnalisez", 
+                                desc: "Une fois votre carte en main, activez-la d'un simple geste et créez votre profil (liens, réseaux, bio) en quelques secondes.",
+                                icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
                                 color: "#F59E0B"
                             }
                         ].map((item, i) => (
@@ -810,8 +713,8 @@ export default function LandingPage() {
                     </div>
 
                     <div style={{ marginTop: '60px', textAlign: 'center' }} className="animate-fade-up delay-3">
-                        <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary" style={{ padding: '20px 48px' }}>
-                            Démarrer mon projet maintenant
+                        <button onClick={() => window.open(getWhatsAppUrl(), '_blank')} className="btn-primary" style={{ padding: '20px 48px' }}>
+                            Commander ma carte maintenant
                         </button>
                     </div>
                 </div>
