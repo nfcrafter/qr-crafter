@@ -185,22 +185,56 @@ export default function Activate() {
     const themeColor = cardInfo?.admin_profile?.primaryColor || "#1A1265";
 
     return (
-        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: `linear-gradient(135deg, ${themeColor}10 0%, #F8FAFC 100%)`, padding: '24px' }}>
-            <div className="premium-card" style={{ padding: '48px 40px', width: '100%', maxWidth: '440px', background: 'rgba(255, 255, 255, 0.8)', backdropFilter: 'blur(10px)', textAlign: 'center', borderTop: `6px solid ${themeColor}` }}>
+        <div className="activation-container" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: `linear-gradient(135deg, ${themeColor}10 0%, #F8FAFC 100%)`, padding: '16px' }}>
+            <style>{`
+                .activation-card {
+                    padding: 40px;
+                    width: 100%;
+                    max-width: 440px;
+                    background: rgba(255, 255, 255, 0.85);
+                    backdrop-filter: blur(12px);
+                    -webkit-backdrop-filter: blur(12px);
+                    text-align: center;
+                    border-top: 6px solid ${themeColor};
+                    border-radius: 32px;
+                    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+                }
+                .activation-id {
+                    font-size: 42px;
+                    color: ${themeColor};
+                    font-weight: 900;
+                    letter-spacing: -1px;
+                    margin: 0;
+                    font-family: 'Outfit', 'monospace';
+                    word-break: break-all;
+                }
+                @media (max-width: 480px) {
+                    .activation-card {
+                        padding: 32px 20px;
+                        border-radius: 24px;
+                    }
+                    .activation-id {
+                        font-size: 32px;
+                    }
+                    h1 {
+                        font-size: 24px !important;
+                    }
+                }
+            `}</style>
+            
+            <div className="activation-card">
                 <h1 style={{ fontSize: '28px', fontWeight: '800', letterSpacing: '-1px', color: themeColor, margin: '0 0 12px 0' }}>ACTIVATION</h1>
                 
                 {verifying ? (
                     <div style={{ padding: '40px 0' }}>Vérification en cours...</div>
                 ) : cardInfo ? (
                     <>
-                        <div style={{ margin: '24px 0', padding: '32px 24px', background: '#F8FAFC', borderRadius: '24px', border: `2px solid ${themeColor}20` }}>
-                            <div style={{ fontSize: '12px', color: themeColor, fontWeight: 800, textTransform: 'uppercase', marginBottom: 16, letterSpacing: '2px' }}>ID DE LA CARTE</div>
+                        <div style={{ margin: '24px 0', padding: '32px 20px', background: '#F8FAFC', borderRadius: '24px', border: `2px solid ${themeColor}15` }}>
+                            <div style={{ fontSize: '11px', color: themeColor, fontWeight: 800, textTransform: 'uppercase', marginBottom: 12, letterSpacing: '2px' }}>ID DE LA CARTE</div>
                             
-                            <div style={{ fontSize: '42px', color: themeColor, fontWeight: '1000', letterSpacing: '-1px', marginBottom: '8px', fontFamily: 'monospace' }}>
+                            <div className="activation-id">
                                 {cardId}
                             </div>
-
-                            <div style={{ fontSize: '16px', color: '#64748B', fontWeight: '700' }}>{cardInfo.card_name}</div>
                         </div>
 
                         {!user ? (

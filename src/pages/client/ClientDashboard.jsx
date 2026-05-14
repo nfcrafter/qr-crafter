@@ -212,8 +212,16 @@ export default function ClientDashboard() {
     const subTextColor = isDark ? '#94A3B8' : '#64748B';
     const cardBg = isDark ? 'rgba(255,255,255,0.08)' : 'white';
 
+    // Check if profile is incomplete (missing main contacts or name)
+    const isProfileIncomplete = userCards.length > 0 && (
+        !publicProfile.full_name || 
+        publicProfile.full_name === 'Nom complet' || 
+        (!publicProfile.phone && !publicProfile.email) ||
+        Object.keys(publicProfile.socials || {}).length === 0
+    );
+
     return (
-        <div style={{ display: 'flex', minHeight: '100vh', background: '#F8FAFC' }}>
+        <div style={{ display: 'flex', minHeight: '100vh', background: '#F8FAFC', maxWidth: '100vw', overflowX: 'hidden' }}>
             
             {/* Header Mobile Only */}
             <div className="mobile-header" style={{ position: 'fixed', top: 0, left: 0, right: 0, height: '70px', background: 'white', borderBottom: '1px solid #E2E8F0', zIndex: 100, display: 'none', alignItems: 'center', justifyContent: 'space-between', padding: '0 20px' }}>
@@ -248,7 +256,7 @@ export default function ClientDashboard() {
             )}
 
             {/* Sidebar (Left) */}
-            <aside className={`sidebar ${isMobileMenuOpen ? 'open' : ''}`} style={{ width: '300px', background: 'white', borderRight: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', position: 'fixed', height: '100vh', zIndex: 200, transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)', boxShadow: '10px 0 30px rgba(0,0,0,0.02)' }}>
+            <aside className={`sidebar ${isMobileMenuOpen ? 'open' : ''}`} style={{ width: '280px', background: 'white', borderRight: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', position: 'fixed', height: '100vh', zIndex: 200, transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)', boxShadow: '10px 0 30px rgba(0,0,0,0.02)' }}>
                 <div style={{ padding: '40px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                         <div style={{ width: '40px', height: '40px', background: '#1A1265', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 16px rgba(26,18,101,0.2)' }}>
@@ -298,6 +306,52 @@ export default function ClientDashboard() {
                     <div className="dashboard-grid" style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 340px', gap: '40px', alignItems: 'start' }}>
                         
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+                            
+                            {/* Incomplete Profile Banner */}
+                            {isProfileIncomplete && viewMode === 'view' && (
+                                <div style={{ 
+                                    background: 'linear-gradient(135deg, #1A1265 0%, #3B82F6 100%)', 
+                                    padding: '24px 32px', 
+                                    borderRadius: '24px', 
+                                    color: 'white', 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    justifyContent: 'space-between', 
+                                    gap: '24px',
+                                    boxShadow: '0 20px 40px rgba(26,18,101,0.15)',
+                                    animation: 'fadeIn 0.6s ease-out',
+                                    flexWrap: 'wrap'
+                                }}>
+                                    <div style={{ flex: 1, minWidth: '280px' }}>
+                                        <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                            <span style={{ fontSize: '24px' }}>✨</span> Configurez votre profil
+                                        </h3>
+                                        <p style={{ fontSize: '14px', opacity: 0.9, lineHeight: '1.6' }}>
+                                            Votre carte est active ! Ajoutez vos contacts et réseaux sociaux pour que vos futurs contacts puissent vous enregistrer en un clic.
+                                        </p>
+                                    </div>
+                                    <button 
+                                        onClick={() => setViewMode('edit')}
+                                        style={{ 
+                                            background: 'white', 
+                                            color: '#1A1265', 
+                                            padding: '12px 24px', 
+                                            borderRadius: '14px', 
+                                            border: 'none', 
+                                            fontWeight: '800', 
+                                            cursor: 'pointer',
+                                            fontSize: '14px',
+                                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                                            transition: 'transform 0.2s',
+                                            whiteSpace: 'nowrap'
+                                        }}
+                                        onMouseOver={e => e.currentTarget.style.transform = 'scale(1.05)'}
+                                        onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
+                                    >
+                                        Compléter mon profil
+                                    </button>
+                                </div>
+                            )}
                             {/* Link Box */}
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
                                 <div style={{ background: 'white', padding: '24px', borderRadius: '24px', border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -442,9 +496,9 @@ export default function ClientDashboard() {
                     .desktop-only { display: none !important; }
                     .mobile-only { display: block !important; }
                     .mobile-header { display: flex !important; }
-                    .sidebar { transform: translateX(-100%); }
+                    .sidebar { width: 260px !important; transform: translateX(-100%); }
                     .sidebar.open { transform: translateX(0); }
-                    .main-content { margin-left: 0 !important; padding: 100px 20px 40px !important; }
+                    .main-content { margin-left: 0 !important; padding: 100px 16px 40px !important; width: 100%; overflow-x: hidden; }
                 }
             `}</style>
         </div>
