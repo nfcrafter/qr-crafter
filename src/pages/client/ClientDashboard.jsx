@@ -52,48 +52,21 @@ export default function ClientDashboard() {
     async function loadUserData() {
         try {
             setLoading(true);
-            const { data: { user: authUser } } = await supabase.auth.getUser();
-            if (!authUser) { navigate('/login'); return; }
+            const { data: authData, error: authError } = await supabase.auth.getUser();
+            if (authError || !authData?.user) { navigate('/login'); return; }
+            const authUser = authData.user;
             setUser(authUser);
 
-            // 1. Fetch cards where owner_id is the user
+            // Fetch cards where owner_id is the user — only source of truth
             const { data: ownedCards, error: ownedError } = await supabase
                 .from('cards')
                 .select('*')
                 .eq('owner_id', authUser.id)
                 .order('created_at', { ascending: false });
 
-            if (ownedError) throw ownedError;
-
-            // 2. Fetch from user_cards as fallback/secondary link
-            const { data: userCardsLinks, error: linksError } = await supabase
-                .from('user_cards')
-                .select('card_id')
-                .eq('user_id', authUser.id);
-
-            if (linksError) throw linksError;
-
-            let finalCards = ownedCards || [];
-
-            // 3. If there are linked cards in user_cards that aren't in ownedCards, fetch them
-            if (userCardsLinks && userCardsLinks.length > 0) {
-                const ownedIds = new Set(finalCards.map(c => c.card_id.toUpperCase()));
-                const missingIds = userCardsLinks
-                    .map(l => l.card_id)
-                    .filter(id => id && !ownedIds.has(id.toUpperCase()));
-
-                if (missingIds.length > 0) {
-                    const { data: extraCards, error: extraError } = await supabase
-                        .from('cards')
-                        .select('*')
-                        .in('card_id', missingIds);
-                    
-                    if (extraError) throw extraError;
-                    if (extraCards) {
-                        finalCards = [...finalCards, ...extraCards];
-                    }
-                }
-            }
+            // Don't throw on error — just use empty array and show empty state
+            const finalCards = ownedError ? [] : (ownedCards || []);
+            if (ownedError) console.warn("Cards fetch warning:", ownedError.message);
 
             setUserCards(finalCards);
 
@@ -108,17 +81,17 @@ export default function ClientDashboard() {
                     ...(card.admin_profile || {})
                 });
 
-                // Load scan count
-                const { count, error: countErr } = await supabase
-                    .from('scan_logs')
-                    .select('*', { count: 'exact', head: true })
-                    .eq('card_id', card.card_id);
-                
-                if (!countErr) setScanCount(count || 0);
+                // Load scan count — non-blocking
+                try {
+                    const { count } = await supabase
+                        .from('scan_logs')
+                        .select('*', { count: 'exact', head: true })
+                        .eq('card_id', card.card_id);
+                    setScanCount(count || 0);
+                } catch (_) {}
             }
         } catch (err) {
             console.error("Dashboard Load Error:", err);
-            toast('Une erreur est survenue lors du chargement', 'error');
         } finally {
             setLoading(false);
         }
