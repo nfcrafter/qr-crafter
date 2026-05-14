@@ -1022,7 +1022,7 @@ export default function LandingPage() {
                         <details>
                             <summary>Y a-t-il un abonnement caché à payer ?</summary>
                             <div className="faq-content">
-                                Non, c'est un paiement unique ! Vous payez une seule fois votre Pack Digital (5.000f) ou votre Pack Physique (10.000f) et vous en profitez à vie. Vous pouvez modifier vos informations à l'infini depuis votre espace client gratuit.
+                                Non, c'est un paiement unique ! Vous payez votre Carte Signature NFC (10.000f) une seule fois et vous en profitez à vie. Vous pouvez modifier vos informations à l'infini depuis votre espace client gratuit.
                             </div>
                         </details>
 

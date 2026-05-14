@@ -123,7 +123,7 @@ export default function ClientDashboard() {
     }, [selectedCardId]);
 
     function handleWhatsAppOrder() {
-        const message = `Bonjour NFCrafter ! Je souhaite commander une carte NFC personnalisée. Mon email : ${user?.email}`;
+        const message = `Bonjour NFCrafter, je souhaite commander ma Carte Signature NFC à 10.000f. Mon email : ${user?.email}`;
         window.open(`https://wa.me/22969473921?text=${encodeURIComponent(message)}`, '_blank');
     }
     
@@ -456,7 +456,7 @@ export default function ClientDashboard() {
                                     </h3>
                                     <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '13px', lineHeight: '1.5', maxWidth: '300px' }}>Commandez votre carte NFC premium personnalisée.</p>
                                 </div>
-                                <button onClick={() => window.open(`https://wa.me/22969473921?text=${encodeURIComponent('Commande carte : ' + publicUrl)}`, '_blank')} style={{ background: 'white', color: '#4F46E5', border: 'none', padding: '12px 24px', borderRadius: '14px', fontWeight: '900', cursor: 'pointer', fontSize: '13px' }}>Commander</button>
+                                <button onClick={() => window.open(`https://wa.me/22969473921?text=${encodeURIComponent('Bonjour NFCrafter, je souhaite commander ma Carte Signature NFC à 10.000f. Mon profil actuel : ' + publicUrl)}`, '_blank')} style={{ background: 'white', color: '#4F46E5', border: 'none', padding: '12px 24px', borderRadius: '14px', fontWeight: '900', cursor: 'pointer', fontSize: '13px' }}>Commander</button>
                             </div>
 
                             {/* Editor */}

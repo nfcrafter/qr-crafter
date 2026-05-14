@@ -97,7 +97,7 @@ export default function AdminDashboard() {
         
         if (transactionType === 'income') {
             if (incomeCategory === 'digital') {
-                newTx = { ...newTx, type: 'income', category: 'Pack Digital', amount: incomeQty * 5000, desc: `${incomeQty}x Pack Digital` };
+                newTx = { ...newTx, type: 'income', category: 'Vente Carte', amount: incomeQty * 10000, desc: `${incomeQty}x Carte Signature` };
             } else if (incomeCategory === 'physical') {
                 newTx = { ...newTx, type: 'income', category: 'Pack Physique', amount: incomeQty * 10000, desc: `${incomeQty}x Pack Physique` };
             } else {
@@ -624,8 +624,7 @@ export default function AdminDashboard() {
                                                 <div>
                                                     <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: '#475569', marginBottom: '8px' }}>Que venez-vous de vendre ?</label>
                                                     <select value={incomeCategory} onChange={e => setIncomeCategory(e.target.value)} style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #E2E8F0', background: '#F8FAFC', fontSize: '15px', fontWeight: '600', outline: 'none' }}>
-                                                        <option value="digital">Pack Digital (5.000f)</option>
-                                                        <option value="physical">Pack Physique (10.000f)</option>
+                                                        <option value="physique">Carte Signature (10.000f)</option>
                                                         <option value="other">Autre revenu</option>
                                                     </select>
                                                 </div>
@@ -1330,7 +1329,7 @@ function CardListItem({ card, scanCount, navigate, toast, onResolve }) {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                         <span style={{ fontSize: '10px', fontWeight: '900', color: card._type === 'digital' ? '#10B981' : '#6366F1', background: card._type === 'digital' ? '#ECFDF5' : '#EEF2FF', padding: '2px 8px', borderRadius: '10px', textTransform: 'uppercase' }}>
-                            {card._type === 'digital' ? 'Personnalisée' : 'Carte Signature'}
+                            {card._type === 'digital' ? 'Carte Personnalisée' : 'Carte Signature'}
                         </span>
                         <div style={{ color: '#6366F1', fontWeight: '800', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{card.admin_profile?.qr_type || card.type || 'URL'}</div>
                     </div>
