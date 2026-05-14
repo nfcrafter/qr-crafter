@@ -210,7 +210,10 @@ export default function AdminDashboard() {
 
     async function loadUsers() {
         setLoading(true);
-        const { data, error } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
+        const { data, error } = await supabase
+            .from('profiles')
+            .select('*, cards(*)')
+            .order('created_at', { ascending: false });
         if (error) {
             console.error('Error loading users:', error);
             toast('Erreur chargement utilisateurs : ' + error.message, 'error');
@@ -1017,7 +1020,18 @@ export default function AdminDashboard() {
                                         </div>
                                         <div style={{ flex: 1 }}>
                                             <div style={{ fontWeight: '900', fontSize: '16px', color: '#1A1265' }}>{user.full_name || 'Utilisateur sans nom'}</div>
-                                            <div style={{ color: '#94A3B8', fontSize: '12px' }}>{user.email}</div>
+                                            <div style={{ color: '#94A3B8', fontSize: '12px', marginBottom: '8px' }}>{user.email}</div>
+                                            
+                                            {/* List of user cards */}
+                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                                                {user.cards && user.cards.length > 0 ? user.cards.map(card => (
+                                                    <div key={card.card_id} style={{ background: '#F1F5F9', color: '#475569', padding: '4px 10px', borderRadius: '8px', fontSize: '11px', fontWeight: '800', border: '1px solid #E2E8F0' }}>
+                                                        {card.card_name || card.card_id}
+                                                    </div>
+                                                )) : (
+                                                    <div style={{ fontSize: '11px', color: '#CBD5E1', fontStyle: 'italic' }}>Aucune carte</div>
+                                                )}
+                                            </div>
                                         </div>
                                         <button 
                                             onClick={() => {
