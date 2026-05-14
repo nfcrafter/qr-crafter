@@ -223,14 +223,14 @@ export default function Activate() {
                             </div>
                         ) : (
                             <>
-                                <div style={{ marginBottom: 24, textAlign: 'left' }}>
+                                <div style={{ marginBottom: 24, textAlign: 'left', marginTop: 32 }}>
                                     <label style={{ display: 'block', marginBottom: 8, fontSize: 13, fontWeight: 700, color: '#64748B' }}>DONNEZ UN NOM À CETTE CARTE</label>
                                     <input 
                                         type="text" 
                                         value={customCardName} 
                                         onChange={e => setCustomCardName(e.target.value)}
                                         placeholder="Ex: Profil Professionnel, Perso, etc."
-                                        style={{ width: '100%', padding: '14px', borderRadius: '12px', border: `1px solid ${themeColor}30`, fontSize: '15px', outline: 'none' }}
+                                        style={{ width: '100%', padding: '14px', borderRadius: '12px', border: `1px solid ${themeColor}30`, fontSize: '15px', outline: 'none', background: 'white' }}
                                     />
                                 </div>
 

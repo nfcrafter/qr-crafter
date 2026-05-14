@@ -44,60 +44,8 @@ export default function ClientDashboard() {
 
     useEffect(() => { 
         console.log("Dashboard mount/update, activatedId:", activatedId);
-        loadUserData().then(() => {
-            checkPendingActivation();
-        });
+        loadUserData();
     }, [activatedId]);
-
-    async function checkPendingActivation() {
-        const pending = localStorage.getItem('pending_activation');
-        if (!pending) return;
-
-        try {
-            const { cardId, token, customCardName } = JSON.parse(pending);
-            console.log("Found pending activation:", cardId, "Name:", customCardName);
-            
-            const { data: { user: authUser } } = await supabase.auth.getUser();
-            if (!authUser) return;
-
-            // 1. Verify card again to be sure
-            const { data: card, error: fetchError } = await supabase.from('cards').select('*').ilike('card_id', cardId).single();
-            if (fetchError || !card || card.owner_id || card.activation_token !== token) {
-                localStorage.removeItem('pending_activation');
-                return;
-            }
-
-            // 2. Activate it (Simplified version for the dashboard)
-            const { data: profile } = await supabase.from('profiles').select('*').eq('id', authUser.id).single();
-            const normalizedId = cardId.toUpperCase();
-
-            const { error: updateError } = await supabase.from('cards')
-                .update({ 
-                    owner_id: authUser.id, 
-                    status: 'active',
-                    activation_token: null,
-                    card_name: customCardName || profile?.full_name || card.card_name || 'Mon Profil'
-                })
-                .ilike('card_id', normalizedId)
-                .eq('activation_token', token);
-
-            if (!updateError) {
-                await supabase.from('profiles').update({ card_id: normalizedId }).eq('id', authUser.id);
-                await supabase.from('user_cards').upsert({ 
-                    user_id: authUser.id, 
-                    card_id: normalizedId,
-                    profile_name: customCardName || profile?.full_name || 'Mon Profil'
-                });
-                
-                toast('Nouvelle carte liée avec succès !', 'success');
-                localStorage.removeItem('pending_activation');
-                loadUserData(); // Reload to show the new card
-            }
-        } catch (e) {
-            console.error("Error processing pending activation:", e);
-            localStorage.removeItem('pending_activation');
-        }
-    }
 
     async function loadUserData() {
         setLoading(true);

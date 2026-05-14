@@ -77,25 +77,12 @@ export default function Register() {
                 card_id: cardId || null,
                 ...adminProfile,
             })
-
-            await supabase.from('cards')
-                .update({ 
-                    owner_id: data.user.id, 
-                    status: 'active',
-                    activation_token: null
-                })
-                .eq('card_id', cardId)
-                .eq('activation_token', token)
-
-            await supabase.from('user_cards').upsert({
-                user_id: data.user.id,
-                card_id: cardId,
-                profile_name: form.fullName,
-            })
+            // No activation here, we redirect to Activate to let them name the card
+            localStorage.removeItem('pending_activation');
         }
 
         setLoading(false)
-        navigate(`/dashboard?activated=${cardId}`)
+        navigate(`/activate?card=${cardId}&token=${token}`)
     }
 
     return (
