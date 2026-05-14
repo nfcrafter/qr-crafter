@@ -60,15 +60,37 @@ export default function PublicProfile() {
     setLoading(false)
   }
 
-  function saveContact() {
+  async function saveContact() {
     if (!profile) return
+    
+    let photoBase64 = '';
+    if (profile.photo_url) {
+      try {
+        const response = await fetch(profile.photo_url);
+        const blob = await response.blob();
+        photoBase64 = await new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result.split(',')[1]);
+          reader.readAsDataURL(blob);
+        });
+      } catch (e) {
+        console.error("Error fetching profile photo for VCard:", e);
+      }
+    }
+
     let vc = `BEGIN:VCARD\r\nVERSION:3.0\r\n`
     if (profile.full_name) vc += `FN:${profile.full_name}\r\nN:${profile.full_name};;;;\r\n`
     if (profile.title || profile.job_title) vc += `TITLE:${profile.title || profile.job_title}\r\n`
     if (profile.bio) vc += `NOTE:${profile.bio}\r\n`
     if (profile.phone) vc += `TEL;TYPE=CELL:${profile.phone}\r\n`
     if (profile.email) vc += `EMAIL:${profile.email}\r\n`
-    if (profile.photo_url) vc += `PHOTO;VALUE=URI:${profile.photo_url}\r\n`
+    
+    if (photoBase64) {
+      vc += `PHOTO;TYPE=JPEG;ENCODING=b:${photoBase64}\r\n`
+    } else if (profile.photo_url) {
+      vc += `PHOTO;VALUE=URI:${profile.photo_url}\r\n`
+    }
+
     let itemIndex = 1;
     SOCIAL_NETWORKS.forEach(s => {
       const rawVal = profile[s.id] || profile?.socials?.[s.id]
@@ -80,7 +102,6 @@ export default function PublicProfile() {
           if (s.id === 'website') {
             vc += `URL:${url}\r\n`
           } else {
-            // High compatibility format for iOS/Android
             vc += `item${itemIndex}.URL:${url}\r\n`
             vc += `item${itemIndex}.X-ABLabel:${s.label}\r\n`
             itemIndex++;
