@@ -505,10 +505,9 @@ export default function AdminDashboard() {
         
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
-        canvas.width = 1080;
-        canvas.height = 1350; // Format Portrait Premium
+        canvas.width = 1600;
+        canvas.height = 900;
         
-        // Background soft
         ctx.fillStyle = "#F8FAFC";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
@@ -518,32 +517,48 @@ export default function AdminDashboard() {
             img.src = src;
         });
 
+        const drawRoundedCard = (img, x, y, w, h, radius) => {
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + w - radius, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+            ctx.lineTo(x + w, y + h - radius);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
+            ctx.lineTo(x + x + radius, y + h); // Fixed typo here
+            ctx.lineTo(x + radius, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+            
+            // Shadow
+            ctx.shadowColor = "rgba(0,0,0,0.15)";
+            ctx.shadowBlur = 60;
+            ctx.shadowOffsetY = 20;
+            
+            ctx.clip();
+            ctx.drawImage(img, x, y, w, h);
+            ctx.restore();
+            
+            // Subtle Border
+            ctx.strokeStyle = "rgba(255,255,255,0.2)";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        };
+
         try {
-            // Dessiner la carte arrière (Verso)
-            if (backImage) {
-                const img = await loadImage(backImage);
-                ctx.save();
-                ctx.translate(450, 550);
-                ctx.rotate(-0.08);
-                ctx.shadowColor = "rgba(0,0,0,0.15)";
-                ctx.shadowBlur = 70;
-                ctx.drawImage(img, -225, -350, 450, 700);
-                ctx.restore();
-            }
-            // Dessiner la carte avant (Recto)
             if (frontImage) {
                 const img = await loadImage(frontImage);
-                ctx.save();
-                ctx.translate(630, 800);
-                ctx.rotate(0.08);
-                ctx.shadowColor = "rgba(0,0,0,0.2)";
-                ctx.shadowBlur = 90;
-                ctx.drawImage(img, -225, -350, 450, 700);
-                ctx.restore();
+                drawRoundedCard(img, 150, 260, 600, 380, 35);
+            }
+            if (backImage) {
+                const img = await loadImage(backImage);
+                drawRoundedCard(img, 850, 260, 600, 380, 35);
             }
             
             const finalImage = canvas.toDataURL("image/png");
-            saveAs(finalImage, "nfcrafter-mockup-portrait.png");
+            saveAs(finalImage, "nfcrafter-mockup-horizontal.png");
             toast("Mockup Portrait téléchargé !", "success");
         } catch (e) {
             toast("Erreur lors de la génération", "error");
@@ -1178,54 +1193,53 @@ export default function AdminDashboard() {
                                     </div>
                                 </div>
 
-                                <div style={{ height: '600px', background: '#F8FAFC', borderRadius: '30px', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', perspective: '2000px', overflow: 'hidden', position: 'relative' }}>
+                                <div style={{ height: '500px', background: '#F8FAFC', borderRadius: '30px', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', perspective: '1500px', overflow: 'hidden', position: 'relative' }}>
                                     <style dangerouslySetInnerHTML={{ __html: `
-                                        @keyframes rotate3DVertical {
-                                            0% { transform: rotateY(-20deg) rotateX(10deg) translateY(0px); }
-                                            50% { transform: rotateY(20deg) rotateX(-5deg) translateY(-20px); }
-                                            100% { transform: rotateY(-20deg) rotateX(10deg) translateY(0px); }
+                                        @keyframes floatHorizontal {
+                                            0% { transform: translateY(0px) rotateX(10deg); }
+                                            50% { transform: translateY(-15px) rotateX(5deg); }
+                                            100% { transform: translateY(0px) rotateX(10deg); }
                                         }
-                                        .card-3d-stack {
-                                            position: relative;
-                                            width: 320px;
-                                            height: 500px;
+                                        .card-horizontal-container {
+                                            display: flex;
+                                            gap: 40px;
                                             transform-style: preserve-3d;
-                                            animation: rotate3DVertical 6s infinite ease-in-out;
+                                            animation: floatHorizontal 5s infinite ease-in-out;
                                         }
-                                        .card-3d-vertical {
-                                            position: absolute;
-                                            width: 100%;
-                                            height: 100%;
-                                            border-radius: 20px;
-                                            box-shadow: 0 40px 80px rgba(0,0,0,0.15);
-                                            overflow: hidden;
+                                        .card-mockup-horizontal {
+                                            width: 440px;
+                                            height: 275px;
+                                            border-radius: 24px;
+                                            box-shadow: 0 30px 70px rgba(0,0,0,0.15);
                                             background: #1A1265;
-                                            transition: transform 0.5s;
+                                            overflow: hidden;
+                                            border: 1px solid rgba(255,255,255,0.1);
+                                            position: relative;
                                         }
-                                        .card-back-layer {
-                                            transform: translateZ(-50px) translateX(-40px) translateY(-20px) rotateY(-5deg);
-                                            opacity: 0.9;
-                                        }
-                                        .card-front-layer {
-                                            transform: translateZ(50px) translateX(40px) translateY(20px) rotateY(5deg);
+                                        .card-mockup-horizontal::after {
+                                            content: '';
+                                            position: absolute;
+                                            inset: 0;
+                                            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%, rgba(0,0,0,0.1) 100%);
+                                            pointer-events: none;
                                         }
                                     ` }} />
                                     
-                                    <div className="card-3d-stack">
-                                        <div className="card-3d-vertical card-back-layer">
-                                            {backImage ? <img src={backImage} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: '900', fontSize: '20px' }}>VERSO</div>}
+                                    <div className="card-horizontal-container">
+                                        <div className="card-mockup-horizontal">
+                                            {frontImage ? <img src={frontImage} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: '900' }}>RECTO</div>}
                                         </div>
-                                        <div className="card-3d-vertical card-front-layer">
-                                            {frontImage ? <img src={frontImage} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: '900', fontSize: '20px' }}>RECTO</div>}
+                                        <div className="card-mockup-horizontal">
+                                            {backImage ? <img src={backImage} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: '900' }}>VERSO</div>}
                                         </div>
                                     </div>
                                     
                                     <div style={{ position: 'absolute', bottom: '24px', display: 'flex', gap: '12px' }}>
                                         <div style={{ background: 'rgba(255,255,255,0.8)', padding: '10px 20px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', color: '#1A1265', backdropFilter: 'blur(5px)' }}>
-                                            Aperçu Portrait Premium
+                                            Aperçu Horizontal
                                         </div>
                                         <button onClick={handleDownloadMockup} style={{ background: '#1A1265', color: 'white', padding: '10px 20px', borderRadius: '100px', border: 'none', fontWeight: '800', fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                            <div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>` }} /> Télécharger Mockup Portrait
+                                            <div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>` }} /> Télécharger Mockup
                                         </button>
                                     </div>
                                 </div>
