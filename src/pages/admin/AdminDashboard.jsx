@@ -56,9 +56,13 @@ export default function AdminDashboard() {
     const [hideIdsInPrint, setHideIdsInPrint] = useState(false);
     const [isProductionFormOpen, setIsProductionFormOpen] = useState(true);
     const [selectedCards, setSelectedCards] = useState([]);
-    const [expandedBatch, setExpandedBatch] = useState(null);
-    const [studioColor, setStudioColor] = useState('#1A1265');
     const [studioLogo, setStudioLogo] = useState(null);
+    const [socialQRColor, setSocialQRColor] = useState('#1A1265');
+    const [socialQRBgColor, setSocialQRBgColor] = useState('#FFFFFF');
+    const [socialQRData, setSocialQRData] = useState('https://nfcrafter.com');
+    const [socialQRPreview, setSocialQRPreview] = useState(null);
+    const [frontImage, setFrontImage] = useState(null);
+    const [backImage, setBackImage] = useState(null);
 
     const [financeTransactions, setFinanceTransactions] = useState([]);
 
@@ -86,6 +90,8 @@ export default function AdminDashboard() {
             loadRequests();
         } else if (view === 'logo-studio') {
             generateStudioLogo();
+        } else if (view === 'social-qr') {
+            generateSocialQR();
         }
         updateRequestsCount();
 
@@ -458,6 +464,38 @@ export default function AdminDashboard() {
         toast('Logo téléchargé !', 'success');
     };
 
+    const generateSocialQR = async () => {
+        const qrCode = new QRCodeStyling({
+            width: 800, height: 800, data: socialQRData,
+            margin: 10,
+            dotsOptions: { color: socialQRColor, type: "rounded" },
+            cornersSquareOptions: { color: socialQRColor, type: "extra-rounded" },
+            cornersDotOptions: { color: socialQRColor, type: "dot" },
+            backgroundOptions: { color: socialQRBgColor },
+            imageOptions: { margin: 5, imageSize: 0.2 }
+        });
+        const blob = await qrCode.getRawData("png");
+        setSocialQRPreview(URL.createObjectURL(blob));
+    };
+
+    useEffect(() => {
+        if (view === 'social-qr') generateSocialQR();
+    }, [socialQRColor, socialQRBgColor, socialQRData, view]);
+
+    const handleDownloadSocialQR = () => {
+        if (!socialQRPreview) return;
+        saveAs(socialQRPreview, `social-qr-${socialQRColor.replace('#', '')}.png`);
+        toast('QR Code téléchargé !', 'success');
+    };
+
+    const handleImageUpload = (e, side) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const url = URL.createObjectURL(file);
+        if (side === 'front') setFrontImage(url);
+        else setBackImage(url);
+    };
+
     const filtered = cards.filter(card => {
         const matchesSearch = (card.card_id?.toLowerCase().includes(search.toLowerCase())) || (card.card_name?.toLowerCase().includes(search.toLowerCase()));
         const matchesStatus = statusFilter === 'all' || card.status === statusFilter;
@@ -510,8 +548,14 @@ export default function AdminDashboard() {
                     <button onClick={() => { setView('production'); setIsSidebarOpen(false); }} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'production' ? '#1A1265' : 'transparent', color: view === 'production' ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
                         <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>` }} /> Production
                     </button>
-                    <button onClick={() => { setView('logo-studio'); setIsSidebarOpen(false); }} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'logo-studio' ? '#1A1265' : 'transparent', color: view === 'logo-studio' ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+                    <button onClick={() => { setView('logo-studio'); setIsSidebarOpen(false); }} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'logo-studio' ? '#1A1265' : 'transparent', color: view === 'logo-studio' ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
                         <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>` }} /> Logo Studio
+                    </button>
+                    <button onClick={() => { setView('social-qr'); setIsSidebarOpen(false); }} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'social-qr' ? '#1A1265' : 'transparent', color: view === 'social-qr' ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                        <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2" ry="2"></rect><path d="M7 7h1"></path><path d="M7 11h1"></path><path d="M7 15h1"></path><path d="M11 7h1"></path><path d="M11 11h1"></path><path d="M11 15h1"></path><path d="M15 7h1"></path><path d="M15 11h1"></path><path d="M15 15h1"></path></svg>` }} /> Social QR
+                    </button>
+                    <button onClick={() => { setView('mockup-3d'); setIsSidebarOpen(false); }} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'mockup-3d' ? '#1A1265' : 'transparent', color: view === 'mockup-3d' ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+                        <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>` }} /> Mockup 3D
                     </button>
 
                     <div style={{ margin: '12px 16px', fontSize: '11px', fontWeight: '800', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '1px' }}>Dossiers</div>
@@ -560,10 +604,10 @@ export default function AdminDashboard() {
                             </button>
                             <div>
                                 <h1 style={{ fontSize: '26px', fontWeight: '900', color: '#1A1265' }}>
-                                    {view === 'users' ? 'Gestion des Utilisateurs' : (view === 'requests' ? 'Demandes de Design' : (view === 'finance' ? 'Finance & CA' : (view === 'production' ? 'Atelier Production' : (view === 'logo-studio' ? 'Logo Studio' : (filterFolder ? currentFolder?.name : 'Tableau de bord')))))}
+                                    {view === 'users' ? 'Gestion des Utilisateurs' : (view === 'requests' ? 'Demandes de Design' : (view === 'finance' ? 'Finance & CA' : (view === 'production' ? 'Atelier Production' : (view === 'logo-studio' ? 'Logo Studio' : (view === 'social-qr' ? 'Générateur QR Social' : (view === 'mockup-3d' ? 'Studio Mockup 3D' : (filterFolder ? currentFolder?.name : 'Tableau de bord')))))))}
                                 </h1>
                                 <p style={{ color: '#64748B' }} className="desktop-only">
-                                    {view === 'users' ? 'Gérez les comptes et les profils de vos clients.' : (view === 'requests' ? 'Clients souhaitant modifier le design de leur QR.' : (view === 'finance' ? 'Suivez votre chiffre d\'affaires et vos bénéfices.' : (view === 'production' ? 'Générez des cartes en masse et préparez les supports physiques.' : (view === 'logo-studio' ? 'Personnalisez et téléchargez votre logo en haute qualité.' : (filterFolder ? (isSubFolder ? 'Contenu de ce sous-dossier' : 'Contenu de ce dossier') : 'Gérez l\'ensemble de vos projets QR.')))))}
+                                    {view === 'users' ? 'Gérez les comptes et les profils de vos clients.' : (view === 'requests' ? 'Clients souhaitant modifier le design de leur QR.' : (view === 'finance' ? 'Suivez votre chiffre d\'affaires et vos bénéfices.' : (view === 'production' ? 'Générez des cartes en masse et préparez les supports physiques.' : (view === 'logo-studio' ? 'Personnalisez et téléchargez votre logo en haute qualité.' : (view === 'social-qr' ? 'Créez des codes QR décoratifs pour vos réseaux sociaux.' : (view === 'mockup-3d' ? 'Générez des visuels 3D premium pour vos publicités.' : (filterFolder ? (isSubFolder ? 'Contenu de ce sous-dossier' : 'Contenu de ce dossier') : 'Gérez l\'ensemble de vos projets QR.')))))))}
                                 </p>
                             </div>
                         </div>
@@ -1032,6 +1076,91 @@ export default function AdminDashboard() {
                                             ))}
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                        ) : view === 'social-qr' ? (
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '32px', animation: 'fadeIn 0.4s ease' }}>
+                                <div style={{ background: 'white', borderRadius: '30px', padding: '40px', border: '1px solid #E2E8F0', boxShadow: '0 10px 40px rgba(0,0,0,0.03)' }}>
+                                    <h3 style={{ fontSize: '20px', fontWeight: '900', color: '#1A1265', marginBottom: '24px' }}>Configuration Marketing</h3>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                                        <div>
+                                            <label style={{ display: 'block', fontSize: '14px', fontWeight: '800', color: '#475569', marginBottom: '12px' }}>Contenu du QR (Lien ou Texte)</label>
+                                            <input type="text" value={socialQRData} onChange={e => setSocialQRData(e.target.value)} style={{ width: '100%', padding: '16px', borderRadius: '16px', border: '1px solid #E2E8F0', background: '#F8FAFC', fontSize: '16px', fontWeight: '700' }} />
+                                        </div>
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                                            <div>
+                                                <label style={{ display: 'block', fontSize: '12px', fontWeight: '800', color: '#64748B', marginBottom: '8px' }}>COULEUR QR</label>
+                                                <input type="color" value={socialQRColor} onChange={e => setSocialQRColor(e.target.value)} style={{ width: '100%', height: '50px', borderRadius: '12px', border: 'none', cursor: 'pointer' }} />
+                                            </div>
+                                            <div>
+                                                <label style={{ display: 'block', fontSize: '12px', fontWeight: '800', color: '#64748B', marginBottom: '8px' }}>COULEUR FOND</label>
+                                                <input type="color" value={socialQRBgColor} onChange={e => setSocialQRBgColor(e.target.value)} style={{ width: '100%', height: '50px', borderRadius: '12px', border: 'none', cursor: 'pointer' }} />
+                                            </div>
+                                        </div>
+                                        <button onClick={handleDownloadSocialQR} style={{ width: '100%', marginTop: '12px', background: '#1A1265', color: 'white', padding: '20px', borderRadius: '18px', border: 'none', fontWeight: '900', fontSize: '16px', cursor: 'pointer' }}>Télécharger le QR Social</button>
+                                    </div>
+                                </div>
+                                <div style={{ background: 'white', borderRadius: '30px', padding: '40px', border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '20px' }}>
+                                    {socialQRPreview && <img src={socialQRPreview} alt="Social QR Preview" style={{ width: '100%', maxWidth: '300px', borderRadius: '20px', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }} />}
+                                    <p style={{ fontSize: '13px', color: '#94A3B8', fontWeight: '600' }}>Aperçu temps réel pour vos publicités</p>
+                                </div>
+                            </div>
+                        ) : view === 'mockup-3d' ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', animation: 'fadeIn 0.4s ease' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+                                    <div style={{ background: 'white', borderRadius: '24px', padding: '32px', border: '1px solid #E2E8F0' }}>
+                                        <h4 style={{ fontSize: '16px', fontWeight: '900', color: '#1A1265', marginBottom: '16px' }}>Image Recto</h4>
+                                        <input type="file" accept="image/*" onChange={e => handleImageUpload(e, 'front')} style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px dashed #CBD5E1', cursor: 'pointer' }} />
+                                    </div>
+                                    <div style={{ background: 'white', borderRadius: '24px', padding: '32px', border: '1px solid #E2E8F0' }}>
+                                        <h4 style={{ fontSize: '16px', fontWeight: '900', color: '#1A1265', marginBottom: '16px' }}>Image Verso</h4>
+                                        <input type="file" accept="image/*" onChange={e => handleImageUpload(e, 'back')} style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px dashed #CBD5E1', cursor: 'pointer' }} />
+                                    </div>
+                                </div>
+
+                                <div style={{ height: '500px', background: '#F8FAFC', borderRadius: '30px', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', perspective: '1500px', overflow: 'hidden', position: 'relative' }}>
+                                    <style dangerouslySetInnerHTML={{ __html: `
+                                        @keyframes rotate3D {
+                                            0% { transform: rotateY(0deg) rotateX(10deg); }
+                                            50% { transform: rotateY(180deg) rotateX(-10deg); }
+                                            100% { transform: rotateY(360deg) rotateX(10deg); }
+                                        }
+                                        .card-3d-container {
+                                            width: 400px;
+                                            height: 250px;
+                                            position: relative;
+                                            transform-style: preserve-3d;
+                                            animation: rotate3D 8s infinite linear;
+                                        }
+                                        .card-3d-side {
+                                            position: absolute;
+                                            inset: 0;
+                                            border-radius: 18px;
+                                            backface-visibility: hidden;
+                                            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+                                            overflow: hidden;
+                                            background: #1A1265;
+                                        }
+                                        .card-3d-back {
+                                            transform: rotateY(180deg);
+                                        }
+                                    ` }} />
+                                    
+                                    <div className="card-3d-container">
+                                        <div className="card-3d-side card-3d-front">
+                                            {frontImage ? <img src={frontImage} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: '900' }}>RECTO</div>}
+                                        </div>
+                                        <div className="card-3d-side card-3d-back">
+                                            {backImage ? <img src={backImage} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: '900' }}>VERSO</div>}
+                                        </div>
+                                    </div>
+                                    
+                                    <div style={{ position: 'absolute', bottom: '24px', textAlign: 'center', background: 'rgba(255,255,255,0.8)', padding: '10px 20px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', color: '#1A1265', backdropFilter: 'blur(5px)' }}>
+                                        Aperçu 3D interactif (Auto-rotation)
+                                    </div>
+                                </div>
+                                <div style={{ textAlign: 'center' }}>
+                                    <p style={{ color: '#94A3B8', fontSize: '14px', fontWeight: '600' }}>Note: Pour vos vidéos publicitaires, vous pouvez utiliser un enregistreur d'écran sur cet aperçu 3D premium.</p>
                                 </div>
                             </div>
                         ) : view === 'logo-studio' ? (
