@@ -657,6 +657,7 @@ export default function AdminDashboard() {
         const matchesCategory = categoryFilter === 'all' || card._type === categoryFilter;
         const matchesFolder = !filterFolder || card.folder_id === filterFolder;
 
+        return matchesSearch && matchesStatus && matchesType && matchesCategory && matchesFolder;
     }).sort((a, b) => {
         if (sortBy === 'newest') return new Date(b.created_at) - new Date(a.created_at);
         if (sortBy === 'modified') return new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at);
