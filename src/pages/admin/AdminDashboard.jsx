@@ -55,6 +55,8 @@ export default function AdminDashboard() {
     const [generatingBulk, setGeneratingBulk] = useState(false);
     const [hideIdsInPrint, setHideIdsInPrint] = useState(false);
     const [isProductionFormOpen, setIsProductionFormOpen] = useState(true);
+    const [selectedCards, setSelectedCards] = useState([]);
+    const [expandedBatch, setExpandedBatch] = useState(null);
     const [studioColor, setStudioColor] = useState('#1A1265');
     const [studioLogo, setStudioLogo] = useState(null);
 
