@@ -66,6 +66,8 @@ export default function AdminDashboard() {
     const [frontImage, setFrontImage] = useState(null);
     const [backImage, setBackImage] = useState(null);
     const [mockupBgColor, setMockupBgColor] = useState('#111827');
+    const [socialQRHistory, setSocialQRHistory] = useState(() => JSON.parse(localStorage.getItem('socialQRHistory') || '[]'));
+    const [mockupHistory, setMockupHistory] = useState(() => JSON.parse(localStorage.getItem('mockupHistory') || '[]'));
 
     const [financeTransactions, setFinanceTransactions] = useState([]);
 
@@ -483,6 +485,23 @@ export default function AdminDashboard() {
         setSocialQRPreview(URL.createObjectURL(blob));
     };
 
+    const saveSocialQRToHistory = () => {
+        if (!socialQRPreview) return;
+        const newItem = { id: Date.now(), url: socialQRPreview, color: socialQRColor, data: socialQRData, date: new Date().toISOString() };
+        const newHistory = [newItem, ...socialQRHistory].slice(0, 10);
+        setSocialQRHistory(newHistory);
+        localStorage.setItem('socialQRHistory', JSON.stringify(newHistory));
+        toast('QR Code sauvegardé dans l\'historique !', 'success');
+    };
+
+    const saveMockupToHistory = (imageUrl) => {
+        const newItem = { id: Date.now(), url: imageUrl, date: new Date().toISOString() };
+        const newHistory = [newItem, ...mockupHistory].slice(0, 10);
+        setMockupHistory(newHistory);
+        localStorage.setItem('mockupHistory', JSON.stringify(newHistory));
+        toast('Mockup sauvegardé dans l\'historique !', 'success');
+    };
+
     useEffect(() => {
         if (view === 'social-qr') generateSocialQR();
     }, [socialQRColor, socialQRBgColor, socialQRData, view]);
@@ -550,19 +569,20 @@ export default function AdminDashboard() {
         };
 
         try {
-            // Dessiner la carte arrière (Verso)
+            // Dessiner la carte arrière (Verso) - décalée plus bas à droite pour visibilité
             if (backImage) {
                 const img = await loadImage(backImage);
-                drawPremiumCard(img, 450, 450, 800, 500, 50, 0.08);
+                drawPremiumCard(img, 550, 480, 800, 500, 50, 0.08);
             }
-            // Dessiner la carte avant (Recto)
+            // Dessiner la carte avant (Recto) - décalée plus haut à gauche
             if (frontImage) {
                 const img = await loadImage(frontImage);
-                drawPremiumCard(img, 350, 250, 800, 500, 50, -0.05);
+                drawPremiumCard(img, 250, 220, 800, 500, 50, -0.05);
             }
             
             const finalImage = canvas.toDataURL("image/png");
             saveAs(finalImage, "nfcrafter-mockup-showcase.png");
+            saveMockupToHistory(finalImage);
             toast("Mockup Showcase téléchargé !", "success");
         } catch (e) {
             toast("Erreur lors de la génération", "error");
@@ -1176,13 +1196,31 @@ export default function AdminDashboard() {
                                                 </div>
                                             </div>
                                         </div>
-                                        <button onClick={handleDownloadSocialQR} style={{ width: '100%', marginTop: '12px', background: '#1A1265', color: 'white', padding: '20px', borderRadius: '18px', border: 'none', fontWeight: '900', fontSize: '16px', cursor: 'pointer' }}>Télécharger le QR Social</button>
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                                            <button onClick={handleDownloadSocialQR} style={{ width: '100%', marginTop: '12px', background: '#1A1265', color: 'white', padding: '20px', borderRadius: '18px', border: 'none', fontWeight: '900', fontSize: '16px', cursor: 'pointer' }}>Télécharger</button>
+                                            <button onClick={saveSocialQRToHistory} style={{ width: '100%', marginTop: '12px', background: '#F1F5F9', color: '#1A1265', padding: '20px', borderRadius: '18px', border: '1px solid #E2E8F0', fontWeight: '900', fontSize: '16px', cursor: 'pointer' }}>Sauvegarder</button>
+                                        </div>
                                     </div>
                                 </div>
                                 <div style={{ background: 'white', borderRadius: '30px', padding: '40px', border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '20px' }}>
                                     {socialQRPreview && <img src={socialQRPreview} alt="Social QR Preview" style={{ width: '100%', maxWidth: '300px', borderRadius: '20px', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }} />}
-                                    <p style={{ fontSize: '13px', color: '#94A3B8', fontWeight: '600' }}>Aperçu temps réel pour vos publicités</p>
+                                    <p style={{ fontSize: '13px', color: '#94A3B8', fontWeight: '600' }}>Aperçu temps réel</p>
                                 </div>
+
+                                {/* History section */}
+                                {socialQRHistory.length > 0 && (
+                                    <div style={{ gridColumn: '1 / -1', background: 'white', borderRadius: '30px', padding: '40px', border: '1px solid #E2E8F0' }}>
+                                        <h3 style={{ fontSize: '18px', fontWeight: '900', color: '#1A1265', marginBottom: '24px' }}>Historique Récent</h3>
+                                        <div style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '10px' }}>
+                                            {socialQRHistory.map(item => (
+                                                <div key={item.id} style={{ flexShrink: 0, width: '120px', textAlign: 'center' }}>
+                                                    <img src={item.url} style={{ width: '100%', borderRadius: '12px', border: '1px solid #F1F5F9', cursor: 'pointer' }} onClick={() => saveAs(item.url, `social-qr-${item.id}.png`)} />
+                                                    <div style={{ fontSize: '10px', color: '#94A3B8', marginTop: '8px', fontWeight: '700' }}>{new Date(item.date).toLocaleDateString()}</div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         ) : view === 'mockup-3d' ? (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', animation: 'fadeIn 0.4s ease' }}>
@@ -1229,11 +1267,11 @@ export default function AdminDashboard() {
                                             border: 1px solid rgba(255,255,255,0.1);
                                         }
                                         .showcase-back {
-                                            transform: translateZ(-60px) translateX(60px) translateY(60px) rotate(8deg);
+                                            transform: translateZ(-60px) translateX(120px) translateY(120px) rotate(8deg);
                                             opacity: 0.8;
                                         }
                                         .showcase-front {
-                                            transform: translateZ(60px) translateX(-40px) translateY(-40px) rotate(-5deg);
+                                            transform: translateZ(60px) translateX(-80px) translateY(-80px) rotate(-5deg);
                                         }
                                     ` }} />
                                     
@@ -1262,6 +1300,21 @@ export default function AdminDashboard() {
                                         C'est la méthode utilisée par les pros pour garder une fluidité parfaite dans les pubs TikTok/Instagram.
                                     </p>
                                 </div>
+
+                                {/* Mockup History */}
+                                {mockupHistory.length > 0 && (
+                                    <div style={{ background: 'white', borderRadius: '30px', padding: '40px', border: '1px solid #E2E8F0' }}>
+                                        <h3 style={{ fontSize: '18px', fontWeight: '900', color: '#1A1265', marginBottom: '24px' }}>Derniers Mockups Générés</h3>
+                                        <div style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '10px' }}>
+                                            {mockupHistory.map(item => (
+                                                <div key={item.id} style={{ flexShrink: 0, width: '200px', textAlign: 'center' }}>
+                                                    <img src={item.url} style={{ width: '100%', borderRadius: '16px', border: '1px solid #F1F5F9', cursor: 'pointer', boxShadow: '0 10px 20px rgba(0,0,0,0.05)' }} onClick={() => saveAs(item.url, `mockup-${item.id}.png`)} />
+                                                    <div style={{ fontSize: '11px', color: '#94A3B8', marginTop: '10px', fontWeight: '700' }}>Généré le {new Date(item.date).toLocaleDateString()}</div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         ) : view === 'logo-studio' ? (
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '32px', animation: 'fadeIn 0.4s ease' }}>
