@@ -56,6 +56,8 @@ export default function AdminDashboard() {
     const [hideIdsInPrint, setHideIdsInPrint] = useState(false);
     const [isProductionFormOpen, setIsProductionFormOpen] = useState(true);
     const [selectedCards, setSelectedCards] = useState([]);
+    const [expandedBatch, setExpandedBatch] = useState(null);
+    const [studioColor, setStudioColor] = useState('#1A1265');
     const [studioLogo, setStudioLogo] = useState(null);
     const [socialQRColor, setSocialQRColor] = useState('#1A1265');
     const [socialQRBgColor, setSocialQRBgColor] = useState('#FFFFFF');
@@ -494,6 +496,49 @@ export default function AdminDashboard() {
         const url = URL.createObjectURL(file);
         if (side === 'front') setFrontImage(url);
         else setBackImage(url);
+    };
+
+    const handleDownloadMockup = async () => {
+        if (!frontImage && !backImage) return toast("Veuillez uploader au moins une image", "error");
+        
+        // Create a temporary canvas to merge images
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = 1200;
+        canvas.height = 800;
+        
+        // Background
+        ctx.fillStyle = "#F8FAFC";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        const loadImage = (src) => new Promise(res => {
+            const img = new Image();
+            img.onload = () => res(img);
+            img.src = src;
+        });
+
+        try {
+            if (frontImage) {
+                const img = await loadImage(frontImage);
+                // Draw front with shadow
+                ctx.shadowColor = "rgba(0,0,0,0.1)";
+                ctx.shadowBlur = 40;
+                ctx.drawImage(img, 100, 200, 450, 280);
+            }
+            if (backImage) {
+                const img = await loadImage(backImage);
+                // Draw back with shadow
+                ctx.shadowColor = "rgba(0,0,0,0.1)";
+                ctx.shadowBlur = 40;
+                ctx.drawImage(img, 650, 320, 450, 280);
+            }
+            
+            const finalImage = canvas.toDataURL("image/png");
+            saveAs(finalImage, "nfcrafter-mockup-premium.png");
+            toast("Image mockup téléchargée !", "success");
+        } catch (e) {
+            toast("Erreur lors de la génération", "error");
+        }
     };
 
     const filtered = cards.filter(card => {
@@ -1155,12 +1200,21 @@ export default function AdminDashboard() {
                                         </div>
                                     </div>
                                     
-                                    <div style={{ position: 'absolute', bottom: '24px', textAlign: 'center', background: 'rgba(255,255,255,0.8)', padding: '10px 20px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', color: '#1A1265', backdropFilter: 'blur(5px)' }}>
-                                        Aperçu 3D interactif (Auto-rotation)
+                                    <div style={{ position: 'absolute', bottom: '24px', display: 'flex', gap: '12px' }}>
+                                        <div style={{ background: 'rgba(255,255,255,0.8)', padding: '10px 20px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', color: '#1A1265', backdropFilter: 'blur(5px)' }}>
+                                            Aperçu 3D interactif (Auto-rotation)
+                                        </div>
+                                        <button onClick={handleDownloadMockup} style={{ background: '#1A1265', color: 'white', padding: '10px 20px', borderRadius: '100px', border: 'none', fontWeight: '800', fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>` }} /> Télécharger Image Mockup
+                                        </button>
                                     </div>
                                 </div>
-                                <div style={{ textAlign: 'center' }}>
-                                    <p style={{ color: '#94A3B8', fontSize: '14px', fontWeight: '600' }}>Note: Pour vos vidéos publicitaires, vous pouvez utiliser un enregistreur d'écran sur cet aperçu 3D premium.</p>
+                                <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                    <p style={{ color: '#1A1265', fontSize: '15px', fontWeight: '800' }}>💡 Astuce Publicitaire</p>
+                                    <p style={{ color: '#64748B', fontSize: '14px', fontWeight: '600', maxWidth: '800px', margin: '0 auto' }}>
+                                        Pour obtenir une <strong>vidéo 3D premium</strong> : utilisez un enregistreur d'écran (Windows + G ou QuickTime) pendant que la carte tourne. 
+                                        C'est la méthode utilisée par les pros pour garder une fluidité parfaite dans les pubs TikTok/Instagram.
+                                    </p>
                                 </div>
                             </div>
                         ) : view === 'logo-studio' ? (
