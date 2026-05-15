@@ -8,6 +8,8 @@ import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import Modal from '../../components/Modal.jsx';
 import { OFFICIAL_CARD_COLORS } from '../../constants/cardColors.js';
+import Card3DVideo from '../../components/Card3DVideo.jsx';
+
 
 
 const getTintedLogo = async (color) => {
@@ -612,82 +614,40 @@ export default function AdminDashboard() {
         setRecordProgress(0);
         
         const canvas = videoCanvasRef.current;
-        const ctx = canvas.getContext('2d', { alpha: false });
+        if (!canvas) {
+            toast("Erreur d'initialisation du moteur 3D", "error");
+            setIsRecording(false);
+            return;
+        }
+
         const stream = canvas.captureStream(60); 
-        
         const recorder = new MediaRecorder(stream, { 
             mimeType: 'video/webm;codecs=vp9',
-            videoBitsPerSecond: 8000000 
+            videoBitsPerSecond: 12000000 // Haute qualité (12Mbps)
         });
         
         const chunks = [];
         recorder.ondataavailable = e => chunks.push(e.data);
         recorder.onstop = () => {
             const blob = new Blob(chunks, { type: 'video/webm' });
-            saveAs(blob, "nfcrafter-card-animation.mp4");
+            saveAs(blob, "nfcrafter-3d-card.mp4");
             setIsRecording(false);
             setRecordProgress(0);
-            toast("Vidéo générée avec succès !", "success");
+            toast("Vidéo ultra-HD générée !", "success");
         };
-
-        const loadImage = (src) => new Promise(res => {
-            const img = new Image();
-            img.onload = () => res(img);
-            img.src = src;
-        });
-
-        const imgFront = await loadImage(frontImage);
-        const imgBack = await loadImage(backImage);
 
         recorder.start();
         
-        let frame = 0;
-        const duration = 4;
-        const totalFrames = duration * 60;
-        
-        const drawFrame = () => {
-            if (frame >= totalFrames) {
+        // Simuler une barre de progression sur 4 secondes
+        let p = 0;
+        const interval = setInterval(() => {
+            p += 1;
+            setRecordProgress(p);
+            if (p >= 100) {
+                clearInterval(interval);
                 recorder.stop();
-                return;
             }
-            ctx.fillStyle = '#0F172A';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            const angle = (frame / totalFrames) * Math.PI * 4;
-            const scaleX = Math.cos(angle);
-            const floatY = Math.sin(frame / 30) * 20;
-            ctx.save();
-            ctx.translate(canvas.width / 2, canvas.height / 2 + floatY);
-            const w = 720;
-            const h = 454;
-            const radius = 40;
-            ctx.scale(scaleX, 1);
-            ctx.shadowColor = "rgba(0,0,0,0.8)";
-            ctx.shadowBlur = 80;
-            ctx.shadowOffsetY = 40;
-            const currentImg = scaleX > 0 ? imgFront : imgBack;
-            ctx.beginPath();
-            const x = -w/2, y = -h/2;
-            ctx.moveTo(x + radius, y);
-            ctx.lineTo(x + w - radius, y);
-            ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
-            ctx.lineTo(x + w, y + h - radius);
-            ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
-            ctx.lineTo(x + radius, y + h);
-            ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
-            ctx.lineTo(x, y + radius);
-            ctx.quadraticCurveTo(x, y, x + radius, y);
-            ctx.closePath();
-            ctx.fillStyle = '#1A1265';
-            ctx.fill();
-            ctx.clip();
-            if (scaleX < 0) ctx.scale(-1, 1);
-            ctx.drawImage(currentImg, -w/2, -h/2, w, h);
-            ctx.restore();
-            frame++;
-            setRecordProgress(Math.round((frame / totalFrames) * 100));
-            requestAnimationFrame(drawFrame);
-        };
-        drawFrame();
+        }, 40); // 40ms * 100 = 4000ms (4s)
     };
 
     const filtered = cards.filter(card => {
@@ -1667,12 +1627,19 @@ export default function AdminDashboard() {
                                             overflow: 'hidden',
                                             boxShadow: '0 20px 50px rgba(0,0,0,0.2)'
                                         }}>
-                                            <canvas 
-                                                ref={videoCanvasRef} 
-                                                width={1000} 
-                                                height={1000} 
-                                                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                                            />
+                                            {frontImage && backImage ? (
+                                                <Card3DVideo 
+                                                    frontImage={frontImage} 
+                                                    backImage={backImage} 
+                                                    onCanvasReady={(el) => videoCanvasRef.current = el} 
+                                                />
+                                            ) : (
+                                                <div style={{ color: '#64748B', textAlign: 'center', padding: '40px' }}>
+                                                    <div style={{ fontSize: '40px', marginBottom: '20px' }}>🎴</div>
+                                                    <p style={{ fontWeight: '700' }}>Uploadez Recto et Verso pour voir l'aperçu 3D</p>
+                                                </div>
+                                            )}
+
                                         </div>
                                         {isRecording && (
                                             <div style={{ position: 'absolute', bottom: '60px', left: '50%', transform: 'translateX(-50%)', background: 'rgba(255,255,255,0.9)', padding: '10px 20px', borderRadius: '100px', fontSize: '13px', fontWeight: '800', color: '#1A1265', border: '1px solid #1A1265', backdropFilter: 'blur(10px)' }}>
