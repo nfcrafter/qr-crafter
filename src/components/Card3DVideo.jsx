@@ -1,7 +1,6 @@
-import React, { useRef, useMemo } from 'react';
-import { Canvas, useFrame, useLoader } from '@react-three/fiber';
+import React, { useRef, useMemo, Suspense } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { 
-  Stage, 
   ContactShadows, 
   Environment, 
   PerspectiveCamera, 
@@ -10,26 +9,19 @@ import {
 } from '@react-three/drei';
 import * as THREE from 'three';
 
-const Card = ({ frontImage, backImage }) => {
-  const meshRef = useRef();
+const CardContent = ({ frontImage, backImage }) => {
+  const groupRef = useRef();
   
   // Textures loading
   const frontTexture = useTexture(frontImage);
   const backTexture = useTexture(backImage);
   
-  // Flip back texture horizontally because it will be mirrored on the back face
-  useMemo(() => {
-    backTexture.repeat.set(-1, 1);
-    backTexture.offset.set(1, 0);
-  }, [backTexture]);
-
   // Dimensions
-  const width = 3.37; // Standard credit card width
-  const height = 2.125; // Standard credit card height
-  const depth = 0.04; // Very thin
-  const radius = 0.15; // Corner radius
+  const width = 3.37;
+  const height = 2.125;
+  const radius = 0.12;
 
-  // Create rounded rectangle shape for extrusion
+  // Create rounded rectangle shape
   const shape = useMemo(() => {
     const s = new THREE.Shape();
     const x = -width / 2;
@@ -46,49 +38,51 @@ const Card = ({ frontImage, backImage }) => {
     return s;
   }, [width, height, radius]);
 
-  const extrudeSettings = {
-    steps: 1,
-    depth: depth,
-    bevelEnabled: true,
-    bevelThickness: 0.01,
-    bevelSize: 0.01,
-    bevelOffset: 0,
-    bevelSegments: 5
-  };
-
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
-    // Smooth 360 degree rotation
-    meshRef.current.rotation.y = t * 1.5;
-    // Slight vertical wobble
-    meshRef.current.position.y = Math.sin(t) * 0.1;
+    groupRef.current.rotation.y = t * 1.5;
+    groupRef.current.position.y = Math.sin(t) * 0.1;
   });
 
   return (
-    <group ref={meshRef}>
-      <mesh>
-        <extrudeGeometry args={[shape, extrudeSettings]} />
-        {/* Multimaterial: Front, Back, Edges */}
+    <group ref={groupRef}>
+      {/* Front Face */}
+      <mesh position={[0, 0, 0.011]}>
+        <shapeGeometry args={[shape]} />
         <meshPhysicalMaterial 
-          attach="material-0" 
-          color="#1A1265" 
-          roughness={0.1} 
-          metalness={0.2} 
-          clearcoat={1}
-        />
-        <meshPhysicalMaterial 
-          attach="material-1" 
           map={frontTexture} 
-          roughness={0.1} 
-          metalness={0.1} 
+          roughness={0.15} 
+          metalness={0.05} 
           clearcoat={1}
+          clearcoatRoughness={0.1}
+          emissive="#ffffff"
+          emissiveIntensity={0.05}
         />
+      </mesh>
+
+      {/* Back Face */}
+      <mesh position={[0, 0, -0.011]} rotation={[0, Math.PI, 0]}>
+        <shapeGeometry args={[shape]} />
         <meshPhysicalMaterial 
-          attach="material-2" 
           map={backTexture} 
-          roughness={0.1} 
-          metalness={0.1} 
+          roughness={0.15} 
+          metalness={0.05} 
           clearcoat={1}
+          clearcoatRoughness={0.1}
+          emissive="#ffffff"
+          emissiveIntensity={0.05}
+        />
+      </mesh>
+
+
+      {/* Middle Edge (Extruded) */}
+      <mesh position={[0, 0, -0.01]}>
+        <extrudeGeometry args={[shape, { depth: 0.02, bevelEnabled: false }]} />
+
+        <meshPhysicalMaterial 
+          color="#111111" 
+          roughness={0.3} 
+          metalness={0.5}
         />
       </mesh>
     </group>
@@ -101,26 +95,27 @@ const Card3DVideo = ({ frontImage, backImage, onCanvasReady }) => {
   return (
     <div style={{ width: '100%', height: '100%', background: '#0F172A' }}>
       <Canvas 
-        gl={{ preserveDrawingBuffer: true, antialias: true }}
+        gl={{ preserveDrawingBuffer: true, antialias: true, alpha: false }}
         onCreated={({ gl }) => onCanvasReady && onCanvasReady(gl.domElement)}
       >
-        <PerspectiveCamera makeDefault position={[0, 0, 6]} fov={40} />
-        <Environment preset="city" />
-        <ambientLight intensity={0.5} />
-        <pointLight position={[10, 10, 10]} intensity={1} />
-        <spotLight position={[-10, 10, 10]} angle={0.15} penumbra={1} intensity={1} castShadow />
-        
-        <Float speed={2} rotationIntensity={0.5} floatIntensity={0.5}>
-          <Card frontImage={frontImage} backImage={backImage} />
-        </Float>
+        <Suspense fallback={null}>
+          <PerspectiveCamera makeDefault position={[0, 0, 6]} fov={35} />
+          <Environment preset="studio" />
+          <ambientLight intensity={0.5} />
+          <pointLight position={[10, 10, 10]} intensity={1} />
+          
+          <Float speed={2} rotationIntensity={0.2} floatIntensity={0.5}>
+            <CardContent frontImage={frontImage} backImage={backImage} />
+          </Float>
 
-        <ContactShadows 
-          position={[0, -2, 0]} 
-          opacity={0.4} 
-          scale={10} 
-          blur={2.5} 
-          far={4} 
-        />
+          <ContactShadows 
+            position={[0, -1.8, 0]} 
+            opacity={0.6} 
+            scale={10} 
+            blur={2} 
+            far={4} 
+          />
+        </Suspense>
       </Canvas>
     </div>
   );

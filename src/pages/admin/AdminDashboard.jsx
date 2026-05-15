@@ -1629,11 +1629,13 @@ export default function AdminDashboard() {
                                         }}>
                                             {frontImage && backImage ? (
                                                 <Card3DVideo 
+                                                    key={`${frontImage?.length || 0}-${backImage?.length || 0}`}
                                                     frontImage={frontImage} 
                                                     backImage={backImage} 
                                                     onCanvasReady={(el) => videoCanvasRef.current = el} 
                                                 />
                                             ) : (
+
                                                 <div style={{ color: '#64748B', textAlign: 'center', padding: '40px' }}>
                                                     <div style={{ fontSize: '40px', marginBottom: '20px' }}>🎴</div>
                                                     <p style={{ fontWeight: '700' }}>Uploadez Recto et Verso pour voir l'aperçu 3D</p>
