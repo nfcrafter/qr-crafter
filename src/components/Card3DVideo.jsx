@@ -19,17 +19,22 @@ const CardContent = ({ frontImage, backImage }) => {
   useMemo(() => {
     [frontTexture, backTexture].forEach(t => {
       t.anisotropy = 16;
+      t.colorSpace = THREE.SRGBColorSpace; // Assure des couleurs fidèles à l'original
       t.minFilter = THREE.LinearMipmapLinearFilter;
       t.magFilter = THREE.LinearFilter;
       t.needsUpdate = true;
     });
+    
+    // Correction de l'orientation pour le verso
+    backTexture.repeat.set(-1, 1);
+    backTexture.offset.set(1, 0);
   }, [frontTexture, backTexture]);
 
   // Dimensions
   const width = 3.37;
   const height = 2.125;
   const radius = 0.12;
-  const thickness = 0.08; // Augmenté pour un aspect plus solide
+  const thickness = 0.08;
 
   // Create rounded rectangle shape
   const shape = useMemo(() => {
@@ -61,12 +66,11 @@ const CardContent = ({ frontImage, backImage }) => {
         <shapeGeometry args={[shape]} />
         <meshPhysicalMaterial 
           map={frontTexture} 
-          roughness={0.1} 
-          metalness={0.05} 
-          clearcoat={1}
-          clearcoatRoughness={0.05}
-          emissive="#ffffff"
-          emissiveIntensity={0.02}
+          roughness={0.2} 
+          metalness={0} 
+          clearcoat={0.8}
+          clearcoatRoughness={0.1}
+          color="#ffffff"
         />
       </mesh>
 
@@ -75,12 +79,11 @@ const CardContent = ({ frontImage, backImage }) => {
         <shapeGeometry args={[shape]} />
         <meshPhysicalMaterial 
           map={backTexture} 
-          roughness={0.1} 
-          metalness={0.05} 
-          clearcoat={1}
-          clearcoatRoughness={0.05}
-          emissive="#ffffff"
-          emissiveIntensity={0.02}
+          roughness={0.2} 
+          metalness={0} 
+          clearcoat={0.8}
+          clearcoatRoughness={0.1}
+          color="#ffffff"
         />
       </mesh>
 
@@ -89,13 +92,14 @@ const CardContent = ({ frontImage, backImage }) => {
         <extrudeGeometry args={[shape, { depth: thickness, bevelEnabled: false }]} />
         <meshPhysicalMaterial 
           color="#111111" 
-          roughness={0.2} 
-          metalness={0.8}
+          roughness={0.5} 
+          metalness={0.5}
         />
       </mesh>
     </group>
   );
 };
+
 
 const Card3DVideo = ({ frontImage, backImage, onCanvasReady }) => {
   if (!frontImage || !backImage) return null;
