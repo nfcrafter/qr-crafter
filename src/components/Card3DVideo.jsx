@@ -65,9 +65,9 @@ const CardContent = ({ frontImage, backImage }) => {
 
   return (
     <group ref={groupRef}>
-      {/* Front Face - Utilisation de PlaneGeometry pour un mapping parfait */}
+      {/* Front Face - Retour à ShapeGeometry pour les bords arrondis */}
       <mesh position={[0, 0, thickness / 2 + 0.002]}>
-        <planeGeometry args={[width, height]} />
+        <shapeGeometry args={[shape]} />
         <meshPhysicalMaterial 
           map={frontTexture} 
           roughness={0.2} 
@@ -80,7 +80,7 @@ const CardContent = ({ frontImage, backImage }) => {
 
       {/* Back Face */}
       <mesh position={[0, 0, -(thickness / 2 + 0.002)]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[width, height]} />
+        <shapeGeometry args={[shape]} />
         <meshPhysicalMaterial 
           map={backTexture} 
           roughness={0.2} 
@@ -90,6 +90,7 @@ const CardContent = ({ frontImage, backImage }) => {
           transparent={true}
         />
       </mesh>
+
 
       {/* Solid Body with Rounded Corners */}
       <mesh position={[0, 0, -thickness / 2]}>
