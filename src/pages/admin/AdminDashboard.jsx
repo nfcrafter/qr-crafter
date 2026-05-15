@@ -65,6 +65,7 @@ export default function AdminDashboard() {
     const [socialQRPreview, setSocialQRPreview] = useState(null);
     const [frontImage, setFrontImage] = useState(null);
     const [backImage, setBackImage] = useState(null);
+    const [mockupBgColor, setMockupBgColor] = useState('#111827');
 
     const [financeTransactions, setFinanceTransactions] = useState([]);
 
@@ -506,9 +507,10 @@ export default function AdminDashboard() {
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
         canvas.width = 1600;
-        canvas.height = 900;
+        canvas.height = 1200;
         
-        ctx.fillStyle = "#F8FAFC";
+        // Background Personnalisé
+        ctx.fillStyle = mockupBgColor;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
         const loadImage = (src) => new Promise(res => {
@@ -517,49 +519,51 @@ export default function AdminDashboard() {
             img.src = src;
         });
 
-        const drawRoundedCard = (img, x, y, w, h, radius) => {
+        const drawPremiumCard = (img, x, y, w, h, radius, rotation) => {
             ctx.save();
-            ctx.beginPath();
-            ctx.moveTo(x + radius, y);
-            ctx.lineTo(x + w - radius, y);
-            ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
-            ctx.lineTo(x + w, y + h - radius);
-            ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
-            ctx.lineTo(x + x + radius, y + h); // Fixed typo here
-            ctx.lineTo(x + radius, y + h);
-            ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
-            ctx.lineTo(x, y + radius);
-            ctx.quadraticCurveTo(x, y, x + radius, y);
-            ctx.closePath();
+            ctx.translate(x + w/2, y + h/2);
+            ctx.rotate(rotation);
             
+            // Round rect path
+            ctx.beginPath();
+            ctx.moveTo(-w/2 + radius, -h/2);
+            ctx.lineTo(w/2 - radius, -h/2);
+            ctx.quadraticCurveTo(w/2, -h/2, w/2, -h/2 + radius);
+            ctx.lineTo(w/2, h/2 - radius);
+            ctx.quadraticCurveTo(w/2, h/2, w/2 - radius, h/2);
+            ctx.lineTo(-w/2 + radius, h/2);
+            ctx.quadraticCurveTo(-w/2, h/2, -w/2, h/2 - radius);
+            ctx.lineTo(-w/2, -h/2 + radius);
+            ctx.quadraticCurveTo(-w/2, -h/2, -w/2 + radius, -h/2);
+            ctx.closePath();
+
             // Shadow
-            ctx.shadowColor = "rgba(0,0,0,0.15)";
-            ctx.shadowBlur = 60;
-            ctx.shadowOffsetY = 20;
+            ctx.shadowColor = "rgba(0,0,0,0.5)";
+            ctx.shadowBlur = 100;
+            ctx.shadowOffsetY = 40;
+            
+            ctx.fill(); // Fill dummy for shadow
             
             ctx.clip();
-            ctx.drawImage(img, x, y, w, h);
+            ctx.drawImage(img, -w/2, -h/2, w, h);
             ctx.restore();
-            
-            // Subtle Border
-            ctx.strokeStyle = "rgba(255,255,255,0.2)";
-            ctx.lineWidth = 2;
-            ctx.stroke();
         };
 
         try {
-            if (frontImage) {
-                const img = await loadImage(frontImage);
-                drawRoundedCard(img, 150, 260, 600, 380, 35);
-            }
+            // Dessiner la carte arrière (Verso)
             if (backImage) {
                 const img = await loadImage(backImage);
-                drawRoundedCard(img, 850, 260, 600, 380, 35);
+                drawPremiumCard(img, 450, 450, 800, 500, 50, 0.08);
+            }
+            // Dessiner la carte avant (Recto)
+            if (frontImage) {
+                const img = await loadImage(frontImage);
+                drawPremiumCard(img, 350, 250, 800, 500, 50, -0.05);
             }
             
             const finalImage = canvas.toDataURL("image/png");
-            saveAs(finalImage, "nfcrafter-mockup-horizontal.png");
-            toast("Mockup Portrait téléchargé !", "success");
+            saveAs(finalImage, "nfcrafter-mockup-showcase.png");
+            toast("Mockup Showcase téléchargé !", "success");
         } catch (e) {
             toast("Erreur lors de la génération", "error");
         }
@@ -1182,7 +1186,7 @@ export default function AdminDashboard() {
                             </div>
                         ) : view === 'mockup-3d' ? (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', animation: 'fadeIn 0.4s ease' }}>
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px' }}>
                                     <div style={{ background: 'white', borderRadius: '24px', padding: '32px', border: '1px solid #E2E8F0' }}>
                                         <h4 style={{ fontSize: '16px', fontWeight: '900', color: '#1A1265', marginBottom: '16px' }}>Image Recto</h4>
                                         <input type="file" accept="image/*" onChange={e => handleImageUpload(e, 'front')} style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px dashed #CBD5E1', cursor: 'pointer' }} />
@@ -1191,55 +1195,63 @@ export default function AdminDashboard() {
                                         <h4 style={{ fontSize: '16px', fontWeight: '900', color: '#1A1265', marginBottom: '16px' }}>Image Verso</h4>
                                         <input type="file" accept="image/*" onChange={e => handleImageUpload(e, 'back')} style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px dashed #CBD5E1', cursor: 'pointer' }} />
                                     </div>
+                                    <div style={{ background: 'white', borderRadius: '24px', padding: '32px', border: '1px solid #E2E8F0' }}>
+                                        <h4 style={{ fontSize: '16px', fontWeight: '900', color: '#1A1265', marginBottom: '16px' }}>Fond Mockup</h4>
+                                        <div style={{ display: 'flex', gap: '8px' }}>
+                                            <input type="color" value={mockupBgColor} onChange={e => setMockupBgColor(e.target.value)} style={{ width: '40px', height: '50px', borderRadius: '12px', border: 'none', cursor: 'pointer', flexShrink: 0 }} />
+                                            <input type="text" value={mockupBgColor} onChange={e => setMockupBgColor(e.target.value)} placeholder="#111827" style={{ flex: 1, padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: '#F8FAFC', fontSize: '13px', fontWeight: '700' }} />
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <div style={{ height: '500px', background: '#F8FAFC', borderRadius: '30px', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', perspective: '1500px', overflow: 'hidden', position: 'relative' }}>
+                                <div style={{ height: '600px', background: mockupBgColor, borderRadius: '30px', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', perspective: '1500px', overflow: 'hidden', position: 'relative', transition: 'background 0.3s' }}>
                                     <style dangerouslySetInnerHTML={{ __html: `
-                                        @keyframes floatHorizontal {
+                                        @keyframes floatingShowcase {
                                             0% { transform: translateY(0px) rotateX(10deg); }
-                                            50% { transform: translateY(-15px) rotateX(5deg); }
+                                            50% { transform: translateY(-20px) rotateX(5deg); }
                                             100% { transform: translateY(0px) rotateX(10deg); }
                                         }
-                                        .card-horizontal-container {
-                                            display: flex;
-                                            gap: 40px;
-                                            transform-style: preserve-3d;
-                                            animation: floatHorizontal 5s infinite ease-in-out;
-                                        }
-                                        .card-mockup-horizontal {
-                                            width: 440px;
-                                            height: 275px;
-                                            border-radius: 24px;
-                                            box-shadow: 0 30px 70px rgba(0,0,0,0.15);
-                                            background: #1A1265;
-                                            overflow: hidden;
-                                            border: 1px solid rgba(255,255,255,0.1);
+                                        .showcase-stack {
                                             position: relative;
+                                            width: 500px;
+                                            height: 320px;
+                                            transform-style: preserve-3d;
+                                            animation: floatingShowcase 6s infinite ease-in-out;
                                         }
-                                        .card-mockup-horizontal::after {
-                                            content: '';
+                                        .showcase-card {
                                             position: absolute;
-                                            inset: 0;
-                                            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%, rgba(0,0,0,0.1) 100%);
-                                            pointer-events: none;
+                                            width: 100%;
+                                            height: 100%;
+                                            border-radius: 28px;
+                                            box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+                                            overflow: hidden;
+                                            background: #1A1265;
+                                            border: 1px solid rgba(255,255,255,0.1);
+                                        }
+                                        .showcase-back {
+                                            transform: translateZ(-60px) translateX(60px) translateY(60px) rotate(8deg);
+                                            opacity: 0.8;
+                                        }
+                                        .showcase-front {
+                                            transform: translateZ(60px) translateX(-40px) translateY(-40px) rotate(-5deg);
                                         }
                                     ` }} />
                                     
-                                    <div className="card-horizontal-container">
-                                        <div className="card-mockup-horizontal">
-                                            {frontImage ? <img src={frontImage} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: '900' }}>RECTO</div>}
-                                        </div>
-                                        <div className="card-mockup-horizontal">
+                                    <div className="showcase-stack">
+                                        <div className="showcase-card showcase-back">
                                             {backImage ? <img src={backImage} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: '900' }}>VERSO</div>}
+                                        </div>
+                                        <div className="showcase-card showcase-front">
+                                            {frontImage ? <img src={frontImage} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: '900' }}>RECTO</div>}
                                         </div>
                                     </div>
                                     
                                     <div style={{ position: 'absolute', bottom: '24px', display: 'flex', gap: '12px' }}>
-                                        <div style={{ background: 'rgba(255,255,255,0.8)', padding: '10px 20px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', color: '#1A1265', backdropFilter: 'blur(5px)' }}>
-                                            Aperçu Horizontal
+                                        <div style={{ background: 'rgba(255,255,255,0.1)', padding: '10px 20px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', color: 'white', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.2)' }}>
+                                            Style Showcase Premium
                                         </div>
-                                        <button onClick={handleDownloadMockup} style={{ background: '#1A1265', color: 'white', padding: '10px 20px', borderRadius: '100px', border: 'none', fontWeight: '800', fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                            <div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>` }} /> Télécharger Mockup
+                                        <button onClick={handleDownloadMockup} style={{ background: 'white', color: '#111827', padding: '10px 24px', borderRadius: '100px', border: 'none', fontWeight: '900', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 10px 30px rgba(0,0,0,0.3)' }}>
+                                            <div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>` }} /> Télécharger Showcase
                                         </button>
                                     </div>
                                 </div>
