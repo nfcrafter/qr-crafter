@@ -19,24 +19,28 @@ const CardContent = ({ frontImage, backImage }) => {
   useMemo(() => {
     [frontTexture, backTexture].forEach(t => {
       t.anisotropy = 16;
-      t.colorSpace = THREE.SRGBColorSpace; // Assure des couleurs fidèles à l'original
+      t.colorSpace = THREE.SRGBColorSpace;
       t.minFilter = THREE.LinearMipmapLinearFilter;
       t.magFilter = THREE.LinearFilter;
+      t.wrapS = THREE.ClampToEdgeWrapping;
+      t.wrapT = THREE.ClampToEdgeWrapping;
+      t.repeat.set(1, 1); // Assure qu'il n'y a pas de répétition ou de mise à l'échelle
+      t.offset.set(0, 0);
       t.needsUpdate = true;
     });
     
-    // Correction de l'orientation pour le verso
+    // Correction de l'orientation pour le verso (flip horizontal sur place)
+    backTexture.center.set(0.5, 0.5);
     backTexture.repeat.set(-1, 1);
-    backTexture.offset.set(1, 0);
   }, [frontTexture, backTexture]);
 
-  // Dimensions
+  // Dimensions standard (ratio 1.585)
   const width = 3.37;
   const height = 2.125;
   const radius = 0.12;
   const thickness = 0.08;
 
-  // Create rounded rectangle shape
+  // Forme pour la tranche uniquement
   const shape = useMemo(() => {
     const s = new THREE.Shape();
     const x = -width / 2;
@@ -61,44 +65,45 @@ const CardContent = ({ frontImage, backImage }) => {
 
   return (
     <group ref={groupRef}>
-      {/* Front Face */}
-      <mesh position={[0, 0, thickness / 2 + 0.001]}>
-        <shapeGeometry args={[shape]} />
+      {/* Front Face - Utilisation de PlaneGeometry pour un mapping parfait */}
+      <mesh position={[0, 0, thickness / 2 + 0.002]}>
+        <planeGeometry args={[width, height]} />
         <meshPhysicalMaterial 
           map={frontTexture} 
           roughness={0.2} 
           metalness={0} 
           clearcoat={0.8}
-          clearcoatRoughness={0.1}
           color="#ffffff"
+          transparent={true}
         />
       </mesh>
 
       {/* Back Face */}
-      <mesh position={[0, 0, -(thickness / 2 + 0.001)]} rotation={[0, Math.PI, 0]}>
-        <shapeGeometry args={[shape]} />
+      <mesh position={[0, 0, -(thickness / 2 + 0.002)]} rotation={[0, Math.PI, 0]}>
+        <planeGeometry args={[width, height]} />
         <meshPhysicalMaterial 
           map={backTexture} 
           roughness={0.2} 
           metalness={0} 
           clearcoat={0.8}
-          clearcoatRoughness={0.1}
           color="#ffffff"
+          transparent={true}
         />
       </mesh>
 
-      {/* Middle Edge (Extruded) */}
+      {/* Solid Body with Rounded Corners */}
       <mesh position={[0, 0, -thickness / 2]}>
         <extrudeGeometry args={[shape, { depth: thickness, bevelEnabled: false }]} />
         <meshPhysicalMaterial 
           color="#111111" 
-          roughness={0.5} 
+          roughness={0.4} 
           metalness={0.5}
         />
       </mesh>
     </group>
   );
 };
+
 
 
 const Card3DVideo = ({ frontImage, backImage, onCanvasReady }) => {
