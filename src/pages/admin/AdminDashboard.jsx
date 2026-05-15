@@ -7,6 +7,8 @@ import QRCodeStyling from 'qr-code-styling';
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import Modal from '../../components/Modal.jsx';
+import { OFFICIAL_CARD_COLORS } from '../../constants/cardColors.js';
+
 
 const getTintedLogo = async (color) => {
     return new Promise((resolve) => {
@@ -68,6 +70,13 @@ export default function AdminDashboard() {
     const [mockupBgColor, setMockupBgColor] = useState('#111827');
     const [socialQRHistory, setSocialQRHistory] = useState(() => JSON.parse(localStorage.getItem('socialQRHistory') || '[]'));
     const [mockupHistory, setMockupHistory] = useState(() => JSON.parse(localStorage.getItem('mockupHistory') || '[]'));
+    
+    // Marketing Studio States
+    const [marketingPalette, setMarketingPalette] = useState('noir');
+    const [marketingTemplate, setMarketingTemplate] = useState('showcase');
+    const [marketingText, setMarketingText] = useState('Votre Identité Numérique Premium');
+    const [marketingPreview, setMarketingPreview] = useState(null);
+
 
     const [financeTransactions, setFinanceTransactions] = useState([]);
 
@@ -647,9 +656,13 @@ export default function AdminDashboard() {
                     <button onClick={() => { setView('social-qr'); setIsSidebarOpen(false); }} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'social-qr' ? '#1A1265' : 'transparent', color: view === 'social-qr' ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
                         <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2" ry="2"></rect><path d="M7 7h1"></path><path d="M7 11h1"></path><path d="M7 15h1"></path><path d="M11 7h1"></path><path d="M11 11h1"></path><path d="M11 15h1"></path><path d="M15 7h1"></path><path d="M15 11h1"></path><path d="M15 15h1"></path></svg>` }} /> Social QR
                     </button>
-                    <button onClick={() => { setView('mockup-3d'); setIsSidebarOpen(false); }} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'mockup-3d' ? '#1A1265' : 'transparent', color: view === 'mockup-3d' ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+                    <button onClick={() => { setView('mockup-3d'); setIsSidebarOpen(false); }} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'mockup-3d' ? '#1A1265' : 'transparent', color: view === 'mockup-3d' ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
                         <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>` }} /> Mockup 3D
                     </button>
+                    <button onClick={() => { setView('marketing-studio'); setIsSidebarOpen(false); }} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'marketing-studio' ? '#1A1265' : 'transparent', color: view === 'marketing-studio' ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+                        <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.5 1.5"></path><path d="M7.67 7.67L2 2"></path><path d="M2 2l1.5 7.5"></path></svg>` }} /> Marketing Studio
+                    </button>
+
 
                     <div style={{ margin: '12px 16px', fontSize: '11px', fontWeight: '800', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '1px' }}>Dossiers</div>
 
@@ -697,10 +710,11 @@ export default function AdminDashboard() {
                             </button>
                             <div>
                                 <h1 style={{ fontSize: '26px', fontWeight: '900', color: '#1A1265' }}>
-                                    {view === 'users' ? 'Gestion des Utilisateurs' : (view === 'requests' ? 'Demandes de Design' : (view === 'finance' ? 'Finance & CA' : (view === 'production' ? 'Atelier Production' : (view === 'logo-studio' ? 'Logo Studio' : (view === 'social-qr' ? 'Générateur QR Social' : (view === 'mockup-3d' ? 'Studio Mockup 3D' : (filterFolder ? currentFolder?.name : 'Tableau de bord')))))))}
+                                    {view === 'users' ? 'Gestion des Utilisateurs' : (view === 'requests' ? 'Demandes de Design' : (view === 'finance' ? 'Finance & CA' : (view === 'production' ? 'Atelier Production' : (view === 'logo-studio' ? 'Logo Studio' : (view === 'social-qr' ? 'Générateur QR Social' : (view === 'mockup-3d' ? 'Studio Mockup 3D' : (view === 'marketing-studio' ? 'Marketing Studio' : (filterFolder ? currentFolder?.name : 'Tableau de bord'))))))))}
                                 </h1>
                                 <p style={{ color: '#64748B' }} className="desktop-only">
-                                    {view === 'users' ? 'Gérez les comptes et les profils de vos clients.' : (view === 'requests' ? 'Clients souhaitant modifier le design de leur QR.' : (view === 'finance' ? 'Suivez votre chiffre d\'affaires et vos bénéfices.' : (view === 'production' ? 'Générez des cartes en masse et préparez les supports physiques.' : (view === 'logo-studio' ? 'Personnalisez et téléchargez votre logo en haute qualité.' : (view === 'social-qr' ? 'Créez des codes QR décoratifs pour vos réseaux sociaux.' : (view === 'mockup-3d' ? 'Générez des visuels 3D premium pour vos publicités.' : (filterFolder ? (isSubFolder ? 'Contenu de ce sous-dossier' : 'Contenu de ce dossier') : 'Gérez l\'ensemble de vos projets QR.')))))))}
+                                    {view === 'users' ? 'Gérez les comptes et les profils de vos clients.' : (view === 'requests' ? 'Clients souhaitant modifier le design de leur QR.' : (view === 'finance' ? 'Suivez votre chiffre d\'affaires et vos bénéfices.' : (view === 'production' ? 'Générez des cartes en masse et préparez les supports physiques.' : (view === 'logo-studio' ? 'Personnalisez et téléchargez votre logo en haute qualité.' : (view === 'social-qr' ? 'Créez des codes QR décoratifs pour vos réseaux sociaux.' : (view === 'mockup-3d' ? 'Générez des visuels 3D premium pour vos publicités.' : (view === 'marketing-studio' ? 'Créez des affiches publicitaires automatiques pour vos cartes.' : (filterFolder ? (isSubFolder ? 'Contenu de ce sous-dossier' : 'Contenu de ce dossier') : 'Gérez l\'ensemble de vos projets QR.'))))))))}
+
                                 </p>
                             </div>
                         </div>
@@ -1315,7 +1329,179 @@ export default function AdminDashboard() {
                                     </div>
                                 )}
                             </div>
+                        ) : view === 'marketing-studio' ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', animation: 'fadeIn 0.4s ease' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+                                    {/* Palette Selection */}
+                                    <div style={{ background: 'white', borderRadius: '30px', padding: '32px', border: '1px solid #E2E8F0', boxShadow: '0 10px 40px rgba(0,0,0,0.02)' }}>
+                                        <h3 style={{ fontSize: '18px', fontWeight: '900', color: '#1A1265', marginBottom: '20px' }}>1. Choisir un coloris</h3>
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
+                                            {Object.entries(OFFICIAL_CARD_COLORS).map(([key, palette]) => (
+                                                <button
+                                                    key={key}
+                                                    onClick={() => setMarketingPalette(key)}
+                                                    style={{ 
+                                                        width: '100%', 
+                                                        aspectRatio: '1', 
+                                                        borderRadius: '14px', 
+                                                        background: palette.card, 
+                                                        border: marketingPalette === key ? '3px solid #6366F1' : '2px solid transparent',
+                                                        cursor: 'pointer',
+                                                        transition: 'all 0.2s',
+                                                        position: 'relative'
+                                                    }}
+                                                    title={palette.name}
+                                                >
+                                                    {marketingPalette === key && (
+                                                        <div style={{ position: 'absolute', top: '-5px', right: '-5px', background: '#6366F1', borderRadius: '50%', padding: '4px', color: 'white' }}>
+                                                            <div style={{ width: 10, height: 10 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><polyline points="20 6 9 17 4 12"></polyline></svg>` }} />
+                                                        </div>
+                                                    )}
+                                                </button>
+                                            ))}
+                                        </div>
+                                        <div style={{ marginTop: '16px', padding: '12px', borderRadius: '12px', background: '#F8FAFC', border: '1px solid #E2E8F0' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                <div style={{ fontSize: '14px', fontWeight: '800', color: '#1A1265' }}>{OFFICIAL_CARD_COLORS[marketingPalette].name}</div>
+                                                <span style={{ fontSize: '10px', fontWeight: '900', color: '#6366F1', background: '#EEF2FF', padding: '2px 8px', borderRadius: '6px' }}>{OFFICIAL_CARD_COLORS[marketingPalette].rating}</span>
+                                            </div>
+                                            <div style={{ fontSize: '12px', color: '#64748B', marginTop: '4px' }}>{OFFICIAL_CARD_COLORS[marketingPalette].note}</div>
+                                        </div>
+                                    </div>
+
+                                    {/* Template Selection */}
+                                    <div style={{ background: 'white', borderRadius: '30px', padding: '32px', border: '1px solid #E2E8F0', boxShadow: '0 10px 40px rgba(0,0,0,0.02)' }}>
+                                        <h3 style={{ fontSize: '18px', fontWeight: '900', color: '#1A1265', marginBottom: '20px' }}>2. Format d'affiche</h3>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                            {[
+                                                { id: 'showcase', name: 'Showcase Premium (4:3)', icon: '🖼️' },
+                                                { id: 'instagram', name: 'Post Instagram (1:1)', icon: '📱' },
+                                                { id: 'story', name: 'Story / TikTok (9:16)', icon: '🎞️' }
+                                            ].map(t => (
+                                                <button
+                                                    key={t.id}
+                                                    onClick={() => setMarketingTemplate(t.id)}
+                                                    style={{ 
+                                                        width: '100%', 
+                                                        padding: '14px', 
+                                                        borderRadius: '16px', 
+                                                        border: marketingTemplate === t.id ? '2px solid #1A1265' : '1px solid #E2E8F0',
+                                                        background: marketingTemplate === t.id ? '#F1F5F9' : 'white',
+                                                        color: '#1A1265',
+                                                        fontWeight: '700',
+                                                        textAlign: 'left',
+                                                        cursor: 'pointer',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '12px'
+                                                    }}
+                                                >
+                                                    <span style={{ fontSize: '20px' }}>{t.icon}</span> {t.name}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Text Customization */}
+                                    <div style={{ background: 'white', borderRadius: '30px', padding: '32px', border: '1px solid #E2E8F0', boxShadow: '0 10px 40px rgba(0,0,0,0.02)' }}>
+                                        <h3 style={{ fontSize: '18px', fontWeight: '900', color: '#1A1265', marginBottom: '20px' }}>3. Texte de l'affiche</h3>
+                                        <textarea 
+                                            value={marketingText} 
+                                            onChange={e => setMarketingText(e.target.value)}
+                                            style={{ width: '100%', height: '100px', padding: '16px', borderRadius: '16px', border: '1px solid #E2E8F0', background: '#F8FAFC', fontSize: '15px', fontWeight: '600', outline: 'none', resize: 'none' }}
+                                            placeholder="Saisissez votre slogan..."
+                                        />
+                                        <button 
+                                            onClick={() => toast('Fonctionnalité de téléchargement HD en cours de finalisation', 'info')}
+                                            style={{ width: '100%', marginTop: '20px', background: '#1A1265', color: 'white', padding: '16px', borderRadius: '16px', border: 'none', fontWeight: '900', fontSize: '15px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+                                        >
+                                            <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>` }} /> Télécharger HD
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Main Preview Area */}
+                                <div style={{ 
+                                    background: OFFICIAL_CARD_COLORS[marketingPalette].card, 
+                                    minHeight: marketingTemplate === 'story' ? '800px' : '600px', 
+                                    borderRadius: '40px', 
+                                    display: 'flex', 
+                                    flexDirection: 'column',
+                                    alignItems: 'center', 
+                                    justifyContent: 'center', 
+                                    padding: '60px', 
+                                    position: 'relative', 
+                                    overflow: 'hidden',
+                                    transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+                                    boxShadow: '0 30px 60px rgba(0,0,0,0.2)'
+                                }}>
+                                    {/* Abstract background elements */}
+                                    <div style={{ position: 'absolute', width: '600px', height: '600px', borderRadius: '50%', background: 'white', opacity: 0.03, top: '-200px', right: '-100px' }}></div>
+                                    <div style={{ position: 'absolute', width: '400px', height: '400px', borderRadius: '50%', background: 'white', opacity: 0.02, bottom: '-100px', left: '-50px' }}></div>
+
+                                    {/* Content Wrapper */}
+                                    <div style={{ width: '100%', maxWidth: '800px', display: 'flex', flexDirection: marketingTemplate === 'story' ? 'column' : 'row', alignItems: 'center', gap: '60px', zIndex: 10 }}>
+                                        
+                                        {/* Card Showcase */}
+                                        <div style={{ flex: 1, perspective: '1000px' }}>
+                                            <div style={{ 
+                                                width: '100%', 
+                                                aspectRatio: '1.58', 
+                                                background: OFFICIAL_CARD_COLORS[marketingPalette].card, 
+                                                borderRadius: '24px', 
+                                                boxShadow: '0 40px 80px rgba(0,0,0,0.5)', 
+                                                display: 'flex', 
+                                                alignItems: 'center', 
+                                                justifyContent: 'center',
+                                                transform: 'rotateX(15deg) rotateY(-15deg)',
+                                                border: '1px solid rgba(255,255,255,0.1)',
+                                                position: 'relative',
+                                                overflow: 'hidden'
+                                            }}>
+                                                {/* Card Logo Simulation */}
+                                                <div style={{ 
+                                                    width: '40%', 
+                                                    height: '60px', 
+                                                    background: OFFICIAL_CARD_COLORS[marketingPalette].logo,
+                                                    opacity: 0.8,
+                                                    maskImage: 'url(/logo.png)',
+                                                    maskRepeat: 'no-repeat',
+                                                    maskPosition: 'center',
+                                                    maskSize: 'contain',
+                                                    WebkitMaskImage: 'url(/logo.png)',
+                                                    WebkitMaskRepeat: 'no-repeat',
+                                                    WebkitMaskPosition: 'center',
+                                                    WebkitMaskSize: 'contain'
+                                                }}></div>
+                                                
+                                                {/* QR Symbol */}
+                                                <div style={{ position: 'absolute', bottom: '20px', right: '20px', width: '50px', height: '50px', background: OFFICIAL_CARD_COLORS[marketingPalette].qrBg, borderRadius: '8px', padding: '6px' }}>
+                                                    <div style={{ width: '100%', height: '100%', background: OFFICIAL_CARD_COLORS[marketingPalette].qrPoints, borderRadius: '2px' }}></div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Text Section */}
+                                        <div style={{ flex: 1, textAlign: marketingTemplate === 'story' ? 'center' : 'left' }}>
+                                            <h2 style={{ fontSize: marketingTemplate === 'story' ? '36px' : '48px', fontWeight: '900', color: 'white', lineHeight: '1.2', margin: 0, textShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+                                                {marketingText}
+                                            </h2>
+                                            <div style={{ marginTop: '30px', display: 'flex', gap: '12px', justifyContent: marketingTemplate === 'story' ? 'center' : 'flex-start' }}>
+                                                <div style={{ padding: '10px 24px', borderRadius: '100px', background: 'white', color: OFFICIAL_CARD_COLORS[marketingPalette].card, fontWeight: '900', fontSize: '14px' }}>
+                                                    NFCrafter Premium
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Footer */}
+                                    <div style={{ position: 'absolute', bottom: '40px', left: '0', width: '100%', textAlign: 'center', color: 'rgba(255,255,255,0.4)', fontSize: '12px', fontWeight: '700', letterSpacing: '2px', textTransform: 'uppercase' }}>
+                                        www.nfcrafter.com
+                                    </div>
+                                </div>
+                            </div>
                         ) : view === 'logo-studio' ? (
+
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '32px', animation: 'fadeIn 0.4s ease' }}>
                                 {/* Controls */}
                                 <div style={{ background: 'white', borderRadius: '30px', padding: '40px', border: '1px solid #E2E8F0', boxShadow: '0 10px 40px rgba(0,0,0,0.03)' }}>
