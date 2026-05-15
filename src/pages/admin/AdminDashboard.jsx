@@ -54,12 +54,12 @@ export default function AdminDashboard() {
     const [includeLogo, setIncludeLogo] = useState(true);
     const [generatingBulk, setGeneratingBulk] = useState(false);
     const [hideIdsInPrint, setHideIdsInPrint] = useState(false);
-    const [selectedCards, setSelectedCards] = useState([]);
-    const [expandedBatch, setExpandedBatch] = useState(null);
     const [isProductionFormOpen, setIsProductionFormOpen] = useState(true);
-    
+    const [studioColor, setStudioColor] = useState('#1A1265');
+    const [studioLogo, setStudioLogo] = useState(null);
+
     const [financeTransactions, setFinanceTransactions] = useState([]);
-    
+
     // Form states
     const [transactionType, setTransactionType] = useState('income');
     const [incomeCategory, setIncomeCategory] = useState('digital');
@@ -82,19 +82,21 @@ export default function AdminDashboard() {
             loadUsers();
         } else if (view === 'requests') {
             loadRequests();
+        } else if (view === 'logo-studio') {
+            generateStudioLogo();
         }
         updateRequestsCount();
-        
+
         // Load finance data from local storage
         const savedTrans = localStorage.getItem('nfcrafter_transactions');
         if (savedTrans) {
-            try { setFinanceTransactions(JSON.parse(savedTrans)); } catch (e) {}
+            try { setFinanceTransactions(JSON.parse(savedTrans)); } catch (e) { }
         }
     }, [filterFolder, view]);
 
     const handleAddTransaction = () => {
         let newTx = { id: Date.now(), date: new Date().toISOString() };
-        
+
         if (transactionType === 'income') {
             if (incomeCategory === 'digital') {
                 newTx = { ...newTx, type: 'income', category: 'Vente Carte', amount: incomeQty * 10000, desc: `${incomeQty}x Carte Signature` };
@@ -148,7 +150,7 @@ export default function AdminDashboard() {
                     if (c.admin_profile?.creation_type === 'personalized') type = 'digital';
                     else if (c.admin_profile?.creation_type === 'signature') type = 'physical';
                     else if (c.card_name && !c.card_name.startsWith('Signature_') && c.status === 'active') type = 'digital';
-                    
+
                     return { ...c, _type: type };
                 }),
                 ...(qrsData || []).map(q => ({ ...q, _type: 'digital', card_id: q.id, card_name: q.name }))
@@ -277,12 +279,12 @@ export default function AdminDashboard() {
 
     const handleDownloadAll = async (targetIds = null) => {
         const unactivated = cards.filter(c => !c.owner_id);
-        const toDownload = targetIds 
+        const toDownload = targetIds
             ? unactivated.filter(c => targetIds.includes(c.card_id))
             : unactivated;
 
         if (toDownload.length === 0) return toast("Aucune carte à télécharger", "info");
-        
+
         toast(`Génération du ZIP pour ${toDownload.length} cartes...`, 'info');
         const zip = new JSZip();
         const folder = zip.folder(batchName);
@@ -290,7 +292,7 @@ export default function AdminDashboard() {
         for (const card of toDownload) {
             const activationUrl = `${window.location.origin}/activate?card=${card.card_id}&token=${card.activation_token}`;
             const qrColor = card.admin_profile?.primaryColor || "#1A1265";
-            
+
             const tintedLogo = includeLogo ? await getTintedLogo(qrColor) : null;
 
             const qrCode = new QRCodeStyling({
@@ -308,11 +310,11 @@ export default function AdminDashboard() {
                     hideBackgroundDots: true
                 }
             });
-            
+
             const blob = await qrCode.getRawData("png");
             folder.file(`QR-${card.card_id}.png`, blob);
         }
-        
+
         const content = await zip.generateAsync({ type: "blob" });
         saveAs(content, `${batchName.replace(/\s+/g, '_')}.zip`);
         toast("Téléchargement du ZIP lancé !", "success");
@@ -321,7 +323,7 @@ export default function AdminDashboard() {
 
     const handleBulkDelete = async () => {
         if (selectedCards.length === 0) return;
-        
+
         setModalConfig({
             isOpen: true,
             title: 'Action irréversible',
@@ -437,6 +439,23 @@ export default function AdminDashboard() {
     const currentFolder = folders.find(f => f.id === filterFolder);
     const isSubFolder = currentFolder?.parent_id != null;
 
+    const generateStudioLogo = async () => {
+        const tinted = await getTintedLogo(studioColor);
+        setStudioLogo(tinted);
+    };
+
+    useEffect(() => {
+        if (view === 'logo-studio') {
+            generateStudioLogo();
+        }
+    }, [studioColor, view]);
+
+    const handleDownloadStudioLogo = () => {
+        if (!studioLogo) return;
+        saveAs(studioLogo, `logo-nfcrafter-${studioColor.replace('#', '')}.png`);
+        toast('Logo téléchargé !', 'success');
+    };
+
     const filtered = cards.filter(card => {
         const matchesSearch = (card.card_id?.toLowerCase().includes(search.toLowerCase())) || (card.card_name?.toLowerCase().includes(search.toLowerCase()));
         const matchesStatus = statusFilter === 'all' || card.status === statusFilter;
@@ -457,7 +476,7 @@ export default function AdminDashboard() {
         <div style={{ display: 'flex', height: '100vh', background: 'linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%)', overflow: 'hidden', position: 'relative' }}>
             {/* Mobile Overlay */}
             {isSidebarOpen && (
-                <div 
+                <div
                     onClick={() => setIsSidebarOpen(false)}
                     style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 90, backdropFilter: 'blur(4px)' }}
                     className="mobile-overlay"
@@ -486,12 +505,15 @@ export default function AdminDashboard() {
                     <button onClick={() => { setView('requests'); setIsSidebarOpen(false); }} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'requests' ? '#1A1265' : 'transparent', color: view === 'requests' ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
                         <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.5 1.5"></path><path d="M7.67 7.67L2 2"></path><path d="M2 2l1.5 7.5"></path></svg>` }} /> Demandes {requestsCount > 0 && <span style={{ background: '#EF4444', color: 'white', fontSize: '10px', padding: '2px 8px', borderRadius: '10px', marginLeft: 'auto' }}>{requestsCount}</span>}
                     </button>
-                    <button onClick={() => { setView('production'); setIsSidebarOpen(false); }} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'production' ? '#1A1265' : 'transparent', color: view === 'production' ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+                    <button onClick={() => { setView('production'); setIsSidebarOpen(false); }} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'production' ? '#1A1265' : 'transparent', color: view === 'production' ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
                         <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>` }} /> Production
                     </button>
-                    
+                    <button onClick={() => { setView('logo-studio'); setIsSidebarOpen(false); }} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'logo-studio' ? '#1A1265' : 'transparent', color: view === 'logo-studio' ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+                        <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>` }} /> Logo Studio
+                    </button>
+
                     <div style={{ margin: '12px 16px', fontSize: '11px', fontWeight: '800', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '1px' }}>Dossiers</div>
-                    
+
                     {folders.filter(f => !f.parent_id).map(f => {
                         const subFolders = folders.filter(sub => sub.parent_id === f.id);
                         const isExpanded = expandedFolders[f.id];
@@ -508,7 +530,7 @@ export default function AdminDashboard() {
                                 </div>
                                 {isExpanded && subFolders.map(sub => (
                                     <div key={sub.id} style={{ display: 'flex', alignItems: 'center', gap: '2px', marginLeft: '32px' }}>
-                                    <button onClick={() => { setView('dashboard'); setFilterFolder(sub.id); setIsSidebarOpen(false); }} style={{ flex: 1, padding: '8px 12px', borderRadius: '10px', border: 'none', background: filterFolder === sub.id ? '#F1F5F9' : 'transparent', color: filterFolder === sub.id ? '#1A1265' : '#475569', fontWeight: '600', textAlign: 'left', cursor: 'pointer', fontSize: '13px' }}>↳ {sub.name}</button>
+                                        <button onClick={() => { setView('dashboard'); setFilterFolder(sub.id); setIsSidebarOpen(false); }} style={{ flex: 1, padding: '8px 12px', borderRadius: '10px', border: 'none', background: filterFolder === sub.id ? '#F1F5F9' : 'transparent', color: filterFolder === sub.id ? '#1A1265' : '#475569', fontWeight: '600', textAlign: 'left', cursor: 'pointer', fontSize: '13px' }}>↳ {sub.name}</button>
                                         <button onClick={(e) => openDeleteFolderModal(sub.id, sub.name, e)} style={{ padding: '6px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#CBD5E1', display: 'flex' }} className="trash-btn-sub"><div style={{ width: 12, height: 12 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>` }} /></button>
                                     </div>
                                 ))}
@@ -527,7 +549,7 @@ export default function AdminDashboard() {
                 <div style={{ padding: '24px 40px 20px', background: 'rgba(248, 250, 252, 0.8)', backdropFilter: 'blur(10px)', borderBottom: '1px solid #E2E8F0', zIndex: 50 }}>
                     <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', gap: '16px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                            <button 
+                            <button
                                 onClick={() => setIsSidebarOpen(true)}
                                 className="mobile-only"
                                 style={{ background: 'white', border: '1px solid #E2E8F0', padding: '10px', borderRadius: '12px', cursor: 'pointer', fontSize: '20px' }}
@@ -536,10 +558,10 @@ export default function AdminDashboard() {
                             </button>
                             <div>
                                 <h1 style={{ fontSize: '26px', fontWeight: '900', color: '#1A1265' }}>
-                                    {view === 'users' ? 'Gestion des Utilisateurs' : (view === 'requests' ? 'Demandes de Design' : (view === 'finance' ? 'Finance & CA' : (view === 'production' ? 'Atelier Production' : (filterFolder ? currentFolder?.name : 'Tableau de bord'))))}
+                                    {view === 'users' ? 'Gestion des Utilisateurs' : (view === 'requests' ? 'Demandes de Design' : (view === 'finance' ? 'Finance & CA' : (view === 'production' ? 'Atelier Production' : (view === 'logo-studio' ? 'Logo Studio' : (filterFolder ? currentFolder?.name : 'Tableau de bord')))))}
                                 </h1>
                                 <p style={{ color: '#64748B' }} className="desktop-only">
-                                    {view === 'users' ? 'Gérez les comptes et les profils de vos clients.' : (view === 'requests' ? 'Clients souhaitant modifier le design de leur QR.' : (view === 'finance' ? 'Suivez votre chiffre d\'affaires et vos bénéfices.' : (view === 'production' ? 'Générez des cartes en masse et préparez les supports physiques.' : (filterFolder ? (isSubFolder ? 'Contenu de ce sous-dossier' : 'Contenu de ce dossier') : 'Gérez l\'ensemble de vos projets QR.'))))}
+                                    {view === 'users' ? 'Gérez les comptes et les profils de vos clients.' : (view === 'requests' ? 'Clients souhaitant modifier le design de leur QR.' : (view === 'finance' ? 'Suivez votre chiffre d\'affaires et vos bénéfices.' : (view === 'production' ? 'Générez des cartes en masse et préparez les supports physiques.' : (view === 'logo-studio' ? 'Personnalisez et téléchargez votre logo en haute qualité.' : (filterFolder ? (isSubFolder ? 'Contenu de ce sous-dossier' : 'Contenu de ce dossier') : 'Gérez l\'ensemble de vos projets QR.')))))}
                                 </p>
                             </div>
                         </div>
@@ -553,19 +575,19 @@ export default function AdminDashboard() {
                     {(view === 'dashboard' || view === 'requests') && (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                             <div style={{ display: 'flex', gap: '8px', background: '#F1F5F9', padding: '6px', borderRadius: '14px', width: 'fit-content' }}>
-                                <button 
+                                <button
                                     onClick={() => setCategoryFilter('all')}
                                     style={{ padding: '8px 20px', borderRadius: '10px', border: 'none', background: categoryFilter === 'all' ? 'white' : 'transparent', color: categoryFilter === 'all' ? '#1A1265' : '#64748B', fontWeight: '800', fontSize: '13px', cursor: 'pointer', boxShadow: categoryFilter === 'all' ? '0 4px 12px rgba(0,0,0,0.05)' : 'none', transition: 'all 0.2s' }}
                                 >
                                     Tout ({cards.length})
                                 </button>
-                                <button 
+                                <button
                                     onClick={() => setCategoryFilter('physical')}
                                     style={{ padding: '8px 20px', borderRadius: '10px', border: 'none', background: categoryFilter === 'physical' ? 'white' : 'transparent', color: categoryFilter === 'physical' ? '#6366F1' : '#64748B', fontWeight: '800', fontSize: '13px', cursor: 'pointer', boxShadow: categoryFilter === 'physical' ? '0 4px 12px rgba(0,0,0,0.05)' : 'none', transition: 'all 0.2s' }}
                                 >
                                     Signature ({cards.filter(c => c._type === 'physical').length})
                                 </button>
-                                <button 
+                                <button
                                     onClick={() => setCategoryFilter('digital')}
                                     style={{ padding: '8px 20px', borderRadius: '10px', border: 'none', background: categoryFilter === 'digital' ? 'white' : 'transparent', color: categoryFilter === 'digital' ? '#10B981' : '#64748B', fontWeight: '800', fontSize: '13px', cursor: 'pointer', boxShadow: categoryFilter === 'digital' ? '0 4px 12px rgba(0,0,0,0.05)' : 'none', transition: 'all 0.2s' }}
                                 >
@@ -592,19 +614,19 @@ export default function AdminDashboard() {
                                     <div style={{ padding: '24px', background: 'white', borderRadius: '20px', border: '1px solid #E2E8F0', boxShadow: '0 4px 15px rgba(0,0,0,0.02)' }}>
                                         <div style={{ fontSize: '13px', fontWeight: '800', color: '#64748B', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>CA Total</div>
                                         <div style={{ fontSize: '32px', fontWeight: '900', color: '#1A1265' }}>
-                                            {totalIncome.toLocaleString('fr-FR')} <small style={{fontSize: '16px', color: '#94A3B8'}}>f CFA</small>
+                                            {totalIncome.toLocaleString('fr-FR')} <small style={{ fontSize: '16px', color: '#94A3B8' }}>f CFA</small>
                                         </div>
                                     </div>
                                     <div style={{ padding: '24px', background: 'white', borderRadius: '20px', border: '1px solid #E2E8F0', boxShadow: '0 4px 15px rgba(0,0,0,0.02)' }}>
                                         <div style={{ fontSize: '13px', fontWeight: '800', color: '#64748B', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>Dépenses</div>
                                         <div style={{ fontSize: '32px', fontWeight: '900', color: '#EF4444' }}>
-                                            {totalExpense.toLocaleString('fr-FR')} <small style={{fontSize: '16px', color: '#FCA5A5'}}>f CFA</small>
+                                            {totalExpense.toLocaleString('fr-FR')} <small style={{ fontSize: '16px', color: '#FCA5A5' }}>f CFA</small>
                                         </div>
                                     </div>
                                     <div style={{ padding: '24px', background: '#1A1265', borderRadius: '20px', color: 'white', boxShadow: '0 10px 25px rgba(26,18,101,0.2)' }}>
                                         <div style={{ fontSize: '13px', fontWeight: '800', color: '#A5B4FC', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>Bénéfice Net</div>
                                         <div style={{ fontSize: '32px', fontWeight: '900', color: '#10B981' }}>
-                                            {netProfit.toLocaleString('fr-FR')} <small style={{fontSize: '16px', color: '#6EE7B7'}}>f CFA</small>
+                                            {netProfit.toLocaleString('fr-FR')} <small style={{ fontSize: '16px', color: '#6EE7B7' }}>f CFA</small>
                                         </div>
                                     </div>
                                 </div>
@@ -613,7 +635,7 @@ export default function AdminDashboard() {
                                     {/* Action Form */}
                                     <div style={{ background: 'white', borderRadius: '20px', border: '1px solid #E2E8F0', padding: '32px' }}>
                                         <h3 style={{ fontSize: '20px', fontWeight: '900', color: '#1A1265', marginBottom: '24px' }}>Ajouter une opération</h3>
-                                        
+
                                         <div style={{ display: 'flex', gap: '12px', marginBottom: '24px' }}>
                                             <button onClick={() => setTransactionType('income')} style={{ flex: 1, padding: '12px', borderRadius: '12px', fontWeight: '700', border: transactionType === 'income' ? '2px solid #10B981' : '1px solid #E2E8F0', background: transactionType === 'income' ? '#ECFDF5' : 'white', color: transactionType === 'income' ? '#059669' : '#64748B', cursor: 'pointer', transition: 'all 0.2s' }}>📈 Vente (Revenu)</button>
                                             <button onClick={() => setTransactionType('expense')} style={{ flex: 1, padding: '12px', borderRadius: '12px', fontWeight: '700', border: transactionType === 'expense' ? '2px solid #EF4444' : '1px solid #E2E8F0', background: transactionType === 'expense' ? '#FEF2F2' : 'white', color: transactionType === 'expense' ? '#DC2626' : '#64748B', cursor: 'pointer', transition: 'all 0.2s' }}>📉 Dépense</button>
@@ -628,7 +650,7 @@ export default function AdminDashboard() {
                                                         <option value="other">Autre revenu</option>
                                                     </select>
                                                 </div>
-                                                
+
                                                 {incomeCategory !== 'other' ? (
                                                     <div>
                                                         <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: '#475569', marginBottom: '8px' }}>Combien de packs vendus ?</label>
@@ -676,7 +698,7 @@ export default function AdminDashboard() {
                                                             </div>
                                                             <div>
                                                                 <div style={{ fontWeight: '800', fontSize: '14px', color: '#1A1265' }}>{t.desc}</div>
-                                                                <div style={{ fontSize: '12px', color: '#94A3B8', marginTop: '2px' }}>{new Date(t.date).toLocaleDateString('fr-FR')} à {new Date(t.date).toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})}</div>
+                                                                <div style={{ fontSize: '12px', color: '#94A3B8', marginTop: '2px' }}>{new Date(t.date).toLocaleDateString('fr-FR')} à {new Date(t.date).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</div>
                                                             </div>
                                                         </div>
                                                         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
@@ -697,7 +719,7 @@ export default function AdminDashboard() {
                                 {/* === COLLAPSIBLE GENERATION FORM === */}
                                 <div style={{ background: 'white', borderRadius: '24px', border: '1px solid #E2E8F0', overflow: 'hidden' }}>
                                     {/* Accordion Header */}
-                                    <div 
+                                    <div
                                         onClick={() => setIsProductionFormOpen(o => !o)}
                                         style={{ padding: '24px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', background: isProductionFormOpen ? '#F8FAFC' : 'white', transition: 'background 0.2s' }}
                                     >
@@ -718,124 +740,124 @@ export default function AdminDashboard() {
 
                                     {/* Accordion Body */}
                                     {isProductionFormOpen && (
-                                    <div style={{ padding: '0 32px 32px', borderTop: '1px solid #F1F5F9' }}>
-                                    <div style={{ paddingTop: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '16px' }}>
-                                            <div style={{ position: 'relative' }}>
-                                                <label style={{ fontSize: '12px', fontWeight: '800', color: '#64748B', marginBottom: '8px', display: 'block' }}>QUANTITÉ</label>
-                                                <input 
-                                                    type="number" 
-                                                    min="1" 
-                                                    max="100" 
-                                                    value={bulkQty} 
-                                                    onChange={e => setBulkQty(Number(e.target.value))} 
-                                                    placeholder="20" 
-                                                    style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #E2E8F0', fontSize: '16px', fontWeight: '600' }} 
-                                                />
-                                            </div>
-                                            <div>
-                                                <label style={{ fontSize: '12px', fontWeight: '800', color: '#64748B', marginBottom: '8px', display: 'block' }}>NOM DU LOT / DOSSIER</label>
-                                                <input 
-                                                    type="text" 
-                                                    value={batchName} 
-                                                    onChange={e => setBatchName(e.target.value)} 
-                                                    placeholder="Ex: Batch_NFC_Client_Alpha" 
-                                                    style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #E2E8F0', fontSize: '16px', fontWeight: '600' }} 
-                                                />
-                                            </div>
-                                        </div>
+                                        <div style={{ padding: '0 32px 32px', borderTop: '1px solid #F1F5F9' }}>
+                                            <div style={{ paddingTop: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '16px' }}>
+                                                    <div style={{ position: 'relative' }}>
+                                                        <label style={{ fontSize: '12px', fontWeight: '800', color: '#64748B', marginBottom: '8px', display: 'block' }}>QUANTITÉ</label>
+                                                        <input
+                                                            type="number"
+                                                            min="1"
+                                                            max="100"
+                                                            value={bulkQty}
+                                                            onChange={e => setBulkQty(Number(e.target.value))}
+                                                            placeholder="20"
+                                                            style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #E2E8F0', fontSize: '16px', fontWeight: '600' }}
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label style={{ fontSize: '12px', fontWeight: '800', color: '#64748B', marginBottom: '8px', display: 'block' }}>NOM DU LOT / DOSSIER</label>
+                                                        <input
+                                                            type="text"
+                                                            value={batchName}
+                                                            onChange={e => setBatchName(e.target.value)}
+                                                            placeholder="Ex: Batch_NFC_Client_Alpha"
+                                                            style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #E2E8F0', fontSize: '16px', fontWeight: '600' }}
+                                                        />
+                                                    </div>
+                                                </div>
 
-                                        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                                            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                                <label style={{ fontSize: '12px', fontWeight: '800', color: '#64748B' }}>COULEUR POINTS</label>
-                                                <div style={{ display: 'flex', gap: '8px', alignItems: 'center', background: '#F8FAFC', padding: '8px 14px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
-                                                    <input 
-                                                        type="color" 
-                                                        value={bulkColor} 
-                                                        onChange={e => setBulkColor(e.target.value)} 
-                                                        style={{ width: '32px', height: '32px', border: 'none', background: 'transparent', cursor: 'pointer' }} 
-                                                    />
-                                                    <input 
-                                                        type="text" 
-                                                        value={bulkColor} 
-                                                        onChange={e => setBulkColor(e.target.value)} 
-                                                        placeholder="#HEX"
-                                                        style={{ flex: 1, border: 'none', background: 'transparent', fontSize: '14px', fontWeight: '700', color: '#1A1265', outline: 'none' }}
-                                                    />
+                                                <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                                                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                                        <label style={{ fontSize: '12px', fontWeight: '800', color: '#64748B' }}>COULEUR POINTS</label>
+                                                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', background: '#F8FAFC', padding: '8px 14px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                                                            <input
+                                                                type="color"
+                                                                value={bulkColor}
+                                                                onChange={e => setBulkColor(e.target.value)}
+                                                                style={{ width: '32px', height: '32px', border: 'none', background: 'transparent', cursor: 'pointer' }}
+                                                            />
+                                                            <input
+                                                                type="text"
+                                                                value={bulkColor}
+                                                                onChange={e => setBulkColor(e.target.value)}
+                                                                placeholder="#HEX"
+                                                                style={{ flex: 1, border: 'none', background: 'transparent', fontSize: '14px', fontWeight: '700', color: '#1A1265', outline: 'none' }}
+                                                            />
+                                                        </div>
+                                                    </div>
+
+                                                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                                        <label style={{ fontSize: '12px', fontWeight: '800', color: '#64748B' }}>COULEUR FOND</label>
+                                                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', background: '#F8FAFC', padding: '8px 14px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                                                            <input
+                                                                type="color"
+                                                                value={bulkBgColor}
+                                                                onChange={e => setBulkBgColor(e.target.value)}
+                                                                style={{ width: '32px', height: '32px', border: 'none', background: 'transparent', cursor: 'pointer' }}
+                                                            />
+                                                            <input
+                                                                type="text"
+                                                                value={bulkBgColor}
+                                                                onChange={e => setBulkBgColor(e.target.value)}
+                                                                placeholder="#HEX"
+                                                                style={{ flex: 1, border: 'none', background: 'transparent', fontSize: '14px', fontWeight: '700', color: '#1A1265', outline: 'none' }}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                                    {['#1A1265', '#10B981', '#6366F1', '#F59E0B', '#EF4444', '#000000'].map(c => (
+                                                        <button key={c} onClick={() => setBulkColor(c)} style={{ width: '24px', height: '24px', borderRadius: '6px', background: c, border: bulkColor === c ? '2px solid #1A1265' : 'none', cursor: 'pointer', outline: bulkColor === c ? '2px solid white' : 'none' }} />
+                                                    ))}
+                                                </div>
+
+                                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                                                    <div
+                                                        onClick={() => setIncludeLogo(!includeLogo)}
+                                                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#F8FAFC', padding: '12px 16px', borderRadius: '16px', border: '1px solid #E2E8F0', cursor: 'pointer', transition: 'all 0.2s' }}
+                                                    >
+                                                        <span style={{ fontSize: '13px', fontWeight: '800', color: '#1A1265' }}>Inclure Logo</span>
+                                                        <div style={{ width: '40px', height: '22px', borderRadius: '11px', background: includeLogo ? '#1A1265' : '#CBD5E1', position: 'relative', transition: 'all 0.3s' }}>
+                                                            <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: 'white', position: 'absolute', top: '3px', left: includeLogo ? '21px' : '3px', transition: 'all 0.3s', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }} />
+                                                        </div>
+                                                    </div>
+
+                                                    <div
+                                                        onClick={() => setHideIdsInPrint(!hideIdsInPrint)}
+                                                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#F8FAFC', padding: '12px 16px', borderRadius: '16px', border: '1px solid #E2E8F0', cursor: 'pointer', transition: 'all 0.2s' }}
+                                                    >
+                                                        <span style={{ fontSize: '13px', fontWeight: '800', color: '#1A1265' }}>Mode UV (Masquer IDs)</span>
+                                                        <div style={{ width: '40px', height: '22px', borderRadius: '11px', background: hideIdsInPrint ? '#EF4444' : '#CBD5E1', position: 'relative', transition: 'all 0.3s' }}>
+                                                            <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: 'white', position: 'absolute', top: '3px', left: hideIdsInPrint ? '21px' : '3px', transition: 'all 0.3s', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }} />
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                                                    <button
+                                                        onClick={handleBulkCreate}
+                                                        disabled={generatingBulk}
+                                                        style={{ flex: 1, padding: '14px 28px', background: '#1A1265', color: 'white', border: 'none', borderRadius: '12px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', opacity: generatingBulk ? 0.7 : 1 }}
+                                                    >
+                                                        {generatingBulk ? 'Génération...' : '+ Générer les cartes'}
+                                                    </button>
+                                                    <button
+                                                        onClick={() => window.print()}
+                                                        style={{ padding: '14px 24px', background: 'white', color: '#1A1265', border: '1px solid #E2E8F0', borderRadius: '12px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
+                                                    >
+                                                        <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>` }} /> Impression
+                                                    </button>
+                                                    <button
+                                                        onClick={handleDownloadAll}
+                                                        style={{ padding: '14px 24px', background: '#F8FAFC', color: '#1A1265', border: '1px solid #E2E8F0', borderRadius: '12px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
+                                                    >
+                                                        <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>` }} /> Tout télécharger
+                                                    </button>
                                                 </div>
                                             </div>
-
-                                            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                                <label style={{ fontSize: '12px', fontWeight: '800', color: '#64748B' }}>COULEUR FOND</label>
-                                                <div style={{ display: 'flex', gap: '8px', alignItems: 'center', background: '#F8FAFC', padding: '8px 14px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
-                                                    <input 
-                                                        type="color" 
-                                                        value={bulkBgColor} 
-                                                        onChange={e => setBulkBgColor(e.target.value)} 
-                                                        style={{ width: '32px', height: '32px', border: 'none', background: 'transparent', cursor: 'pointer' }} 
-                                                    />
-                                                    <input 
-                                                        type="text" 
-                                                        value={bulkBgColor} 
-                                                        onChange={e => setBulkBgColor(e.target.value)} 
-                                                        placeholder="#HEX"
-                                                        style={{ flex: 1, border: 'none', background: 'transparent', fontSize: '14px', fontWeight: '700', color: '#1A1265', outline: 'none' }}
-                                                    />
-                                                </div>
-                                            </div>
                                         </div>
-
-                                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                                            {['#1A1265', '#10B981', '#6366F1', '#F59E0B', '#EF4444', '#000000'].map(c => (
-                                                <button key={c} onClick={() => setBulkColor(c)} style={{ width: '24px', height: '24px', borderRadius: '6px', background: c, border: bulkColor === c ? '2px solid #1A1265' : 'none', cursor: 'pointer', outline: bulkColor === c ? '2px solid white' : 'none' }} />
-                                            ))}
-                                        </div>
-
-                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                                            <div 
-                                                onClick={() => setIncludeLogo(!includeLogo)}
-                                                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#F8FAFC', padding: '12px 16px', borderRadius: '16px', border: '1px solid #E2E8F0', cursor: 'pointer', transition: 'all 0.2s' }}
-                                            >
-                                                <span style={{ fontSize: '13px', fontWeight: '800', color: '#1A1265' }}>Inclure Logo</span>
-                                                <div style={{ width: '40px', height: '22px', borderRadius: '11px', background: includeLogo ? '#1A1265' : '#CBD5E1', position: 'relative', transition: 'all 0.3s' }}>
-                                                    <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: 'white', position: 'absolute', top: '3px', left: includeLogo ? '21px' : '3px', transition: 'all 0.3s', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }} />
-                                                </div>
-                                            </div>
-
-                                            <div 
-                                                onClick={() => setHideIdsInPrint(!hideIdsInPrint)}
-                                                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#F8FAFC', padding: '12px 16px', borderRadius: '16px', border: '1px solid #E2E8F0', cursor: 'pointer', transition: 'all 0.2s' }}
-                                            >
-                                                <span style={{ fontSize: '13px', fontWeight: '800', color: '#1A1265' }}>Mode UV (Masquer IDs)</span>
-                                                <div style={{ width: '40px', height: '22px', borderRadius: '11px', background: hideIdsInPrint ? '#EF4444' : '#CBD5E1', position: 'relative', transition: 'all 0.3s' }}>
-                                                    <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: 'white', position: 'absolute', top: '3px', left: hideIdsInPrint ? '21px' : '3px', transition: 'all 0.3s', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }} />
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                                            <button 
-                                                onClick={handleBulkCreate} 
-                                                disabled={generatingBulk}
-                                                style={{ flex: 1, padding: '14px 28px', background: '#1A1265', color: 'white', border: 'none', borderRadius: '12px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', opacity: generatingBulk ? 0.7 : 1 }}
-                                            >
-                                                {generatingBulk ? 'Génération...' : '+ Générer les cartes'}
-                                            </button>
-                                            <button 
-                                                onClick={() => window.print()}
-                                                style={{ padding: '14px 24px', background: 'white', color: '#1A1265', border: '1px solid #E2E8F0', borderRadius: '12px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
-                                            >
-                                                <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>` }} /> Impression
-                                            </button>
-                                            <button 
-                                                onClick={handleDownloadAll}
-                                                style={{ padding: '14px 24px', background: '#F8FAFC', color: '#1A1265', border: '1px solid #E2E8F0', borderRadius: '12px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
-                                            >
-                                                <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>` }} /> Tout télécharger
-                                            </button>
-                                        </div>
-                                    </div>
-                                    </div>
                                     )}
                                 </div>
 
@@ -849,10 +871,10 @@ export default function AdminDashboard() {
                                             </div>
                                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
                                                 {cards.filter(c => c.design_request === 'pending').map(card => (
-                                                    <ProductionCard 
-                                                        key={card.card_id} 
-                                                        card={card} 
-                                                        toast={toast} 
+                                                    <ProductionCard
+                                                        key={card.card_id}
+                                                        card={card}
+                                                        toast={toast}
                                                         includeLogo={includeLogo}
                                                         isSelected={selectedCards.includes(card.card_id)}
                                                         onSelect={() => setSelectedCards(prev => prev.includes(card.card_id) ? prev.filter(id => id !== card.card_id) : [...prev, card.card_id])}
@@ -868,7 +890,7 @@ export default function AdminDashboard() {
                                             <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#10B981' }}></div>
                                             <h3 style={{ fontSize: '18px', fontWeight: '900', color: '#1A1265' }}>Lots de Production</h3>
                                         </div>
-                                        
+
                                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '20px' }}>
                                             {(() => {
                                                 const batchMap = {};
@@ -879,36 +901,36 @@ export default function AdminDashboard() {
                                                     batchMap[name].cards.push(card);
                                                     if (card.admin_profile?.print_status === 'printed') batchMap[name].status = 'printed';
                                                 });
-                                                
-                                                return Object.values(batchMap).sort((a,b) => b.cards[0].created_at.localeCompare(a.cards[0].created_at)).map(batch => {
+
+                                                return Object.values(batchMap).sort((a, b) => b.cards[0].created_at.localeCompare(a.cards[0].created_at)).map(batch => {
                                                     const isExpanded = expandedBatch === batch.name;
                                                     return (
                                                         <div key={batch.name} style={{ gridColumn: '1 / -1', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                                                            <div 
-                                                                style={{ 
-                                                                    background: 'white', 
-                                                                    borderRadius: '24px', 
-                                                                    padding: '24px', 
-                                                                    border: isExpanded ? '2px solid #1A1265' : '1px solid #E2E8F0', 
-                                                                    display: 'flex', 
+                                                            <div
+                                                                style={{
+                                                                    background: 'white',
+                                                                    borderRadius: '24px',
+                                                                    padding: '24px',
+                                                                    border: isExpanded ? '2px solid #1A1265' : '1px solid #E2E8F0',
+                                                                    display: 'flex',
                                                                     alignItems: 'center',
                                                                     justifyContent: 'space-between',
-                                                                    boxShadow: '0 4px 12px rgba(0,0,0,0.02)', 
-                                                                    position: 'relative', 
+                                                                    boxShadow: '0 4px 12px rgba(0,0,0,0.02)',
+                                                                    position: 'relative',
                                                                     overflow: 'hidden',
                                                                     transition: 'all 0.3s ease'
                                                                 }}
                                                             >
                                                                 <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: batch.status === 'printed' ? '#10B981' : '#F59E0B' }}></div>
-                                                                
+
                                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '24px', flex: 1 }}>
-                                                                    <div 
+                                                                    <div
                                                                         onClick={() => setExpandedBatch(isExpanded ? null : batch.name)}
                                                                         style={{ width: '50px', height: '50px', borderRadius: '14px', background: isExpanded ? '#1A1265' : '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
                                                                     >
                                                                         <div style={{ width: 24, height: 24, color: isExpanded ? 'white' : '#1A1265' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>` }} />
                                                                     </div>
-                                                                    
+
                                                                     <div>
                                                                         <h4 style={{ fontSize: '18px', fontWeight: '900', color: '#1A1265', margin: 0 }}>{batch.name}</h4>
                                                                         <div style={{ fontSize: '13px', color: '#64748B', marginTop: '4px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -920,7 +942,7 @@ export default function AdminDashboard() {
                                                                 </div>
 
                                                                 <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                                                                    <button 
+                                                                    <button
                                                                         onClick={() => handleDownloadAll(batch.cards.map(c => c.card_id))}
                                                                         style={{ padding: '10px 16px', borderRadius: '12px', border: 'none', background: '#F1F5F9', color: '#1A1265', fontWeight: '800', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px' }}
                                                                     >
@@ -934,13 +956,13 @@ export default function AdminDashboard() {
                                                                                 <div style={{ width: 13, height: 13 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>` }} />
                                                                                 Imprimé
                                                                             </div>
-                                                                            <button 
+                                                                            <button
                                                                                 onClick={() => setModalConfig({
-                                                                                    isOpen: true, 
-                                                                                    title: '⚠️ Déjà imprimé !', 
+                                                                                    isOpen: true,
+                                                                                    title: '⚠️ Déjà imprimé !',
                                                                                     type: 'danger',
-                                                                                    children: <div><p style={{marginBottom:8}}>Ce lot <strong>{batch.name}</strong> a déjà été marqué comme <strong>imprimé</strong>.</p><p style={{color:'#EF4444', fontWeight:700}}>Êtes-vous sûr de vouloir le réimprimer ? Cela risque de créer des doublons.</p></div>,
-                                                                                    onConfirm: () => { handleMarkBatchStatus(batch.cards, 'pending'); setModalConfig(p => ({...p, isOpen: false})); },
+                                                                                    children: <div><p style={{ marginBottom: 8 }}>Ce lot <strong>{batch.name}</strong> a déjà été marqué comme <strong>imprimé</strong>.</p><p style={{ color: '#EF4444', fontWeight: 700 }}>Êtes-vous sûr de vouloir le réimprimer ? Cela risque de créer des doublons.</p></div>,
+                                                                                    onConfirm: () => { handleMarkBatchStatus(batch.cards, 'pending'); setModalConfig(p => ({ ...p, isOpen: false })); },
                                                                                     confirmText: 'Oui, réinitialiser quand même'
                                                                                 })}
                                                                                 style={{ padding: '8px 12px', borderRadius: '10px', border: '1px solid #FECACA', background: 'white', color: '#EF4444', fontWeight: '800', cursor: 'pointer', fontSize: '12px' }}
@@ -949,7 +971,7 @@ export default function AdminDashboard() {
                                                                             </button>
                                                                         </div>
                                                                     ) : (
-                                                                        <button 
+                                                                        <button
                                                                             onClick={() => handleMarkBatchStatus(batch.cards, 'printed')}
                                                                             style={{ padding: '10px 16px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', color: '#1A1265', fontWeight: '800', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}
                                                                         >
@@ -959,7 +981,7 @@ export default function AdminDashboard() {
                                                                     )}
                                                                     {/* ===== END PROTECTION ===== */}
 
-                                                                    <button 
+                                                                    <button
                                                                         onClick={() => setExpandedBatch(isExpanded ? null : batch.name)}
                                                                         style={{ padding: '10px 16px', borderRadius: '12px', border: 'none', background: isExpanded ? '#1A1265' : '#F8FAFC', color: isExpanded ? 'white' : '#1A1265', fontWeight: '800', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px' }}
                                                                     >
@@ -971,10 +993,10 @@ export default function AdminDashboard() {
                                                             {isExpanded && (
                                                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px', padding: '0 20px', animation: 'fadeIn 0.3s ease' }}>
                                                                     {batch.cards.map(card => (
-                                                                        <ProductionCard 
-                                                                            key={card.card_id} 
-                                                                            card={card} 
-                                                                            toast={toast} 
+                                                                        <ProductionCard
+                                                                            key={card.card_id}
+                                                                            card={card}
+                                                                            toast={toast}
                                                                             includeLogo={includeLogo}
                                                                             isSelected={selectedCards.includes(card.card_id)}
                                                                             onSelect={() => setSelectedCards(prev => prev.includes(card.card_id) ? prev.filter(id => id !== card.card_id) : [...prev, card.card_id])}
@@ -986,8 +1008,8 @@ export default function AdminDashboard() {
                                                     );
                                                 });
                                             })()}
+                                        </div>
                                     </div>
-                                </div>
 
                                     {/* Section 3: Vue Détail (Unactivated cards not in batches or individual) */}
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -997,16 +1019,80 @@ export default function AdminDashboard() {
                                         </div>
                                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
                                             {cards.filter(c => !c.owner_id && c.design_request !== 'pending').map(card => (
-                                                <ProductionCard 
-                                                    key={card.card_id} 
-                                                    card={card} 
-                                                    toast={toast} 
+                                                <ProductionCard
+                                                    key={card.card_id}
+                                                    card={card}
+                                                    toast={toast}
                                                     includeLogo={includeLogo}
                                                     isSelected={selectedCards.includes(card.card_id)}
                                                     onSelect={() => setSelectedCards(prev => prev.includes(card.card_id) ? prev.filter(id => id !== card.card_id) : [...prev, card.card_id])}
                                                 />
                                             ))}
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : view === 'logo-studio' ? (
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '32px', animation: 'fadeIn 0.4s ease' }}>
+                                {/* Controls */}
+                                <div style={{ background: 'white', borderRadius: '30px', padding: '40px', border: '1px solid #E2E8F0', boxShadow: '0 10px 40px rgba(0,0,0,0.03)' }}>
+                                    <h3 style={{ fontSize: '20px', fontWeight: '900', color: '#1A1265', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                        <div style={{ width: 32, height: 32, borderRadius: '10px', background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <div style={{ width: 16, height: 16, color: '#1A1265' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>` }} />
+                                        </div>
+                                        Personnalisation
+                                    </h3>
+
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                                        <div>
+                                            <label style={{ display: 'block', fontSize: '14px', fontWeight: '800', color: '#475569', marginBottom: '12px' }}>Couleur du logo</label>
+                                            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                                                <input
+                                                    type="color"
+                                                    value={studioColor}
+                                                    onChange={(e) => setStudioColor(e.target.value)}
+                                                    style={{ width: '60px', height: '60px', borderRadius: '15px', border: 'none', cursor: 'pointer', padding: '0', background: 'transparent' }}
+                                                />
+                                                <input
+                                                    type="text"
+                                                    value={studioColor}
+                                                    onChange={(e) => setStudioColor(e.target.value)}
+                                                    placeholder="#000000"
+                                                    style={{ flex: 1, padding: '16px', borderRadius: '16px', border: '1px solid #E2E8F0', background: '#F8FAFC', fontSize: '16px', fontWeight: '700', color: '#1A1265', outline: 'none' }}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div style={{ padding: '20px', borderRadius: '20px', background: '#F1F5F9', border: '1px dashed #CBD5E1' }}>
+                                            <p style={{ fontSize: '13px', color: '#64748B', fontWeight: '600', lineHeight: '1.6', margin: 0 }}>
+                                                Le logo sera généré avec un <strong>fond transparent</strong>. Parfait pour vos cartes de visite, flyers ou supports physiques.
+                                            </p>
+                                        </div>
+
+                                        <button
+                                            onClick={handleDownloadStudioLogo}
+                                            style={{ width: '100%', marginTop: '12px', background: '#1A1265', color: 'white', padding: '20px', borderRadius: '18px', border: 'none', fontWeight: '900', fontSize: '16px', cursor: 'pointer', boxShadow: '0 8px 25px rgba(26,18,101,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', transition: 'transform 0.2s' }}
+                                            onMouseDown={e => e.currentTarget.style.transform = 'scale(0.98)'}
+                                            onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}
+                                        >
+                                            <div style={{ width: 20, height: 20 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>` }} />
+                                            Télécharger le logo PNG
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Preview */}
+                                <div style={{ background: 'white', borderRadius: '30px', padding: '40px', border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                                    <h3 style={{ fontSize: '20px', fontWeight: '900', color: '#1A1265', margin: 0 }}>Aperçu (Fond transparent)</h3>
+                                    <div style={{ flex: 1, minHeight: '300px', borderRadius: '24px', background: 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAMUlEQVQ4T2NkYGAQYcAP3uInGs0Ak89HkhjnMogTRhS78GpkMAnx/+NPMykzghp68BAA39YfP+6GvEYAAAAASUVORK5CYII=")', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #F1F5F9' }}>
+                                        {studioLogo ? (
+                                            <img src={studioLogo} alt="Preview" style={{ maxWidth: '80%', maxHeight: '80%', objectFit: 'contain', filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.1))' }} />
+                                        ) : (
+                                            <div style={{ color: '#94A3B8', fontWeight: '600' }}>Chargement...</div>
+                                        )}
+                                    </div>
+                                    <div style={{ textAlign: 'center', fontSize: '12px', color: '#94A3B8', fontWeight: '600' }}>
+                                        Le damier gris indique la transparence.
                                     </div>
                                 </div>
                             </div>
@@ -1020,7 +1106,7 @@ export default function AdminDashboard() {
                                         <div style={{ flex: 1 }}>
                                             <div style={{ fontWeight: '900', fontSize: '16px', color: '#1A1265' }}>{user.full_name || 'Utilisateur sans nom'}</div>
                                             <div style={{ color: '#94A3B8', fontSize: '12px', marginBottom: '8px' }}>{user.email}</div>
-                                            
+
                                             {/* List of user cards */}
                                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                                                 {user.cards && user.cards.length > 0 ? user.cards.map(card => (
@@ -1032,12 +1118,12 @@ export default function AdminDashboard() {
                                                 )}
                                             </div>
                                         </div>
-                                        <button 
+                                        <button
                                             onClick={() => {
                                                 setModalConfig({
                                                     isOpen: true, title: 'Supprimer utilisateur', type: 'danger',
                                                     children: <p>Voulez-vous vraiment supprimer cet utilisateur ?</p>,
-                                                    onConfirm: () => { handleDeleteUser(user.id); setModalConfig(p => ({...p, isOpen: false})); },
+                                                    onConfirm: () => { handleDeleteUser(user.id); setModalConfig(p => ({ ...p, isOpen: false })); },
                                                     confirmText: 'Supprimer'
                                                 })
                                             }}
@@ -1052,12 +1138,12 @@ export default function AdminDashboard() {
                         ) : (
                             currentItems.length > 0 ? (
                                 currentItems.map(card => (
-                                    <CardListItem 
-                                        key={card.card_id} 
-                                        card={card} 
-                                        scanCount={scans[card.card_id] || 0} 
-                                        navigate={navigate} 
-                                        toast={toast} 
+                                    <CardListItem
+                                        key={card.card_id}
+                                        card={card}
+                                        scanCount={scans[card.card_id] || 0}
+                                        navigate={navigate}
+                                        toast={toast}
                                         onResolve={() => resolveRequest(card.card_id)}
                                     />
                                 ))
@@ -1073,8 +1159,8 @@ export default function AdminDashboard() {
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '32px', paddingBottom: '40px' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                     <span style={{ fontSize: '13px', color: '#64748B', fontWeight: '600' }}>Afficher</span>
-                                    <select 
-                                        value={quantity} 
+                                    <select
+                                        value={quantity}
                                         onChange={(e) => setQuantity(Number(e.target.value))}
                                         style={{ padding: '8px 12px', borderRadius: '10px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '700', color: '#1A1265', cursor: 'pointer' }}
                                     >
@@ -1086,7 +1172,7 @@ export default function AdminDashboard() {
                                 </div>
 
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <button 
+                                    <button
                                         disabled={currentPage === 1}
                                         onClick={() => setCurrentPage(prev => prev - 1)}
                                         style={{ padding: '10px 18px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', color: '#1A1265', fontWeight: '800', cursor: currentPage === 1 ? 'default' : 'pointer', opacity: currentPage === 1 ? 0.5 : 1, transition: 'all 0.2s' }}
@@ -1095,7 +1181,7 @@ export default function AdminDashboard() {
                                     </button>
                                     <div style={{ display: 'flex', gap: '6px' }}>
                                         {[...Array(totalPages)].map((_, i) => (
-                                            <button 
+                                            <button
                                                 key={i}
                                                 onClick={() => setCurrentPage(i + 1)}
                                                 style={{ width: '40px', height: '40px', borderRadius: '12px', border: 'none', background: currentPage === i + 1 ? '#1A1265' : 'white', color: currentPage === i + 1 ? 'white' : '#64748B', fontWeight: '800', cursor: 'pointer', transition: 'all 0.2s', border: currentPage === i + 1 ? 'none' : '1px solid #E2E8F0' }}
@@ -1104,7 +1190,7 @@ export default function AdminDashboard() {
                                             </button>
                                         ))}
                                     </div>
-                                    <button 
+                                    <button
                                         disabled={currentPage === totalPages}
                                         onClick={() => setCurrentPage(prev => prev + 1)}
                                         style={{ padding: '10px 18px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', color: '#1A1265', fontWeight: '800', cursor: currentPage === totalPages ? 'default' : 'pointer', opacity: currentPage === totalPages ? 0.5 : 1, transition: 'all 0.2s' }}
@@ -1162,7 +1248,7 @@ export default function AdminDashboard() {
                     }
                 }
             `}</style>
-            
+
             {/* Floating Selection Bar */}
             {selectedCards.length > 0 && view === 'production' && (
                 <div style={{ position: 'fixed', bottom: '30px', left: '50%', transform: 'translateX(-50%)', background: '#1A1265', padding: '12px 24px', borderRadius: '100px', display: 'flex', alignItems: 'center', gap: '24px', boxShadow: '0 10px 40px rgba(0,0,0,0.3)', zIndex: 1000, border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}>
@@ -1172,9 +1258,9 @@ export default function AdminDashboard() {
                         </div>
                         <span style={{ color: 'white', fontWeight: '800', fontSize: '14px' }}>{selectedCards.length} sélectionnés</span>
                     </div>
-                    
+
                     <div style={{ width: '1px', height: '24px', background: 'rgba(255,255,255,0.2)' }}></div>
-                    
+
                     <div style={{ display: 'flex', gap: '12px' }}>
                         <button onClick={() => handleDownloadAll(selectedCards)} style={{ background: 'white', color: '#1A1265', border: 'none', padding: '8px 16px', borderRadius: '50px', fontWeight: '800', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>` }} /> ZIP
@@ -1186,7 +1272,7 @@ export default function AdminDashboard() {
                     </div>
                 </div>
             )}
-            
+
             {/* Print Section (Visible only during print) */}
             <div className="print-section" style={{ display: 'none' }}>
                 {cards.filter(c => !c.owner_id).map(card => (
@@ -1206,10 +1292,10 @@ function ProductionCard({ card, toast, isPrintMode = false, hideId = false, incl
             if (qrRef.current) {
                 const qrColor = card.admin_profile?.primaryColor || "#1A1265";
                 const tintedLogo = includeLogo ? await getTintedLogo(qrColor) : null;
-                
+
                 const qrCode = new QRCodeStyling({
-                    width: isPrintMode ? 200 : 160, 
-                    height: isPrintMode ? 200 : 160, 
+                    width: isPrintMode ? 200 : 160,
+                    height: isPrintMode ? 200 : 160,
                     data: activationUrl,
                     margin: 5,
                     dotsOptions: { color: qrColor, type: "rounded" },
@@ -1237,7 +1323,7 @@ function ProductionCard({ card, toast, isPrintMode = false, hideId = false, incl
     const downloadQR = async () => {
         const qrColor = card.admin_profile?.primaryColor || "#1A1265";
         const tintedLogo = includeLogo ? await getTintedLogo(qrColor) : null;
-        
+
         const qrCode = new QRCodeStyling({
             width: 1000, height: 1000, data: activationUrl,
             margin: 5,
@@ -1258,9 +1344,9 @@ function ProductionCard({ card, toast, isPrintMode = false, hideId = false, incl
 
     return (
         <div className={isPrintMode ? "print-card" : ""} style={{ position: 'relative', background: 'white', borderRadius: isPrintMode ? '0' : '24px', padding: isPrintMode ? '20px' : '24px', border: isPrintMode ? 'none' : isSelected ? '2px solid #1A1265' : '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', breakInside: 'avoid', transition: 'all 0.2s', transform: isSelected ? 'scale(1.02)' : 'none', boxShadow: isSelected ? '0 12px 30px rgba(26,18,101,0.1)' : 'none' }}>
-            
+
             {!isPrintMode && (
-                <div 
+                <div
                     onClick={onSelect}
                     style={{ position: 'absolute', top: '16px', left: '16px', width: '24px', height: '24px', borderRadius: '8px', border: '2px solid #E2E8F0', background: isSelected ? '#1A1265' : 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s', zIndex: 10 }}
                 >
@@ -1271,19 +1357,19 @@ function ProductionCard({ card, toast, isPrintMode = false, hideId = false, incl
             {(!hideId || !isPrintMode) && (
                 <div style={{ fontWeight: '1000', color: '#1A1265', fontSize: isPrintMode ? '18px' : '14px', marginBottom: isPrintMode ? '12px' : '16px', fontFamily: 'monospace' }}>{card.card_id}</div>
             )}
-            
+
             <div ref={qrRef} style={{ padding: '0', borderRadius: '16px', marginBottom: isPrintMode ? '0' : '16px', border: 'none', overflow: 'hidden', boxShadow: isPrintMode ? 'none' : '0 8px 20px rgba(0,0,0,0.1)' }}></div>
-            
+
             {!isPrintMode && (
                 <div style={{ width: '100%', display: 'flex', gap: '8px' }}>
-                    <button 
-                        onClick={() => { navigator.clipboard.writeText(activationUrl); toast('Lien copié !', 'success'); }} 
+                    <button
+                        onClick={() => { navigator.clipboard.writeText(activationUrl); toast('Lien copié !', 'success'); }}
                         style={{ flex: 1, padding: '10px', borderRadius: '10px', border: '1px solid #E2E8F0', background: 'white', color: '#1A1265', fontWeight: '800', cursor: 'pointer', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
                     >
                         <div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>` }} /> Copier
                     </button>
-                    <button 
-                        onClick={downloadQR} 
+                    <button
+                        onClick={downloadQR}
                         style={{ flex: 1, padding: '10px', borderRadius: '10px', border: 'none', background: '#F1F5F9', color: '#1A1265', fontWeight: '800', cursor: 'pointer', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
                     >
                         <div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>` }} /> QR
@@ -1298,7 +1384,7 @@ function CardListItem({ card, scanCount, navigate, toast, onResolve }) {
     const qrRef = useRef(null);
     const isActive = card.status === 'active';
     const isPendingRequest = card.design_request === 'pending';
-    
+
     useEffect(() => {
         if (qrRef.current) {
             const qrCode = new QRCodeStyling({
@@ -1320,7 +1406,7 @@ function CardListItem({ card, scanCount, navigate, toast, onResolve }) {
                     <div style={{ width: 10, height: 10 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5"></circle><circle cx="17.5" cy="10.5" r=".5"></circle><circle cx="8.5" cy="7.5" r=".5"></circle><circle cx="6.5" cy="12.5" r=".5"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.6-.5 2-1.2.3.7 1 1.2 1.9 1.2h.1c1.1 0 2-.9 2-2 0-.4-.1-.8-.3-1.2.7.4 1.5.7 2.3.7 1.1 0 2-.9 2-2 0-5.5-4.5-10-10-10z"></path></svg>` }} /> DEMANDE DE DESIGN
                 </div>
             )}
-            
+
             <div className="card-info-group" style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '24px' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
                     <div ref={qrRef} style={{ width: '76px', height: '76px', background: '#F8FAFC', borderRadius: '14px', border: '1px solid #F1F5F9', overflow: 'hidden', flexShrink: 0 }}></div>
@@ -1351,17 +1437,17 @@ function CardListItem({ card, scanCount, navigate, toast, onResolve }) {
 
             <div className="card-actions-group" style={{ display: 'flex', gap: '8px' }}>
                 {!card.owner_id && (
-                        <button 
-                            onClick={() => {
-                                const url = `${window.location.origin}/activate?card=${card.card_id}&token=${card.activation_token}`;
-                                navigator.clipboard.writeText(url);
-                                toast('Lien d\'activation copié !', 'success');
-                            }} 
-                            style={{ background: '#F1F5F9', color: '#475569', padding: '10px 16px', borderRadius: '10px', border: '1px solid #E2E8F0', fontWeight: '800', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', gap: 6 }}
-                            title="Copier le lien d'activation pour le client"
-                        >
-                            <div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3L15.5 7.5z"></path></svg>` }} /> Lien
-                        </button>
+                    <button
+                        onClick={() => {
+                            const url = `${window.location.origin}/activate?card=${card.card_id}&token=${card.activation_token}`;
+                            navigator.clipboard.writeText(url);
+                            toast('Lien d\'activation copié !', 'success');
+                        }}
+                        style={{ background: '#F1F5F9', color: '#475569', padding: '10px 16px', borderRadius: '10px', border: '1px solid #E2E8F0', fontWeight: '800', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', gap: 6 }}
+                        title="Copier le lien d'activation pour le client"
+                    >
+                        <div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3L15.5 7.5z"></path></svg>` }} /> Lien
+                    </button>
                 )}
                 {isPendingRequest ? (
                     <button onClick={onResolve} style={{ background: '#10B981', color: 'white', padding: '10px 16px', borderRadius: '10px', border: 'none', fontWeight: '800', cursor: 'pointer', fontSize: '13px' }}>Fait</button>

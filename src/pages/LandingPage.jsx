@@ -12,14 +12,14 @@ export default function LandingPage() {
             setScrolled(window.scrollY > 20);
         };
         window.addEventListener('scroll', handleScroll);
-        
+
         supabase.auth.getSession().then(({ data: { session } }) => {
             setSession(session);
         });
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             setSession(session);
         });
-        
+
         return () => {
             window.removeEventListener('scroll', handleScroll);
             subscription?.unsubscribe();
@@ -315,12 +315,12 @@ export default function LandingPage() {
                     <a href="#tarifs" className="nav-link">Nos Packs</a>
                 </div>
                 <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                    
+
                     {/* Bouton WhatsApp (Desktop) */}
                     <button onClick={() => window.open(getWhatsAppUrl(), '_blank')} className="btn-primary desktop-only" style={{ padding: '10px 16px', fontSize: '14px', whiteSpace: 'nowrap' }}>
                         Commander
                     </button>
-                    
+
                     {/* Bouton WhatsApp (Mobile) */}
                     <button onClick={() => window.open(getWhatsAppUrl(), '_blank')} className="mobile-only" style={{ background: '#25D366', border: 'none', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 10px rgba(37, 211, 102, 0.3)' }}>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
@@ -380,9 +380,9 @@ export default function LandingPage() {
                                     <span style={{ fontSize: '16px' }}>&#8594;</span>
                                 </a>
                             </div>
-                           
+
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#6B7280', fontWeight: '600' }}>
-                               <span><strong style={{ color: '#10B981' }}>100% Sécurisé.</strong> Vos données sont modifiables uniquement par vous.</span>
+                                <span><strong style={{ color: '#10B981' }}>100% Sécurisé.</strong> Vos données sont modifiables uniquement par vous.</span>
                             </div>
                         </div>
 
@@ -390,29 +390,29 @@ export default function LandingPage() {
                             <div style={{ position: 'relative', width: '100%', maxWidth: '300px' }}>
                                 {/* Arrière-plan coloré pour faire ressortir l'image */}
                                 <div style={{ position: 'absolute', top: '10px', left: '-10px', right: '10px', bottom: '-10px', background: 'linear-gradient(135deg, #4F46E5, #0EA5E9)', borderRadius: '32px', opacity: 0.15, filter: 'blur(20px)', zIndex: 0 }}></div>
-                                
-                                <video 
-                                    src="/demo-nfc.mp4" 
-                                    autoPlay 
-                                    loop 
-                                    muted 
+
+                                <video
+                                    src="/demo-nfc.mp4"
+                                    autoPlay
+                                    loop
+                                    muted
                                     playsInline
                                     controls
-                                    style={{ 
-                                        width: '100%', 
-                                        height: '400px', 
-                                        borderRadius: '32px', 
-                                        boxShadow: '0 25px 60px rgba(0,0,0,0.15)', 
-                                        transform: 'rotate(-2deg)', 
+                                    style={{
+                                        width: '100%',
+                                        height: '400px',
+                                        borderRadius: '32px',
+                                        boxShadow: '0 25px 60px rgba(0,0,0,0.15)',
+                                        transform: 'rotate(-2deg)',
                                         border: '6px solid white',
                                         position: 'relative',
                                         zIndex: 1,
                                         animation: 'floatSlow 6s ease-in-out infinite',
                                         objectFit: 'cover',
                                         backgroundColor: '#1A1265'
-                                    }} 
+                                    }}
                                 />
-                                
+
                                 {/* Badge de statut flottant */}
                                 <div className="glass-panel" style={{ position: 'absolute', bottom: '-15px', right: '-15px', padding: '10px 18px', borderRadius: '100px', zIndex: 2, display: 'flex', alignItems: 'center', gap: '8px', animation: 'floatFast 4s ease-in-out infinite', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}>
                                     <div style={{ width: '20px', height: '20px', display: 'flex' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>` }} />
@@ -471,12 +471,12 @@ export default function LandingPage() {
             {/* Showcase 3D Cards Section (Dark Mode Premium) */}
             <section className="section showcase-mobile-fix" style={{ background: '#111827', color: 'white', position: 'relative', overflow: 'hidden' }}>
                 <div className="bg-orb" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '80vw', height: '80vw', background: '#374151', filter: 'blur(120px)', opacity: 0.6 }}></div>
-                
+
                 <div className="container" style={{ position: 'relative', zIndex: 10 }}>
                     <div className="hero-grid" style={{ minHeight: 'unset', padding: '0', alignItems: 'center' }}>
                         <div className="hero-text animate-fade-up">
                             <h2 style={{ fontSize: '44px', fontWeight: '900', fontFamily: 'Outfit', color: 'white', letterSpacing: '-0.02em', marginBottom: '24px' }}>
-                                Une carte premium,<br/>100% à votre image.
+                                Une carte premium,<br />100% à votre image.
                             </h2>
                             <p style={{ color: '#D1D5DB', fontSize: '18px', marginBottom: '32px', lineHeight: '1.6' }}>
                                 Ne vous contentez pas d'une carte standard. Intégrez votre logo, votre nom et vos couleurs. Nos cartes NFC sont conçues en matériaux durables pour laisser une impression inoubliable à chaque rencontre.
@@ -496,13 +496,13 @@ export default function LandingPage() {
                                 </li>
                             </ul>
 
-                            
-                            
+
+
                             <button onClick={() => window.open(getWhatsAppUrl('physique'), '_blank')} className="btn-primary" style={{ background: 'white', color: '#111827', border: 'none', boxShadow: '0 10px 20px rgba(0,0,0,0.3)' }}>
                                 Je veux ma carte physique
                             </button>
                         </div>
-                        
+
                         {/* 3D Floating Cards optimized for mobile */}
                         <div className="animate-fade-up delay-1" style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
                             <div className="visual-stack showcase-stack-mobile">
@@ -568,7 +568,7 @@ export default function LandingPage() {
                         {/* Physical Audience Only */}
                         <div className="glass-panel animate-fade-up delay-1" style={{ padding: '40px', background: '#111827', color: 'white', border: '1px solid #374151', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden', maxWidth: '800px' }}>
                             <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '150px', height: '150px', opacity: '0.05', pointerEvents: 'none', display: 'flex' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>` }} />
-                            
+
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px', position: 'relative', zIndex: 1 }}>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                     <div style={{ background: 'linear-gradient(90deg, #F59E0B, #FBBF24)', color: '#111827', padding: '4px 12px', borderRadius: '100px', fontSize: '11px', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '4px', alignSelf: 'flex-start', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
@@ -577,9 +577,9 @@ export default function LandingPage() {
                                     <h3 style={{ fontSize: '28px', fontWeight: '900', fontFamily: 'Outfit', margin: 0, color: 'white' }}>La Carte NFCrafter</h3>
                                 </div>
                             </div>
-                            
+
                             <div style={{ fontWeight: '700', color: '#9CA3AF', marginBottom: '32px', fontSize: '16px', position: 'relative', zIndex: 1 }}>L'atout des rencontres en présentiel et digital</div>
-                            
+
                             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', flex: 1, position: 'relative', zIndex: 1 }}>
                                 <li style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
                                     <div style={{ background: 'rgba(255,255,255,0.1)', color: 'white', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px', fontWeight: 'bold' }}>✓</div>
@@ -659,7 +659,7 @@ export default function LandingPage() {
                     <p style={{ color: '#4B5563', fontSize: '13px', marginTop: '16px', fontWeight: '600' }}>Design inclus — Livraison sous 24-48h</p>
                 </div>
             </section>
-            
+
 
             {/* Steps Section - New Model */}
             <section className="section" style={{ background: 'white', position: 'relative', overflow: 'hidden' }}>
@@ -675,23 +675,23 @@ export default function LandingPage() {
                         <div className="desktop-only" style={{ position: 'absolute', top: '120px', left: '100px', right: '100px', height: '2px', background: 'linear-gradient(90deg, #E0E7FF 0%, #E0E7FF 100%)', zIndex: 0, opacity: 0.5 }}></div>
 
                         {[
-                            { 
-                                step: "01", 
-                                title: "Choisissez votre Modèle", 
+                            {
+                                step: "01",
+                                title: "Choisissez votre Modèle",
                                 desc: "Parcourez nos modèles déjà prêts et choisissez la couleur ou le style qui vous correspond le mieux.",
                                 icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>`,
                                 color: "#4F46E5"
                             },
-                            { 
-                                step: "02", 
-                                title: "Commandez & Recevez", 
+                            {
+                                step: "02",
+                                title: "Commandez & Recevez",
                                 desc: "Validez votre commande sur WhatsApp. Recevez votre carte physique chez vous sous 24h à 48h.",
                                 icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 1 1-7.6-10.4 8.38 8.38 0 0 1 3.9.9L21 4.2Z"/></svg>`,
                                 color: "#10B981"
                             },
-                            { 
-                                step: "03", 
-                                title: "Activez & Personnalisez", 
+                            {
+                                step: "03",
+                                title: "Activez & Personnalisez",
                                 desc: "Une fois votre carte en main, activez-la d'un simple geste et créez votre profil (liens, réseaux, bio) en quelques secondes.",
                                 icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
                                 color: "#F59E0B"
@@ -779,11 +779,11 @@ export default function LandingPage() {
                     </div>
                 </div>
             </section>
-            
+
             {/* New Dedicated "Centralize All" Section */}
             <section className="section" style={{ background: '#F9FAFB', overflow: 'hidden', position: 'relative', borderTop: '1px solid #E5E7EB', borderBottom: '1px solid #E5E7EB' }}>
                 <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '60vw', height: '60vw', background: 'radial-gradient(circle, rgba(79,70,229,0.05) 0%, transparent 70%)', pointerEvents: 'none' }}></div>
-                
+
                 <div className="container">
                     <div className="hero-grid" style={{ minHeight: 'unset', gap: '80px', alignItems: 'center' }}>
                         <div className="animate-fade-up" style={{ order: 2 }}>
@@ -794,7 +794,7 @@ export default function LandingPage() {
                             <p style={{ color: '#4B5563', fontSize: '19px', marginBottom: '32px', lineHeight: '1.6' }}>
                                 Ne forcez plus vos clients à vous chercher. Rassemblez vos réseaux sociaux, vos moyens de paiement, vos documents et vos liens pro en un seul endroit élégant et accessible.
                             </p>
-                            
+
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                                 {[
                                     { icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>`, color: '#3B82F6', title: "Réseaux Sociaux", sub: "Instagram, TikTok, LinkedIn..." },
@@ -815,15 +815,15 @@ export default function LandingPage() {
                         <div className="animate-fade-up delay-1" style={{ order: 1, position: 'relative' }}>
                             <div style={{ position: 'relative', width: '100%', maxWidth: '500px', margin: '0 auto' }}>
                                 {/* Big Visual */}
-                                <img 
-                                    src="/social-links.png" 
-                                    alt="Centralisation liens" 
-                                    style={{ 
-                                        width: '100%', 
+                                <img
+                                    src="/social-links.png"
+                                    alt="Centralisation liens"
+                                    style={{
+                                        width: '100%',
                                         filter: 'drop-shadow(0 30px 60px rgba(0,0,0,0.12))',
                                         animation: 'floatSlow 8s ease-in-out infinite',
                                         mixBlendMode: 'multiply'
-                                    }} 
+                                    }}
                                 />
                                 {/* Floating Badges */}
                                 <div style={{ position: 'absolute', top: '10%', left: '-20px', background: 'white', padding: '12px 20px', borderRadius: '16px', boxShadow: '0 10px 25px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', gap: '10px', animation: 'floatMed 5s ease-in-out infinite', zIndex: 10 }}>
@@ -848,38 +848,38 @@ export default function LandingPage() {
 
                 <div className="container" style={{ position: 'relative', zIndex: 10 }}>
                     <div className="hero-grid" style={{ alignItems: 'center', gap: '64px', minHeight: 'unset', padding: '0' }}>
-                        
+
                         {/* Text Content */}
                         <div className="animate-fade-up">
                             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(79, 70, 229, 0.2)', border: '1px solid rgba(79, 70, 229, 0.4)', padding: '8px 20px', borderRadius: '100px', fontSize: '13px', fontWeight: '800', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '24px', color: '#A5B4FC' }}>
                                 <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#818CF8', display: 'inline-block', boxShadow: '0 0 10px #818CF8' }}></span>
                                 Au-delà de la carte
                             </div>
-                            
+
                             <h2 style={{ fontSize: '48px', fontWeight: '900', fontFamily: 'Outfit', color: 'white', letterSpacing: '-0.02em', marginBottom: '24px', lineHeight: '1.1' }}>
                                 On crée aussi votre <span style={{ color: '#818CF8', textShadow: '0 0 30px rgba(129, 140, 248, 0.4)' }}>Site Internet</span> de A à Z.
                             </h2>
-                            
+
                             <p style={{ color: '#D1D5DB', fontSize: '18px', marginBottom: '24px', lineHeight: '1.6' }}>
                                 La carte NFC est parfaite pour le contact physique. Mais pour exister en ligne et digitaliser votre business, il vous faut un site web sur-mesure à intégrer dans votre profil digital NFCrafter. Confiez-nous votre projet.
                             </p>
 
-                             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', background: 'linear-gradient(90deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.2))', border: '1px solid rgba(16, 185, 129, 0.3)', padding: '12px 24px', borderRadius: '12px', marginBottom: '40px' }}>
-                                 <div style={{ width: '24px', height: '24px', color: '#34D399' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>` }} />
-                                 <span style={{ color: '#34D399', fontWeight: '800', fontSize: '16px', letterSpacing: '0.5px' }}>Un site commandé = Une carte personnalisée offerte !</span>
-                             </div>
+                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', background: 'linear-gradient(90deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.2))', border: '1px solid rgba(16, 185, 129, 0.3)', padding: '12px 24px', borderRadius: '12px', marginBottom: '40px' }}>
+                                <div style={{ width: '24px', height: '24px', color: '#34D399' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>` }} />
+                                <span style={{ color: '#34D399', fontWeight: '800', fontSize: '16px', letterSpacing: '0.5px' }}>Un site commandé = Une carte personnalisée offerte !</span>
+                            </div>
 
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '40px' }}>
-                                 <div style={{ background: 'rgba(255,255,255,0.05)', padding: '24px', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}>
-                                     <div style={{ width: '32px', height: '32px', color: '#818CF8', marginBottom: '16px' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>` }} />
-                                     <h4 style={{ fontSize: '18px', fontWeight: '800', fontFamily: 'Outfit', color: 'white', marginBottom: '8px' }}>Sites Vitrines</h4>
-                                     <p style={{ fontSize: '14px', color: '#9CA3AF', lineHeight: '1.5' }}>Présentez votre entreprise, vos services et attirez de nouveaux prospects.</p>
-                                 </div>
-                                 <div style={{ background: 'rgba(255,255,255,0.05)', padding: '24px', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}>
-                                     <div style={{ width: '32px', height: '32px', color: '#38BDF8', marginBottom: '16px' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>` }} />
-                                     <h4 style={{ fontSize: '18px', fontWeight: '800', fontFamily: 'Outfit', color: 'white', marginBottom: '8px' }}>Boutiques E-commerce</h4>
-                                     <p style={{ fontSize: '14px', color: '#9CA3AF', lineHeight: '1.5' }}>Vendez vos produits en ligne avec des paiements sécurisés intégrés.</p>
-                                 </div>
+                                <div style={{ background: 'rgba(255,255,255,0.05)', padding: '24px', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}>
+                                    <div style={{ width: '32px', height: '32px', color: '#818CF8', marginBottom: '16px' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>` }} />
+                                    <h4 style={{ fontSize: '18px', fontWeight: '800', fontFamily: 'Outfit', color: 'white', marginBottom: '8px' }}>Sites Vitrines</h4>
+                                    <p style={{ fontSize: '14px', color: '#9CA3AF', lineHeight: '1.5' }}>Présentez votre entreprise, vos services et attirez de nouveaux prospects.</p>
+                                </div>
+                                <div style={{ background: 'rgba(255,255,255,0.05)', padding: '24px', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}>
+                                    <div style={{ width: '32px', height: '32px', color: '#38BDF8', marginBottom: '16px' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>` }} />
+                                    <h4 style={{ fontSize: '18px', fontWeight: '800', fontFamily: 'Outfit', color: 'white', marginBottom: '8px' }}>Boutiques E-commerce</h4>
+                                    <p style={{ fontSize: '14px', color: '#9CA3AF', lineHeight: '1.5' }}>Vendez vos produits en ligne avec des paiements sécurisés intégrés.</p>
+                                </div>
                             </div>
 
                             <button onClick={() => window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Bonjour NFCrafter, je voudrais discuter de la création d\'un site internet professionnel pour mon entreprise. Pouvons-nous en parler ?')}`, '_blank')} className="btn-primary" style={{ background: 'white', color: '#111827', width: '100%', maxWidth: '400px', fontSize: '16px', padding: '20px 32px' }}>
@@ -892,7 +892,7 @@ export default function LandingPage() {
                             <div style={{ position: 'relative', width: '100%', maxWidth: '500px' }}>
                                 {/* Decorative elements */}
                                 <div style={{ position: 'absolute', top: '10%', right: '-5%', width: '120px', height: '120px', background: 'linear-gradient(135deg, #3B82F6, #8B5CF6)', borderRadius: '50%', filter: 'blur(40px)', zIndex: 0 }}></div>
-                                
+
                                 {/* Main Laptop Mockup */}
                                 <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px', padding: '16px', position: 'relative', zIndex: 1, backdropFilter: 'blur(20px)', boxShadow: '0 30px 60px rgba(0,0,0,0.5)' }}>
                                     <div style={{ background: '#0F172A', borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.05)' }}>
@@ -911,7 +911,7 @@ export default function LandingPage() {
                                             <div style={{ width: '40%', height: '16px', background: 'rgba(255,255,255,0.1)', borderRadius: '8px', marginBottom: '24px' }}></div>
                                             <div style={{ width: '80%', height: '32px', background: 'linear-gradient(90deg, #818CF8, #38BDF8)', borderRadius: '8px', marginBottom: '16px' }}></div>
                                             <div style={{ width: '60%', height: '32px', background: 'rgba(255,255,255,0.2)', borderRadius: '8px', marginBottom: '32px' }}></div>
-                                            
+
                                             <div style={{ display: 'flex', gap: '16px', marginBottom: '40px' }}>
                                                 <div style={{ width: '120px', height: '36px', background: '#38BDF8', borderRadius: '100px' }}></div>
                                                 <div style={{ width: '120px', height: '36px', background: 'rgba(255,255,255,0.1)', borderRadius: '100px' }}></div>
@@ -925,7 +925,7 @@ export default function LandingPage() {
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                     {/* Mobile Mockup overlapping */}
                                     <div style={{ position: 'absolute', bottom: '-20px', right: '-20px', width: '140px', background: '#0F172A', border: '4px solid #1E293B', borderRadius: '24px', padding: '8px', zIndex: 2, boxShadow: '0 20px 40px rgba(0,0,0,0.6)' }}>
                                         <div style={{ width: '40px', height: '4px', background: 'rgba(255,255,255,0.2)', borderRadius: '4px', margin: '0 auto 12px auto' }}></div>
@@ -951,47 +951,47 @@ export default function LandingPage() {
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
-                         <div className="glass-panel animate-fade-up delay-1" style={{ padding: '32px', background: '#F8FAFC', border: '1px solid #E2E8F0', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
-                             <div style={{ color: '#F59E0B', fontSize: '20px', marginBottom: '16px' }}>★★★★★</div>
-                             <p style={{ color: '#4B5563', fontSize: '16px', lineHeight: '1.6', marginBottom: '24px', fontStyle: 'italic' }}>"Je ne perds plus aucun contact après mes séminaires. Les gens scannent ma carte et j'ai directement un nouveau follower ou un message WhatsApp. C'est magique !"</p>
-                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                 <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748B', padding: 12 }}>
-                                     <div style={{ width: '100%', height: '100%' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>` }} />
-                                 </div>
-                                 <div>
-                                     <h4 style={{ fontWeight: '800', color: '#111827', fontSize: '15px' }}>Alain D.</h4>
-                                     <span style={{ color: '#64748B', fontSize: '13px' }}>Entrepreneur Web</span>
-                                 </div>
-                             </div>
-                         </div>
- 
-                         <div className="glass-panel animate-fade-up delay-2" style={{ padding: '32px', background: '#F8FAFC', border: '1px solid #E2E8F0', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
-                             <div style={{ color: '#F59E0B', fontSize: '20px', marginBottom: '16px' }}>★★★★★</div>
-                             <p style={{ color: '#4B5563', fontSize: '16px', lineHeight: '1.6', marginBottom: '24px', fontStyle: 'italic' }}>"Mes clients au restaurant adorent ! Ils scannent la carte sur le comptoir, voient le menu (que j'ai commandé sur NFCrafter) et s'abonnent à notre page Instagram. C'est ultra pratique et pro."</p>
-                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                 <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748B', padding: 12 }}>
-                                     <div style={{ width: '100%', height: '100%' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>` }} />
-                                 </div>
-                                 <div>
-                                     <h4 style={{ fontWeight: '800', color: '#111827', fontSize: '15px' }}>Sarah M.</h4>
-                                     <span style={{ color: '#64748B', fontSize: '13px' }}>Gérante de Restaurant</span>
-                                 </div>
-                             </div>
-                         </div>
- 
-                         <div className="glass-panel animate-fade-up delay-3" style={{ padding: '32px', background: '#F8FAFC', border: '1px solid #E2E8F0', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
-                             <div style={{ color: '#F59E0B', fontSize: '20px', marginBottom: '16px' }}>★★★★★</div>
-                             <p style={{ color: '#4B5563', fontSize: '16px', lineHeight: '1.6', marginBottom: '24px', fontStyle: 'italic' }}>"La qualité de la carte est incroyable. Quand je la sors en rendez-vous client, ça crée direct l'effet waouh. C'est le meilleur investissement pour mon business."</p>
-                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                 <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748B', padding: 12 }}>
-                                     <div style={{ width: '100%', height: '100%' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>` }} />
-                                 </div>
-                                 <div>
-                                     <h4 style={{ fontWeight: '800', color: '#111827', fontSize: '15px' }}>Marc K.</h4>
-                                     <span style={{ color: '#64748B', fontSize: '13px' }}>Freelance IT</span>
-                                 </div>
-                             </div>
-                         </div>
+                        <div className="glass-panel animate-fade-up delay-1" style={{ padding: '32px', background: '#F8FAFC', border: '1px solid #E2E8F0', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
+                            <div style={{ color: '#F59E0B', fontSize: '20px', marginBottom: '16px' }}>★★★★★</div>
+                            <p style={{ color: '#4B5563', fontSize: '16px', lineHeight: '1.6', marginBottom: '24px', fontStyle: 'italic' }}>"Je ne perds plus aucun contact après mes séminaires. Les gens scannent ma carte et j'ai directement un nouveau follower ou un message WhatsApp. C'est magique !"</p>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748B', padding: 12 }}>
+                                    <div style={{ width: '100%', height: '100%' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>` }} />
+                                </div>
+                                <div>
+                                    <h4 style={{ fontWeight: '800', color: '#111827', fontSize: '15px' }}>Alain D.</h4>
+                                    <span style={{ color: '#64748B', fontSize: '13px' }}>Entrepreneur Web</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="glass-panel animate-fade-up delay-2" style={{ padding: '32px', background: '#F8FAFC', border: '1px solid #E2E8F0', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
+                            <div style={{ color: '#F59E0B', fontSize: '20px', marginBottom: '16px' }}>★★★★★</div>
+                            <p style={{ color: '#4B5563', fontSize: '16px', lineHeight: '1.6', marginBottom: '24px', fontStyle: 'italic' }}>"Mes clients au restaurant adorent ! Ils scannent la carte sur le comptoir, voient le menu (que j'ai commandé sur NFCrafter) et s'abonnent à notre page Instagram. C'est ultra pratique et pro."</p>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748B', padding: 12 }}>
+                                    <div style={{ width: '100%', height: '100%' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>` }} />
+                                </div>
+                                <div>
+                                    <h4 style={{ fontWeight: '800', color: '#111827', fontSize: '15px' }}>Sarah M.</h4>
+                                    <span style={{ color: '#64748B', fontSize: '13px' }}>Gérante de Restaurant</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="glass-panel animate-fade-up delay-3" style={{ padding: '32px', background: '#F8FAFC', border: '1px solid #E2E8F0', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
+                            <div style={{ color: '#F59E0B', fontSize: '20px', marginBottom: '16px' }}>★★★★★</div>
+                            <p style={{ color: '#4B5563', fontSize: '16px', lineHeight: '1.6', marginBottom: '24px', fontStyle: 'italic' }}>"La qualité de la carte est incroyable. Quand je la sors en rendez-vous client, ça crée direct l'effet waouh. C'est le meilleur investissement pour mon business."</p>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748B', padding: 12 }}>
+                                    <div style={{ width: '100%', height: '100%' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>` }} />
+                                </div>
+                                <div>
+                                    <h4 style={{ fontWeight: '800', color: '#111827', fontSize: '15px' }}>Marc K.</h4>
+                                    <span style={{ color: '#64748B', fontSize: '13px' }}>Freelance IT</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -1011,7 +1011,7 @@ export default function LandingPage() {
                                 Oui, à 100% ! Tous les smartphones récents (iPhone depuis 2018, Android) intègrent la technologie NFC et scannent la carte par simple contact. Pour les téléphones plus anciens, le QR Code gravé sur le dos de la carte prend le relais instantanément via scan QR.
                             </div>
                         </details>
-                        
+
                         <details>
                             <summary>Mon interlocuteur a-t-il besoin d'une application ?</summary>
                             <div className="faq-content">
@@ -1058,7 +1058,7 @@ export default function LandingPage() {
                         onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 25px rgba(37,211,102,0.4)'; }}
                         onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 15px rgba(37,211,102,0.3)'; }}
                     >
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" /></svg>
                         Nous contacter sur WhatsApp
                     </a>
                 </div>
