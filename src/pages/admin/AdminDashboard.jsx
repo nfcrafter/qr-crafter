@@ -1267,11 +1267,10 @@ export default function AdminDashboard() {
                                             border: 1px solid rgba(255,255,255,0.1);
                                         }
                                         .showcase-back {
-                                            transform: translateZ(-60px) translateX(120px) translateY(120px) rotate(8deg);
-                                            opacity: 0.8;
+                                            transform: translateZ(-60px) translateX(80px) translateY(80px) rotate(6deg);
                                         }
                                         .showcase-front {
-                                            transform: translateZ(60px) translateX(-80px) translateY(-80px) rotate(-5deg);
+                                            transform: translateZ(60px) translateX(-60px) translateY(-60px) rotate(-4deg);
                                         }
                                     ` }} />
                                     
