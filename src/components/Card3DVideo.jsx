@@ -12,14 +12,24 @@ import * as THREE from 'three';
 const CardContent = ({ frontImage, backImage }) => {
   const groupRef = useRef();
   
-  // Textures loading
+  // Textures loading with high-quality settings
   const frontTexture = useTexture(frontImage);
   const backTexture = useTexture(backImage);
   
+  useMemo(() => {
+    [frontTexture, backTexture].forEach(t => {
+      t.anisotropy = 16;
+      t.minFilter = THREE.LinearMipmapLinearFilter;
+      t.magFilter = THREE.LinearFilter;
+      t.needsUpdate = true;
+    });
+  }, [frontTexture, backTexture]);
+
   // Dimensions
   const width = 3.37;
   const height = 2.125;
   const radius = 0.12;
+  const thickness = 0.08; // Augmenté pour un aspect plus solide
 
   // Create rounded rectangle shape
   const shape = useMemo(() => {
@@ -47,42 +57,40 @@ const CardContent = ({ frontImage, backImage }) => {
   return (
     <group ref={groupRef}>
       {/* Front Face */}
-      <mesh position={[0, 0, 0.011]}>
+      <mesh position={[0, 0, thickness / 2 + 0.001]}>
         <shapeGeometry args={[shape]} />
         <meshPhysicalMaterial 
           map={frontTexture} 
-          roughness={0.15} 
+          roughness={0.1} 
           metalness={0.05} 
           clearcoat={1}
-          clearcoatRoughness={0.1}
+          clearcoatRoughness={0.05}
           emissive="#ffffff"
-          emissiveIntensity={0.05}
+          emissiveIntensity={0.02}
         />
       </mesh>
 
       {/* Back Face */}
-      <mesh position={[0, 0, -0.011]} rotation={[0, Math.PI, 0]}>
+      <mesh position={[0, 0, -(thickness / 2 + 0.001)]} rotation={[0, Math.PI, 0]}>
         <shapeGeometry args={[shape]} />
         <meshPhysicalMaterial 
           map={backTexture} 
-          roughness={0.15} 
+          roughness={0.1} 
           metalness={0.05} 
           clearcoat={1}
-          clearcoatRoughness={0.1}
+          clearcoatRoughness={0.05}
           emissive="#ffffff"
-          emissiveIntensity={0.05}
+          emissiveIntensity={0.02}
         />
       </mesh>
 
-
       {/* Middle Edge (Extruded) */}
-      <mesh position={[0, 0, -0.01]}>
-        <extrudeGeometry args={[shape, { depth: 0.02, bevelEnabled: false }]} />
-
+      <mesh position={[0, 0, -thickness / 2]}>
+        <extrudeGeometry args={[shape, { depth: thickness, bevelEnabled: false }]} />
         <meshPhysicalMaterial 
           color="#111111" 
-          roughness={0.3} 
-          metalness={0.5}
+          roughness={0.2} 
+          metalness={0.8}
         />
       </mesh>
     </group>
@@ -95,7 +103,8 @@ const Card3DVideo = ({ frontImage, backImage, onCanvasReady }) => {
   return (
     <div style={{ width: '100%', height: '100%', background: '#0F172A' }}>
       <Canvas 
-        gl={{ preserveDrawingBuffer: true, antialias: true, alpha: false }}
+        dpr={[1, 2]} // Force haute résolution sur écrans Retina/4K
+        gl={{ preserveDrawingBuffer: true, antialias: true, alpha: false, powerPreference: 'high-performance' }}
         onCreated={({ gl }) => onCanvasReady && onCanvasReady(gl.domElement)}
       >
         <Suspense fallback={null}>
