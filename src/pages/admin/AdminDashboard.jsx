@@ -503,13 +503,12 @@ export default function AdminDashboard() {
     const handleDownloadMockup = async () => {
         if (!frontImage && !backImage) return toast("Veuillez uploader au moins une image", "error");
         
-        // Create a temporary canvas to merge images
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
-        canvas.width = 1200;
-        canvas.height = 800;
+        canvas.width = 1080;
+        canvas.height = 1350; // Format Portrait Premium
         
-        // Background
+        // Background soft
         ctx.fillStyle = "#F8FAFC";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
@@ -520,24 +519,32 @@ export default function AdminDashboard() {
         });
 
         try {
-            if (frontImage) {
-                const img = await loadImage(frontImage);
-                // Draw front with shadow
-                ctx.shadowColor = "rgba(0,0,0,0.1)";
-                ctx.shadowBlur = 40;
-                ctx.drawImage(img, 100, 200, 450, 280);
-            }
+            // Dessiner la carte arrière (Verso)
             if (backImage) {
                 const img = await loadImage(backImage);
-                // Draw back with shadow
-                ctx.shadowColor = "rgba(0,0,0,0.1)";
-                ctx.shadowBlur = 40;
-                ctx.drawImage(img, 650, 320, 450, 280);
+                ctx.save();
+                ctx.translate(450, 550);
+                ctx.rotate(-0.08);
+                ctx.shadowColor = "rgba(0,0,0,0.15)";
+                ctx.shadowBlur = 70;
+                ctx.drawImage(img, -225, -350, 450, 700);
+                ctx.restore();
+            }
+            // Dessiner la carte avant (Recto)
+            if (frontImage) {
+                const img = await loadImage(frontImage);
+                ctx.save();
+                ctx.translate(630, 800);
+                ctx.rotate(0.08);
+                ctx.shadowColor = "rgba(0,0,0,0.2)";
+                ctx.shadowBlur = 90;
+                ctx.drawImage(img, -225, -350, 450, 700);
+                ctx.restore();
             }
             
             const finalImage = canvas.toDataURL("image/png");
-            saveAs(finalImage, "nfcrafter-mockup-premium.png");
-            toast("Image mockup téléchargée !", "success");
+            saveAs(finalImage, "nfcrafter-mockup-portrait.png");
+            toast("Mockup Portrait téléchargé !", "success");
         } catch (e) {
             toast("Erreur lors de la génération", "error");
         }
@@ -1171,49 +1178,54 @@ export default function AdminDashboard() {
                                     </div>
                                 </div>
 
-                                <div style={{ height: '500px', background: '#F8FAFC', borderRadius: '30px', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', perspective: '1500px', overflow: 'hidden', position: 'relative' }}>
+                                <div style={{ height: '600px', background: '#F8FAFC', borderRadius: '30px', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', perspective: '2000px', overflow: 'hidden', position: 'relative' }}>
                                     <style dangerouslySetInnerHTML={{ __html: `
-                                        @keyframes rotate3D {
-                                            0% { transform: rotateY(0deg) rotateX(10deg); }
-                                            50% { transform: rotateY(180deg) rotateX(-10deg); }
-                                            100% { transform: rotateY(360deg) rotateX(10deg); }
+                                        @keyframes rotate3DVertical {
+                                            0% { transform: rotateY(-20deg) rotateX(10deg) translateY(0px); }
+                                            50% { transform: rotateY(20deg) rotateX(-5deg) translateY(-20px); }
+                                            100% { transform: rotateY(-20deg) rotateX(10deg) translateY(0px); }
                                         }
-                                        .card-3d-container {
-                                            width: 400px;
-                                            height: 250px;
+                                        .card-3d-stack {
                                             position: relative;
+                                            width: 320px;
+                                            height: 500px;
                                             transform-style: preserve-3d;
-                                            animation: rotate3D 8s infinite linear;
+                                            animation: rotate3DVertical 6s infinite ease-in-out;
                                         }
-                                        .card-3d-side {
+                                        .card-3d-vertical {
                                             position: absolute;
-                                            inset: 0;
-                                            border-radius: 18px;
-                                            backface-visibility: hidden;
-                                            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+                                            width: 100%;
+                                            height: 100%;
+                                            border-radius: 20px;
+                                            box-shadow: 0 40px 80px rgba(0,0,0,0.15);
                                             overflow: hidden;
                                             background: #1A1265;
+                                            transition: transform 0.5s;
                                         }
-                                        .card-3d-back {
-                                            transform: rotateY(180deg);
+                                        .card-back-layer {
+                                            transform: translateZ(-50px) translateX(-40px) translateY(-20px) rotateY(-5deg);
+                                            opacity: 0.9;
+                                        }
+                                        .card-front-layer {
+                                            transform: translateZ(50px) translateX(40px) translateY(20px) rotateY(5deg);
                                         }
                                     ` }} />
                                     
-                                    <div className="card-3d-container">
-                                        <div className="card-3d-side card-3d-front">
-                                            {frontImage ? <img src={frontImage} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: '900' }}>RECTO</div>}
+                                    <div className="card-3d-stack">
+                                        <div className="card-3d-vertical card-back-layer">
+                                            {backImage ? <img src={backImage} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: '900', fontSize: '20px' }}>VERSO</div>}
                                         </div>
-                                        <div className="card-3d-side card-3d-back">
-                                            {backImage ? <img src={backImage} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: '900' }}>VERSO</div>}
+                                        <div className="card-3d-vertical card-front-layer">
+                                            {frontImage ? <img src={frontImage} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: '900', fontSize: '20px' }}>RECTO</div>}
                                         </div>
                                     </div>
                                     
                                     <div style={{ position: 'absolute', bottom: '24px', display: 'flex', gap: '12px' }}>
                                         <div style={{ background: 'rgba(255,255,255,0.8)', padding: '10px 20px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', color: '#1A1265', backdropFilter: 'blur(5px)' }}>
-                                            Aperçu 3D interactif (Auto-rotation)
+                                            Aperçu Portrait Premium
                                         </div>
                                         <button onClick={handleDownloadMockup} style={{ background: '#1A1265', color: 'white', padding: '10px 20px', borderRadius: '100px', border: 'none', fontWeight: '800', fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                            <div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>` }} /> Télécharger Image Mockup
+                                            <div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>` }} /> Télécharger Mockup Portrait
                                         </button>
                                     </div>
                                 </div>
