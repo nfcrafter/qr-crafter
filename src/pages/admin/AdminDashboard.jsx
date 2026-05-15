@@ -77,6 +77,12 @@ export default function AdminDashboard() {
     const [marketingText, setMarketingText] = useState('Votre Identité Numérique Premium');
     const [marketingPreview, setMarketingPreview] = useState(null);
 
+    // Video Studio States
+    const [isRecording, setIsRecording] = useState(false);
+    const [recordProgress, setRecordProgress] = useState(0);
+    const videoCanvasRef = useRef(null);
+
+
 
     const [financeTransactions, setFinanceTransactions] = useState([]);
 
@@ -592,10 +598,96 @@ export default function AdminDashboard() {
             const finalImage = canvas.toDataURL("image/png");
             saveAs(finalImage, "nfcrafter-mockup-showcase.png");
             saveMockupToHistory(finalImage);
-            toast("Mockup Showcase téléchargé !", "success");
-        } catch (e) {
+            toast('Mockup exporté !', 'success');
+        } catch (err) {
+            console.error(err);
             toast("Erreur lors de la génération", "error");
         }
+    };
+
+    const handleGenerateVideo = async () => {
+        if (!frontImage || !backImage) return toast("Veuillez uploader Recto et Verso", "error");
+        
+        setIsRecording(true);
+        setRecordProgress(0);
+        
+        const canvas = videoCanvasRef.current;
+        const ctx = canvas.getContext('2d', { alpha: false });
+        const stream = canvas.captureStream(60); 
+        
+        const recorder = new MediaRecorder(stream, { 
+            mimeType: 'video/webm;codecs=vp9',
+            videoBitsPerSecond: 8000000 
+        });
+        
+        const chunks = [];
+        recorder.ondataavailable = e => chunks.push(e.data);
+        recorder.onstop = () => {
+            const blob = new Blob(chunks, { type: 'video/webm' });
+            saveAs(blob, "nfcrafter-card-animation.mp4");
+            setIsRecording(false);
+            setRecordProgress(0);
+            toast("Vidéo générée avec succès !", "success");
+        };
+
+        const loadImage = (src) => new Promise(res => {
+            const img = new Image();
+            img.onload = () => res(img);
+            img.src = src;
+        });
+
+        const imgFront = await loadImage(frontImage);
+        const imgBack = await loadImage(backImage);
+
+        recorder.start();
+        
+        let frame = 0;
+        const duration = 4;
+        const totalFrames = duration * 60;
+        
+        const drawFrame = () => {
+            if (frame >= totalFrames) {
+                recorder.stop();
+                return;
+            }
+            ctx.fillStyle = '#0F172A';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            const angle = (frame / totalFrames) * Math.PI * 4;
+            const scaleX = Math.cos(angle);
+            const floatY = Math.sin(frame / 30) * 20;
+            ctx.save();
+            ctx.translate(canvas.width / 2, canvas.height / 2 + floatY);
+            const w = 720;
+            const h = 454;
+            const radius = 40;
+            ctx.scale(scaleX, 1);
+            ctx.shadowColor = "rgba(0,0,0,0.8)";
+            ctx.shadowBlur = 80;
+            ctx.shadowOffsetY = 40;
+            const currentImg = scaleX > 0 ? imgFront : imgBack;
+            ctx.beginPath();
+            const x = -w/2, y = -h/2;
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + w - radius, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+            ctx.lineTo(x + w, y + h - radius);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
+            ctx.lineTo(x + radius, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+            ctx.fillStyle = '#1A1265';
+            ctx.fill();
+            ctx.clip();
+            if (scaleX < 0) ctx.scale(-1, 1);
+            ctx.drawImage(currentImg, -w/2, -h/2, w, h);
+            ctx.restore();
+            frame++;
+            setRecordProgress(Math.round((frame / totalFrames) * 100));
+            requestAnimationFrame(drawFrame);
+        };
+        drawFrame();
     };
 
     const filtered = cards.filter(card => {
@@ -603,7 +695,8 @@ export default function AdminDashboard() {
         const matchesStatus = statusFilter === 'all' || card.status === statusFilter;
         const matchesType = typeFilter === 'all' || (card.admin_profile?.qr_type === typeFilter || card.type === typeFilter);
         const matchesCategory = categoryFilter === 'all' || card._type === categoryFilter;
-        return matchesSearch && matchesStatus && matchesType && matchesCategory;
+        const matchesFolder = !filterFolder || card.folder_id === filterFolder;
+
     }).sort((a, b) => {
         if (sortBy === 'newest') return new Date(b.created_at) - new Date(a.created_at);
         if (sortBy === 'modified') return new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at);
@@ -659,9 +752,13 @@ export default function AdminDashboard() {
                     <button onClick={() => { setView('mockup-3d'); setIsSidebarOpen(false); }} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'mockup-3d' ? '#1A1265' : 'transparent', color: view === 'mockup-3d' ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
                         <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>` }} /> Mockup 3D
                     </button>
-                    <button onClick={() => { setView('marketing-studio'); setIsSidebarOpen(false); }} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'marketing-studio' ? '#1A1265' : 'transparent', color: view === 'marketing-studio' ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+                    <button onClick={() => { setView('marketing-studio'); setIsSidebarOpen(false); }} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'marketing-studio' ? '#1A1265' : 'transparent', color: view === 'marketing-studio' ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
                         <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.5 1.5"></path><path d="M7.67 7.67L2 2"></path><path d="M2 2l1.5 7.5"></path></svg>` }} /> Marketing Studio
                     </button>
+                    <button onClick={() => { setView('video-studio'); setIsSidebarOpen(false); }} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', background: view === 'video-studio' ? '#1A1265' : 'transparent', color: view === 'video-studio' ? 'white' : '#64748B', fontWeight: '700', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+                        <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7l-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>` }} /> Video Studio
+                    </button>
+
 
 
                     <div style={{ margin: '12px 16px', fontSize: '11px', fontWeight: '800', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '1px' }}>Dossiers</div>
@@ -710,10 +807,12 @@ export default function AdminDashboard() {
                             </button>
                             <div>
                                 <h1 style={{ fontSize: '26px', fontWeight: '900', color: '#1A1265' }}>
-                                    {view === 'users' ? 'Gestion des Utilisateurs' : (view === 'requests' ? 'Demandes de Design' : (view === 'finance' ? 'Finance & CA' : (view === 'production' ? 'Atelier Production' : (view === 'logo-studio' ? 'Logo Studio' : (view === 'social-qr' ? 'Générateur QR Social' : (view === 'mockup-3d' ? 'Studio Mockup 3D' : (view === 'marketing-studio' ? 'Marketing Studio' : (filterFolder ? currentFolder?.name : 'Tableau de bord'))))))))}
+                                    {view === 'users' ? 'Gestion des Utilisateurs' : (view === 'requests' ? 'Demandes de Design' : (view === 'finance' ? 'Finance & CA' : (view === 'production' ? 'Atelier Production' : (view === 'logo-studio' ? 'Logo Studio' : (view === 'social-qr' ? 'Générateur QR Social' : (view === 'mockup-3d' ? 'Studio Mockup 3D' : (view === 'marketing-studio' ? 'Marketing Studio' : (view === 'video-studio' ? 'Video Studio 3D' : (filterFolder ? currentFolder?.name : 'Tableau de bord')))))))))}
+
                                 </h1>
                                 <p style={{ color: '#64748B' }} className="desktop-only">
-                                    {view === 'users' ? 'Gérez les comptes et les profils de vos clients.' : (view === 'requests' ? 'Clients souhaitant modifier le design de leur QR.' : (view === 'finance' ? 'Suivez votre chiffre d\'affaires et vos bénéfices.' : (view === 'production' ? 'Générez des cartes en masse et préparez les supports physiques.' : (view === 'logo-studio' ? 'Personnalisez et téléchargez votre logo en haute qualité.' : (view === 'social-qr' ? 'Créez des codes QR décoratifs pour vos réseaux sociaux.' : (view === 'mockup-3d' ? 'Générez des visuels 3D premium pour vos publicités.' : (view === 'marketing-studio' ? 'Créez des affiches publicitaires automatiques pour vos cartes.' : (filterFolder ? (isSubFolder ? 'Contenu de ce sous-dossier' : 'Contenu de ce dossier') : 'Gérez l\'ensemble de vos projets QR.'))))))))}
+                                    {view === 'users' ? 'Gérez les comptes et les profils de vos clients.' : (view === 'requests' ? 'Clients souhaitant modifier le design de leur QR.' : (view === 'finance' ? 'Suivez votre chiffre d\'affaires et vos bénéfices.' : (view === 'production' ? 'Générez des cartes en masse et préparez les supports physiques.' : (view === 'logo-studio' ? 'Personnalisez et téléchargez votre logo en haute qualité.' : (view === 'social-qr' ? 'Créez des codes QR décoratifs pour vos réseaux sociaux.' : (view === 'mockup-3d' ? 'Générez des visuels 3D premium pour vos publicités.' : (view === 'marketing-studio' ? 'Créez des affiches publicitaires automatiques pour vos cartes.' : (view === 'video-studio' ? 'Générez des vidéos 3D MP4 carrées à partir de vos designs.' : (filterFolder ? (isSubFolder ? 'Contenu de ce sous-dossier' : 'Contenu de ce dossier') : 'Gérez l\'ensemble de vos projets QR.')))))))))}
+
 
                                 </p>
                             </div>
@@ -1500,7 +1599,91 @@ export default function AdminDashboard() {
                                     </div>
                                 </div>
                             </div>
+                        ) : view === 'video-studio' ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', animation: 'fadeIn 0.4s ease' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '32px' }}>
+                                    {/* Upload Controls */}
+                                    <div style={{ background: 'white', borderRadius: '30px', padding: '40px', border: '1px solid #E2E8F0', boxShadow: '0 10px 40px rgba(0,0,0,0.03)' }}>
+                                        <h3 style={{ fontSize: '20px', fontWeight: '900', color: '#1A1265', marginBottom: '24px' }}>Images de la carte</h3>
+                                        
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                            <div>
+                                                <label style={{ display: 'block', fontSize: '14px', fontWeight: '800', color: '#475569', marginBottom: '10px' }}>Recto (Face)</label>
+                                                <input type="file" accept="image/*" onChange={(e) => {
+                                                    const file = e.target.files[0];
+                                                    if (file) {
+                                                        const reader = new FileReader();
+                                                        reader.onload = (re) => setFrontImage(re.target.result);
+                                                        reader.readAsDataURL(file);
+                                                    }
+                                                }} style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: '#F8FAFC', fontSize: '14px' }} />
+                                            </div>
+                                            <div>
+                                                <label style={{ display: 'block', fontSize: '14px', fontWeight: '800', color: '#475569', marginBottom: '10px' }}>Verso (Dos)</label>
+                                                <input type="file" accept="image/*" onChange={(e) => {
+                                                    const file = e.target.files[0];
+                                                    if (file) {
+                                                        const reader = new FileReader();
+                                                        reader.onload = (re) => setBackImage(re.target.result);
+                                                        reader.readAsDataURL(file);
+                                                    }
+                                                }} style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: '#F8FAFC', fontSize: '14px' }} />
+                                            </div>
+
+                                            <div style={{ padding: '20px', borderRadius: '20px', background: '#F1F5F9', border: '1px dashed #CBD5E1', marginTop: '10px' }}>
+                                                <p style={{ fontSize: '13px', color: '#64748B', fontWeight: '600', lineHeight: '1.6', margin: 0 }}>
+                                                    La vidéo sera générée au format <strong>carré (1:1)</strong>, idéale pour les posts Instagram et TikTok.
+                                                </p>
+                                            </div>
+
+                                            <button
+                                                onClick={handleGenerateVideo}
+                                                disabled={isRecording || !frontImage || !backImage}
+                                                style={{ width: '100%', marginTop: '12px', background: isRecording ? '#94A3B8' : '#1A1265', color: 'white', padding: '20px', borderRadius: '18px', border: 'none', fontWeight: '900', fontSize: '16px', cursor: isRecording ? 'not-allowed' : 'pointer', boxShadow: '0 8px 25px rgba(26,18,101,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}
+                                            >
+                                                {isRecording ? (
+                                                    <>Génération en cours... {recordProgress}%</>
+                                                ) : (
+                                                    <>
+                                                        <div style={{ width: 20, height: 20 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 7l-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>` }} />
+                                                        Générer la vidéo MP4
+                                                    </>
+                                                )}
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* Preview & Hidden Canvas */}
+                                    <div style={{ background: 'white', borderRadius: '30px', padding: '40px', border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', gap: '24px', position: 'relative' }}>
+                                        <h3 style={{ fontSize: '20px', fontWeight: '900', color: '#1A1265', margin: 0 }}>Aperçu du Rendu</h3>
+                                        <div style={{ 
+                                            width: '100%', 
+                                            aspectRatio: '1', 
+                                            borderRadius: '24px', 
+                                            background: '#111827', 
+                                            display: 'flex', 
+                                            alignItems: 'center', 
+                                            justifyContent: 'center', 
+                                            overflow: 'hidden',
+                                            boxShadow: '0 20px 50px rgba(0,0,0,0.2)'
+                                        }}>
+                                            <canvas 
+                                                ref={videoCanvasRef} 
+                                                width={1000} 
+                                                height={1000} 
+                                                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                                            />
+                                        </div>
+                                        {isRecording && (
+                                            <div style={{ position: 'absolute', bottom: '60px', left: '50%', transform: 'translateX(-50%)', background: 'rgba(255,255,255,0.9)', padding: '10px 20px', borderRadius: '100px', fontSize: '13px', fontWeight: '800', color: '#1A1265', border: '1px solid #1A1265', backdropFilter: 'blur(10px)' }}>
+                                                🔴 Enregistrement...
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
                         ) : view === 'logo-studio' ? (
+
 
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '32px', animation: 'fadeIn 0.4s ease' }}>
                                 {/* Controls */}
