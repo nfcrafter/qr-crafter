@@ -467,14 +467,16 @@ export default function AdminDashboard() {
     };
 
     const generateSocialQR = async () => {
+        const tintedLogo = await getTintedLogo(socialQRColor);
         const qrCode = new QRCodeStyling({
             width: 800, height: 800, data: socialQRData,
             margin: 10,
+            image: tintedLogo,
             dotsOptions: { color: socialQRColor, type: "rounded" },
             cornersSquareOptions: { color: socialQRColor, type: "extra-rounded" },
             cornersDotOptions: { color: socialQRColor, type: "dot" },
             backgroundOptions: { color: socialQRBgColor },
-            imageOptions: { margin: 5, imageSize: 0.2 }
+            imageOptions: { margin: 10, imageSize: 0.2, hideBackgroundDots: true }
         });
         const blob = await qrCode.getRawData("png");
         setSocialQRPreview(URL.createObjectURL(blob));
@@ -1135,11 +1137,17 @@ export default function AdminDashboard() {
                                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                                             <div>
                                                 <label style={{ display: 'block', fontSize: '12px', fontWeight: '800', color: '#64748B', marginBottom: '8px' }}>COULEUR QR</label>
-                                                <input type="color" value={socialQRColor} onChange={e => setSocialQRColor(e.target.value)} style={{ width: '100%', height: '50px', borderRadius: '12px', border: 'none', cursor: 'pointer' }} />
+                                                <div style={{ display: 'flex', gap: '8px' }}>
+                                                    <input type="color" value={socialQRColor} onChange={e => setSocialQRColor(e.target.value)} style={{ width: '40px', height: '50px', borderRadius: '12px', border: 'none', cursor: 'pointer', flexShrink: 0 }} />
+                                                    <input type="text" value={socialQRColor} onChange={e => setSocialQRColor(e.target.value)} placeholder="#000000" style={{ flex: 1, padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: '#F8FAFC', fontSize: '13px', fontWeight: '700' }} />
+                                                </div>
                                             </div>
                                             <div>
                                                 <label style={{ display: 'block', fontSize: '12px', fontWeight: '800', color: '#64748B', marginBottom: '8px' }}>COULEUR FOND</label>
-                                                <input type="color" value={socialQRBgColor} onChange={e => setSocialQRBgColor(e.target.value)} style={{ width: '100%', height: '50px', borderRadius: '12px', border: 'none', cursor: 'pointer' }} />
+                                                <div style={{ display: 'flex', gap: '8px' }}>
+                                                    <input type="color" value={socialQRBgColor} onChange={e => setSocialQRBgColor(e.target.value)} style={{ width: '40px', height: '50px', borderRadius: '12px', border: 'none', cursor: 'pointer', flexShrink: 0 }} />
+                                                    <input type="text" value={socialQRBgColor} onChange={e => setSocialQRBgColor(e.target.value)} placeholder="#FFFFFF" style={{ flex: 1, padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: '#F8FAFC', fontSize: '13px', fontWeight: '700' }} />
+                                                </div>
                                             </div>
                                         </div>
                                         <button onClick={handleDownloadSocialQR} style={{ width: '100%', marginTop: '12px', background: '#1A1265', color: 'white', padding: '20px', borderRadius: '18px', border: 'none', fontWeight: '900', fontSize: '16px', cursor: 'pointer' }}>Télécharger le QR Social</button>
