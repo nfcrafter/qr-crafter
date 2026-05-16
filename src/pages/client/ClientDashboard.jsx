@@ -472,7 +472,7 @@ export default function ClientDashboard() {
                             </div>
 
                             {/* Editor */}
-                            <div ref={editorRef} style={{ background: 'white', padding: '40px', borderRadius: '32px', border: '1px solid #E2E8F0', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+                            <div ref={editorRef} className="editor-card" style={{ background: 'white', padding: '40px', borderRadius: '32px', border: '1px solid #E2E8F0', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px', gap: '16px', flexWrap: 'wrap' }}>
                                     <div>
                                         <h2 style={{ fontSize: '26px', fontWeight: '900', color: '#1A1265', margin: '0 0 8px 0' }}>Configuration</h2>
@@ -577,10 +577,11 @@ export default function ClientDashboard() {
                 @media (max-width: 768px) {
                     .sidebar { transform: translateX(-100%); }
                     .sidebar.open { transform: translateX(0); }
-                    .main-content { marginLeft: 0 !important; padding: 20px !important; marginTop: 70px !important; }
+                    .main-content { margin-left: 0 !important; padding: 20px !important; margin-top: 70px !important; }
                     .mobile-header { display: flex !important; }
                     .desktop-only { display: none !important; }
                     .mobile-only { display: flex !important; }
+                    .editor-card { padding: 20px !important; }
                 }
             `}</style>
         </div>
