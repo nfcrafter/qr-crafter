@@ -51,6 +51,7 @@ export default function CreateCardWizard() {
     const [openSection, setOpenSection] = useState('info');
     const [previewMode, setPreviewMode] = useState('page');
     const [cardName, setCardName] = useState('');
+    const [urlSlug, setUrlSlug] = useState('');
     const [folders, setFolders] = useState([]);
     const [selectedFolderId, setSelectedFolderId] = useState(null);
     const [activeSocialInput, setActiveSocialInput] = useState(null);
@@ -140,9 +141,18 @@ export default function CreateCardWizard() {
         if (selectedType === 'profile' && !profile.full_name) return toast('Nom requis', 'error');
         setGenerating(true);
         try {
+            let finalSlug = urlSlug ? urlSlug.trim().toLowerCase().replace(/[^a-z0-9-]/g, '') : null;
+            if (finalSlug) {
+                const { data: existingSlug } = await supabase.from('cards').select('card_id').eq('url_slug', finalSlug).single();
+                if (existingSlug && existingSlug.card_id !== cardId) {
+                    throw new Error("Ce lien personnalisé est déjà pris par une autre carte.");
+                }
+            }
+
             const { error } = await supabase.from('cards').insert({
                 card_id: cardId,
                 card_name: cardName || profile.full_name || 'Sans titre',
+                url_slug: finalSlug,
                 folder_id: selectedFolderId || null,
                 qr_appearance: qrStyle,
                 admin_profile: { ...profile, qr_type: selectedType, creation_type: 'personalized' },
@@ -151,7 +161,7 @@ export default function CreateCardWizard() {
             });
             if (error) throw error;
             toast('QR créé avec succès !', 'success');
-            const pUrl = `${window.location.origin}/u/${cardId}`;
+            const pUrl = finalSlug ? `${window.location.origin}/${finalSlug}` : `${window.location.origin}/u/${cardId}`;
             const aUrl = `${window.location.origin}/activate?card=${cardId}&token=${activationToken}`;
             setPublicUrl(pUrl);
             setActivationUrl(aUrl);
@@ -222,6 +232,21 @@ export default function CreateCardWizard() {
                                 {selectedType === 'profile' && <>
                                     {acc('info', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`, 'Informations', 'Nom, bio, photo, bannière.', (
                                         <div style={{ marginTop: 16 }}>
+                                            <div className="field">
+                                                <label>Lien personnalisé</label>
+                                                <div style={{ display: 'flex', alignItems: 'center', background: 'white', borderRadius: '12px', border: '1px solid #E2E8F0', overflow: 'hidden' }}>
+                                                    <div style={{ padding: '14px 8px 14px 14px', background: '#F8FAFC', color: '#64748B', fontWeight: 600, borderRight: '1px solid #E2E8F0', fontSize: 14 }}>
+                                                        nfcrafter.com/
+                                                    </div>
+                                                    <input 
+                                                        type="text" 
+                                                        value={urlSlug} 
+                                                        onChange={e => setUrlSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+                                                        placeholder="votre-nom"
+                                                        style={{ flex: 1, padding: '14px 12px', border: 'none', fontSize: '14px', outline: 'none', background: 'transparent' }}
+                                                    />
+                                                </div>
+                                            </div>
                                             <div className="field"><label>Nom complet *</label><input type="text" value={profile.full_name} onChange={e => setProfile({ ...profile, full_name: e.target.value })} /></div>
                                             <div className="field"><label>Profession / Titre</label><input type="text" value={profile.job_title} onChange={e => setProfile({ ...profile, job_title: e.target.value })} /></div>
                                             <div className="field"><label>Description</label><textarea rows={3} value={profile.bio} onChange={e => setProfile({ ...profile, bio: e.target.value })} /></div>

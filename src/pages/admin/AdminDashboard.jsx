@@ -242,15 +242,30 @@ export default function AdminDashboard() {
 
     async function loadUsers() {
         setLoading(true);
-        const { data, error } = await supabase
-            .from('profiles')
-            .select('*, cards(*)')
-            .order('created_at', { ascending: false });
-        if (error) {
+        try {
+            const [{ data: profilesData }, { data: userCardsData }, { data: cardsData }] = await Promise.all([
+                supabase.from('profiles').select('*').order('created_at', { ascending: false }),
+                supabase.from('user_cards').select('*'),
+                supabase.from('cards').select('*')
+            ]);
+            
+            if (profilesData) {
+                const mappedUsers = profilesData.map(p => {
+                    const userCardsLinks = (userCardsData || []).filter(uc => uc.user_id === p.id);
+                    const userCards = userCardsLinks.map(uc => (cardsData || []).find(c => c.card_id === uc.card_id)).filter(Boolean);
+                    
+                    return {
+                        ...p,
+                        cards: userCards
+                    };
+                });
+                setUsers(mappedUsers);
+            } else {
+                setUsers([]);
+            }
+        } catch (error) {
             console.error('Error loading users:', error);
             toast('Erreur chargement utilisateurs : ' + error.message, 'error');
-        } else {
-            setUsers(data || []);
         }
         setLoading(false);
     }

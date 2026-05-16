@@ -41,6 +41,7 @@ export default function CardSettings() {
     const [openSection, setOpenSection] = useState('info');
     const [previewMode, setPreviewMode] = useState('page');
     const [cardName, setCardName] = useState('');
+    const [urlSlug, setUrlSlug] = useState('');
     const [folders, setFolders] = useState([]);
     const [selectedFolderId, setSelectedFolderId] = useState(null);
     const [activeSocialInput, setActiveSocialInput] = useState(null);
@@ -105,6 +106,7 @@ export default function CardSettings() {
         const { data: card, error } = await supabase.from('cards').select('*').eq('card_id', cardId).single();
         if (error || !card) { navigate('/admin'); return; }
         setCardName(card.card_name || '');
+        setUrlSlug(card.url_slug || '');
         setSelectedFolderId(card.folder_id);
         if (card.admin_profile) {
             const { qr_type, ...rest } = card.admin_profile;
@@ -125,7 +127,7 @@ export default function CardSettings() {
 
     useEffect(() => {
         if (!qrRef.current || loading) return;
-        const url = `${window.location.origin}/u/${cardId}`;
+        const url = urlSlug ? `${window.location.origin}/${urlSlug}` : `${window.location.origin}/u/${cardId}`;
         if (!qrCode.current) {
             qrCode.current = new QRCodeStyling({
                 width: 256, height: 256, data: url,
@@ -138,13 +140,14 @@ export default function CardSettings() {
             qrCode.current.append(qrRef.current);
         } else {
             qrCode.current.update({
+                data: url,
                 dotsOptions: { color: qrStyle.dotsColor, type: qrStyle.dotsType },
                 cornersSquareOptions: { color: qrStyle.cornersColor, type: qrStyle.cornersType },
                 backgroundOptions: { color: qrStyle.bgColor },
                 image: qrStyle.logo_url || ''
             });
         }
-    }, [qrStyle, loading]);
+    }, [qrStyle, loading, urlSlug]);
 
     const isDark = (parseInt((profile.backgroundColor || '#f0f2f5').slice(1, 3), 16) * 299 + parseInt((profile.backgroundColor || '#f0f2f5').slice(3, 5), 16) * 587 + parseInt((profile.backgroundColor || '#f0f2f5').slice(5, 7), 16) * 114) / 1000 < 128;
     const textColor = isDark ? '#F8FAFC' : '#111';
@@ -227,8 +230,17 @@ export default function CardSettings() {
     async function handleSave() {
         setSaving(true);
         try {
+            let finalSlug = urlSlug ? urlSlug.trim().toLowerCase().replace(/[^a-z0-9-]/g, '') : null;
+            if (finalSlug) {
+                const { data: existingSlug } = await supabase.from('cards').select('card_id').eq('url_slug', finalSlug).single();
+                if (existingSlug && existingSlug.card_id !== cardId) {
+                    throw new Error("Ce lien personnalisé est déjà pris par une autre carte.");
+                }
+            }
+
             const { error } = await supabase.from('cards').update({
                 card_name: cardName,
+                url_slug: finalSlug,
                 folder_id: selectedFolderId || null,
                 qr_appearance: qrStyle,
                 admin_profile: { ...profile, qr_type: qrType },
@@ -391,6 +403,21 @@ export default function CardSettings() {
                         {qrType === 'profile' && <>
                             {acc('info', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`, 'Informations du profil', 'Nom, bio, photo, bannière.', (
                                 <div style={{ marginTop: 16 }}>
+                                    <div className="field">
+                                        <label>Lien personnalisé</label>
+                                        <div style={{ display: 'flex', alignItems: 'center', background: 'white', borderRadius: '12px', border: '1px solid #E2E8F0', overflow: 'hidden' }}>
+                                            <div style={{ padding: '14px 8px 14px 14px', background: '#F8FAFC', color: '#64748B', fontWeight: 600, borderRight: '1px solid #E2E8F0', fontSize: 14 }}>
+                                                nfcrafter.com/
+                                            </div>
+                                            <input 
+                                                type="text" 
+                                                value={urlSlug} 
+                                                onChange={e => setUrlSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+                                                placeholder="votre-nom"
+                                                style={{ flex: 1, padding: '14px 12px', border: 'none', fontSize: '14px', outline: 'none', background: 'transparent' }}
+                                            />
+                                        </div>
+                                    </div>
                                     <div className="field"><label>Nom complet</label><input type="text" value={profile.full_name} onChange={e => setProfile({ ...profile, full_name: e.target.value })} /></div>
                                     <div className="field"><label>Profession / Titre</label><input type="text" value={profile.job_title} onChange={e => setProfile({ ...profile, job_title: e.target.value })} /></div>
                                     <div className="field"><label>Description (Bio)</label><textarea rows={3} value={profile.bio} onChange={e => setProfile({ ...profile, bio: e.target.value })} placeholder="Astuce : Utilisez '-' pour les listes" /></div>
