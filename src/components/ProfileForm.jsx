@@ -503,19 +503,7 @@ export default function ProfileForm({
             ))}
 
             {/* SECTION AVANCÉE SUPPRIMÉE */}
-            <input 
-                ref={productFileRef} 
-                type="file" 
-                hidden 
-                accept="image/*"
-                onChange={e => {
-                    if (e.target.files[0] && activeProductId) {
-                        onUploadProductImage(activeProductId, e.target.files[0]);
-                    }
-                }} 
-            />
-
-            {renderAccordion('layout', 'Mise en page', (
+            {acc('layout', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10H3M21 6H3M21 14H3M21 18H3"></path></svg>`, 'Mise en page', 'Ordre des sections du profil.', (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                     <p style={{ fontSize: 13, color: '#64748B', marginBottom: 10 }}>Organisez l'ordre d'apparition des sections sur votre profil public.</p>
                     {(() => {
@@ -546,6 +534,18 @@ export default function ProfileForm({
                     })()}
                 </div>
             ))}
+
+            <input 
+                ref={productFileRef} 
+                type="file" 
+                hidden 
+                accept="image/*"
+                onChange={e => {
+                    if (e.target.files[0] && activeProductId) {
+                        onUploadProductImage(activeProductId, e.target.files[0]);
+                    }
+                }} 
+            />
         </div>
     );
 }

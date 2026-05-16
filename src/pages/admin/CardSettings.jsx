@@ -172,6 +172,44 @@ export default function CardSettings() {
         setProfile({ ...profile, customLinks: (profile.customLinks || []).filter((_, i) => i !== idx) });
     }
 
+    const productFileRef = useRef();
+    const [activeProductId, setActiveProductId] = useState(null);
+
+    const addProduct = () => {
+        const products = [...(profile.products || [])];
+        products.push({ id: Date.now(), name: '', price: '', action_type: 'whatsapp', image_url: '' });
+        setProfile({ ...profile, products });
+    };
+
+    const updateProduct = (id, updates) => {
+        const products = (profile.products || []).map(p => p.id === id ? { ...p, ...updates } : p);
+        setProfile({ ...profile, products });
+    };
+
+    const removeProduct = (id) => {
+        const products = (profile.products || []).filter(p => p.id !== id);
+        setProfile({ ...profile, products });
+    };
+
+    const triggerProductUpload = (id) => {
+        setActiveProductId(id);
+        productFileRef.current.click();
+    };
+
+    async function onUploadProductImage(file) {
+        if (!activeProductId) return;
+        try {
+            const ext = file.name.split('.').pop();
+            const path = `products/${Date.now()}.${ext}`;
+            const { error: uploadError } = await supabase.storage.from('products').upload(path, file);
+            if (uploadError) throw uploadError;
+            const { data: { publicUrl } } = supabase.storage.from('products').getPublicUrl(path);
+            updateProduct(activeProductId, { image_url: publicUrl });
+        } catch (e) {
+            toast('Erreur upload image', 'error');
+        }
+    }
+
     async function handleSave() {
         setSaving(true);
         try {
@@ -386,6 +424,81 @@ export default function CardSettings() {
                                     <button onClick={addCustomLink} style={{ width: '100%', padding: 14, borderRadius: 14, border: '2px dashed #CBD5E1', background: 'white', color: '#475569', fontWeight: 700, cursor: 'pointer', fontSize: 14 }}>+ Ajouter un lien</button>
                                 </div>
                             ))}
+
+                            {acc('products', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>`, 'Boutique & Catalogue', 'Gérez vos produits et services.', (
+                                <div style={{ marginTop: 16 }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                                        <label style={{ fontSize: 13, fontWeight: 700, color: '#1A1265', display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
+                                            <input type="checkbox" checked={profile.show_products} onChange={e => setProfile({ ...profile, show_products: e.target.checked })} style={{ width: 18, height: 18 }} /> Afficher la boutique
+                                        </label>
+                                    </div>
+                                    
+                                    {(profile.products || []).map(p => (
+                                        <div key={p.id} style={{ padding: 16, background: '#F8FAFC', borderRadius: 16, marginBottom: 12, border: '1px solid #E2E8F0', position: 'relative' }}>
+                                            <button onClick={() => removeProduct(p.id)} style={{ position: 'absolute', top: 10, right: 10, background: '#FEE2E2', border: 'none', color: '#EF4444', borderRadius: 6, padding: '4px 8px', cursor: 'pointer' }}>✕</button>
+                                            <div style={{ display: 'flex', gap: 12, marginBottom: 12 }}>
+                                                <div onClick={() => triggerProductUpload(p.id)} style={{ width: 60, height: 60, borderRadius: 12, background: 'white', border: '1px dashed #CBD5E1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', overflow: 'hidden' }}>
+                                                    {p.image_url ? <img src={p.image_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '📸'}
+                                                </div>
+                                                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                                                    <input placeholder="Nom du produit" value={p.name} onChange={e => updateProduct(p.id, { name: e.target.value })} style={{ fontSize: 13, padding: '6px 10px' }} />
+                                                    <input placeholder="Prix" value={p.price} onChange={e => updateProduct(p.id, { price: e.target.value })} style={{ fontSize: 13, padding: '6px 10px' }} />
+                                                </div>
+                                            </div>
+                                            <div style={{ background: 'white', padding: 10, borderRadius: 10, border: '1px solid #E2E8F0' }}>
+                                                <div style={{ fontSize: 10, fontWeight: 800, color: '#64748B', marginBottom: 6, textTransform: 'uppercase' }}>Action du bouton</div>
+                                                <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                                                    <button onClick={() => updateProduct(p.id, { action_type: 'whatsapp' })} style={{ flex: 1, padding: 6, borderRadius: 6, border: '1px solid', borderColor: p.action_type !== 'link' ? '#25D366' : '#E2E8F0', background: p.action_type !== 'link' ? '#F0FDF4' : 'white', fontSize: 11, fontWeight: 700 }}>WhatsApp</button>
+                                                    <button onClick={() => updateProduct(p.id, { action_type: 'link' })} style={{ flex: 1, padding: 6, borderRadius: 6, border: '1px solid', borderColor: p.action_type === 'link' ? '#6366F1' : '#E2E8F0', background: p.action_type === 'link' ? '#EEF2FF' : 'white', fontSize: 11, fontWeight: 700 }}>Lien</button>
+                                                </div>
+                                                {p.action_type === 'link' && <input placeholder="https://..." value={p.link_url || ''} onChange={e => updateProduct(p.id, { link_url: e.target.value })} style={{ fontSize: 12, padding: '6px 10px' }} />}
+                                            </div>
+                                        </div>
+                                    ))}
+                                    
+                                    <div style={{ padding: 12, background: '#F1F5F9', borderRadius: 12, marginTop: 12 }}>
+                                        <div style={{ fontSize: 11, fontWeight: 800, color: '#475569', marginBottom: 8 }}>CONFIG WHATSAPP COMMANDES</div>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                                            <label style={{ fontSize: 12, display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                                                <input type="radio" checked={profile.wa_order_type === 'whatsapp_social'} onChange={() => setProfile({ ...profile, wa_order_type: 'whatsapp_social' })} /> WhatsApp Perso
+                                            </label>
+                                            <label style={{ fontSize: 12, display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                                                <input type="radio" checked={profile.wa_order_type === 'business'} onChange={() => setProfile({ ...profile, wa_order_type: 'business' })} /> WhatsApp Business
+                                            </label>
+                                            <label style={{ fontSize: 12, display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                                                <input type="radio" checked={profile.wa_order_type === 'custom'} onChange={() => setProfile({ ...profile, wa_order_type: 'custom' })} /> Numéro Spécifique
+                                            </label>
+                                            {profile.wa_order_type === 'custom' && <input placeholder="+229..." value={profile.business_whatsapp_number || ''} onChange={e => setProfile({ ...profile, business_whatsapp_number: e.target.value })} style={{ fontSize: 12, padding: 6 }} />}
+                                        </div>
+                                    </div>
+                                    <button onClick={addProduct} style={{ width: '100%', padding: 12, borderRadius: 12, border: '2px dashed #CBD5E1', background: 'white', color: '#1A1265', fontWeight: 700, cursor: 'pointer', marginTop: 12 }}>+ Ajouter un produit</button>
+                                </div>
+                            ))}
+
+                            {acc('layout', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10H3M21 6H3M21 14H3M21 18H3"></path></svg>`, 'Mise en page', 'Ordre des sections du profil.', (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                                    {(() => {
+                                        const sections = profile.section_order || ['bio', 'contact_buttons', 'links', 'products', 'business_info'];
+                                        const sectionLabels = { bio: 'Bio', contact_buttons: 'Appel/Email', links: 'Réseaux Sociaux', products: 'Boutique', business_info: 'Horaires/Map' };
+                                        const move = (idx, dir) => {
+                                            const newOrder = [...sections];
+                                            const tmp = newOrder[idx];
+                                            newOrder[idx] = newOrder[idx+dir];
+                                            newOrder[idx+dir] = tmp;
+                                            setProfile({ ...profile, section_order: newOrder });
+                                        };
+                                        return sections.map((s, i) => (
+                                            <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', background: '#F8FAFC', borderRadius: 10, border: '1px solid #E2E8F0' }}>
+                                                <span style={{ flex: 1, fontWeight: 700, fontSize: 13, color: '#1A1265' }}>{sectionLabels[s] || s}</span>
+                                                <div style={{ display: 'flex', gap: 4 }}>
+                                                    <button disabled={i === 0} onClick={() => move(i, -1)} style={{ width: 28, height: 28, borderRadius: 6, border: '1px solid #E2E8F0', background: 'white', cursor: 'pointer', opacity: i === 0 ? 0.3 : 1 }}>↑</button>
+                                                    <button disabled={i === sections.length - 1} onClick={() => move(i, 1)} style={{ width: 28, height: 28, borderRadius: 8, border: '1px solid #E2E8F0', background: 'white', cursor: 'pointer', opacity: i === sections.length - 1 ? 0.3 : 1 }}>↓</button>
+                                                </div>
+                                            </div>
+                                        ));
+                                    })()}
+                                </div>
+                            ))}
                         </>}
 
                         {acc('config', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>`, 'Organisation', 'Nom interne et dossier.', (
@@ -533,6 +646,7 @@ export default function CardSettings() {
                 </div>
             </Modal>
 
+            <input ref={productFileRef} type="file" hidden accept="image/*" onChange={e => e.target.files[0] && onUploadProductImage(e.target.files[0])} />
             <style>{`
                 @media (max-width: 1100px) {
                     .admin-grid { grid-template-columns: 1fr !important; }
