@@ -387,7 +387,40 @@ export default function ProfileForm({
                         ))}
                     </div>
 
-                    <button onClick={addProduct} style={{ width: '100%', padding: 16, borderRadius: 16, border: '2px dashed #CBD5E1', background: 'white', color: '#475569', fontWeight: 700, cursor: 'pointer', fontSize: 14 }}>+ Ajouter un produit / service</button>
+                    <div style={{ padding: 16, background: '#F8FAFC', borderRadius: 16, marginTop: 16, border: '1px solid #E2E8F0' }}>
+                        <div style={{ fontSize: 12, fontWeight: 800, color: '#1A1265', marginBottom: 12, textTransform: 'uppercase' }}>Réception des commandes</div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', fontSize: 14 }}>
+                                <input 
+                                    type="radio" 
+                                    name="wa_type" 
+                                    checked={!profile.use_business_whatsapp} 
+                                    onChange={() => setProfile({...profile, use_business_whatsapp: false})}
+                                />
+                                Numéro principal ({profile.phone || 'Non défini'})
+                            </label>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', fontSize: 14 }}>
+                                <input 
+                                    type="radio" 
+                                    name="wa_type" 
+                                    checked={profile.use_business_whatsapp} 
+                                    onChange={() => setProfile({...profile, use_business_whatsapp: true})}
+                                />
+                                Numéro WhatsApp Business spécifique
+                            </label>
+                            {profile.use_business_whatsapp && (
+                                <input 
+                                    type="tel" 
+                                    placeholder="Ex: +22969000000"
+                                    value={profile.business_whatsapp_number || ''}
+                                    onChange={e => setProfile({...profile, business_whatsapp_number: e.target.value})}
+                                    style={{ width: '100%', padding: '10px 14px', borderRadius: 10, border: '1px solid #E2E8F0', fontSize: 14 }}
+                                />
+                            )}
+                        </div>
+                    </div>
+
+                    <button onClick={addProduct} style={{ width: '100%', padding: 16, borderRadius: 16, border: '2px dashed #CBD5E1', background: 'white', color: '#1A1265', fontWeight: 700, cursor: 'pointer', fontSize: 14, marginTop: 12 }}>+ Ajouter un produit</button>
                 </div>
             ))}
 
