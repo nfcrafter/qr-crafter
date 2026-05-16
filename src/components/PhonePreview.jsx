@@ -29,17 +29,24 @@ export default function PhonePreview({ children }) {
             }}></div>
 
             {/* Screen */}
-            <div style={{
-                width: '100%',
-                height: '100%',
-                background: 'white',
-                borderRadius: '30px',
-                overflowY: 'auto',
-                overflowX: 'hidden',
-                position: 'relative'
-            }}>
+            <div 
+                className="iphone-screen"
+                style={{
+                    width: '100%',
+                    height: '100%',
+                    background: 'white',
+                    borderRadius: '30px',
+                    overflowY: 'auto',
+                    overflowX: 'hidden',
+                    position: 'relative'
+                }}
+            >
                 {children}
             </div>
+            <style>{`
+                .iphone-screen::-webkit-scrollbar { display: none; }
+                .iphone-screen { -ms-overflow-style: none; scrollbar-width: none; }
+            `}</style>
             
             {/* Home indicator */}
             <div style={{
