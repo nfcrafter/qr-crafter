@@ -801,7 +801,24 @@ export default function AdminDashboard() {
                         </div>
                     </header>
                     {(view === 'dashboard' || view === 'requests') && (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                            {view === 'dashboard' && (
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
+                                    <div style={{ padding: '20px', background: 'white', borderRadius: '16px', border: '1px solid #E2E8F0', boxShadow: '0 4px 15px rgba(0,0,0,0.02)' }}>
+                                        <div style={{ fontSize: '12px', fontWeight: '800', color: '#64748B', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>Cartes Totales</div>
+                                        <div style={{ fontSize: '28px', fontWeight: '900', color: '#1A1265' }}>{cards.length}</div>
+                                    </div>
+                                    <div style={{ padding: '20px', background: 'white', borderRadius: '16px', border: '1px solid #E2E8F0', boxShadow: '0 4px 15px rgba(0,0,0,0.02)' }}>
+                                        <div style={{ fontSize: '12px', fontWeight: '800', color: '#64748B', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>Cartes Actives</div>
+                                        <div style={{ fontSize: '28px', fontWeight: '900', color: '#10B981' }}>{cards.filter(c => c.status === 'active').length}</div>
+                                    </div>
+                                    <div style={{ padding: '20px', background: '#1A1265', borderRadius: '16px', color: 'white', boxShadow: '0 10px 25px rgba(26,18,101,0.2)' }}>
+                                        <div style={{ fontSize: '12px', fontWeight: '800', color: '#A5B4FC', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>Scans Totaux</div>
+                                        <div style={{ fontSize: '28px', fontWeight: '900', color: '#38BDF8' }}>{Object.values(scans).reduce((a, b) => a + b, 0)}</div>
+                                    </div>
+                                </div>
+                            )}
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                             <div style={{ display: 'flex', gap: '8px', background: '#F1F5F9', padding: '6px', borderRadius: '14px', width: 'fit-content' }}>
                                 <button
                                     onClick={() => setCategoryFilter('all')}
