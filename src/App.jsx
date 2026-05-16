@@ -67,46 +67,60 @@ export default function App() {
         }
     }
 
-    return (
-        <>
-            <Routes>
-                {/* Public Routes */}
-                <Route path="/" element={<LandingPage />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/u/:cardId" element={<PublicProfile />} />
-                <Route path="/activate" element={<Activate />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/reset-password" element={<ResetPassword />} />
+            // Hide WhatsApp support on public profiles (both /u/:id and /:slug)
+            const isPublicProfile = location.pathname.startsWith('/u/') || 
+                (location.pathname !== '/' && 
+                 !location.pathname.startsWith('/login') && 
+                 !location.pathname.startsWith('/register') && 
+                 !location.pathname.startsWith('/dashboard') && 
+                 !location.pathname.startsWith('/admin') && 
+                 !location.pathname.startsWith('/activate') &&
+                 !location.pathname.startsWith('/forgot-password') &&
+                 !location.pathname.startsWith('/reset-password'));
 
-                {/* Client Routes */}
-                <Route path="/dashboard" element={
-                    <ProtectedClient session={session}>
-                        <ClientDashboard />
-                    </ProtectedClient>
-                } />
+            return (
+                <>
+                    <Routes>
+                        {/* Public Routes */}
+                        <Route path="/" element={<LandingPage />} />
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/register" element={<Register />} />
+                        <Route path="/u/:cardId" element={<PublicProfile />} />
+                        <Route path="/activate" element={<Activate />} />
+                        <Route path="/forgot-password" element={<ForgotPassword />} />
+                        <Route path="/reset-password" element={<ResetPassword />} />
 
-                {/* Admin Routes */}
-                <Route path="/admin" element={
-                    <ProtectedAdmin session={session} isAdmin={isAdmin}>
-                        <AdminDashboard />
-                    </ProtectedAdmin>
-                } />
-                <Route path="/admin/card/:cardId" element={
-                    <ProtectedAdmin session={session} isAdmin={isAdmin}>
-                        <CardSettings />
-                    </ProtectedAdmin>
-                } />
-                <Route path="/admin/create" element={
-                    <ProtectedAdmin session={session} isAdmin={isAdmin}>
-                        <CreateCardWizard />
-                    </ProtectedAdmin>
-                } />
+                        {/* Client Routes */}
+                        <Route path="/dashboard" element={
+                            <ProtectedClient session={session}>
+                                <ClientDashboard />
+                            </ProtectedClient>
+                        } />
 
-                {/* Catch-all */}
-                <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-            {!location.pathname.startsWith('/u/') && <WhatsAppSupport />}
-        </>
-    )
+                        {/* Admin Routes */}
+                        <Route path="/admin" element={
+                            <ProtectedAdmin session={session} isAdmin={isAdmin}>
+                                <AdminDashboard />
+                            </ProtectedAdmin>
+                        } />
+                        <Route path="/admin/card/:cardId" element={
+                            <ProtectedAdmin session={session} isAdmin={isAdmin}>
+                                <CardSettings />
+                            </ProtectedAdmin>
+                        } />
+                        <Route path="/admin/create" element={
+                            <ProtectedAdmin session={session} isAdmin={isAdmin}>
+                                <CreateCardWizard />
+                            </ProtectedAdmin>
+                        } />
+
+                        <Route path="/:slug" element={<PublicProfile />} />
+
+                        {/* Catch-all */}
+                        <Route path="*" element={<Navigate to="/" replace />} />
+                    </Routes>
+                    {!isPublicProfile && <WhatsAppSupport />}
+                </>
+            )
+
 }

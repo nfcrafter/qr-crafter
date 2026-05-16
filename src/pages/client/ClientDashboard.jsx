@@ -197,16 +197,19 @@ export default function ClientDashboard() {
     }
 
     const downloadQR = () => {
+        const selectedCard = userCards.find(c => c.card_id === selectedCardId);
+        const link = selectedCard?.url_slug ? `${window.location.origin}/${selectedCard.url_slug}` : `${window.location.origin}/u/${selectedCardId}`;
+        
         import('qr-code-styling').then(QRCodeStyling => {
             const qrCode = new QRCodeStyling.default({
                 width: 1000,
                 height: 1000,
-                data: `${window.location.origin}/u/${selectedCardId}`,
+                data: link,
                 dotsOptions: { color: "#1A1265", type: "rounded" },
                 cornersSquareOptions: { color: "#1A1265", type: "extra-rounded" },
                 backgroundOptions: { color: "#FFFFFF" }
             });
-            qrCode.download({ name: `nfcrafter-qr-${selectedCardId}`, extension: "png" });
+            qrCode.download({ name: `nfcrafter-qr-${selectedCard?.url_slug || selectedCardId}`, extension: "png" });
         });
     };
 
@@ -217,7 +220,8 @@ export default function ClientDashboard() {
         </div>
     );
 
-    const publicUrl = selectedCardId ? `${window.location.origin}/u/${selectedCardId}` : '';
+    const selectedCard = userCards.find(c => c.card_id === selectedCardId);
+    const publicUrl = selectedCard ? (selectedCard.url_slug ? `${window.location.origin}/${selectedCard.url_slug}` : `${window.location.origin}/u/${selectedCardId}`) : '';
 
     const getBrightness = (hex) => {
         if (!hex || hex[0] !== '#') return 255;

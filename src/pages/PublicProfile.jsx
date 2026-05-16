@@ -6,19 +6,24 @@ import { supabase } from '../lib/supabase.js'
 import { SOCIAL_NETWORKS, LINK_ICONS } from '../constants/socials.js'
 
 export default function PublicProfile() {
-  const { cardId } = useParams()
+  const { cardId, slug } = useParams()
+  const lookupValue = cardId || slug
   const [profile, setProfile] = useState(null)
   const [customLinks, setCustomLinks] = useState([])
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
   const [isBioExpanded, setIsBioExpanded] = useState(false)
 
-  useEffect(() => { loadProfile() }, [cardId])
+  useEffect(() => { loadProfile() }, [lookupValue])
 
   async function loadProfile() {
     setLoading(true)
     const { data: card, error } = await supabase
-      .from('cards').select('*').eq('card_id', cardId).single()
+      .from('cards')
+      .select('*')
+      .or(`card_id.ilike.${lookupValue},url_slug.ilike.${lookupValue}`)
+      .single()
+      
     if (error || !card) { setNotFound(true); setLoading(false); return }
 
     // URL type → immediate redirect

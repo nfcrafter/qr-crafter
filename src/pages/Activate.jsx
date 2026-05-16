@@ -19,6 +19,7 @@ export default function Activate() {
     const [error, setError] = useState('')
     const [verifying, setVerifying] = useState(true)
     const [customCardName, setCustomCardName] = useState('')
+    const [customUrlSlug, setCustomUrlSlug] = useState('')
     const qrRef = useRef(null)
 
     useEffect(() => {
@@ -113,7 +114,18 @@ export default function Activate() {
                 customLinks: profile?.customLinks || cardInfo?.admin_profile?.customLinks || [],
             };
 
-            // 3. Perform atomic update on the card
+            let finalSlug = null;
+            if (customUrlSlug.trim()) {
+                const slug = customUrlSlug.trim().toLowerCase().replace(/[^a-z0-9-]/g, '');
+                if (slug) {
+                    const { data: existingSlug } = await supabase.from('cards').select('card_id').eq('url_slug', slug).single();
+                    if (existingSlug && existingSlug.card_id !== normalizedId) {
+                        throw new Error("Ce lien personnalisé est déjà pris. Veuillez en choisir un autre.");
+                    }
+                    finalSlug = slug;
+                }
+            }
+
             console.log('Attempting to activate card:', normalizedId, 'with token:', token);
             
             const { data: updatedCard, error: updateError } = await supabase.from('cards')
@@ -122,19 +134,14 @@ export default function Activate() {
                     status: 'active',
                     activation_token: null,
                     admin_profile: updatedProfile,
-                    card_name: customCardName || profile?.full_name || cardInfo?.card_name || 'Mon Profil'
+                    card_name: customCardName || profile?.full_name || cardInfo?.card_name || 'Mon Profil',
+                    url_slug: finalSlug
                 })
                 .ilike('card_id', normalizedId)
                 .eq('activation_token', token)
                 .select();
 
-            if (updateError) {
-                console.error('Update error:', updateError);
-                throw updateError;
-            }
-
-            if (!updatedCard || updatedCard.length === 0) {
-                console.warn('No card updated. Checking if card exists...');
+            if (updateError || !updatedCard || updatedCard.length === 0) {
                 const { data: checkCard } = await supabase.from('cards').select('card_id, status, activation_token').ilike('card_id', normalizedId).single();
                 console.log('Card state in DB:', checkCard);
                 
@@ -271,29 +278,45 @@ export default function Activate() {
                                     textAlign: 'left' 
                                 }}>
                                     <label style={{ display: 'block', marginBottom: 12, fontSize: 12, fontWeight: 800, color: themeColor, letterSpacing: '1px' }}>
-                                        ÉTAPE FINALE : NOMMEZ VOTRE CARTE *
+                                        ÉTAPE FINALE : PARAMÉTREZ VOTRE PROFIL *
                                     </label>
-                                    <input 
-                                        type="text" 
-                                        value={customCardName} 
-                                        onChange={e => setCustomCardName(e.target.value)}
-                                        placeholder="Ex: Profil Business, Carte Perso..."
-                                        style={{ 
-                                            width: '100%', 
-                                            padding: '16px', 
-                                            borderRadius: '12px', 
-                                            border: `2px solid ${customCardName ? themeColor : '#E2E8F0'}`, 
-                                            fontSize: '16px', 
-                                            outline: 'none', 
-                                            background: 'white',
-                                            fontWeight: '600',
-                                            transition: 'all 0.2s'
-                                        }}
-                                        autoFocus
-                                    />
-                                    <p style={{ marginTop: 12, fontSize: 12, color: '#64748B', lineHeight: 1.4 }}>
-                                        Ce nom vous aidera à distinguer vos différentes cartes dans votre tableau de bord.
-                                    </p>
+                                    
+                                    <div style={{ marginBottom: 20 }}>
+                                        <label style={{ display: 'block', marginBottom: 8, fontSize: 13, fontWeight: 700, color: '#333' }}>Lien personnalisé</label>
+                                        <div style={{ display: 'flex', alignItems: 'center', background: 'white', borderRadius: '12px', border: `2px solid ${customUrlSlug ? themeColor : '#E2E8F0'}`, overflow: 'hidden', transition: 'all 0.2s' }}>
+                                            <div style={{ padding: '16px 8px 16px 16px', background: '#F8FAFC', color: '#64748B', fontWeight: 600, borderRight: '1px solid #E2E8F0', fontSize: 15 }}>
+                                                nfcrafter.com/
+                                            </div>
+                                            <input 
+                                                type="text" 
+                                                value={customUrlSlug} 
+                                                onChange={e => setCustomUrlSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+                                                placeholder="votre-nom"
+                                                style={{ 
+                                                    flex: 1, padding: '16px 12px', border: 'none', fontSize: '15px', 
+                                                    outline: 'none', background: 'transparent', fontWeight: '700', color: themeColor
+                                                }}
+                                            />
+                                        </div>
+                                        <p style={{ marginTop: 6, fontSize: 11, color: '#64748B' }}>Ce lien sera unique et public. Il ne pourra plus être modifié plus tard.</p>
+                                    </div>
+
+                                    <div style={{ marginBottom: 8 }}>
+                                        <label style={{ display: 'block', marginBottom: 8, fontSize: 13, fontWeight: 700, color: '#333' }}>Nom interne de la carte</label>
+                                        <input 
+                                            type="text" 
+                                            value={customCardName} 
+                                            onChange={e => setCustomCardName(e.target.value)}
+                                            placeholder="Ex: Profil Business, Carte Perso..."
+                                            style={{ 
+                                                width: '100%', padding: '16px', borderRadius: '12px', 
+                                                border: `2px solid ${customCardName ? themeColor : '#E2E8F0'}`, 
+                                                fontSize: '15px', outline: 'none', background: 'white',
+                                                fontWeight: '600', transition: 'all 0.2s'
+                                            }}
+                                        />
+                                        <p style={{ marginTop: 6, fontSize: 11, color: '#64748B' }}>Ce nom vous aidera à distinguer vos différentes cartes en privé.</p>
+                                    </div>
                                 </div>
 
                                  <button 
