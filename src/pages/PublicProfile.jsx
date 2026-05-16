@@ -326,6 +326,27 @@ export default function PublicProfile() {
                     </button>
                   </div>
                 )}
+                {isBioExpanded && profile.bio.length > 150 && (
+                  <button 
+                    onClick={() => setIsBioExpanded(false)}
+                    style={{ 
+                      background: 'none', 
+                      border: 'none', 
+                      color: themeColor, 
+                      fontSize: 11, 
+                      fontWeight: 800, 
+                      cursor: 'pointer',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.5px',
+                      marginTop: '8px',
+                      display: 'block',
+                      width: '100%',
+                      textAlign: 'center'
+                    }}
+                  >
+                    Voir moins ↑
+                  </button>
+                )}
               </div>
             )}
           </div>
