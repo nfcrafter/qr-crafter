@@ -481,6 +481,149 @@ export default function PublicProfile() {
                         </div>
                     )}
                 </div>
+              ),
+              gallery: () => profile?.show_gallery && profile?.gallery?.length > 0 && (
+                <div key="gallery" style={{ background: cardBg, borderRadius: 24, padding: 20, boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.2)' : '0 4px 20px rgba(0,0,0,0.03)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+                        <div style={{ width: 32, height: 32, borderRadius: 8, background: themeColor + '15', color: themeColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                        </div>
+                        <h3 style={{ fontSize: 16, fontWeight: 800, color: textColor, margin: 0 }}>Galerie</h3>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+                        {profile.gallery.map(item => (
+                            <div key={item.id} style={{ aspectRatio: '1', borderRadius: 12, overflow: 'hidden', background: '#111' }}>
+                                {item.type === 'video' ? (
+                                    <a href={item.url} target="_blank" rel="noreferrer" style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: 28, textDecoration: 'none' }}>▶</a>
+                                ) : (
+                                    <img src={item.url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+              ),
+              video: () => profile?.show_video && profile?.presentation_video && (() => {
+                const url = profile.presentation_video;
+                let embedUrl = '';
+                if (url.includes('youtube.com/watch')) embedUrl = `https://www.youtube.com/embed/${new URL(url).searchParams.get('v')}`;
+                else if (url.includes('youtu.be/')) embedUrl = `https://www.youtube.com/embed/${url.split('youtu.be/')[1]?.split('?')[0]}`;
+                else if (url.includes('tiktok.com')) embedUrl = url;
+                if (!embedUrl) return null;
+                return (
+                  <div key="video" style={{ background: cardBg, borderRadius: 24, padding: 20, boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.2)' : '0 4px 20px rgba(0,0,0,0.03)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+                          <div style={{ width: 32, height: 32, borderRadius: 8, background: themeColor + '15', color: themeColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+                          </div>
+                          <h3 style={{ fontSize: 16, fontWeight: 800, color: textColor, margin: 0 }}>Présentation</h3>
+                      </div>
+                      <div style={{ borderRadius: 16, overflow: 'hidden', aspectRatio: '16/9' }}>
+                          <iframe src={embedUrl} style={{ width: '100%', height: '100%', border: 'none' }} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen title="Présentation" />
+                      </div>
+                  </div>
+                );
+              })(),
+              skills: () => profile?.show_skills && profile?.skills?.length > 0 && (
+                <div key="skills" style={{ background: cardBg, borderRadius: 24, padding: 20, boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.2)' : '0 4px 20px rgba(0,0,0,0.03)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+                        <div style={{ width: 32, height: 32, borderRadius: 8, background: themeColor + '15', color: themeColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                        </div>
+                        <h3 style={{ fontSize: 16, fontWeight: 800, color: textColor, margin: 0 }}>Compétences</h3>
+                    </div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                        {profile.skills.map((s, i) => (
+                            <span key={i} style={{ padding: '6px 16px', background: themeColor + '15', color: themeColor, borderRadius: 100, fontWeight: 700, fontSize: 13 }}>{s}</span>
+                        ))}
+                    </div>
+                </div>
+              ),
+              testimonials: () => profile?.show_testimonials && profile?.testimonials?.length > 0 && (
+                <div key="testimonials" style={{ background: cardBg, borderRadius: 24, padding: 20, boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.2)' : '0 4px 20px rgba(0,0,0,0.03)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+                        <div style={{ width: 32, height: 32, borderRadius: 8, background: themeColor + '15', color: themeColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                        </div>
+                        <h3 style={{ fontSize: 16, fontWeight: 800, color: textColor, margin: 0 }}>Témoignages</h3>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                        {profile.testimonials.map(t => (
+                            <div key={t.id} style={{ background: isDark ? 'rgba(255,255,255,0.03)' : '#F8FAFC', borderRadius: 16, padding: 16, border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid #F1F5F9' }}>
+                                <div style={{ display: 'flex', gap: 4, marginBottom: 8 }}>{[1,2,3,4,5].map(n => <span key={n} style={{ color: t.rating >= n ? '#F59E0B' : '#E2E8F0', fontSize: 16 }}>★</span>)}</div>
+                                <p style={{ fontSize: 14, color: textColor, lineHeight: 1.6, margin: '0 0 10px', fontStyle: 'italic' }}>"{t.text}"</p>
+                                <div style={{ fontSize: 13, fontWeight: 700, color: themeColor }}>— {t.name}</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+              ),
+              faq: () => profile?.show_faq && profile?.faq?.length > 0 && (
+                <div key="faq" style={{ background: cardBg, borderRadius: 24, padding: 20, boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.2)' : '0 4px 20px rgba(0,0,0,0.03)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+                        <div style={{ width: 32, height: 32, borderRadius: 8, background: themeColor + '15', color: themeColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                        </div>
+                        <h3 style={{ fontSize: 16, fontWeight: 800, color: textColor, margin: 0 }}>FAQ</h3>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                        {profile.faq.map(q => (
+                            <details key={q.id} style={{ background: isDark ? 'rgba(255,255,255,0.03)' : '#F8FAFC', borderRadius: 14, border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid #F1F5F9', overflow: 'hidden' }}>
+                                <summary style={{ padding: '14px 16px', fontWeight: 700, fontSize: 14, color: textColor, cursor: 'pointer', listStyle: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>{q.question} <span style={{ color: themeColor, fontSize: 18 }}>+</span></summary>
+                                <div style={{ padding: '0 16px 14px', fontSize: 14, color: subTextColor, lineHeight: 1.6 }}>{q.answer}</div>
+                            </details>
+                        ))}
+                    </div>
+                </div>
+              ),
+              events: () => profile?.show_events && profile?.events?.length > 0 && (
+                <div key="events" style={{ background: cardBg, borderRadius: 24, padding: 20, boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.2)' : '0 4px 20px rgba(0,0,0,0.03)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+                        <div style={{ width: 32, height: 32, borderRadius: 8, background: themeColor + '15', color: themeColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                        </div>
+                        <h3 style={{ fontSize: 16, fontWeight: 800, color: textColor, margin: 0 }}>Événements</h3>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                        {profile.events.filter(ev => !ev.date || new Date(ev.date) >= new Date(new Date().toDateString())).map(ev => (
+                            <div key={ev.id} className="pl" style={{ background: isDark ? 'rgba(255,255,255,0.03)' : '#F8FAFC', borderRadius: 16, padding: 16, border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid #F1F5F9' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+                                    <div style={{ fontWeight: 800, fontSize: 15, color: textColor }}>{ev.title}</div>
+                                    {ev.date && <div style={{ fontSize: 12, fontWeight: 700, color: themeColor, background: themeColor + '15', padding: '4px 10px', borderRadius: 8, whiteSpace: 'nowrap' }}>{new Date(ev.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}</div>}
+                                </div>
+                                {ev.location && <div style={{ fontSize: 13, color: subTextColor, marginBottom: 6 }}>📍 {ev.location}</div>}
+                                {ev.description && <div style={{ fontSize: 13, color: textColor, lineHeight: 1.5, marginBottom: ev.link ? 10 : 0 }}>{ev.description}</div>}
+                                {ev.link && <a href={ev.link} target="_blank" rel="noreferrer" style={{ display: 'inline-block', marginTop: 4, padding: '8px 16px', background: themeColor, color: 'white', borderRadius: 10, textDecoration: 'none', fontSize: 13, fontWeight: 700 }}>S'inscrire →</a>}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+              ),
+              contact_form: () => profile?.show_contact_form && (
+                <div key="contact_form" style={{ background: cardBg, borderRadius: 24, padding: 20, boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.2)' : '0 4px 20px rgba(0,0,0,0.03)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+                        <div style={{ width: 32, height: 32, borderRadius: 8, background: themeColor + '15', color: themeColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                        </div>
+                        <h3 style={{ fontSize: 16, fontWeight: 800, color: textColor, margin: 0 }}>Contactez-moi</h3>
+                    </div>
+                    <form onSubmit={e => {
+                        e.preventDefault();
+                        const fd = new FormData(e.target);
+                        const name = fd.get('name');
+                        const msg = fd.get('message');
+                        const waNum = (profile?.socials?.whatsapp?.value || profile?.phone || '').toString().replace(/\D/g, '');
+                        if (waNum) {
+                            window.open(`https://wa.me/${waNum}?text=${encodeURIComponent(`Bonjour, je suis ${name}. ${msg}`)}`, '_blank');
+                        } else if (profile?.email) {
+                            window.location.href = `mailto:${profile.email}?subject=Contact via NFCrafter&body=${encodeURIComponent(`Bonjour, je suis ${name}. ${msg}`)}`;
+                        }
+                    }} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                        <input name="name" required placeholder="Votre nom" style={{ padding: '12px 16px', borderRadius: 12, border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #E2E8F0', background: isDark ? 'rgba(255,255,255,0.05)' : '#F8FAFC', color: textColor, fontSize: 14 }} />
+                        <textarea name="message" required placeholder="Votre message..." rows={3} style={{ padding: '12px 16px', borderRadius: 12, border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #E2E8F0', background: isDark ? 'rgba(255,255,255,0.05)' : '#F8FAFC', color: textColor, fontSize: 14, resize: 'vertical', fontFamily: 'inherit' }} />
+                        <button type="submit" className="sb" style={{ padding: '14px', background: themeColor, color: 'white', border: 'none', borderRadius: 14, fontWeight: 700, fontSize: 14, cursor: 'pointer', boxShadow: `0 6px 20px ${themeColor}44`, transition: 'all .18s' }}>Envoyer le message</button>
+                    </form>
+                </div>
               )
             };
 

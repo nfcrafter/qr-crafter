@@ -121,6 +121,45 @@ export default function ProfileForm({
         productFileRef.current.click();
     };
 
+    // Gallery Helpers
+    const galleryFileRef = useRef();
+    const [activeGalleryAction, setActiveGalleryAction] = useState(null);
+    const addGalleryItem = (type) => {
+        if (type === 'video') {
+            const url = prompt('Collez le lien YouTube ou TikTok :');
+            if (!url) return;
+            const items = [...(profile.gallery || []), { id: Date.now(), url, caption: '', type: 'video' }];
+            setProfile({ ...profile, gallery: items });
+        } else {
+            setActiveGalleryAction('add');
+            galleryFileRef.current.click();
+        }
+    };
+    const removeGalleryItem = (id) => {
+        if (!window.confirm('Supprimer cet élément ?')) return;
+        setProfile({ ...profile, gallery: (profile.gallery || []).filter(g => g.id !== id) });
+    };
+
+    // Testimonials
+    const addTestimonial = () => setProfile({ ...profile, testimonials: [...(profile.testimonials || []), { id: Date.now(), name: '', text: '', rating: 5 }] });
+    const updateTestimonial = (id, f, v) => setProfile({ ...profile, testimonials: (profile.testimonials || []).map(t => t.id === id ? { ...t, [f]: v } : t) });
+    const removeTestimonial = (id) => { if (!window.confirm('Supprimer ce témoignage ?')) return; setProfile({ ...profile, testimonials: (profile.testimonials || []).filter(t => t.id !== id) }); };
+
+    // FAQ
+    const addFaq = () => setProfile({ ...profile, faq: [...(profile.faq || []), { id: Date.now(), question: '', answer: '' }] });
+    const updateFaq = (id, f, v) => setProfile({ ...profile, faq: (profile.faq || []).map(q => q.id === id ? { ...q, [f]: v } : q) });
+    const removeFaq = (id) => { if (!window.confirm('Supprimer cette question ?')) return; setProfile({ ...profile, faq: (profile.faq || []).filter(q => q.id !== id) }); };
+
+    // Events
+    const addEvent = () => setProfile({ ...profile, events: [...(profile.events || []), { id: Date.now(), title: '', date: '', location: '', description: '', link: '' }] });
+    const updateEvent = (id, f, v) => setProfile({ ...profile, events: (profile.events || []).map(e => e.id === id ? { ...e, [f]: v } : e) });
+    const removeEvent = (id) => { if (!window.confirm('Supprimer cet événement ?')) return; setProfile({ ...profile, events: (profile.events || []).filter(e => e.id !== id) }); };
+
+    // Skills
+    const [skillInput, setSkillInput] = useState('');
+    const addSkill = () => { if (!skillInput.trim()) return; setProfile({ ...profile, skills: [...(profile.skills || []), skillInput.trim()] }); setSkillInput(''); };
+    const removeSkill = (idx) => { const s = [...(profile.skills || [])]; s.splice(idx, 1); setProfile({ ...profile, skills: s }); };
+
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             {/* SECTION APPARENCE */}
@@ -566,17 +605,160 @@ export default function ProfileForm({
                 </div>
             ))}
 
+            {/* GALLERY */}
+            {acc('gallery', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>`, 'Galerie Photos/Vidéos', 'Montrez vos réalisations.', (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: '#1A1265' }}>Activer la galerie</span>
+                        <input type="checkbox" checked={profile.show_gallery || false} onChange={e => setProfile({ ...profile, show_gallery: e.target.checked })} />
+                    </label>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+                        {(profile.gallery || []).map(item => (
+                            <div key={item.id} style={{ width: 90, height: 90, borderRadius: 12, overflow: 'hidden', position: 'relative', border: '1px solid #E2E8F0', background: '#F8FAFC' }}>
+                                {item.type === 'video' ? (
+                                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, background: '#111', color: 'white' }}>▶</div>
+                                ) : (
+                                    <img src={item.url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                )}
+                                <button onClick={() => removeGalleryItem(item.id)} style={{ position: 'absolute', top: 4, right: 4, width: 22, height: 22, borderRadius: '50%', background: '#FEE2E2', color: '#EF4444', border: 'none', cursor: 'pointer', fontSize: 10, fontWeight: 900 }}>✕</button>
+                            </div>
+                        ))}
+                    </div>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                        <button onClick={() => addGalleryItem('image')} style={{ flex: 1, padding: 14, borderRadius: 14, border: '2px dashed #CBD5E1', background: 'white', color: '#475569', fontWeight: 700, cursor: 'pointer', fontSize: 13 }}>+ Photo</button>
+                        <button onClick={() => addGalleryItem('video')} style={{ flex: 1, padding: 14, borderRadius: 14, border: '2px dashed #CBD5E1', background: 'white', color: '#475569', fontWeight: 700, cursor: 'pointer', fontSize: 13 }}>+ Vidéo (URL)</button>
+                    </div>
+                </div>
+            ))}
+
+            {/* PRESENTATION VIDEO */}
+            {acc('video', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>`, 'Vidéo de Présentation', 'Intégrez une vidéo YouTube ou TikTok.', (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: '#1A1265' }}>Activer la vidéo</span>
+                        <input type="checkbox" checked={profile.show_video || false} onChange={e => setProfile({ ...profile, show_video: e.target.checked })} />
+                    </label>
+                    <div className="field" style={{ marginBottom: 0 }}>
+                        <label>Lien YouTube ou TikTok</label>
+                        <input type="url" value={profile.presentation_video || ''} onChange={e => setProfile({ ...profile, presentation_video: e.target.value })} placeholder="https://youtube.com/watch?v=..." style={{ background: '#F8FAFC' }} />
+                    </div>
+                    <p style={{ fontSize: 12, color: '#94A3B8', margin: 0 }}>Formats supportés : YouTube, TikTok. La vidéo sera intégrée directement dans votre profil.</p>
+                </div>
+            ))}
+
+            {/* SKILLS / TAGS */}
+            {acc('skills', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>`, 'Compétences / Tags', 'Affichez vos domaines d\'expertise.', (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: '#1A1265' }}>Afficher les compétences</span>
+                        <input type="checkbox" checked={profile.show_skills || false} onChange={e => setProfile({ ...profile, show_skills: e.target.checked })} />
+                    </label>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                        {(profile.skills || []).map((s, i) => (
+                            <span key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 14px', background: '#EEF2FF', color: '#4F46E5', borderRadius: 100, fontWeight: 700, fontSize: 13 }}>
+                                {s}
+                                <button onClick={() => removeSkill(i)} style={{ background: 'none', border: 'none', color: '#4F46E5', cursor: 'pointer', fontWeight: 900, fontSize: 14, padding: 0 }}>×</button>
+                            </span>
+                        ))}
+                    </div>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                        <input type="text" value={skillInput} onChange={e => setSkillInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addSkill())} placeholder="Ex: Design, Marketing..." style={{ flex: 1, padding: '12px 16px', borderRadius: 12, border: '1px solid #E2E8F0', background: '#F8FAFC' }} />
+                        <button onClick={addSkill} style={{ padding: '12px 20px', borderRadius: 12, background: '#4F46E5', color: 'white', border: 'none', fontWeight: 800, cursor: 'pointer' }}>+</button>
+                    </div>
+                </div>
+            ))}
+
+            {/* TESTIMONIALS */}
+            {acc('testimonials', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>`, 'Témoignages / Avis', 'Avis de vos clients satisfaits.', (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: '#1A1265' }}>Afficher les témoignages</span>
+                        <input type="checkbox" checked={profile.show_testimonials || false} onChange={e => setProfile({ ...profile, show_testimonials: e.target.checked })} />
+                    </label>
+                    {(profile.testimonials || []).map(t => (
+                        <div key={t.id} style={{ background: '#F8FAFC', borderRadius: 16, padding: 16, border: '1px solid #E2E8F0', position: 'relative' }}>
+                            <button onClick={() => removeTestimonial(t.id)} style={{ position: 'absolute', top: 10, right: 10, width: 28, height: 28, borderRadius: '50%', background: '#FEE2E2', color: '#EF4444', border: 'none', cursor: 'pointer', fontSize: 12 }}>✕</button>
+                            <div className="field" style={{ marginBottom: 10 }}><label>Nom du client</label><input type="text" value={t.name} onChange={e => updateTestimonial(t.id, 'name', e.target.value)} placeholder="Jean Dupont" style={{ background: 'white' }} /></div>
+                            <div className="field" style={{ marginBottom: 10 }}><label>Témoignage</label><textarea value={t.text} onChange={e => updateTestimonial(t.id, 'text', e.target.value)} placeholder="Super service..." rows={2} style={{ background: 'white', width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #E2E8F0', resize: 'vertical', fontFamily: 'inherit' }} /></div>
+                            <div className="field" style={{ marginBottom: 0 }}><label>Note (1-5)</label>
+                                <div style={{ display: 'flex', gap: 4 }}>{[1,2,3,4,5].map(n => <button key={n} onClick={() => updateTestimonial(t.id, 'rating', n)} style={{ width: 36, height: 36, borderRadius: 10, border: '1px solid #E2E8F0', background: t.rating >= n ? '#F59E0B' : 'white', color: t.rating >= n ? 'white' : '#CBD5E1', fontWeight: 900, cursor: 'pointer', fontSize: 16 }}>★</button>)}</div>
+                            </div>
+                        </div>
+                    ))}
+                    <button onClick={addTestimonial} style={{ width: '100%', padding: 14, borderRadius: 14, border: '2px dashed #CBD5E1', background: 'white', color: '#475569', fontWeight: 700, cursor: 'pointer', fontSize: 13 }}>+ Ajouter un témoignage</button>
+                </div>
+            ))}
+
+            {/* FAQ */}
+            {acc('faq', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`, 'FAQ', 'Questions fréquemment posées.', (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: '#1A1265' }}>Afficher la FAQ</span>
+                        <input type="checkbox" checked={profile.show_faq || false} onChange={e => setProfile({ ...profile, show_faq: e.target.checked })} />
+                    </label>
+                    {(profile.faq || []).map(q => (
+                        <div key={q.id} style={{ background: '#F8FAFC', borderRadius: 16, padding: 16, border: '1px solid #E2E8F0', position: 'relative' }}>
+                            <button onClick={() => removeFaq(q.id)} style={{ position: 'absolute', top: 10, right: 10, width: 28, height: 28, borderRadius: '50%', background: '#FEE2E2', color: '#EF4444', border: 'none', cursor: 'pointer', fontSize: 12 }}>✕</button>
+                            <div className="field" style={{ marginBottom: 10 }}><label>Question</label><input type="text" value={q.question} onChange={e => updateFaq(q.id, 'question', e.target.value)} placeholder="Comment ça marche ?" style={{ background: 'white' }} /></div>
+                            <div className="field" style={{ marginBottom: 0 }}><label>Réponse</label><textarea value={q.answer} onChange={e => updateFaq(q.id, 'answer', e.target.value)} placeholder="Très simplement..." rows={2} style={{ background: 'white', width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #E2E8F0', resize: 'vertical', fontFamily: 'inherit' }} /></div>
+                        </div>
+                    ))}
+                    <button onClick={addFaq} style={{ width: '100%', padding: 14, borderRadius: 14, border: '2px dashed #CBD5E1', background: 'white', color: '#475569', fontWeight: 700, cursor: 'pointer', fontSize: 13 }}>+ Ajouter une question</button>
+                </div>
+            ))}
+
+            {/* EVENTS */}
+            {acc('events', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>`, 'Événements à Venir', 'Annoncez vos prochains événements.', (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: '#1A1265' }}>Afficher les événements</span>
+                        <input type="checkbox" checked={profile.show_events || false} onChange={e => setProfile({ ...profile, show_events: e.target.checked })} />
+                    </label>
+                    {(profile.events || []).map(ev => (
+                        <div key={ev.id} style={{ background: '#F8FAFC', borderRadius: 16, padding: 16, border: '1px solid #E2E8F0', position: 'relative' }}>
+                            <button onClick={() => removeEvent(ev.id)} style={{ position: 'absolute', top: 10, right: 10, width: 28, height: 28, borderRadius: '50%', background: '#FEE2E2', color: '#EF4444', border: 'none', cursor: 'pointer', fontSize: 12 }}>✕</button>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
+                                <div className="field" style={{ marginBottom: 0 }}><label>Titre</label><input type="text" value={ev.title} onChange={e => updateEvent(ev.id, 'title', e.target.value)} placeholder="Workshop Design" style={{ background: 'white' }} /></div>
+                                <div className="field" style={{ marginBottom: 0 }}><label>Date</label><input type="date" value={ev.date} onChange={e => updateEvent(ev.id, 'date', e.target.value)} style={{ background: 'white' }} /></div>
+                            </div>
+                            <div className="field" style={{ marginBottom: 10 }}><label>Lieu</label><input type="text" value={ev.location} onChange={e => updateEvent(ev.id, 'location', e.target.value)} placeholder="Cotonou, Bénin" style={{ background: 'white' }} /></div>
+                            <div className="field" style={{ marginBottom: 10 }}><label>Description</label><textarea value={ev.description} onChange={e => updateEvent(ev.id, 'description', e.target.value)} placeholder="Détails..." rows={2} style={{ background: 'white', width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #E2E8F0', resize: 'vertical', fontFamily: 'inherit' }} /></div>
+                            <div className="field" style={{ marginBottom: 0 }}><label>Lien (optionnel)</label><input type="url" value={ev.link} onChange={e => updateEvent(ev.id, 'link', e.target.value)} placeholder="https://..." style={{ background: 'white' }} /></div>
+                        </div>
+                    ))}
+                    <button onClick={addEvent} style={{ width: '100%', padding: 14, borderRadius: 14, border: '2px dashed #CBD5E1', background: 'white', color: '#475569', fontWeight: 700, cursor: 'pointer', fontSize: 13 }}>+ Ajouter un événement</button>
+                </div>
+            ))}
+
+            {/* CONTACT FORM */}
+            {acc('contact_form', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>`, 'Formulaire de Contact', 'Redirigez vers WhatsApp ou Email.', (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: '#1A1265' }}>Activer le formulaire de contact</span>
+                        <input type="checkbox" checked={profile.show_contact_form || false} onChange={e => setProfile({ ...profile, show_contact_form: e.target.checked })} />
+                    </label>
+                    <p style={{ fontSize: 12, color: '#94A3B8', margin: 0 }}>Les visiteurs pourront rédiger un message qui sera envoyé via WhatsApp ou Email (selon ce qui est configuré sur votre profil).</p>
+                </div>
+            ))}
+
             {/* SECTION AVANCÉE SUPPRIMÉE */}
             {acc('layout', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10H3M21 6H3M21 14H3M21 18H3"></path></svg>`, 'Mise en page', 'Ordre des sections du profil.', (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                     <p style={{ fontSize: 13, color: '#64748B', marginBottom: 10 }}>Organisez l'ordre d'apparition des sections sur votre profil public.</p>
                     {(() => {
-                        const sections = (profile.section_order || ['contact_buttons', 'links', 'products', 'business_info']).filter(s => s !== 'bio');
+                        const sections = (profile.section_order || ['contact_buttons', 'links', 'products', 'business_info', 'gallery', 'video', 'skills', 'testimonials', 'faq', 'events', 'contact_form']).filter(s => s !== 'bio');
                         const sectionLabels = {
                             contact_buttons: 'Boutons directs (Appel/Email)',
                             links: 'Réseaux Sociaux & Liens',
                             products: 'Boutique & Catalogue',
-                            business_info: 'Infos Business (Horaires/Map)'
+                            business_info: 'Infos Business (Horaires/Map)',
+                            gallery: 'Galerie Photos/Vidéos',
+                            video: 'Vidéo de Présentation',
+                            skills: 'Compétences / Tags',
+                            testimonials: 'Témoignages / Avis',
+                            faq: 'FAQ',
+                            events: 'Événements à Venir',
+                            contact_form: 'Formulaire de Contact'
                         };
                         const move = (index, dir) => {
                             const newOrder = [...sections];
@@ -597,6 +779,24 @@ export default function ProfileForm({
                     })()}
                 </div>
             ))}
+
+            <input ref={galleryFileRef} type="file" hidden accept="image/*" onChange={e => {
+                if (e.target.files[0] && onUploadBanner) {
+                    const file = e.target.files[0];
+                    const reader = new FileReader();
+                    reader.onload = (re) => {
+                        const items = [...(profile.gallery || []), { id: Date.now(), url: re.target.result, caption: '', type: 'image' }];
+                        setProfile({ ...profile, gallery: items });
+                        // Also upload to storage for persistence
+                        if (onUploadBanner) {
+                            onUploadBanner({ target: { files: [file] } }, (url) => {
+                                setProfile(prev => ({...prev, gallery: (prev.gallery || []).map(g => g.id === items[items.length-1].id ? {...g, url} : g)}));
+                            });
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }} />
 
             <input 
                 ref={productFileRef} 
