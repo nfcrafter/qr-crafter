@@ -460,16 +460,6 @@ export default function ClientDashboard() {
                                 </div>
                             </div>
 
-                            {/* Banner - Physical Card */}
-                            <div style={{ background: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)', color: 'white', padding: '30px', borderRadius: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px', boxShadow: '0 20px 40px rgba(79,70,229,0.15)', position: 'relative', overflow: 'hidden' }}>
-                                <div style={{ flex: 1, position: 'relative', zIndex: 1 }}>
-                                    <h3 style={{ fontSize: '18px', fontWeight: '900', marginBottom: '8px', color: 'white', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        Carte Physique <div style={{ width: 20, height: 20 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>` }} />
-                                    </h3>
-                                    <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '13px', lineHeight: '1.5', maxWidth: '300px' }}>Commandez votre carte NFC premium personnalisée.</p>
-                                </div>
-                                <button onClick={() => window.open(`https://wa.me/22969473921?text=${encodeURIComponent('Bonjour NFCrafter, je souhaite commander ma Carte Signature NFC à 10.000f. Mon profil actuel : ' + publicUrl)}`, '_blank')} style={{ background: 'white', color: '#4F46E5', border: 'none', padding: '12px 24px', borderRadius: '14px', fontWeight: '900', cursor: 'pointer', fontSize: '13px' }}>Commander</button>
-                            </div>
 
                             {/* Editor */}
                             <div ref={editorRef} className="editor-card" style={{ background: 'white', padding: '40px', borderRadius: '32px', border: '1px solid #E2E8F0', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
