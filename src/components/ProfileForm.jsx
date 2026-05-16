@@ -1,6 +1,6 @@
-// src/components/ProfileForm.jsx
 import { useState, useRef } from 'react';
 import { SOCIAL_NETWORKS, LINK_ICONS } from '../constants/socials.js';
+import { OFFICIAL_CARD_COLORS } from '../constants/cardColors.js';
 
 export default function ProfileForm({
     profile,
@@ -143,8 +143,8 @@ export default function ProfileForm({
                     </div>
 
                     <div>
-                        <label style={{ fontSize: 13, fontWeight: 700, color: '#1A1265', marginBottom: 12, display: 'block' }}>Thèmes rapides</label>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
+                        <label style={{ fontSize: 13, fontWeight: 700, color: '#1A1265', marginBottom: 12, display: 'block' }}>Thèmes Rapides</label>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 20 }}>
                             {[
                                 { name: 'Classique', primary: '#1A1265', bg: '#f0f2f5' },
                                 { name: 'Sombre', primary: '#6366F1', bg: '#0F172A' },
@@ -170,6 +170,29 @@ export default function ProfileForm({
                                     <span style={{ fontSize: 11, fontWeight: 700, color: '#475569' }}>{t.name}</span>
                                 </button>
                             ))}
+                        </div>
+
+                        <div style={{ padding: '16px', background: '#F8FAFC', borderRadius: '16px', border: '1px solid #E2E8F0' }}>
+                            <label style={{ display: 'block', fontSize: '11px', fontWeight: '800', color: '#64748B', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Réinitialiser via Thème Officiel</label>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: '8px' }}>
+                                {Object.entries(OFFICIAL_CARD_COLORS).map(([key, theme]) => (
+                                    <button 
+                                        key={key} 
+                                        onClick={() => {
+                                            setProfile({ ...profile, primaryColor: theme.qrPoints, backgroundColor: theme.qrBg });
+                                            toast?.('Thème ' + theme.name + ' appliqué !', 'success');
+                                        }}
+                                        style={{ 
+                                            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', 
+                                            padding: '8px', background: 'white', border: profile.primaryColor === theme.qrPoints ? '2px solid #1A1265' : '1px solid #E2E8F0', 
+                                            borderRadius: '10px', cursor: 'pointer', transition: 'all 0.2s'
+                                        }}
+                                    >
+                                        <div style={{ width: '24px', height: '24px', borderRadius: '6px', background: theme.card, border: '1px solid rgba(0,0,0,0.1)' }} />
+                                        <span style={{ fontSize: '10px', fontWeight: '700', color: '#1A1265' }}>{theme.name.split(' ')[0]}</span>
+                                    </button>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </div>

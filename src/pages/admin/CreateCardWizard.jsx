@@ -8,6 +8,7 @@ import { generateUniqueCardId } from '../../lib/utils.js';
 import PhonePreview from '../../components/PhonePreview.jsx';
 import { SOCIAL_NETWORKS, LINK_ICONS } from '../../constants/socials.js';
 import ImageUpload from '../../components/ImageUpload.jsx';
+import { OFFICIAL_CARD_COLORS } from '../../constants/cardColors.js';
 
 // Reusable color picker: swatch + hex text input
 function ColorField({ label, value, onChange }) {
@@ -229,6 +230,25 @@ export default function CreateCardWizard() {
                                             <ImageUpload label="Photo de profil" value={profile.photo_url} onChange={v => setProfile({ ...profile, photo_url: v })} bucket="avatars" shape="circle" />
                                             <ImageUpload label="Bannière" value={profile.banner_url} onChange={v => setProfile({ ...profile, banner_url: v })} bucket="banners" shape="rect" />
                                             <ColorField label="Couleur principale" value={profile.primaryColor || '#1A1265'} onChange={v => setProfile({ ...profile, primaryColor: v })} />
+                                            <div style={{ marginTop: 8, padding: '16px', background: '#F8FAFC', borderRadius: '16px', border: '1px solid #E2E8F0' }}>
+                                                <label style={{ display: 'block', fontSize: '11px', fontWeight: '800', color: '#64748B', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Appliquer un Thème Officiel</label>
+                                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: '8px' }}>
+                                                    {Object.entries(OFFICIAL_CARD_COLORS).map(([key, theme]) => (
+                                                        <button 
+                                                            key={key} 
+                                                            onClick={() => setProfile({ ...profile, primaryColor: theme.qrPoints, backgroundColor: theme.qrBg })}
+                                                            style={{ 
+                                                                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', 
+                                                                padding: '8px', background: 'white', border: profile.primaryColor === theme.qrPoints ? '2px solid #1A1265' : '1px solid #E2E8F0', 
+                                                                borderRadius: '10px', cursor: 'pointer', transition: 'all 0.2s'
+                                                            }}
+                                                        >
+                                                            <div style={{ width: '24px', height: '24px', borderRadius: '6px', background: theme.card, border: '1px solid rgba(0,0,0,0.1)' }} />
+                                                            <span style={{ fontSize: '10px', fontWeight: '700', color: '#1A1265' }}>{theme.name.split(' ')[0]}</span>
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
                                         </div>
                                     ))}
 
@@ -396,7 +416,7 @@ export default function CreateCardWizard() {
 
                     {/* Right panel: QR-only on step 3, page preview on steps 1&2 */}
                     {step < 4 && (
-                        <div className="phone-preview-container">
+                        <div className="phone-preview-container" style={{ alignSelf: 'start', height: 'fit-content' }}>
                             {step < 3 && (
                                 <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
                                     <button onClick={() => setPreviewMode('qr')} style={{ flex: 1, padding: '10px', borderRadius: 20, border: 'none', background: previewMode === 'qr' ? '#1A1265' : 'white', color: previewMode === 'qr' ? 'white' : '#64748B', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>Code QR</button>

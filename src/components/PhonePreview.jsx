@@ -4,6 +4,7 @@ export default function PhonePreview({ children }) {
     return (
         <div style={{
             width: '320px',
+            maxWidth: '100%',
             height: '640px',
             background: '#111',
             borderRadius: '40px',
@@ -12,7 +13,8 @@ export default function PhonePreview({ children }) {
             border: '4px solid #222',
             position: 'relative',
             margin: '0 auto',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            flexShrink: 0
         }}>
             {/* Notch */}
             <div style={{

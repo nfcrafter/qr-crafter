@@ -519,7 +519,7 @@ export default function ClientDashboard() {
                         </div>
 
                         {/* iPhone Preview Column (Desktop) */}
-                        <div className="desktop-preview" style={{ position: 'sticky', top: '20px' }}>
+                        <div className="desktop-preview" style={{ position: 'sticky', top: '40px', alignSelf: 'start', height: 'fit-content' }}>
                             <div style={{ textAlign: 'center', marginBottom: '16px' }}>
                                 <span style={{ fontSize: '12px', fontWeight: '800', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '1px' }}>Aperçu en direct</span>
                             </div>

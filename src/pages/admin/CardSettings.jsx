@@ -297,6 +297,26 @@ export default function CardSettings() {
                                     <ColorField label="Couleur du fond" value={profile.backgroundColor || '#f0f2f5'} onChange={v => setProfile({ ...profile, backgroundColor: v })} />
                                 </div>
                                 
+                                <div style={{ marginTop: 8, padding: '16px', background: '#F8FAFC', borderRadius: '16px', border: '1px solid #E2E8F0' }}>
+                                    <label style={{ display: 'block', fontSize: '12px', fontWeight: '800', color: '#64748B', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Réinitialiser via Thème Officiel</label>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: '8px' }}>
+                                        {Object.entries(OFFICIAL_CARD_COLORS).map(([key, theme]) => (
+                                            <button 
+                                                key={key} 
+                                                onClick={() => setProfile({ ...profile, primaryColor: theme.qrPoints, backgroundColor: theme.qrBg })}
+                                                style={{ 
+                                                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', 
+                                                    padding: '8px', background: 'white', border: profile.primaryColor === theme.qrPoints ? '2px solid #1A1265' : '1px solid #E2E8F0', 
+                                                    borderRadius: '10px', cursor: 'pointer', transition: 'all 0.2s'
+                                                }}
+                                            >
+                                                <div style={{ width: '24px', height: '24px', borderRadius: '6px', background: theme.card, border: '1px solid rgba(0,0,0,0.1)' }} />
+                                                <span style={{ fontSize: '10px', fontWeight: '700', color: '#1A1265' }}>{theme.name.split(' ')[0]}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                                
                                 <div>
                                     <label style={{ fontSize: 13, fontWeight: 700, color: '#1A1265', marginBottom: 12, display: 'block' }}>Thèmes rapides</label>
                                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))', gap: 10 }}>
@@ -634,10 +654,10 @@ export default function CardSettings() {
                     </div>
 
                     {/* Phone Preview Column (Desktop) */}
-                    <div className="desktop-preview" style={{ position: 'sticky', top: '20px' }}>
+                    <div className="desktop-preview" style={{ position: 'sticky', top: '40px', alignSelf: 'start', height: 'fit-content' }}>
                         <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-                            <button onClick={() => setPreviewMode('page')} style={{ flex: 1, padding: 10, borderRadius: 20, border: 'none', background: previewMode === 'page' ? '#1A1265' : 'white', color: previewMode === 'page' ? 'white' : '#64748B', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>Aperçu Page</button>
-                            <button onClick={() => setPreviewMode('qr')} style={{ flex: 1, padding: 10, borderRadius: 20, border: 'none', background: previewMode === 'qr' ? '#1A1265' : 'white', color: previewMode === 'qr' ? 'white' : '#64748B', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>Aperçu QR</button>
+                            <button onClick={() => setPreviewMode('page')} style={{ flex: 1, padding: 10, borderRadius: 20, border: 'none', background: previewMode === 'page' ? '#1A1265' : 'white', color: previewMode === 'page' ? 'white' : '#64748B', fontWeight: 700, fontSize: 12, cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>Aperçu Page</button>
+                            <button onClick={() => setPreviewMode('qr')} style={{ flex: 1, padding: 10, borderRadius: 20, border: 'none', background: previewMode === 'qr' ? '#1A1265' : 'white', color: previewMode === 'qr' ? 'white' : '#64748B', fontWeight: 700, fontSize: 12, cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>Aperçu QR</button>
                         </div>
                         <AdminPhonePreview profile={profile} qrStyle={qrStyle} qrRef={qrRef} previewMode={previewMode} isDark={isDark} textColor={textColor} subTextColor={subTextColor} cardBg={cardBg} />
                     </div>
