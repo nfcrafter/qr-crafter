@@ -496,8 +496,9 @@ export default function PublicProfile() {
               ),
               gallery: () => {
                 const items = (profile?.gallery || []).filter(i => i.type !== 'video');
-                return profile?.show_gallery && items.length > 0 && (
-                <div key="gallery" style={{ background: cardBg, borderRadius: 24, padding: 20, boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.2)' : '0 4px 20px rgba(0,0,0,0.03)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)' }}>
+                if (!profile?.show_gallery || items.length === 0) return null;
+                return (
+                  <div key="gallery" style={{ background: cardBg, borderRadius: 24, padding: 20, boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.2)' : '0 4px 20px rgba(0,0,0,0.03)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
                         <div style={{ width: 32, height: 32, borderRadius: 8, background: themeColor + '15', color: themeColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
@@ -517,8 +518,9 @@ export default function PublicProfile() {
                             </div>
                         ))}
                     </div>
-                </div>
-              ),
+                  </div>
+                );
+              },
               skills: () => profile?.show_skills && profile?.skills?.length > 0 && (
                 <div key="skills" style={{ background: cardBg, borderRadius: 24, padding: 20, boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.2)' : '0 4px 20px rgba(0,0,0,0.03)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
