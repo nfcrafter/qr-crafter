@@ -376,39 +376,87 @@ export default function ProfileForm({
                                         <div className="field" style={{ marginBottom: 0 }}>
                                             <label>Prix (ex: 5000 FCFA)</label>
                                             <input type="text" value={p.price} onChange={e => updateProduct(p.id, 'price', e.target.value)} placeholder="0" style={{ background: 'white' }} />
-                                        </div>
-                                    </div>
+                    {profile.products.map(p => (
+                        <div key={p.id} style={{ padding: 20, background: '#F8FAFC', borderRadius: 20, marginBottom: 16, border: '1px solid #E2E8F0', position: 'relative' }}>
+                            <button onClick={() => deleteProduct(p.id)} style={{ position: 'absolute', top: 12, right: 12, width: 32, height: 32, borderRadius: '50%', background: '#FEE2E2', color: '#EF4444', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
+                            
+                            <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
+                                <div 
+                                    onClick={() => triggerProductUpload(p.id)}
+                                    style={{ width: 80, height: 80, borderRadius: 16, background: '#FFF', border: '2px dashed #CBD5E1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', overflow: 'hidden', flexShrink: 0 }}
+                                >
+                                    {p.image_url ? <img src={p.image_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ fontSize: 24 }}>📸</div>}
                                 </div>
-                                <div className="field" style={{ marginBottom: 0 }}>
-                                    <label>Description courte</label>
-                                    <input type="text" value={p.description} onChange={e => updateProduct(p.id, 'description', e.target.value)} placeholder="Un café intense..." style={{ background: 'white' }} />
+                                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                                    <input placeholder="Nom du produit" value={p.name} onChange={e => updateProduct(p.id, { name: e.target.value })} style={{ width: '100%', padding: '10px 14px', borderRadius: 10, border: '1px solid #E2E8F0' }} />
+                                    <input placeholder="Prix (ex: 5.000 F)" value={p.price} onChange={e => updateProduct(p.id, { price: e.target.value })} style={{ width: '100%', padding: '10px 14px', borderRadius: 10, border: '1px solid #E2E8F0' }} />
                                 </div>
                             </div>
-                        ))}
-                    </div>
+
+                            <div style={{ background: 'white', padding: 12, borderRadius: 12, border: '1px solid #E2E8F0' }}>
+                                <div style={{ fontSize: 11, fontWeight: 800, color: '#64748B', marginBottom: 8, textTransform: 'uppercase' }}>Action du bouton</div>
+                                <div style={{ display: 'flex', gap: 10, marginBottom: 10 }}>
+                                    <button 
+                                        onClick={() => updateProduct(p.id, { action_type: 'whatsapp' })}
+                                        style={{ flex: 1, padding: '8px', borderRadius: 8, border: '1px solid', borderColor: p.action_type !== 'link' ? '#25D366' : '#E2E8F0', background: p.action_type !== 'link' ? '#F0FDF4' : 'white', color: p.action_type !== 'link' ? '#166534' : '#64748B', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+                                    >
+                                        WhatsApp
+                                    </button>
+                                    <button 
+                                        onClick={() => updateProduct(p.id, { action_type: 'link' })}
+                                        style={{ flex: 1, padding: '8px', borderRadius: 8, border: '1px solid', borderColor: p.action_type === 'link' ? '#6366F1' : '#E2E8F0', background: p.action_type === 'link' ? '#EEF2FF' : 'white', color: p.action_type === 'link' ? '#3730A3' : '#64748B', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+                                    >
+                                        Lien externe
+                                    </button>
+                                </div>
+                                {p.action_type === 'link' && (
+                                    <input 
+                                        placeholder="https://votre-boutique.com/produit" 
+                                        value={p.link_url || ''} 
+                                        onChange={e => updateProduct(p.id, { link_url: e.target.value })} 
+                                        style={{ width: '100%', padding: '10px 14px', borderRadius: 10, border: '1px solid #E2E8F0', fontSize: 13 }} 
+                                    />
+                                )}
+                            </div>
+                        </div>
+                    ))}
 
                     <div style={{ padding: 16, background: '#F8FAFC', borderRadius: 16, marginTop: 16, border: '1px solid #E2E8F0' }}>
-                        <div style={{ fontSize: 12, fontWeight: 800, color: '#1A1265', marginBottom: 12, textTransform: 'uppercase' }}>Réception des commandes</div>
+                        <div style={{ fontSize: 12, fontWeight: 800, color: '#1A1265', marginBottom: 12, textTransform: 'uppercase' }}>WhatsApp pour commandes</div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', fontSize: 14, opacity: profile.socials?.whatsapp?.value ? 1 : 0.5 }}>
+                                <input 
+                                    type="radio" 
+                                    name="wa_type" 
+                                    disabled={!profile.socials?.whatsapp?.value}
+                                    checked={profile.wa_order_type === 'whatsapp_social'} 
+                                    onChange={() => setProfile({...profile, wa_order_type: 'whatsapp_social'})}
+                                />
+                                WhatsApp Personnel {profile.socials?.whatsapp?.value ? `(${profile.socials.whatsapp.value})` : '(Non configuré)'}
+                            </label>
+                            
+                            <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', fontSize: 14, opacity: profile.socials?.whatsapp_business?.value ? 1 : 0.5 }}>
+                                <input 
+                                    type="radio" 
+                                    name="wa_type" 
+                                    disabled={!profile.socials?.whatsapp_business?.value}
+                                    checked={profile.wa_order_type === 'business'} 
+                                    onChange={() => setProfile({...profile, wa_order_type: 'business'})}
+                                />
+                                WhatsApp Business {profile.socials?.whatsapp_business?.value ? `(${profile.socials.whatsapp_business.value})` : '(Non configuré)'}
+                            </label>
+
                             <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', fontSize: 14 }}>
                                 <input 
                                     type="radio" 
                                     name="wa_type" 
-                                    checked={!profile.use_business_whatsapp} 
-                                    onChange={() => setProfile({...profile, use_business_whatsapp: false})}
+                                    checked={profile.wa_order_type === 'custom'} 
+                                    onChange={() => setProfile({...profile, wa_order_type: 'custom'})}
                                 />
-                                Numéro principal ({profile.phone || 'Non défini'})
+                                Autre numéro spécifique
                             </label>
-                            <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', fontSize: 14 }}>
-                                <input 
-                                    type="radio" 
-                                    name="wa_type" 
-                                    checked={profile.use_business_whatsapp} 
-                                    onChange={() => setProfile({...profile, use_business_whatsapp: true})}
-                                />
-                                Numéro WhatsApp Business spécifique
-                            </label>
-                            {profile.use_business_whatsapp && (
+
+                            {profile.wa_order_type === 'custom' && (
                                 <input 
                                     type="tel" 
                                     placeholder="Ex: +22969000000"
@@ -467,6 +515,37 @@ export default function ProfileForm({
                 }} 
             />
 
+            {renderAccordion('layout', 'Mise en page', (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    <p style={{ fontSize: 13, color: '#64748B', marginBottom: 10 }}>Organisez l'ordre d'apparition des sections sur votre profil public.</p>
+                    {(() => {
+                        const sections = profile.section_order || ['bio', 'contact_buttons', 'links', 'products', 'business_info'];
+                        const sectionLabels = {
+                            bio: 'Ma présentation (Bio)',
+                            contact_buttons: 'Boutons directs (Appel/Email)',
+                            links: 'Réseaux Sociaux & Liens',
+                            products: 'Boutique & Catalogue',
+                            business_info: 'Infos Business (Horaires/Map)'
+                        };
+                        const move = (index, dir) => {
+                            const newOrder = [...sections];
+                            const temp = newOrder[index];
+                            newOrder[index] = newOrder[index + dir];
+                            newOrder[index + dir] = temp;
+                            setProfile({ ...profile, section_order: newOrder });
+                        };
+                        return sections.map((s, i) => (
+                            <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', background: '#F8FAFC', borderRadius: 12, border: '1px solid #E2E8F0' }}>
+                                <div style={{ flex: 1, fontWeight: 700, fontSize: 14, color: '#1A1265' }}>{sectionLabels[s] || s}</div>
+                                <div style={{ display: 'flex', gap: 4 }}>
+                                    <button disabled={i === 0} onClick={() => move(i, -1)} style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid #E2E8F0', background: 'white', cursor: i === 0 ? 'default' : 'pointer', opacity: i === 0 ? 0.3 : 1 }}>↑</button>
+                                    <button disabled={i === sections.length - 1} onClick={() => move(i, 1)} style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid #E2E8F0', background: 'white', cursor: i === sections.length - 1 ? 'default' : 'pointer', opacity: i === sections.length - 1 ? 0.3 : 1 }}>↓</button>
+                                </div>
+                            </div>
+                        ));
+                    })()}
+                </div>
+            ))}
         </div>
     );
 }

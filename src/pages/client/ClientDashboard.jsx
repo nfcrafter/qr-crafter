@@ -369,7 +369,7 @@ export default function ClientDashboard() {
             </aside>
 
             {/* Main Content (Right) */}
-            <main className="main-content" style={{ flex: 1, marginLeft: '280px', padding: '40px' }}>
+            <main className="main-content" style={{ flex: 1, marginLeft: '280px', padding: '40px', maxWidth: '100%', overflowX: 'hidden' }}>
                 {userCards.length === 0 ? (
                     <div style={{ maxWidth: '600px', margin: '40px auto', textAlign: 'center', background: 'white', padding: '60px 40px', borderRadius: '32px', border: '1px solid #E2E8F0' }}>
                         <div style={{ width: '80px', height: '80px', margin: '0 auto 24px auto', color: '#1A1265' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a3 3 0 0 0-3-3H5a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V8Z"></path><path d="M10 12h.01"></path><path d="M16 2v2"></path><path d="M6 2v2"></path></svg>` }} />
@@ -378,7 +378,7 @@ export default function ClientDashboard() {
                         <button onClick={() => handleWhatsAppOrder()} className="btn-primary" style={{ padding: '16px 40px', borderRadius: '100px', background: '#25D366', border: 'none' }}>🚀 Commander ma carte</button>
                     </div>
                 ) : (
-                    <div className="dashboard-grid" style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 340px', gap: '40px', alignItems: 'start' }}>
+                    <div className="dashboard-grid" style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 340px', gap: '40px', alignItems: 'start', overflowX: 'hidden' }}>
                         
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
                             
@@ -577,7 +577,7 @@ export default function ClientDashboard() {
                 @media (max-width: 768px) {
                     .sidebar { transform: translateX(-100%); }
                     .sidebar.open { transform: translateX(0); }
-                    .main-content { margin-left: 0 !important; padding: 20px !important; margin-top: 70px !important; }
+                    .main-content { margin-left: 0 !important; padding: 20px !important; margin-top: 70px !important; overflow-x: hidden !important; max-width: 100vw !important; }
                     .mobile-header { display: flex !important; }
                     .desktop-only { display: none !important; }
                     .mobile-only { display: flex !important; }

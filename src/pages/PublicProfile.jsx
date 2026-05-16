@@ -340,168 +340,158 @@ export default function PublicProfile() {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, animation: 'fadeUp .5s ease' }}>
-          
-          {/* Direct Contact Buttons (Call / Email) */}
-          {(profile?.phone || profile?.email) && (
-            <div style={{ display: 'flex', gap: 10 }}>
-              {profile?.phone && (
-                <a className="pl" href={`tel:${profile.phone.toString().replace(/\s+/g, '')}`} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '13px', background: cardBg, borderRadius: 16, textDecoration: 'none', color: textColor, boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)', fontWeight: 700, fontSize: 14 }}>
-                  <span style={{ width: 18, height: 18, color: themeColor, display: 'flex' }} dangerouslySetInnerHTML={{ __html: LINK_ICONS.find(i => i.id === 'phone')?.svg }} /> Appeler
-                </a>
-              )}
-              {profile?.email && (
-                <a className="pl" href={`mailto:${profile.email}`} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '13px', background: cardBg, borderRadius: 16, textDecoration: 'none', color: textColor, boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)', fontWeight: 700, fontSize: 14 }}>
-                  <span style={{ width: 18, height: 18, color: themeColor, display: 'flex' }} dangerouslySetInnerHTML={{ __html: LINK_ICONS.find(i => i.id === 'email')?.svg }} /> Email
-                </a>
-              )}
-            </div>
-          )}
-
-          {/* Social Links */}
-          {activeLinks.length > 0 && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {activeLinks.map(link => {
-                const rawValue = profile[link.id] || profile?.socials?.[link.id];
-                const linkValue = (typeof rawValue === 'object' && rawValue !== null) ? rawValue.value : rawValue;
-                const subText = (typeof rawValue === 'object' && rawValue !== null) ? rawValue.subtitle : '';
-                if (!linkValue) return null;
-                return (
-                  <a key={link.id} className="pl" href={link.getUrl(linkValue)} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 18px', background: cardBg, borderRadius: 16, textDecoration: 'none', color: textColor, boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)' }}>
-                    <div style={{ width: 44, height: 44, borderRadius: 12, flexShrink: 0, background: link.id === 'snapchat' ? link.color : (isDark ? 'rgba(255,255,255,0.05)' : link.color + '18'), display: 'flex', alignItems: 'center', justifyContent: 'center' }} dangerouslySetInnerHTML={{ __html: `<div style="width:22px;height:22px;color:${link.id === 'snapchat' ? '#000000' : (link.iconColor || link.color)}">${link.svg}</div>` }} />
-                    <div style={{ flex: 1, overflow: 'hidden' }}>
-                      <div style={{ fontWeight: 700, fontSize: 15, color: textColor }}>{link.label}</div>
-                      {subText && <div style={{ fontSize: 12, color: subTextColor, marginTop: 2 }}>{subText}</div>}
-                    </div>
-                    <span style={{ color: isDark ? '#475569' : '#CBD5E1', fontSize: 18 }}>→</span>
-                  </a>
-                );
-              })}
-            </div>
-          )}
-
-          {/* Custom Links */}
-          {activeCustomLinks.length > 0 && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {activeCustomLinks.map(link => (
-                <a key={link.id} className="pl" href={link.url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 18px', background: cardBg, borderRadius: 16, textDecoration: 'none', color: textColor, boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)' }}>
-                  <div style={{ width: 44, height: 44, borderRadius: 12, flexShrink: 0, background: isDark ? 'rgba(255,255,255,0.05)' : '#F8FAFC', border: isDark ? 'none' : '1px solid #F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 10 }}>
-                    <div style={{ width: '100%', height: '100%', color: themeColor, display: 'flex' }} dangerouslySetInnerHTML={{ __html: LINK_ICONS.find(i => i.id === link.iconId || i.emoji === link.emoji)?.svg || LINK_ICONS[0].svg }} />
-                  </div>
-                  <span style={{ fontWeight: 700, fontSize: 15, flex: 1 }}>{link.label || link.title}</span>
-                  <span style={{ color: isDark ? '#475569' : '#CBD5E1', fontSize: 18 }}>→</span>
-                </a>
-              ))}
-            </div>
-          )}
-
-          {/* SECTION : BOUTIQUE / CATALOGUE */}
-          {profile?.show_products && profile?.products?.length > 0 && (
-            <div style={{ 
-                background: cardBg, borderRadius: 24, padding: 20, 
-                boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.2)' : '0 4px 20px rgba(0,0,0,0.03)',
-                border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)'
-            }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
-                    <div style={{ width: 32, height: 32, borderRadius: 8, background: themeColor + '15', color: themeColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-                    </div>
-                    <h3 style={{ fontSize: 16, fontWeight: 800, color: textColor, margin: 0 }}>Notre Boutique</h3>
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                    {profile.products.map(p => (
-                        <div key={p.id} className="pl" style={{ 
-                            background: isDark ? 'rgba(255,255,255,0.03)' : '#F8FAFC', 
-                            borderRadius: 16, padding: 12, display: 'flex', gap: 12, alignItems: 'center',
-                            border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid #F1F5F9'
+          {(() => {
+            const sections = profile?.section_order || ['bio', 'contact_buttons', 'links', 'products', 'business_info'];
+            
+            const renderers = {
+              bio: () => profile?.bio && (
+                <div key="bio" style={{ padding: '0 16px' }}>
+                    <div style={{ 
+                        background: cardBg, borderRadius: 24, padding: 20, position: 'relative',
+                        boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.2)' : '0 4px 20px rgba(0,0,0,0.03)',
+                        border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)',
+                        overflow: 'hidden', maxHeight: isBioExpanded ? 'none' : '120px', transition: 'max-height 0.3s ease'
+                    }}>
+                        <div style={{ fontSize: 14, color: textColor, lineHeight: '1.6', whiteSpace: 'pre-wrap' }}>{profile.bio}</div>
+                        {!isBioExpanded && profile.bio.length > 150 && (
+                        <div style={{ 
+                            position: 'absolute', bottom: 0, left: 0, right: 0, height: '40px',
+                            background: `linear-gradient(transparent, ${isDark ? '#1E293B' : '#F8FAFC'})`,
+                            display: 'flex', alignItems: 'flex-end', justifyContent: 'center', paddingBottom: '4px'
                         }}>
-                            <div style={{ width: 60, height: 60, borderRadius: 12, overflow: 'hidden', background: '#DDD', flexShrink: 0 }}>
-                                {p.image_url ? <img src={p.image_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#AAA' }}>📦</div>}
-                            </div>
-                            <div style={{ flex: 1, minWidth: 0 }}>
-                                <div style={{ fontWeight: 700, fontSize: 14, color: textColor, marginBottom: 2 }}>{p.name}</div>
-                                <div style={{ fontSize: 13, fontWeight: 900, color: themeColor }}>{p.price}</div>
-                            </div>
-                            <button 
-                                onClick={() => {
-                                    const waNumber = profile.use_business_whatsapp && profile.business_whatsapp_number 
-                                        ? profile.business_whatsapp_number.replace(/\D/g, '') 
-                                        : profile.phone?.toString().replace(/\D/g, '');
-                                    const msg = `Bonjour, je souhaite commander "${p.name}" (${p.price}) vu sur votre profil NFCrafter.`;
-                                    window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`, '_blank');
-                                }}
-                                style={{ background: '#25D366', color: 'white', border: 'none', padding: '8px 12px', borderRadius: 10, fontWeight: 700, fontSize: 12, cursor: 'pointer' }}
-                            >
-                                Commander
+                            <button onClick={() => setIsBioExpanded(true)} style={{ background: 'none', border: 'none', color: themeColor, fontSize: 11, fontWeight: 800, cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                Lire la suite ↓
                             </button>
                         </div>
-                    ))}
+                        )}
+                    </div>
                 </div>
-            </div>
-          )}
-
-          {/* SECTION : INFOS BUSINESS (MAP & HORAIRES) */}
-          {(profile?.show_location || profile?.show_hours) && (
-            <div style={{ 
-                background: cardBg, borderRadius: 24, padding: 20, 
-                boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.2)' : '0 4px 20px rgba(0,0,0,0.03)',
-                border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)'
-            }}>
-                {profile.show_location && profile.location_address && (
-                    <div style={{ marginBottom: profile.show_hours ? 20 : 0 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                            <div style={{ width: 32, height: 32, borderRadius: 8, background: themeColor + '15', color: themeColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                            </div>
-                            <h3 style={{ fontSize: 15, fontWeight: 800, color: textColor, margin: 0 }}>Nous trouver</h3>
+              ),
+              contact_buttons: () => (profile?.phone || profile?.email) && (
+                <div key="contact_buttons" style={{ display: 'flex', gap: 10 }}>
+                  {profile?.phone && (
+                    <a className="pl" href={`tel:${profile.phone.toString().replace(/\s+/g, '')}`} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '13px', background: cardBg, borderRadius: 16, textDecoration: 'none', color: textColor, boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)', fontWeight: 700, fontSize: 14 }}>
+                      <span style={{ width: 18, height: 18, color: themeColor, display: 'flex' }} dangerouslySetInnerHTML={{ __html: LINK_ICONS.find(i => i.id === 'phone')?.svg }} /> Appeler
+                    </a>
+                  )}
+                  {profile?.email && (
+                    <a className="pl" href={`mailto:${profile.email}`} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '13px', background: cardBg, borderRadius: 16, textDecoration: 'none', color: textColor, boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)', fontWeight: 700, fontSize: 14 }}>
+                      <span style={{ width: 18, height: 18, color: themeColor, display: 'flex' }} dangerouslySetInnerHTML={{ __html: LINK_ICONS.find(i => i.id === 'email')?.svg }} /> Email
+                    </a>
+                  )}
+                </div>
+              ),
+              links: () => (
+                <div key="links" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {activeLinks.map(link => {
+                    const rawValue = profile[link.id] || profile?.socials?.[link.id];
+                    const linkValue = (typeof rawValue === 'object' && rawValue !== null) ? rawValue.value : rawValue;
+                    const subText = (typeof rawValue === 'object' && rawValue !== null) ? rawValue.subtitle : '';
+                    if (!linkValue) return null;
+                    return (
+                      <a key={link.id} className="pl" href={link.getUrl(linkValue)} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 18px', background: cardBg, borderRadius: 16, textDecoration: 'none', color: textColor, boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)' }}>
+                        <div style={{ width: 44, height: 44, borderRadius: 12, flexShrink: 0, background: link.id === 'snapchat' ? link.color : (isDark ? 'rgba(255,255,255,0.05)' : link.color + '18'), display: 'flex', alignItems: 'center', justifyContent: 'center' }} dangerouslySetInnerHTML={{ __html: `<div style="width:22px;height:22px;color:${link.id === 'snapchat' ? '#000000' : (link.iconColor || link.color)}">${link.svg}</div>` }} />
+                        <div style={{ flex: 1, overflow: 'hidden' }}>
+                          <div style={{ fontWeight: 700, fontSize: 15, color: textColor }}>{link.label}</div>
+                          {subText && <div style={{ fontSize: 12, color: subTextColor, marginTop: 2 }}>{subText}</div>}
                         </div>
-                        <div style={{ background: isDark ? 'rgba(255,255,255,0.03)' : '#F8FAFC', borderRadius: 16, padding: 14, border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid #F1F5F9' }}>
-                            <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 12 }}>{profile.location_address}</div>
-                            {profile.location_map_url && (
-                                <a href={profile.location_map_url} target="_blank" rel="noreferrer" style={{ 
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                                    width: '100%', padding: '10px', background: 'white', color: '#111',
-                                    borderRadius: 12, textDecoration: 'none', fontSize: 13, fontWeight: 700,
-                                    boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
-                                }}>
-                                    📍 Ouvrir dans Maps
-                                </a>
-                            )}
+                        <span style={{ color: isDark ? '#475569' : '#CBD5E1', fontSize: 18 }}>→</span>
+                      </a>
+                    );
+                  })}
+                  {activeCustomLinks.map(link => (
+                    <a key={link.id} className="pl" href={link.url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 18px', background: cardBg, borderRadius: 16, textDecoration: 'none', color: textColor, boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)' }}>
+                      <div style={{ width: 44, height: 44, borderRadius: 12, flexShrink: 0, background: isDark ? 'rgba(255,255,255,0.05)' : '#F8FAFC', border: isDark ? 'none' : '1px solid #F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 10 }}>
+                        <div style={{ width: '100%', height: '100%', color: themeColor, display: 'flex' }} dangerouslySetInnerHTML={{ __html: LINK_ICONS.find(i => i.id === link.iconId || i.emoji === link.emoji)?.svg || LINK_ICONS[0].svg }} />
+                      </div>
+                      <span style={{ fontWeight: 700, fontSize: 15, flex: 1 }}>{link.label || link.title}</span>
+                      <span style={{ color: isDark ? '#475569' : '#CBD5E1', fontSize: 18 }}>→</span>
+                    </a>
+                  ))}
+                </div>
+              ),
+              products: () => profile?.show_products && profile?.products?.length > 0 && (
+                <div key="products" style={{ background: cardBg, borderRadius: 24, padding: 20, boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.2)' : '0 4px 20px rgba(0,0,0,0.03)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
+                        <div style={{ width: 32, height: 32, borderRadius: 8, background: themeColor + '15', color: themeColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
                         </div>
+                        <h3 style={{ fontSize: 16, fontWeight: 800, color: textColor, margin: 0 }}>Notre Boutique</h3>
                     </div>
-                )}
-
-                {profile.show_hours && profile.business_hours && (
-                    <div>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                                <div style={{ width: 32, height: 32, borderRadius: 8, background: themeColor + '15', color: themeColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                        {profile.products.map(p => (
+                            <div key={p.id} className="pl" style={{ background: isDark ? 'rgba(255,255,255,0.03)' : '#F8FAFC', borderRadius: 16, padding: 12, display: 'flex', gap: 12, alignItems: 'center', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid #F1F5F9' }}>
+                                <div style={{ width: 60, height: 60, borderRadius: 12, overflow: 'hidden', background: '#DDD', flexShrink: 0 }}>
+                                    {p.image_url ? <img src={p.image_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#AAA' }}>📦</div>}
                                 </div>
-                                <h3 style={{ fontSize: 15, fontWeight: 800, color: textColor, margin: 0 }}>Horaires</h3>
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                    <div style={{ fontWeight: 700, fontSize: 14, color: textColor, marginBottom: 2 }}>{p.name}</div>
+                                    <div style={{ fontSize: 13, fontWeight: 900, color: themeColor }}>{p.price}</div>
+                                </div>
+                                {p.action_type === 'link' ? (
+                                    <a href={p.link_url} target="_blank" rel="noreferrer" style={{ background: themeColor, color: 'white', textDecoration: 'none', padding: '8px 12px', borderRadius: 10, fontWeight: 700, fontSize: 12 }}>Voir</a>
+                                ) : (
+                                    <button 
+                                        onClick={() => {
+                                            let waNumber = '';
+                                            if (profile.wa_order_type === 'whatsapp_social' && profile.socials?.whatsapp?.value) waNumber = profile.socials.whatsapp.value.replace(/\D/g, '');
+                                            else if (profile.wa_order_type === 'business' && profile.socials?.whatsapp_business?.value) waNumber = profile.socials.whatsapp_business.value.replace(/\D/g, '');
+                                            else if (profile.wa_order_type === 'custom' && profile.business_whatsapp_number) waNumber = profile.business_whatsapp_number.replace(/\D/g, '');
+                                            else waNumber = profile.phone?.toString().replace(/\D/g, '');
+                                            const msg = `Bonjour, je souhaite commander "${p.name}" (${p.price}) vu sur votre profil NFCrafter.`;
+                                            window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`, '_blank');
+                                        }}
+                                        style={{ background: '#25D366', color: 'white', border: 'none', padding: '8px 12px', borderRadius: 10, fontWeight: 700, fontSize: 12, cursor: 'pointer' }}
+                                    >Commander</button>
+                                )}
                             </div>
-                            {openStatus && (
-                                <div style={{ fontSize: 11, fontWeight: 800, color: openStatus.color, background: openStatus.color + '15', padding: '4px 10px', borderRadius: 10 }}>
-                                    {openStatus.text}
-                                </div>
-                            )}
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                            {['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'].map(day => {
-                                const h = profile.business_hours?.[day];
-                                const isToday = new Date().toLocaleDateString('fr-FR', { weekday: 'long' }).toLowerCase() === day.toLowerCase();
-                                return (
-                                    <div key={day} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, opacity: h?.active ? 1 : 0.4, fontWeight: isToday ? 800 : 400 }}>
-                                        <span style={{ color: isToday ? themeColor : subTextColor }}>{day}</span>
-                                        <span style={{ color: textColor }}>{h?.active ? `${h.open} - ${h.close}` : 'Fermé'}</span>
-                                    </div>
-                                );
-                            })}
-                        </div>
+                        ))}
                     </div>
-                )}
-            </div>
-          )}
+                </div>
+              ),
+              business_info: () => (profile?.show_location || profile?.show_hours) && (
+                <div key="business_info" style={{ background: cardBg, borderRadius: 24, padding: 20, boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.2)' : '0 4px 20px rgba(0,0,0,0.03)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)' }}>
+                    {profile.show_location && profile.location_address && (
+                        <div style={{ marginBottom: profile.show_hours ? 20 : 0 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+                                <div style={{ width: 32, height: 32, borderRadius: 8, background: themeColor + '15', color: themeColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }} dangerouslySetInnerHTML={{ __html: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>` }} />
+                                <h3 style={{ fontSize: 15, fontWeight: 800, color: textColor, margin: 0 }}>Nous trouver</h3>
+                            </div>
+                            <div style={{ background: isDark ? 'rgba(255,255,255,0.03)' : '#F8FAFC', borderRadius: 16, padding: 14, border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid #F1F5F9' }}>
+                                <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 12 }}>{profile.location_address}</div>
+                                {profile.location_map_url && <a href={profile.location_map_url} target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: '10px', background: 'white', color: '#111', borderRadius: 12, textDecoration: 'none', fontSize: 13, fontWeight: 700, boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>📍 Ouvrir dans Maps</a>}
+                            </div>
+                        </div>
+                    )}
+                    {profile.show_hours && profile.business_hours && (
+                        <div>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                                    <div style={{ width: 32, height: 32, borderRadius: 8, background: themeColor + '15', color: themeColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }} dangerouslySetInnerHTML={{ __html: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>` }} />
+                                    <h3 style={{ fontSize: 15, fontWeight: 800, color: textColor, margin: 0 }}>Horaires</h3>
+                                </div>
+                                {openStatus && <div style={{ fontSize: 11, fontWeight: 800, color: openStatus.color, background: openStatus.color + '15', padding: '4px 10px', borderRadius: 10 }}>{openStatus.text}</div>}
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                                {['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'].map(day => {
+                                    const h = profile.business_hours?.[day];
+                                    const isToday = new Date().toLocaleDateString('fr-FR', { weekday: 'long' }).toLowerCase() === day.toLowerCase();
+                                    return (
+                                        <div key={day} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, opacity: h?.active ? 1 : 0.4, fontWeight: isToday ? 800 : 400 }}>
+                                            <span style={{ color: isToday ? themeColor : subTextColor }}>{day}</span>
+                                            <span style={{ color: textColor }}>{h?.active ? `${h.open} - ${h.close}` : 'Fermé'}</span>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
+                </div>
+              )
+            };
+
+            return sections.map(sectionId => renderers[sectionId]?.());
+          })()}
         </div>
 
         <div style={{ textAlign: 'center', marginTop: 36 }}>
