@@ -762,20 +762,20 @@ function AdminPhonePreview({ profile, qrStyle, qrRef, previewMode, isDark, textC
                         
                         <button style={{ width: '100%', marginTop: 12, padding: 10, borderRadius: 12, background: profile.primaryColor || '#1A1265', color: 'white', border: 'none', fontWeight: 700, fontSize: 12 }}>Enregistrer le contact</button>
                         
+                        {profile.bio && (
+                            <div key="bio" style={{ 
+                                padding: 10, borderRadius: 12, fontSize: 11, lineHeight: 1.5,
+                                background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
+                                border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.03)',
+                                color: textColor,
+                                marginTop: 12
+                            }}>
+                                {profile.bio.split('\n')[0]}...
+                            </div>
+                        )}
+                        
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 16 }}>
-                            {(profile.section_order || ['bio', 'contact_buttons', 'links', 'products', 'business_info']).map(sectionId => {
-                                if (sectionId === 'bio' && profile.bio) {
-                                    return (
-                                        <div key="bio" style={{ 
-                                            padding: 10, borderRadius: 12, fontSize: 11, lineHeight: 1.5,
-                                            background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
-                                            border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.03)',
-                                            color: textColor
-                                        }}>
-                                            {profile.bio.split('\n')[0]}...
-                                        </div>
-                                    );
-                                }
+                            {(profile.section_order || ['contact_buttons', 'links', 'products', 'business_info']).filter(s => s !== 'bio').map(sectionId => {
                                 if (sectionId === 'contact_buttons' && (profile.phone || profile.email)) {
                                     return (
                                         <div key="contact_buttons" style={{ display: 'flex', gap: 6 }}>

@@ -344,29 +344,6 @@ export default function PublicProfile() {
             const sections = profile?.section_order || ['bio', 'contact_buttons', 'links', 'products', 'business_info'];
             
             const renderers = {
-              bio: () => profile?.bio && (
-                <div key="bio" style={{ padding: '0 16px' }}>
-                    <div style={{ 
-                        background: cardBg, borderRadius: 24, padding: 20, position: 'relative',
-                        boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.2)' : '0 4px 20px rgba(0,0,0,0.03)',
-                        border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)',
-                        overflow: 'hidden', maxHeight: isBioExpanded ? 'none' : '120px', transition: 'max-height 0.3s ease'
-                    }}>
-                        <div style={{ fontSize: 14, color: textColor, lineHeight: '1.6', whiteSpace: 'pre-wrap' }}>{profile.bio}</div>
-                        {!isBioExpanded && profile.bio.length > 150 && (
-                        <div style={{ 
-                            position: 'absolute', bottom: 0, left: 0, right: 0, height: '40px',
-                            background: `linear-gradient(transparent, ${isDark ? '#1E293B' : '#F8FAFC'})`,
-                            display: 'flex', alignItems: 'flex-end', justifyContent: 'center', paddingBottom: '4px'
-                        }}>
-                            <button onClick={() => setIsBioExpanded(true)} style={{ background: 'none', border: 'none', color: themeColor, fontSize: 11, fontWeight: 800, cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                                Lire la suite ↓
-                            </button>
-                        </div>
-                        )}
-                    </div>
-                </div>
-              ),
               contact_buttons: () => (profile?.phone || profile?.email) && (
                 <div key="contact_buttons" style={{ display: 'flex', gap: 10 }}>
                   {profile?.phone && (
@@ -434,10 +411,22 @@ export default function PublicProfile() {
                                     <button 
                                         onClick={() => {
                                             let waNumber = '';
-                                            if (profile.wa_order_type === 'whatsapp_social' && profile.socials?.whatsapp?.value) waNumber = profile.socials.whatsapp.value.replace(/\D/g, '');
-                                            else if (profile.wa_order_type === 'business' && profile.socials?.whatsapp_business?.value) waNumber = profile.socials.whatsapp_business.value.replace(/\D/g, '');
-                                            else if (profile.wa_order_type === 'custom' && profile.business_whatsapp_number) waNumber = profile.business_whatsapp_number.replace(/\D/g, '');
-                                            else waNumber = profile.phone?.toString().replace(/\D/g, '');
+                                            const pWaType = p.wa_type || 'personal'; // default to personal if not set
+
+                                            if (pWaType === 'personal') {
+                                                waNumber = (profile.socials?.whatsapp?.value || profile.phone || '').toString().replace(/\D/g, '');
+                                            } else if (pWaType === 'business') {
+                                                waNumber = (profile.socials?.whatsapp_business?.value || profile.socials?.whatsapp?.value || profile.phone || '').toString().replace(/\D/g, '');
+                                            } else if (pWaType === 'custom' && p.wa_number) {
+                                                waNumber = p.wa_number.replace(/\D/g, '');
+                                            } else {
+                                                // Fallback to legacy global logic if product logic fails
+                                                if (profile.wa_order_type === 'whatsapp_social' && profile.socials?.whatsapp?.value) waNumber = profile.socials.whatsapp.value.replace(/\D/g, '');
+                                                else if (profile.wa_order_type === 'business' && profile.socials?.whatsapp_business?.value) waNumber = profile.socials.whatsapp_business.value.replace(/\D/g, '');
+                                                else if (profile.wa_order_type === 'custom' && profile.business_whatsapp_number) waNumber = profile.business_whatsapp_number.replace(/\D/g, '');
+                                                else waNumber = (profile.phone || '').toString().replace(/\D/g, '');
+                                            }
+
                                             const msg = `Bonjour, je souhaite commander "${p.name}" (${p.price}) vu sur votre profil NFCrafter.`;
                                             window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`, '_blank');
                                         }}

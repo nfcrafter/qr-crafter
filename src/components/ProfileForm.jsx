@@ -405,7 +405,7 @@ export default function ProfileForm({
 
                                 <div style={{ background: 'white', padding: 12, borderRadius: 12, border: '1px solid #E2E8F0' }}>
                                     <div style={{ fontSize: 11, fontWeight: 800, color: '#64748B', marginBottom: 8, textTransform: 'uppercase' }}>Action du bouton</div>
-                                    <div style={{ display: 'flex', gap: 10, marginBottom: 10 }}>
+                                    <div style={{ display: 'flex', gap: 10, marginBottom: 12 }}>
                                         <button 
                                             onClick={() => updateProduct(p.id, 'action_type', 'whatsapp')}
                                             style={{ flex: 1, padding: '8px', borderRadius: 8, border: '1px solid', borderColor: p.action_type !== 'link' ? '#25D366' : '#E2E8F0', background: p.action_type !== 'link' ? '#F0FDF4' : 'white', color: p.action_type !== 'link' ? '#166534' : '#64748B', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
@@ -419,7 +419,42 @@ export default function ProfileForm({
                                             Lien externe
                                         </button>
                                     </div>
-                                    {p.action_type === 'link' && (
+
+                                    {p.action_type !== 'link' ? (
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                                            <div style={{ fontSize: 10, fontWeight: 800, color: '#94A3B8', marginBottom: 2 }}>DESTINATION WHATSAPP</div>
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                                                <button 
+                                                    onClick={() => updateProduct(p.id, 'wa_type', 'personal')}
+                                                    style={{ padding: '8px 4px', fontSize: '9px', fontWeight: 700, borderRadius: 6, border: '1px solid', borderColor: (p.wa_type || 'personal') === 'personal' ? '#25D366' : '#E2E8F0', background: (p.wa_type || 'personal') === 'personal' ? '#F0FDF4' : 'white', color: (p.wa_type || 'personal') === 'personal' ? '#166534' : '#64748B', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+                                                >
+                                                    <span>Personnel</span>
+                                                    <span style={{ fontSize: '8px', opacity: 0.6 }}>{(profile.socials?.whatsapp?.value || profile.phone || '').toString().substring(0, 12)}</span>
+                                                </button>
+                                                <button 
+                                                    onClick={() => updateProduct(p.id, 'wa_type', 'business')}
+                                                    style={{ padding: '8px 4px', fontSize: '9px', fontWeight: 700, borderRadius: 6, border: '1px solid', borderColor: p.wa_type === 'business' ? '#25D366' : '#E2E8F0', background: p.wa_type === 'business' ? '#F0FDF4' : 'white', color: p.wa_type === 'business' ? '#166534' : '#64748B', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+                                                >
+                                                    <span>Business</span>
+                                                    <span style={{ fontSize: '8px', opacity: 0.6 }}>{(profile.socials?.whatsapp_business?.value || 'Non config.').toString().substring(0, 12)}</span>
+                                                </button>
+                                            </div>
+                                            <button 
+                                                onClick={() => updateProduct(p.id, 'wa_type', 'custom')}
+                                                style={{ width: '100%', padding: '6px', fontSize: 10, fontWeight: 700, borderRadius: 6, border: '1px solid', borderColor: p.wa_type === 'custom' ? '#25D366' : '#E2E8F0', background: p.wa_type === 'custom' ? '#F0FDF4' : 'white', color: p.wa_type === 'custom' ? '#166534' : '#64748B', cursor: 'pointer' }}
+                                            >Numéro spécifique</button>
+                                            
+                                            {p.wa_type === 'custom' && (
+                                                <input 
+                                                    type="tel"
+                                                    placeholder="+22969000000"
+                                                    value={p.wa_number || ''}
+                                                    onChange={e => updateProduct(p.id, 'wa_number', e.target.value)}
+                                                    style={{ width: '100%', padding: '8px', borderRadius: 8, border: '1px solid #E2E8F0', fontSize: 11 }}
+                                                />
+                                            )}
+                                        </div>
+                                    ) : (
                                         <input 
                                             placeholder="https://votre-boutique.com/produit" 
                                             value={p.link_url || ''} 
@@ -518,9 +553,8 @@ export default function ProfileForm({
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                     <p style={{ fontSize: 13, color: '#64748B', marginBottom: 10 }}>Organisez l'ordre d'apparition des sections sur votre profil public.</p>
                     {(() => {
-                        const sections = profile.section_order || ['bio', 'contact_buttons', 'links', 'products', 'business_info'];
+                        const sections = (profile.section_order || ['contact_buttons', 'links', 'products', 'business_info']).filter(s => s !== 'bio');
                         const sectionLabels = {
-                            bio: 'Ma présentation (Bio)',
                             contact_buttons: 'Boutons directs (Appel/Email)',
                             links: 'Réseaux Sociaux & Liens',
                             products: 'Boutique & Catalogue',
