@@ -404,45 +404,59 @@ export default function ProfileForm({
                                 </div>
 
                                 <div style={{ background: 'white', padding: 12, borderRadius: 12, border: '1px solid #E2E8F0' }}>
-                                    <div style={{ fontSize: 11, fontWeight: 800, color: '#64748B', marginBottom: 8, textTransform: 'uppercase' }}>Action du bouton</div>
-                                    <div style={{ display: 'flex', gap: 10, marginBottom: 12 }}>
+                                    <div style={{ fontSize: 11, fontWeight: 800, color: '#64748B', marginBottom: 12, textTransform: 'uppercase' }}>Configuration du bouton</div>
+                                    
+                                    {/* Type d'action */}
+                                    <div style={{ display: 'flex', gap: 10, marginBottom: 16 }}>
                                         <button 
                                             onClick={() => updateProduct(p.id, 'action_type', 'whatsapp')}
-                                            style={{ flex: 1, padding: '8px', borderRadius: 8, border: '1px solid', borderColor: p.action_type !== 'link' ? '#25D366' : '#E2E8F0', background: p.action_type !== 'link' ? '#F0FDF4' : 'white', color: p.action_type !== 'link' ? '#166534' : '#64748B', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+                                            style={{ flex: 1, padding: '10px', borderRadius: 10, border: '1px solid', borderColor: p.action_type !== 'link' ? '#25D366' : '#E2E8F0', background: p.action_type !== 'link' ? '#F0FDF4' : 'white', color: p.action_type !== 'link' ? '#166534' : '#64748B', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
                                         >
                                             WhatsApp
                                         </button>
                                         <button 
                                             onClick={() => updateProduct(p.id, 'action_type', 'link')}
-                                            style={{ flex: 1, padding: '8px', borderRadius: 8, border: '1px solid', borderColor: p.action_type === 'link' ? '#6366F1' : '#E2E8F0', background: p.action_type === 'link' ? '#EEF2FF' : 'white', color: p.action_type === 'link' ? '#3730A3' : '#64748B', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+                                            style={{ flex: 1, padding: '10px', borderRadius: 10, border: '1px solid', borderColor: p.action_type === 'link' ? '#6366F1' : '#E2E8F0', background: p.action_type === 'link' ? '#EEF2FF' : 'white', color: p.action_type === 'link' ? '#3730A3' : '#64748B', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
                                         >
                                             Lien externe
                                         </button>
                                     </div>
 
+                                    {/* Texte du bouton */}
+                                    <div style={{ marginBottom: 16 }}>
+                                        <label style={{ display: 'block', fontSize: 10, fontWeight: 800, color: '#94A3B8', marginBottom: 8, textTransform: 'uppercase' }}>Texte du bouton</label>
+                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
+                                            {['Commander', 'Acheter', 'Voir plus', 'En savoir plus'].map(txt => (
+                                                <button 
+                                                    key={txt}
+                                                    onClick={() => updateProduct(p.id, 'button_text', txt)}
+                                                    style={{ padding: '6px 10px', fontSize: 10, fontWeight: 600, borderRadius: 6, border: '1px solid', borderColor: p.button_text === txt ? '#1A1265' : '#E2E8F0', background: p.button_text === txt ? '#EEF2FF' : 'white', color: p.button_text === txt ? '#1A1265' : '#64748B', cursor: 'pointer' }}
+                                                >
+                                                    {txt}
+                                                </button>
+                                            ))}
+                                        </div>
+                                        <input 
+                                            placeholder="Ou texte personnalisé..." 
+                                            value={p.button_text || ''} 
+                                            onChange={e => updateProduct(p.id, 'button_text', e.target.value)} 
+                                            style={{ width: '100%', padding: '10px 14px', borderRadius: 10, border: '1px solid #E2E8F0', fontSize: 13 }} 
+                                        />
+                                    </div>
+
+                                    {/* Destination */}
                                     {p.action_type !== 'link' ? (
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                                            <div style={{ fontSize: 10, fontWeight: 800, color: '#94A3B8', marginBottom: 2 }}>DESTINATION WHATSAPP</div>
-                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                                                <button 
-                                                    onClick={() => updateProduct(p.id, 'wa_type', 'personal')}
-                                                    style={{ padding: '8px 4px', fontSize: '9px', fontWeight: 700, borderRadius: 6, border: '1px solid', borderColor: (p.wa_type || 'personal') === 'personal' ? '#25D366' : '#E2E8F0', background: (p.wa_type || 'personal') === 'personal' ? '#F0FDF4' : 'white', color: (p.wa_type || 'personal') === 'personal' ? '#166534' : '#64748B', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
-                                                >
-                                                    <span>Personnel</span>
-                                                    <span style={{ fontSize: '8px', opacity: 0.6 }}>{(profile.socials?.whatsapp?.value || profile.phone || '').toString().substring(0, 12)}</span>
-                                                </button>
-                                                <button 
-                                                    onClick={() => updateProduct(p.id, 'wa_type', 'business')}
-                                                    style={{ padding: '8px 4px', fontSize: '9px', fontWeight: 700, borderRadius: 6, border: '1px solid', borderColor: p.wa_type === 'business' ? '#25D366' : '#E2E8F0', background: p.wa_type === 'business' ? '#F0FDF4' : 'white', color: p.wa_type === 'business' ? '#166534' : '#64748B', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
-                                                >
-                                                    <span>Business</span>
-                                                    <span style={{ fontSize: '8px', opacity: 0.6 }}>{(profile.socials?.whatsapp_business?.value || 'Non config.').toString().substring(0, 12)}</span>
-                                                </button>
-                                            </div>
-                                            <button 
-                                                onClick={() => updateProduct(p.id, 'wa_type', 'custom')}
-                                                style={{ width: '100%', padding: '6px', fontSize: 10, fontWeight: 700, borderRadius: 6, border: '1px solid', borderColor: p.wa_type === 'custom' ? '#25D366' : '#E2E8F0', background: p.wa_type === 'custom' ? '#F0FDF4' : 'white', color: p.wa_type === 'custom' ? '#166534' : '#64748B', cursor: 'pointer' }}
-                                            >Numéro spécifique</button>
+                                            <label style={{ display: 'block', fontSize: 10, fontWeight: 800, color: '#94A3B8', marginBottom: 4, textTransform: 'uppercase' }}>Destination WhatsApp</label>
+                                            <select 
+                                                value={p.wa_type || 'personal'}
+                                                onChange={e => updateProduct(p.id, 'wa_type', e.target.value)}
+                                                style={{ width: '100%', padding: '10px', borderRadius: 10, border: '1px solid #E2E8F0', background: 'white', fontSize: 13, fontWeight: 600, color: '#1A1265' }}
+                                            >
+                                                <option value="personal">WhatsApp Personnel ({(profile.socials?.whatsapp?.value || profile.phone || 'Non config.')})</option>
+                                                <option value="business">WhatsApp Business ({(profile.socials?.whatsapp_business?.value || 'Non config.')})</option>
+                                                <option value="custom">Numéro spécifique...</option>
+                                            </select>
                                             
                                             {p.wa_type === 'custom' && (
                                                 <input 
@@ -450,17 +464,20 @@ export default function ProfileForm({
                                                     placeholder="+22969000000"
                                                     value={p.wa_number || ''}
                                                     onChange={e => updateProduct(p.id, 'wa_number', e.target.value)}
-                                                    style={{ width: '100%', padding: '8px', borderRadius: 8, border: '1px solid #E2E8F0', fontSize: 11 }}
+                                                    style={{ width: '100%', padding: '10px 14px', borderRadius: 10, border: '1px solid #E2E8F0', fontSize: 13 }}
                                                 />
                                             )}
                                         </div>
                                     ) : (
-                                        <input 
-                                            placeholder="https://votre-boutique.com/produit" 
-                                            value={p.link_url || ''} 
-                                            onChange={e => updateProduct(p.id, 'link_url', e.target.value)} 
-                                            style={{ width: '100%', padding: '10px 14px', borderRadius: 10, border: '1px solid #E2E8F0', fontSize: 13 }} 
-                                        />
+                                        <div>
+                                            <label style={{ display: 'block', fontSize: 10, fontWeight: 800, color: '#94A3B8', marginBottom: 8, textTransform: 'uppercase' }}>Lien de redirection</label>
+                                            <input 
+                                                placeholder="https://votre-boutique.com/produit" 
+                                                value={p.link_url || ''} 
+                                                onChange={e => updateProduct(p.id, 'link_url', e.target.value)} 
+                                                style={{ width: '100%', padding: '10px 14px', borderRadius: 10, border: '1px solid #E2E8F0', fontSize: 13 }} 
+                                            />
+                                        </div>
                                     )}
                                 </div>
                             </div>

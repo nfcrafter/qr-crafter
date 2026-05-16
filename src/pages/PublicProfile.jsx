@@ -406,7 +406,7 @@ export default function PublicProfile() {
                                     <div style={{ fontSize: 13, fontWeight: 900, color: themeColor }}>{p.price}</div>
                                 </div>
                                 {p.action_type === 'link' ? (
-                                    <a href={p.link_url} target="_blank" rel="noreferrer" style={{ background: themeColor, color: 'white', textDecoration: 'none', padding: '8px 12px', borderRadius: 10, fontWeight: 700, fontSize: 12 }}>Voir</a>
+                                    <a href={p.link_url} target="_blank" rel="noreferrer" style={{ background: themeColor, color: 'white', textDecoration: 'none', padding: '8px 12px', borderRadius: 10, fontWeight: 700, fontSize: 12 }}>{p.button_text || 'Voir'}</a>
                                 ) : (
                                     <button 
                                         onClick={() => {
@@ -431,7 +431,7 @@ export default function PublicProfile() {
                                             window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`, '_blank');
                                         }}
                                         style={{ background: '#25D366', color: 'white', border: 'none', padding: '8px 12px', borderRadius: 10, fontWeight: 700, fontSize: 12, cursor: 'pointer' }}
-                                    >Commander</button>
+                                    >{p.button_text || 'Commander'}</button>
                                 )}
                             </div>
                         ))}

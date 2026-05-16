@@ -852,7 +852,9 @@ function AdminPhonePreview({ profile, qrStyle, qrRef, previewMode, isDark, textC
                                                             <div style={{ fontSize: 10, fontWeight: 700, color: textColor, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</div>
                                                             <div style={{ fontSize: 9, color: profile.primaryColor || '#1A1265', fontWeight: 800 }}>{p.price}</div>
                                                         </div>
-                                                        <div style={{ background: '#25D366', color: 'white', padding: '3px 6px', borderRadius: 5, fontSize: 7, fontWeight: 800 }}>CMD</div>
+                                                        <div style={{ background: p.action_type === 'link' ? (profile.primaryColor || '#1A1265') : '#25D366', color: 'white', padding: '4px 6px', borderRadius: 5, fontSize: 7, fontWeight: 800, whiteSpace: 'nowrap', maxWidth: 55, overflow: 'hidden', textOverflow: 'ellipsis', textAlign: 'center' }}>
+                                                            {p.button_text || (p.action_type === 'link' ? 'Voir' : 'Commander')}
+                                                        </div>
                                                     </div>
                                                 ))}
                                             </div>

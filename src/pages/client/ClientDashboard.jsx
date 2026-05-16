@@ -709,7 +709,9 @@ function DashboardPhonePreview({ profile, isDark, textColor, subTextColor, cardB
                                                         <div style={{ fontSize: 11, fontWeight: 700, color: textColor, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</div>
                                                         <div style={{ fontSize: 10, color: profile.primaryColor || '#1A1265', fontWeight: 800 }}>{p.price}</div>
                                                     </div>
-                                                    <div style={{ background: '#25D366', color: 'white', padding: '4px 8px', borderRadius: 8, fontSize: 8, fontWeight: 800 }}>CMD</div>
+                                                    <div style={{ background: p.action_type === 'link' ? (profile.primaryColor || '#1A1265') : '#25D366', color: 'white', padding: '5px 8px', borderRadius: 8, fontSize: 8, fontWeight: 800, whiteSpace: 'nowrap', maxWidth: 65, overflow: 'hidden', textOverflow: 'ellipsis', textAlign: 'center' }}>
+                                                        {p.button_text || (p.action_type === 'link' ? 'Voir' : 'Commander')}
+                                                    </div>
                                                 </div>
                                             ))}
                                         </div>
