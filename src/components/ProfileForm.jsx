@@ -358,14 +358,14 @@ export default function ProfileForm({
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                         {(profile.products || []).map(p => (
                             <div key={p.id} style={{ background: '#F8FAFC', borderRadius: 20, padding: 20, border: '1px solid #E2E8F0', position: 'relative' }}>
-                                <button onClick={() => removeProduct(p.id)} style={{ position: 'absolute', top: 12, right: 12, background: 'none', border: 'none', color: '#EF4444', fontSize: 20, cursor: 'pointer' }}>×</button>
+                                <button onClick={() => removeProduct(p.id)} style={{ position: 'absolute', top: 12, right: 12, width: 32, height: 32, borderRadius: '50%', background: '#FEE2E2', color: '#EF4444', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
                                 
                                 <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
                                     <div 
                                         onClick={() => triggerProductUpload(p.id)}
-                                        style={{ width: 80, height: 80, borderRadius: 12, background: 'white', border: '2px dashed #CBD5E1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', overflow: 'hidden', flexShrink: 0, position: 'relative' }}
+                                        style={{ width: 80, height: 80, borderRadius: 16, background: '#FFF', border: '2px dashed #CBD5E1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', overflow: 'hidden', flexShrink: 0, position: 'relative' }}
                                     >
-                                        {p.image_url ? <img src={p.image_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ width: 24, height: 24, color: '#94A3B8' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>` }} />}
+                                        {p.image_url ? <img src={p.image_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ fontSize: 24 }}>📸</div>}
                                         {uploadingProduct && activeProductId === p.id && <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="loader" style={{ width: 20, height: 20 }}></div></div>}
                                     </div>
                                     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -376,50 +376,38 @@ export default function ProfileForm({
                                         <div className="field" style={{ marginBottom: 0 }}>
                                             <label>Prix (ex: 5000 FCFA)</label>
                                             <input type="text" value={p.price} onChange={e => updateProduct(p.id, 'price', e.target.value)} placeholder="0" style={{ background: 'white' }} />
-                    {profile.products.map(p => (
-                        <div key={p.id} style={{ padding: 20, background: '#F8FAFC', borderRadius: 20, marginBottom: 16, border: '1px solid #E2E8F0', position: 'relative' }}>
-                            <button onClick={() => deleteProduct(p.id)} style={{ position: 'absolute', top: 12, right: 12, width: 32, height: 32, borderRadius: '50%', background: '#FEE2E2', color: '#EF4444', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
-                            
-                            <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
-                                <div 
-                                    onClick={() => triggerProductUpload(p.id)}
-                                    style={{ width: 80, height: 80, borderRadius: 16, background: '#FFF', border: '2px dashed #CBD5E1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', overflow: 'hidden', flexShrink: 0 }}
-                                >
-                                    {p.image_url ? <img src={p.image_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ fontSize: 24 }}>📸</div>}
+                                        </div>
+                                    </div>
                                 </div>
-                                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                                    <input placeholder="Nom du produit" value={p.name} onChange={e => updateProduct(p.id, { name: e.target.value })} style={{ width: '100%', padding: '10px 14px', borderRadius: 10, border: '1px solid #E2E8F0' }} />
-                                    <input placeholder="Prix (ex: 5.000 F)" value={p.price} onChange={e => updateProduct(p.id, { price: e.target.value })} style={{ width: '100%', padding: '10px 14px', borderRadius: 10, border: '1px solid #E2E8F0' }} />
-                                </div>
-                            </div>
 
-                            <div style={{ background: 'white', padding: 12, borderRadius: 12, border: '1px solid #E2E8F0' }}>
-                                <div style={{ fontSize: 11, fontWeight: 800, color: '#64748B', marginBottom: 8, textTransform: 'uppercase' }}>Action du bouton</div>
-                                <div style={{ display: 'flex', gap: 10, marginBottom: 10 }}>
-                                    <button 
-                                        onClick={() => updateProduct(p.id, { action_type: 'whatsapp' })}
-                                        style={{ flex: 1, padding: '8px', borderRadius: 8, border: '1px solid', borderColor: p.action_type !== 'link' ? '#25D366' : '#E2E8F0', background: p.action_type !== 'link' ? '#F0FDF4' : 'white', color: p.action_type !== 'link' ? '#166534' : '#64748B', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
-                                    >
-                                        WhatsApp
-                                    </button>
-                                    <button 
-                                        onClick={() => updateProduct(p.id, { action_type: 'link' })}
-                                        style={{ flex: 1, padding: '8px', borderRadius: 8, border: '1px solid', borderColor: p.action_type === 'link' ? '#6366F1' : '#E2E8F0', background: p.action_type === 'link' ? '#EEF2FF' : 'white', color: p.action_type === 'link' ? '#3730A3' : '#64748B', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
-                                    >
-                                        Lien externe
-                                    </button>
+                                <div style={{ background: 'white', padding: 12, borderRadius: 12, border: '1px solid #E2E8F0' }}>
+                                    <div style={{ fontSize: 11, fontWeight: 800, color: '#64748B', marginBottom: 8, textTransform: 'uppercase' }}>Action du bouton</div>
+                                    <div style={{ display: 'flex', gap: 10, marginBottom: 10 }}>
+                                        <button 
+                                            onClick={() => updateProduct(p.id, 'action_type', 'whatsapp')}
+                                            style={{ flex: 1, padding: '8px', borderRadius: 8, border: '1px solid', borderColor: p.action_type !== 'link' ? '#25D366' : '#E2E8F0', background: p.action_type !== 'link' ? '#F0FDF4' : 'white', color: p.action_type !== 'link' ? '#166534' : '#64748B', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+                                        >
+                                            WhatsApp
+                                        </button>
+                                        <button 
+                                            onClick={() => updateProduct(p.id, 'action_type', 'link')}
+                                            style={{ flex: 1, padding: '8px', borderRadius: 8, border: '1px solid', borderColor: p.action_type === 'link' ? '#6366F1' : '#E2E8F0', background: p.action_type === 'link' ? '#EEF2FF' : 'white', color: p.action_type === 'link' ? '#3730A3' : '#64748B', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+                                        >
+                                            Lien externe
+                                        </button>
+                                    </div>
+                                    {p.action_type === 'link' && (
+                                        <input 
+                                            placeholder="https://votre-boutique.com/produit" 
+                                            value={p.link_url || ''} 
+                                            onChange={e => updateProduct(p.id, 'link_url', e.target.value)} 
+                                            style={{ width: '100%', padding: '10px 14px', borderRadius: 10, border: '1px solid #E2E8F0', fontSize: 13 }} 
+                                        />
+                                    )}
                                 </div>
-                                {p.action_type === 'link' && (
-                                    <input 
-                                        placeholder="https://votre-boutique.com/produit" 
-                                        value={p.link_url || ''} 
-                                        onChange={e => updateProduct(p.id, { link_url: e.target.value })} 
-                                        style={{ width: '100%', padding: '10px 14px', borderRadius: 10, border: '1px solid #E2E8F0', fontSize: 13 }} 
-                                    />
-                                )}
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
 
                     <div style={{ padding: 16, background: '#F8FAFC', borderRadius: 16, marginTop: 16, border: '1px solid #E2E8F0' }}>
                         <div style={{ fontSize: 12, fontWeight: 800, color: '#1A1265', marginBottom: 12, textTransform: 'uppercase' }}>WhatsApp pour commandes</div>
