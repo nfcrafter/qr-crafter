@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { SOCIAL_NETWORKS, LINK_ICONS } from '../constants/socials.js';
 import { OFFICIAL_CARD_COLORS } from '../constants/cardColors.js';
+import Modal from './Modal.jsx';
 
 export default function ProfileForm({
     profile,
@@ -19,6 +20,9 @@ export default function ProfileForm({
     const bannerRef = useRef();
     const productFileRef = useRef();
     const [activeProductId, setActiveProductId] = useState(null);
+    const [confirmModal, setConfirmModal] = useState({ isOpen: false, title: '', message: '', onConfirm: null });
+
+    const openConfirm = (title, message, onConfirm) => setConfirmModal({ isOpen: true, title, message, onConfirm });
 
     const acc = (id, icon, title, sub, content) => (
         <div className="accordion" key={id} style={{ marginBottom: 12, border: '1px solid #E2E8F0', borderRadius: 16, background: 'white', overflow: 'hidden' }}>
@@ -102,9 +106,10 @@ export default function ProfileForm({
     };
 
     const removeProduct = (id) => {
-        if (!window.confirm('Voulez-vous vraiment supprimer ce produit ?')) return;
-        const products = (profile.products || []).filter(p => p.id !== id);
-        setProfile({ ...profile, products });
+        openConfirm('Supprimer le produit', 'Voulez-vous vraiment supprimer ce produit de votre boutique ?', () => {
+            const products = (profile.products || []).filter(p => p.id !== id);
+            setProfile({ ...profile, products });
+        });
     };
 
     // Hours Helpers
@@ -136,24 +141,33 @@ export default function ProfileForm({
         }
     };
     const removeGalleryItem = (id) => {
-        if (!window.confirm('Supprimer cet élément ?')) return;
-        setProfile({ ...profile, gallery: (profile.gallery || []).filter(g => g.id !== id) });
+        openConfirm('Supprimer l\'élément', 'Voulez-vous vraiment supprimer cet élément de la galerie ?', () => {
+            setProfile({ ...profile, gallery: (profile.gallery || []).filter(g => g.id !== id) });
+        });
     };
 
     // Testimonials
     const addTestimonial = () => setProfile({ ...profile, testimonials: [...(profile.testimonials || []), { id: Date.now(), name: '', text: '', rating: 5 }] });
     const updateTestimonial = (id, f, v) => setProfile({ ...profile, testimonials: (profile.testimonials || []).map(t => t.id === id ? { ...t, [f]: v } : t) });
-    const removeTestimonial = (id) => { if (!window.confirm('Supprimer ce témoignage ?')) return; setProfile({ ...profile, testimonials: (profile.testimonials || []).filter(t => t.id !== id) }); };
+    const removeTestimonial = (id) => { 
+        openConfirm('Supprimer l\'avis', 'Supprimer cet avis client ?', () => {
+            setProfile({ ...profile, testimonials: (profile.testimonials || []).filter(t => t.id !== id) });
+        });
+    };
 
     // FAQ
     const addFaq = () => setProfile({ ...profile, faq: [...(profile.faq || []), { id: Date.now(), question: '', answer: '' }] });
     const updateFaq = (id, f, v) => setProfile({ ...profile, faq: (profile.faq || []).map(q => q.id === id ? { ...q, [f]: v } : q) });
-    const removeFaq = (id) => { if (!window.confirm('Supprimer cette question ?')) return; setProfile({ ...profile, faq: (profile.faq || []).filter(q => q.id !== id) }); };
+    const removeFaq = (id) => { openConfirm('Supprimer', 'Supprimer cette question ?', () => setProfile({ ...profile, faq: (profile.faq || []).filter(q => q.id !== id) })); };
 
     // Events
     const addEvent = () => setProfile({ ...profile, events: [...(profile.events || []), { id: Date.now(), title: '', date: '', location: '', description: '', link: '' }] });
     const updateEvent = (id, f, v) => setProfile({ ...profile, events: (profile.events || []).map(e => e.id === id ? { ...e, [f]: v } : e) });
-    const removeEvent = (id) => { if (!window.confirm('Supprimer cet événement ?')) return; setProfile({ ...profile, events: (profile.events || []).filter(e => e.id !== id) }); };
+    const removeEvent = (id) => {
+        openConfirm('Supprimer l\'événement', 'Voulez-vous vraiment supprimer cet événement ?', () => {
+            setProfile({ ...profile, events: (profile.events || []).filter(e => e.id !== id) });
+        });
+    };
 
     // Skills
     const [skillInput, setSkillInput] = useState('');
@@ -669,23 +683,25 @@ export default function ProfileForm({
             ))}
 
             {/* TESTIMONIALS */}
-            {acc('testimonials', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>`, 'Témoignages / Avis', 'Avis de vos clients satisfaits.', (
+            {acc('testimonials', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>`, 'Témoignages / Avis', 'Avis reçus de vos visiteurs.', (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    <p style={{ fontSize: 13, color: '#64748B', marginBottom: 5 }}>Les avis sont soumis directement par vos visiteurs sur votre profil public. Vous pouvez gérer ici ceux qui s'affichent.</p>
                     <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <span style={{ fontSize: 13, fontWeight: 700, color: '#1A1265' }}>Afficher les témoignages</span>
                         <input type="checkbox" checked={profile.show_testimonials || false} onChange={e => setProfile({ ...profile, show_testimonials: e.target.checked })} />
                     </label>
-                    {(profile.testimonials || []).map(t => (
-                        <div key={t.id} style={{ background: '#F8FAFC', borderRadius: 16, padding: 16, border: '1px solid #E2E8F0', position: 'relative' }}>
-                            <button onClick={() => removeTestimonial(t.id)} style={{ position: 'absolute', top: 10, right: 10, width: 28, height: 28, borderRadius: '50%', background: '#FEE2E2', color: '#EF4444', border: 'none', cursor: 'pointer', fontSize: 12 }}>✕</button>
-                            <div className="field" style={{ marginBottom: 10 }}><label>Nom du client</label><input type="text" value={t.name} onChange={e => updateTestimonial(t.id, 'name', e.target.value)} placeholder="Jean Dupont" style={{ background: 'white' }} /></div>
-                            <div className="field" style={{ marginBottom: 10 }}><label>Témoignage</label><textarea value={t.text} onChange={e => updateTestimonial(t.id, 'text', e.target.value)} placeholder="Super service..." rows={2} style={{ background: 'white', width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #E2E8F0', resize: 'vertical', fontFamily: 'inherit' }} /></div>
-                            <div className="field" style={{ marginBottom: 0 }}><label>Note (1-5)</label>
-                                <div style={{ display: 'flex', gap: 4 }}>{[1,2,3,4,5].map(n => <button key={n} onClick={() => updateTestimonial(t.id, 'rating', n)} style={{ width: 36, height: 36, borderRadius: 10, border: '1px solid #E2E8F0', background: t.rating >= n ? '#F59E0B' : 'white', color: t.rating >= n ? 'white' : '#CBD5E1', fontWeight: 900, cursor: 'pointer', fontSize: 16 }}>★</button>)}</div>
+                    {(profile.testimonials || []).length === 0 ? (
+                        <div style={{ padding: '20px', textAlign: 'center', background: '#F8FAFC', borderRadius: 16, border: '1px dashed #E2E8F0', color: '#94A3B8', fontSize: 13 }}>Aucun avis reçu pour le moment.</div>
+                    ) : (
+                        (profile.testimonials || []).map(t => (
+                            <div key={t.id} style={{ background: '#F8FAFC', borderRadius: 16, padding: 16, border: '1px solid #E2E8F0', position: 'relative' }}>
+                                <button onClick={() => removeTestimonial(t.id)} style={{ position: 'absolute', top: 10, right: 10, width: 28, height: 28, borderRadius: '50%', background: '#FEE2E2', color: '#EF4444', border: 'none', cursor: 'pointer', fontSize: 12 }}>✕</button>
+                                <div style={{ fontWeight: 800, color: '#1A1265', fontSize: 14, marginBottom: 4 }}>{t.name}</div>
+                                <div style={{ color: '#F59E0B', fontSize: 12, marginBottom: 8 }}>{'★'.repeat(t.rating)}{'☆'.repeat(5-t.rating)}</div>
+                                <div style={{ fontSize: 13, color: '#475569', fontStyle: 'italic' }}>"{t.text}"</div>
                             </div>
-                        </div>
-                    ))}
-                    <button onClick={addTestimonial} style={{ width: '100%', padding: 14, borderRadius: 14, border: '2px dashed #CBD5E1', background: 'white', color: '#475569', fontWeight: 700, cursor: 'pointer', fontSize: 13 }}>+ Ajouter un témoignage</button>
+                        ))
+                    )}
                 </div>
             ))}
 
@@ -741,12 +757,16 @@ export default function ProfileForm({
                 </div>
             ))}
 
-            {/* SECTION AVANCÉE SUPPRIMÉE */}
+            {/* SECTION MISE EN PAGE */}
             {acc('layout', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10H3M21 6H3M21 14H3M21 18H3"></path></svg>`, 'Mise en page', 'Ordre des sections du profil.', (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                     <p style={{ fontSize: 13, color: '#64748B', marginBottom: 10 }}>Organisez l'ordre d'apparition des sections sur votre profil public.</p>
                     {(() => {
-                        const sections = (profile.section_order || ['contact_buttons', 'links', 'products', 'business_info', 'gallery', 'video', 'skills', 'testimonials', 'faq', 'events', 'contact_form']).filter(s => s !== 'bio');
+                        const defaultSections = ['contact_buttons', 'links', 'products', 'business_info', 'gallery', 'video', 'skills', 'testimonials', 'faq', 'events', 'contact_form'];
+                        const currentOrder = profile.section_order || [];
+                        const missing = defaultSections.filter(s => !currentOrder.includes(s));
+                        const sections = [...currentOrder, ...missing].filter(s => s !== 'bio' && defaultSections.includes(s));
+                        
                         const sectionLabels = {
                             contact_buttons: 'Boutons directs (Appel/Email)',
                             links: 'Réseaux Sociaux & Liens',
@@ -809,6 +829,17 @@ export default function ProfileForm({
                     }
                 }} 
             />
+
+            <Modal 
+                isOpen={confirmModal.isOpen} 
+                title={confirmModal.title} 
+                type="warning" 
+                confirmText="Supprimer" 
+                onClose={() => setConfirmModal({ ...confirmModal, isOpen: false })} 
+                onConfirm={confirmModal.onConfirm}
+            >
+                {confirmModal.message}
+            </Modal>
         </div>
     );
 }

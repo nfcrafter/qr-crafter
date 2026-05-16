@@ -49,6 +49,10 @@ export default function CardSettings() {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [showMobilePreview, setShowMobilePreview] = useState(false);
 
+    const [confirmModal, setConfirmModal] = useState({ isOpen: false, title: '', message: '', onConfirm: null });
+
+    const openConfirm = (title, message, onConfirm) => setConfirmModal({ isOpen: true, title, message, onConfirm });
+
     const [profile, setProfile] = useState({
         banner_url: '', photo_url: '', full_name: '', job_title: '', bio: '',
         phone: '', email: '', primaryColor: '#1A1265', backgroundColor: '#f0f2f5',
@@ -204,9 +208,10 @@ export default function CardSettings() {
     };
 
     const removeProduct = (id) => {
-        if (!window.confirm('Voulez-vous vraiment supprimer ce produit ?')) return;
-        const products = (profile.products || []).filter(p => p.id !== id);
-        setProfile({ ...profile, products });
+        openConfirm('Supprimer le produit', 'Voulez-vous vraiment supprimer ce produit ?', () => {
+            const products = (profile.products || []).filter(p => p.id !== id);
+            setProfile({ ...profile, products });
+        });
     };
 
     const triggerProductUpload = (id) => {
@@ -227,6 +232,52 @@ export default function CardSettings() {
             toast('Erreur upload image', 'error');
         }
     }
+
+    // Gallery Helpers
+    const galleryFileRef = useRef();
+    const triggerGalleryUpload = () => galleryFileRef.current.click();
+    async function onUploadGalleryImage(file) {
+        try {
+            const ext = file.name.split('.').pop();
+            const path = `gallery/${Date.now()}.${ext}`;
+            const { error: uploadError } = await supabase.storage.from('gallery').upload(path, file);
+            if (uploadError) throw uploadError;
+            const { data: { publicUrl } } = supabase.storage.from('gallery').getPublicUrl(path);
+            const items = [...(profile.gallery || []), { id: Date.now(), url: publicUrl, caption: '', type: 'image' }];
+            setProfile({ ...profile, gallery: items });
+        } catch (e) { toast('Erreur upload image', 'error'); }
+    }
+    const removeGalleryItem = (id) => {
+        openConfirm('Supprimer l\'élément', 'Voulez-vous vraiment supprimer cet élément de la galerie ?', () => {
+            setProfile({ ...profile, gallery: (profile.gallery || []).filter(g => g.id !== id) });
+        });
+    };
+
+    // Testimonials
+    const removeTestimonial = (id) => { 
+        openConfirm('Supprimer l\'avis', 'Supprimer cet avis client ?', () => {
+            setProfile({ ...profile, testimonials: (profile.testimonials || []).filter(t => t.id !== id) });
+        });
+    };
+
+    // FAQ
+    const addFaq = () => setProfile({ ...profile, faq: [...(profile.faq || []), { id: Date.now(), question: '', answer: '' }] });
+    const updateFaq = (id, f, v) => setProfile({ ...profile, faq: (profile.faq || []).map(q => q.id === id ? { ...q, [f]: v } : q) });
+    const removeFaq = (id) => { openConfirm('Supprimer', 'Supprimer cette question ?', () => setProfile({ ...profile, faq: (profile.faq || []).filter(q => q.id !== id) })); };
+
+    // Events
+    const addEvent = () => setProfile({ ...profile, events: [...(profile.events || []), { id: Date.now(), title: '', date: '', location: '', description: '', link: '' }] });
+    const updateEvent = (id, f, v) => setProfile({ ...profile, events: (profile.events || []).map(e => e.id === id ? { ...e, [f]: v } : e) });
+    const removeEvent = (id) => {
+        openConfirm('Supprimer l\'événement', 'Voulez-vous vraiment supprimer cet événement ?', () => {
+            setProfile({ ...profile, events: (profile.events || []).filter(e => e.id !== id) });
+        });
+    };
+
+    // Skills
+    const [skillInput, setSkillInput] = useState('');
+    const addSkill = () => { if (!skillInput.trim()) return; setProfile({ ...profile, skills: [...(profile.skills || []), skillInput.trim()] }); setSkillInput(''); };
+    const removeSkill = (idx) => { const s = [...(profile.skills || [])]; s.splice(idx, 1); setProfile({ ...profile, skills: s }); };
 
     async function handleSave() {
         setSaving(true);
@@ -575,11 +626,147 @@ export default function CardSettings() {
                                 </div>
                             ))}
 
+                            {acc('gallery', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>`, 'Galerie Photos', 'Affichez vos meilleures images.', (
+                                <div style={{ marginTop: 16 }}>
+                                    <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                                        <span>Afficher la galerie</span>
+                                        <input type="checkbox" checked={profile.show_gallery} onChange={e => setProfile({ ...profile, show_gallery: e.target.checked })} />
+                                    </label>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: 10, marginBottom: 12 }}>
+                                        {(profile.gallery || []).map(g => (
+                                            <div key={g.id} style={{ aspectRatio: '1', borderRadius: 8, overflow: 'hidden', position: 'relative', border: '1px solid #E2E8F0' }}>
+                                                <img src={g.url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                <button onClick={() => removeGalleryItem(g.id)} style={{ position: 'absolute', top: 2, right: 2, background: 'rgba(239, 68, 68, 0.9)', color: 'white', border: 'none', borderRadius: '50%', width: 18, height: 18, fontSize: 10, cursor: 'pointer' }}>×</button>
+                                            </div>
+                                        ))}
+                                        <button onClick={triggerGalleryUpload} style={{ aspectRatio: '1', borderRadius: 8, border: '2px dashed #CBD5E1', background: '#F8FAFC', color: '#94A3B8', fontSize: 24, cursor: 'pointer' }}>+</button>
+                                    </div>
+                                    <input ref={galleryFileRef} type="file" hidden accept="image/*" onChange={e => e.target.files[0] && onUploadGalleryImage(e.target.files[0])} />
+                                </div>
+                            ))}
+
+                            {acc('video', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>`, 'Vidéo de Présentation', 'Lien YouTube ou TikTok.', (
+                                <div style={{ marginTop: 16 }}>
+                                    <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                                        <span>Afficher la vidéo</span>
+                                        <input type="checkbox" checked={profile.show_video} onChange={e => setProfile({ ...profile, show_video: e.target.checked })} />
+                                    </label>
+                                    <div className="field">
+                                        <label>Lien Vidéo</label>
+                                        <input type="url" value={profile.presentation_video || ''} onChange={e => setProfile({ ...profile, presentation_video: e.target.value })} placeholder="https://youtube.com/..." />
+                                    </div>
+                                </div>
+                            ))}
+
+                            {acc('skills', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>`, 'Compétences / Tags', 'Vos points forts.', (
+                                <div style={{ marginTop: 16 }}>
+                                    <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                                        <span>Afficher les tags</span>
+                                        <input type="checkbox" checked={profile.show_skills} onChange={e => setProfile({ ...profile, show_skills: e.target.checked })} />
+                                    </label>
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 12 }}>
+                                        {(profile.skills || []).map((s, i) => (
+                                            <span key={i} style={{ padding: '4px 10px', background: '#EEF2FF', color: '#4F46E5', borderRadius: 8, fontSize: 12, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6 }}>
+                                                {s} <button onClick={() => removeSkill(i)} style={{ border: 'none', background: 'none', color: '#6366F1', cursor: 'pointer', fontSize: 14 }}>×</button>
+                                            </span>
+                                        ))}
+                                    </div>
+                                    <div style={{ display: 'flex', gap: 8 }}>
+                                        <input value={skillInput} onChange={e => setSkillInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && addSkill()} placeholder="Ajouter un tag..." style={{ flex: 1 }} />
+                                        <button onClick={addSkill} className="btn-primary" style={{ padding: '0 15px' }}>+</button>
+                                    </div>
+                                </div>
+                            ))}
+
+                            {acc('testimonials', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>`, 'Témoignages / Avis', 'Avis reçus des visiteurs.', (
+                                <div style={{ marginTop: 16 }}>
+                                    <p style={{ fontSize: 12, color: '#64748B', marginBottom: 10 }}>Gérez les avis laissés par vos visiteurs sur le profil public.</p>
+                                    <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                                        <span>Afficher les avis</span>
+                                        <input type="checkbox" checked={profile.show_testimonials} onChange={e => setProfile({ ...profile, show_testimonials: e.target.checked })} />
+                                    </label>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                                        {(profile.testimonials || []).map(t => (
+                                            <div key={t.id} style={{ padding: 12, background: '#F8FAFC', borderRadius: 12, border: '1px solid #E2E8F0', position: 'relative' }}>
+                                                <button onClick={() => removeTestimonial(t.id)} style={{ position: 'absolute', top: 10, right: 10, color: '#EF4444', border: 'none', background: 'none', cursor: 'pointer' }}>✕</button>
+                                                <div style={{ fontWeight: 800, fontSize: 13 }}>{t.name}</div>
+                                                <div style={{ color: '#F59E0B', fontSize: 12 }}>{'★'.repeat(t.rating)}</div>
+                                                <div style={{ fontSize: 12, color: '#475569', fontStyle: 'italic', marginTop: 4 }}>"{t.text}"</div>
+                                            </div>
+                                        ))}
+                                        {(profile.testimonials || []).length === 0 && <div style={{ textAlign: 'center', fontSize: 12, color: '#94A3B8', padding: 10 }}>Aucun avis reçu.</div>}
+                                    </div>
+                                </div>
+                            ))}
+
+                            {acc('faq', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`, 'FAQ', 'Questions fréquentes.', (
+                                <div style={{ marginTop: 16 }}>
+                                    <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                                        <span>Afficher la FAQ</span>
+                                        <input type="checkbox" checked={profile.show_faq} onChange={e => setProfile({ ...profile, show_faq: e.target.checked })} />
+                                    </label>
+                                    {(profile.faq || []).map(q => (
+                                        <div key={q.id} style={{ padding: 12, background: '#F8FAFC', borderRadius: 12, marginBottom: 10, border: '1px solid #E2E8F0', position: 'relative' }}>
+                                            <button onClick={() => removeFaq(q.id)} style={{ position: 'absolute', top: 10, right: 10, color: '#EF4444', border: 'none', background: 'none', cursor: 'pointer' }}>✕</button>
+                                            <input value={q.question} onChange={e => updateFaq(q.id, 'question', e.target.value)} placeholder="Question" style={{ marginBottom: 8, fontSize: 13, width: '100%', padding: 8, borderRadius: 8, border: '1px solid #E2E8F0' }} />
+                                            <textarea value={q.answer} onChange={e => updateFaq(q.id, 'answer', e.target.value)} placeholder="Réponse" rows={2} style={{ fontSize: 13, width: '100%', padding: 8, borderRadius: 8, border: '1px solid #E2E8F0' }} />
+                                        </div>
+                                    ))}
+                                    <button onClick={addFaq} style={{ width: '100%', padding: 10, borderRadius: 10, border: '2px dashed #CBD5E1', background: 'white', color: '#475569', fontWeight: 700, cursor: 'pointer', fontSize: 12 }}>+ Ajouter une question</button>
+                                </div>
+                            ))}
+
+                            {acc('events', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>`, 'Événements', 'Annoncez vos actus.', (
+                                <div style={{ marginTop: 16 }}>
+                                    <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                                        <span>Afficher les événements</span>
+                                        <input type="checkbox" checked={profile.show_events} onChange={e => setProfile({ ...profile, show_events: e.target.checked })} />
+                                    </label>
+                                    {(profile.events || []).map(ev => (
+                                        <div key={ev.id} style={{ padding: 12, background: '#F8FAFC', borderRadius: 12, marginBottom: 10, border: '1px solid #E2E8F0', position: 'relative' }}>
+                                            <button onClick={() => removeEvent(ev.id)} style={{ position: 'absolute', top: 10, right: 10, color: '#EF4444', border: 'none', background: 'none', cursor: 'pointer' }}>✕</button>
+                                            <input value={ev.title} onChange={e => updateEvent(ev.id, 'title', e.target.value)} placeholder="Titre de l'événement" style={{ marginBottom: 8, fontSize: 13, fontWeight: 700, width: '100%', padding: 8, borderRadius: 8, border: '1px solid #E2E8F0' }} />
+                                            <input type="date" value={ev.date} onChange={e => updateEvent(ev.id, 'date', e.target.value)} style={{ marginBottom: 8, fontSize: 13, width: '100%', padding: 8, borderRadius: 8, border: '1px solid #E2E8F0' }} />
+                                            <input value={ev.location} onChange={e => updateEvent(ev.id, 'location', e.target.value)} placeholder="Lieu" style={{ marginBottom: 8, fontSize: 13, width: '100%', padding: 8, borderRadius: 8, border: '1px solid #E2E8F0' }} />
+                                            <textarea value={ev.description} onChange={e => updateEvent(ev.id, 'description', e.target.value)} placeholder="Description" rows={2} style={{ fontSize: 13, width: '100%', padding: 8, borderRadius: 8, border: '1px solid #E2E8F0' }} />
+                                        </div>
+                                    ))}
+                                    <button onClick={addEvent} style={{ width: '100%', padding: 10, borderRadius: 10, border: '2px dashed #CBD5E1', background: 'white', color: '#475569', fontWeight: 700, cursor: 'pointer', fontSize: 12 }}>+ Ajouter un événement</button>
+                                </div>
+                            ))}
+
+                            {acc('contact_form', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>`, 'Formulaire de Contact', 'Recevez des messages.', (
+                                <div style={{ marginTop: 16 }}>
+                                    <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                        <span>Activer le formulaire</span>
+                                        <input type="checkbox" checked={profile.show_contact_form} onChange={e => setProfile({ ...profile, show_contact_form: e.target.checked })} />
+                                    </label>
+                                    <p style={{ fontSize: 12, color: '#64748B', marginTop: 10 }}>Les messages vous seront envoyés directement sur WhatsApp ou par Email.</p>
+                                </div>
+                            ))}
+
                             {acc('layout', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10H3M21 6H3M21 14H3M21 18H3"></path></svg>`, 'Mise en page', 'Ordre des sections du profil.', (
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                                    <p style={{ fontSize: 13, color: '#64748B', marginBottom: 10 }}>Organisez l'ordre d'apparition des sections sur le profil public.</p>
                                     {(() => {
-                                        const sections = profile.section_order || ['bio', 'contact_buttons', 'links', 'products', 'business_info'];
-                                        const sectionLabels = { bio: 'Bio', contact_buttons: 'Appel/Email', links: 'Réseaux Sociaux', products: 'Boutique', business_info: 'Horaires/Map' };
+                                        const defaultSections = ['contact_buttons', 'links', 'products', 'business_info', 'gallery', 'video', 'skills', 'testimonials', 'faq', 'events', 'contact_form'];
+                                        const currentOrder = profile.section_order || [];
+                                        const missing = defaultSections.filter(s => !currentOrder.includes(s));
+                                        const sections = [...currentOrder, ...missing].filter(s => s !== 'bio' && defaultSections.includes(s));
+                                        
+                                        const sectionLabels = {
+                                            contact_buttons: 'Boutons directs (Appel/Email)',
+                                            links: 'Réseaux Sociaux & Liens',
+                                            products: 'Boutique & Catalogue',
+                                            business_info: 'Infos Business (Horaires/Map)',
+                                            gallery: 'Galerie Photos/Vidéos',
+                                            video: 'Vidéo de Présentation',
+                                            skills: 'Compétences / Tags',
+                                            testimonials: 'Témoignages / Avis',
+                                            faq: 'FAQ',
+                                            events: 'Événements à Venir',
+                                            contact_form: 'Formulaire de Contact'
+                                        };
                                         const move = (idx, dir) => {
                                             const newOrder = [...sections];
                                             const tmp = newOrder[idx];
@@ -588,11 +775,11 @@ export default function CardSettings() {
                                             setProfile({ ...profile, section_order: newOrder });
                                         };
                                         return sections.map((s, i) => (
-                                            <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', background: '#F8FAFC', borderRadius: 10, border: '1px solid #E2E8F0' }}>
-                                                <span style={{ flex: 1, fontWeight: 700, fontSize: 13, color: '#1A1265' }}>{sectionLabels[s] || s}</span>
+                                            <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', background: '#F8FAFC', borderRadius: 12, border: '1px solid #E2E8F0' }}>
+                                                <span style={{ flex: 1, fontWeight: 700, fontSize: 14, color: '#1A1265' }}>{sectionLabels[s] || s}</span>
                                                 <div style={{ display: 'flex', gap: 4 }}>
-                                                    <button disabled={i === 0} onClick={() => move(i, -1)} style={{ width: 28, height: 28, borderRadius: 6, border: '1px solid #E2E8F0', background: 'white', cursor: 'pointer', opacity: i === 0 ? 0.3 : 1 }}>↑</button>
-                                                    <button disabled={i === sections.length - 1} onClick={() => move(i, 1)} style={{ width: 28, height: 28, borderRadius: 8, border: '1px solid #E2E8F0', background: 'white', cursor: 'pointer', opacity: i === sections.length - 1 ? 0.3 : 1 }}>↓</button>
+                                                    <button disabled={i === 0} onClick={() => move(i, -1)} style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid #E2E8F0', background: 'white', cursor: i === 0 ? 'default' : 'pointer', opacity: i === 0 ? 0.3 : 1 }}>↑</button>
+                                                    <button disabled={i === sections.length - 1} onClick={() => move(i, 1)} style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid #E2E8F0', background: 'white', cursor: i === sections.length - 1 ? 'default' : 'pointer', opacity: i === sections.length - 1 ? 0.3 : 1 }}>↓</button>
                                                 </div>
                                             </div>
                                         ));
@@ -754,6 +941,16 @@ export default function CardSettings() {
                     .mobile-preview-btn { display: flex !important; align-items: center; justify-content: center; }
                 }
             `}</style>
+            <Modal 
+                isOpen={confirmModal.isOpen} 
+                title={confirmModal.title} 
+                type="warning" 
+                confirmText="Supprimer" 
+                onClose={() => setConfirmModal({ ...confirmModal, isOpen: false })} 
+                onConfirm={confirmModal.onConfirm}
+            >
+                {confirmModal.message}
+            </Modal>
         </div>
     );
 }
@@ -886,6 +1083,70 @@ function AdminPhonePreview({ profile, qrStyle, qrRef, previewMode, isDark, textC
                                                     </div>
                                                 ))}
                                             </div>
+                                        </div>
+                                    );
+                                }
+                                if (sectionId === 'gallery' && profile.show_gallery && (profile.gallery?.length > 0)) {
+                                    return (
+                                        <div key="gallery" style={{ background: cardBg, borderRadius: 16, padding: 12, border: '1px solid rgba(0,0,0,0.05)' }}>
+                                            <div style={{ fontWeight: 800, fontSize: 11, color: textColor, marginBottom: 8 }}>Galerie</div>
+                                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 4 }}>
+                                                {profile.gallery.slice(0, 3).map(g => (
+                                                    <div key={g.id} style={{ aspectRatio: '1', borderRadius: 6, background: '#DDD', overflow: 'hidden' }}>
+                                                        <img src={g.url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    );
+                                }
+                                if (sectionId === 'video' && profile.show_video && profile.presentation_video) {
+                                    return (
+                                        <div key="video" style={{ background: cardBg, borderRadius: 16, padding: 12, border: '1px solid rgba(0,0,0,0.05)' }}>
+                                            <div style={{ fontWeight: 800, fontSize: 11, color: textColor, marginBottom: 8 }}>Vidéo</div>
+                                            <div style={{ aspectRatio: '16/9', background: '#000', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: 20 }}>▶</div>
+                                        </div>
+                                    );
+                                }
+                                if (sectionId === 'skills' && profile.show_skills && profile.skills?.length > 0) {
+                                    return (
+                                        <div key="skills" style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                                            {profile.skills.map((s, i) => (
+                                                <span key={i} style={{ padding: '4px 8px', background: (profile.primaryColor || '#1A1265') + '15', color: profile.primaryColor || '#1A1265', borderRadius: 6, fontSize: 8, fontWeight: 700 }}>{s}</span>
+                                            ))}
+                                        </div>
+                                    );
+                                }
+                                if (sectionId === 'testimonials' && profile.show_testimonials) {
+                                    return (
+                                        <div key="testimonials" style={{ background: cardBg, borderRadius: 16, padding: 12, border: '1px solid rgba(0,0,0,0.05)' }}>
+                                            <div style={{ fontWeight: 800, fontSize: 11, color: textColor, marginBottom: 4 }}>Témoignages</div>
+                                            <div style={{ fontSize: 9, color: subTextColor, fontStyle: 'italic' }}>— {profile.testimonials?.length || 0} avis reçus</div>
+                                        </div>
+                                    );
+                                }
+                                if (sectionId === 'faq' && profile.show_faq && profile.faq?.length > 0) {
+                                    return (
+                                        <div key="faq" style={{ background: cardBg, borderRadius: 16, padding: 12, border: '1px solid rgba(0,0,0,0.05)' }}>
+                                            <div style={{ fontWeight: 800, fontSize: 11, color: textColor, marginBottom: 4 }}>FAQ</div>
+                                            <div style={{ fontSize: 9, color: subTextColor }}>{profile.faq[0].question}</div>
+                                        </div>
+                                    );
+                                }
+                                if (sectionId === 'events' && profile.show_events && profile.events?.length > 0) {
+                                    return (
+                                        <div key="events" style={{ background: cardBg, borderRadius: 16, padding: 12, border: '1px solid rgba(0,0,0,0.05)' }}>
+                                            <div style={{ fontWeight: 800, fontSize: 11, color: textColor, marginBottom: 4 }}>Événements</div>
+                                            <div style={{ fontSize: 9, color: profile.primaryColor || '#1A1265', fontWeight: 700 }}>{profile.events[0].title}</div>
+                                        </div>
+                                    );
+                                }
+                                if (sectionId === 'contact_form' && profile.show_contact_form) {
+                                    return (
+                                        <div key="contact_form" style={{ background: cardBg, borderRadius: 16, padding: 12, border: '1px solid rgba(0,0,0,0.05)' }}>
+                                            <div style={{ fontWeight: 800, fontSize: 11, color: textColor, marginBottom: 8 }}>Contactez-moi</div>
+                                            <div style={{ height: 24, background: isDark ? 'rgba(255,255,255,0.05)' : '#F8FAFC', borderRadius: 6, marginBottom: 4 }} />
+                                            <div style={{ height: 40, background: profile.primaryColor || '#1A1265', borderRadius: 8 }} />
                                         </div>
                                     );
                                 }

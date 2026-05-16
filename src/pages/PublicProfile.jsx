@@ -367,7 +367,10 @@ export default function PublicProfile() {
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, animation: 'fadeUp .5s ease' }}>
           {(() => {
-            const sections = profile?.section_order || ['bio', 'contact_buttons', 'links', 'products', 'business_info'];
+            const defaultSections = ['bio', 'contact_buttons', 'links', 'products', 'business_info', 'gallery', 'video', 'skills', 'testimonials', 'faq', 'events', 'contact_form'];
+            const currentOrder = profile?.section_order || [];
+            const missing = defaultSections.filter(s => !currentOrder.includes(s));
+            const sections = [...currentOrder, ...missing].filter(s => defaultSections.includes(s));
             
             const renderers = {
               contact_buttons: () => (profile?.phone || profile?.email) && (
@@ -560,7 +563,7 @@ export default function PublicProfile() {
                     </div>
                 </div>
               ),
-              testimonials: () => profile?.show_testimonials && profile?.testimonials?.length > 0 && (
+              testimonials: () => profile?.show_testimonials && (
                 <div key="testimonials" style={{ background: cardBg, borderRadius: 24, padding: 20, boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.2)' : '0 4px 20px rgba(0,0,0,0.03)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
                         <div style={{ width: 32, height: 32, borderRadius: 8, background: themeColor + '15', color: themeColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -568,14 +571,43 @@ export default function PublicProfile() {
                         </div>
                         <h3 style={{ fontSize: 16, fontWeight: 800, color: textColor, margin: 0 }}>Témoignages</h3>
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                        {profile.testimonials.map(t => (
-                            <div key={t.id} style={{ background: isDark ? 'rgba(255,255,255,0.03)' : '#F8FAFC', borderRadius: 16, padding: 16, border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid #F1F5F9' }}>
-                                <div style={{ display: 'flex', gap: 4, marginBottom: 8 }}>{[1,2,3,4,5].map(n => <span key={n} style={{ color: t.rating >= n ? '#F59E0B' : '#E2E8F0', fontSize: 16 }}>★</span>)}</div>
-                                <p style={{ fontSize: 14, color: textColor, lineHeight: 1.6, margin: '0 0 10px', fontStyle: 'italic' }}>"{t.text}"</p>
-                                <div style={{ fontSize: 13, fontWeight: 700, color: themeColor }}>— {t.name}</div>
-                            </div>
-                        ))}
+                    {profile?.testimonials?.length > 0 && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 20 }}>
+                            {profile.testimonials.map(t => (
+                                <div key={t.id} style={{ background: isDark ? 'rgba(255,255,255,0.03)' : '#F8FAFC', borderRadius: 16, padding: 16, border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid #F1F5F9' }}>
+                                    <div style={{ display: 'flex', gap: 4, marginBottom: 8 }}>{[1,2,3,4,5].map(n => <span key={n} style={{ color: t.rating >= n ? '#F59E0B' : '#E2E8F0', fontSize: 16 }}>★</span>)}</div>
+                                    <p style={{ fontSize: 14, color: textColor, lineHeight: 1.6, margin: '0 0 10px', fontStyle: 'italic' }}>"{t.text}"</p>
+                                    <div style={{ fontSize: 13, fontWeight: 700, color: themeColor }}>— {t.name}</div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                    <div style={{ padding: '16px', background: isDark ? 'rgba(255,255,255,0.02)' : '#F8FAFC', borderRadius: 16, border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid #E2E8F0' }}>
+                        <h4 style={{ fontSize: 14, fontWeight: 800, color: textColor, marginTop: 0, marginBottom: 12 }}>Laisser un avis</h4>
+                        <form onSubmit={e => {
+                            e.preventDefault();
+                            const fd = new FormData(e.target);
+                            const name = fd.get('name');
+                            const stars = fd.get('stars');
+                            const msg = fd.get('message');
+                            const waNum = (profile?.socials?.whatsapp?.value || profile?.phone || '').toString().replace(/\D/g, '');
+                            if (waNum) {
+                                window.open(`https://wa.me/${waNum}?text=${encodeURIComponent(`Nouvel Avis (${stars} étoiles) de ${name} :\n\n"${msg}"`)}`, '_blank');
+                            } else if (profile?.email) {
+                                window.location.href = `mailto:${profile.email}?subject=Nouvel avis de ${name}&body=${encodeURIComponent(`Nouvel Avis (${stars} étoiles) de ${name} :\n\n"${msg}"`)}`;
+                            }
+                        }} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                            <input name="name" required placeholder="Votre nom" style={{ padding: '10px 14px', borderRadius: 10, border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #CBD5E1', background: isDark ? 'rgba(255,255,255,0.05)' : 'white', color: textColor, fontSize: 13 }} />
+                            <select name="stars" required style={{ padding: '10px 14px', borderRadius: 10, border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #CBD5E1', background: isDark ? 'rgba(255,255,255,0.05)' : 'white', color: textColor, fontSize: 13 }}>
+                                <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
+                                <option value="4">⭐⭐⭐⭐ (4/5)</option>
+                                <option value="3">⭐⭐⭐ (3/5)</option>
+                                <option value="2">⭐⭐ (2/5)</option>
+                                <option value="1">⭐ (1/5)</option>
+                            </select>
+                            <textarea name="message" required placeholder="Votre avis..." rows={2} style={{ padding: '10px 14px', borderRadius: 10, border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #CBD5E1', background: isDark ? 'rgba(255,255,255,0.05)' : 'white', color: textColor, fontSize: 13, resize: 'vertical', fontFamily: 'inherit' }} />
+                            <button type="submit" className="sb" style={{ padding: '10px', background: themeColor, color: 'white', border: 'none', borderRadius: 10, fontWeight: 700, fontSize: 13, cursor: 'pointer', opacity: 0.9 }}>Soumettre</button>
+                        </form>
                     </div>
                 </div>
               ),

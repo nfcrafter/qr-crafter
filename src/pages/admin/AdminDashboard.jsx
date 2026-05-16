@@ -58,6 +58,9 @@ export default function AdminDashboard() {
     const [includeLogo, setIncludeLogo] = useState(true);
     const [generatingBulk, setGeneratingBulk] = useState(false);
     const [hideIdsInPrint, setHideIdsInPrint] = useState(false);
+    const [confirmModal, setConfirmModal] = useState({ isOpen: false, title: '', message: '', onConfirm: null });
+
+    const openConfirm = (title, message, onConfirm) => setConfirmModal({ isOpen: true, title, message, onConfirm });
     const [isProductionFormOpen, setIsProductionFormOpen] = useState(true);
     const [selectedCards, setSelectedCards] = useState([]);
     const [expandedBatch, setExpandedBatch] = useState(null);
@@ -460,8 +463,8 @@ export default function AdminDashboard() {
     };
 
     async function handleDeleteUser(userId) {
-        if (!window.confirm("Supprimer cet utilisateur et TOUTES ses cartes ?")) return;
-        setLoading(true);
+        openConfirm("Supprimer cet utilisateur", "Supprimer cet utilisateur et TOUTES ses cartes ?", async () => {
+            setLoading(true);
         try {
             const { data: userCards } = await supabase.from('cards').select('card_id').eq('owner_id', userId);
             for (const card of (userCards || [])) {
@@ -479,6 +482,7 @@ export default function AdminDashboard() {
         } finally {
             setLoading(false);
         }
+        });
     }
 
     function toggleFolder(id, e) {
@@ -733,6 +737,17 @@ export default function AdminDashboard() {
 
     return (
         <div style={{ display: 'flex', height: '100vh', background: 'linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%)', overflow: 'hidden', position: 'relative' }}>
+            <Modal 
+                isOpen={confirmModal.isOpen} 
+                title={confirmModal.title} 
+                type="warning" 
+                confirmText="Supprimer" 
+                onClose={() => setConfirmModal({ ...confirmModal, isOpen: false })} 
+                onConfirm={confirmModal.onConfirm}
+            >
+                {confirmModal.message}
+            </Modal>
+            
             {/* Mobile Overlay */}
             {isSidebarOpen && (
                 <div
