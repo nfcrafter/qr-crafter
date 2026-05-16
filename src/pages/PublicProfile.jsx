@@ -13,6 +13,8 @@ export default function PublicProfile() {
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
   const [isBioExpanded, setIsBioExpanded] = useState(false)
+  const [selectedImageIndex, setSelectedImageIndex] = useState(null)
+  const [testimonialSuccess, setTestimonialSuccess] = useState(false)
 
   useEffect(() => { loadProfile() }, [lookupValue])
 
@@ -63,6 +65,18 @@ export default function PublicProfile() {
     setProfile(merged)
     supabase.from('scan_logs').insert({ card_id: cardId, user_agent: navigator.userAgent }).then()
     setLoading(false)
+  }
+
+  async function updateProfileInSupabase(updates) {
+    if (!profile || !profile.id) return
+    const { error } = await supabase
+      .from('profiles')
+      .update(updates)
+      .eq('id', profile.id)
+    
+    if (!error) {
+      setProfile({ ...profile, ...updates })
+    }
   }
 
   async function saveContact() {
@@ -480,7 +494,9 @@ export default function PublicProfile() {
                     )}
                 </div>
               ),
-              gallery: () => profile?.show_gallery && galleryItems.length > 0 && (
+              gallery: () => {
+                const items = (profile?.gallery || []).filter(i => i.type !== 'video');
+                return profile?.show_gallery && items.length > 0 && (
                 <div key="gallery" style={{ background: cardBg, borderRadius: 24, padding: 20, boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.2)' : '0 4px 20px rgba(0,0,0,0.03)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
                         <div style={{ width: 32, height: 32, borderRadius: 8, background: themeColor + '15', color: themeColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -489,7 +505,7 @@ export default function PublicProfile() {
                         <h3 style={{ fontSize: 16, fontWeight: 800, color: textColor, margin: 0 }}>Galerie</h3>
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
-                        {galleryItems.map((item, index) => (
+                        {items.map((item, index) => (
                             <div 
                               key={item.id} 
                               onClick={() => setSelectedImageIndex(index)}
@@ -539,28 +555,35 @@ export default function PublicProfile() {
                     )}
                     <div style={{ background: isDark ? 'rgba(255,255,255,0.05)' : '#F8FAFC', borderRadius: 20, padding: 20, border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #E2E8F0' }}>
                         <h4 style={{ margin: '0 0 15px', fontSize: 15, fontWeight: 800, color: textColor }}>Laissez un avis</h4>
-                        <form onSubmit={e => {
-                            e.preventDefault();
-                            const fd = new FormData(e.target);
-                            const name = fd.get('name');
-                            const rating = parseInt(fd.get('stars'));
-                            const text = fd.get('message');
-                            const newTestimonials = [...(profile.testimonials || []), { id: Date.now(), name, rating, text, date: new Date().toISOString() }];
-                            updateProfileInSupabase({ testimonials: newTestimonials });
-                            e.target.reset();
-                            alert("Merci pour votre avis !");
-                        }} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                            <input name="name" required placeholder="Votre nom" style={{ padding: '10px 14px', borderRadius: 10, border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #CBD5E1', background: isDark ? 'rgba(255,255,255,0.05)' : 'white', color: textColor, fontSize: 13 }} />
-                            <select name="stars" required style={{ padding: '10px 14px', borderRadius: 10, border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #CBD5E1', background: isDark ? 'rgba(255,255,255,0.05)' : 'white', color: textColor, fontSize: 13 }}>
-                                <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
-                                <option value="4">⭐⭐⭐⭐ (4/5)</option>
-                                <option value="3">⭐⭐⭐ (3/5)</option>
-                                <option value="2">⭐⭐ (2/5)</option>
-                                <option value="1">⭐ (1/5)</option>
-                            </select>
-                            <textarea name="message" required placeholder="Votre avis..." rows={2} style={{ padding: '10px 14px', borderRadius: 10, border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #CBD5E1', background: isDark ? 'rgba(255,255,255,0.05)' : 'white', color: textColor, fontSize: 13, resize: 'vertical', fontFamily: 'inherit' }} />
-                            <button type="submit" className="sb" style={{ padding: '10px', background: themeColor, color: 'white', border: 'none', borderRadius: 10, fontWeight: 700, fontSize: 13, cursor: 'pointer', opacity: 0.9 }}>Soumettre</button>
-                        </form>
+                        {testimonialSuccess ? (
+                            <div style={{ padding: '20px', background: '#10B98115', border: '1px solid #10B98133', borderRadius: 16, textAlign: 'center', color: '#10B981', fontWeight: 700, animation: 'fadeUp .4s ease' }}>
+                                ✓ Merci pour votre avis !
+                            </div>
+                        ) : (
+                            <form onSubmit={e => {
+                                e.preventDefault();
+                                const fd = new FormData(e.target);
+                                const name = fd.get('name');
+                                const rating = parseInt(fd.get('stars'));
+                                const text = fd.get('message');
+                                const newTestimonials = [{ id: Date.now(), name, rating, text, date: new Date().toISOString() }, ...(profile.testimonials || [])];
+                                updateProfileInSupabase({ testimonials: newTestimonials });
+                                setTestimonialSuccess(true);
+                                setTimeout(() => setTestimonialSuccess(false), 5000);
+                                e.target.reset();
+                            }} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                                <input name="name" required placeholder="Votre nom" style={{ padding: '10px 14px', borderRadius: 10, border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #CBD5E1', background: isDark ? 'rgba(255,255,255,0.05)' : 'white', color: textColor, fontSize: 13 }} />
+                                <select name="stars" required style={{ padding: '10px 14px', borderRadius: 10, border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #CBD5E1', background: isDark ? 'rgba(255,255,255,0.05)' : 'white', color: textColor, fontSize: 13 }}>
+                                    <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
+                                    <option value="4">⭐⭐⭐⭐ (4/5)</option>
+                                    <option value="3">⭐⭐⭐ (3/5)</option>
+                                    <option value="2">⭐⭐ (2/5)</option>
+                                    <option value="1">⭐ (1/5)</option>
+                                </select>
+                                <textarea name="message" required placeholder="Votre avis..." rows={2} style={{ padding: '10px 14px', borderRadius: 10, border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #CBD5E1', background: isDark ? 'rgba(255,255,255,0.05)' : 'white', color: textColor, fontSize: 13, resize: 'vertical', fontFamily: 'inherit' }} />
+                                <button type="submit" className="sb" style={{ padding: '10px', background: themeColor, color: 'white', border: 'none', borderRadius: 10, fontWeight: 700, fontSize: 13, cursor: 'pointer', opacity: 0.9 }}>Soumettre</button>
+                            </form>
+                        )}
                     </div>
                 </div>
               ),
@@ -619,6 +642,50 @@ export default function PublicProfile() {
           </a>
         </div>
       </div>
+
+      {/* Lightbox / Gallery Overlay */}
+      {selectedImageIndex !== null && (
+        <div style={{
+          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.95)', zIndex: 9999,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(10px)'
+        }}>
+          <button 
+            onClick={() => setSelectedImageIndex(null)}
+            style={{ position: 'absolute', top: 30, right: 30, background: 'rgba(255,255,255,0.1)', color: 'white', border: 'none', width: 44, height: 44, borderRadius: '50%', fontSize: 24, cursor: 'pointer', zIndex: 10001, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          >✕</button>
+          
+          <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                const items = (profile?.gallery || []).filter(i => i.type !== 'video');
+                setSelectedImageIndex((selectedImageIndex - 1 + items.length) % items.length);
+              }}
+              style={{ position: 'absolute', left: 20, background: 'rgba(255,255,255,0.1)', color: 'white', border: 'none', width: 50, height: 50, borderRadius: '50%', fontSize: 24, cursor: 'pointer', zIndex: 10001 }}
+            >‹</button>
+
+            <img 
+              src={(profile?.gallery || []).filter(i => i.type !== 'video')[selectedImageIndex]?.url} 
+              style={{ maxWidth: '95%', maxHeight: '85%', objectFit: 'contain', borderRadius: 8, boxShadow: '0 20px 50px rgba(0,0,0,0.5)', animation: 'fadeUp .3s ease' }} 
+              alt="" 
+            />
+
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                const items = (profile?.gallery || []).filter(i => i.type !== 'video');
+                setSelectedImageIndex((selectedImageIndex + 1) % items.length);
+              }}
+              style={{ position: 'absolute', right: 20, background: 'rgba(255,255,255,0.1)', color: 'white', border: 'none', width: 50, height: 50, borderRadius: '50%', fontSize: 24, cursor: 'pointer', zIndex: 10001 }}
+            >›</button>
+
+            {/* Pagination indicator */}
+            <div style={{ position: 'absolute', bottom: 40, color: 'rgba(255,255,255,0.6)', fontSize: 13, fontWeight: 700, letterSpacing: 1 }}>
+              {selectedImageIndex + 1} / {(profile?.gallery || []).filter(i => i.type !== 'video').length}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

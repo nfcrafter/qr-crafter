@@ -129,16 +129,9 @@ export default function ProfileForm({
     // Gallery Helpers
     const galleryFileRef = useRef();
     const [activeGalleryAction, setActiveGalleryAction] = useState(null);
-    const addGalleryItem = (type) => {
-        if (type === 'video') {
-            const url = prompt('Collez le lien YouTube ou TikTok :');
-            if (!url) return;
-            const items = [...(profile.gallery || []), { id: Date.now(), url, caption: '', type: 'video' }];
-            setProfile({ ...profile, gallery: items });
-        } else {
-            setActiveGalleryAction('add');
-            galleryFileRef.current.click();
-        }
+    const addGalleryItem = () => {
+        setActiveGalleryAction('add');
+        galleryFileRef.current.click();
     };
     const removeGalleryItem = (id) => {
         openConfirm('Supprimer l\'élément', 'Voulez-vous vraiment supprimer cet élément de la galerie ?', () => {
@@ -620,45 +613,24 @@ export default function ProfileForm({
             ))}
 
             {/* GALLERY */}
-            {acc('gallery', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>`, 'Galerie Photos/Vidéos', 'Montrez vos réalisations.', (
+            {acc('gallery', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>`, 'Galerie Photos', 'Montrez vos plus belles images.', (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                     <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <span style={{ fontSize: 13, fontWeight: 700, color: '#1A1265' }}>Activer la galerie</span>
                         <input type="checkbox" checked={profile.show_gallery || false} onChange={e => setProfile({ ...profile, show_gallery: e.target.checked })} />
                     </label>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
-                        {(profile.gallery || []).map(item => (
+                        {(profile.gallery || []).filter(item => item.type !== 'video').map(item => (
                             <div key={item.id} style={{ width: 90, height: 90, borderRadius: 12, overflow: 'hidden', position: 'relative', border: '1px solid #E2E8F0', background: '#F8FAFC' }}>
-                                {item.type === 'video' ? (
-                                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, background: '#111', color: 'white' }}>▶</div>
-                                ) : (
-                                    <img src={item.url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                )}
+                                <img src={item.url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                 <button onClick={() => removeGalleryItem(item.id)} style={{ position: 'absolute', top: 4, right: 4, width: 22, height: 22, borderRadius: '50%', background: '#FEE2E2', color: '#EF4444', border: 'none', cursor: 'pointer', fontSize: 10, fontWeight: 900 }}>✕</button>
                             </div>
                         ))}
                     </div>
-                    <div style={{ display: 'flex', gap: 8 }}>
-                        <button onClick={() => addGalleryItem('image')} style={{ flex: 1, padding: 14, borderRadius: 14, border: '2px dashed #CBD5E1', background: 'white', color: '#475569', fontWeight: 700, cursor: 'pointer', fontSize: 13 }}>+ Photo</button>
-                        <button onClick={() => addGalleryItem('video')} style={{ flex: 1, padding: 14, borderRadius: 14, border: '2px dashed #CBD5E1', background: 'white', color: '#475569', fontWeight: 700, cursor: 'pointer', fontSize: 13 }}>+ Vidéo (URL)</button>
-                    </div>
+                    <button onClick={addGalleryItem} style={{ width: '100%', padding: 14, borderRadius: 14, border: '2px dashed #CBD5E1', background: 'white', color: '#475569', fontWeight: 700, cursor: 'pointer', fontSize: 13 }}>+ Ajouter une photo</button>
                 </div>
             ))}
 
-            {/* PRESENTATION VIDEO */}
-            {acc('video', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>`, 'Vidéo de Présentation', 'Intégrez une vidéo YouTube ou TikTok.', (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                    <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: '#1A1265' }}>Activer la vidéo</span>
-                        <input type="checkbox" checked={profile.show_video || false} onChange={e => setProfile({ ...profile, show_video: e.target.checked })} />
-                    </label>
-                    <div className="field" style={{ marginBottom: 0 }}>
-                        <label>Lien YouTube ou TikTok</label>
-                        <input type="url" value={profile.presentation_video || ''} onChange={e => setProfile({ ...profile, presentation_video: e.target.value })} placeholder="https://youtube.com/watch?v=..." style={{ background: '#F8FAFC' }} />
-                    </div>
-                    <p style={{ fontSize: 12, color: '#94A3B8', margin: 0 }}>Formats supportés : YouTube, TikTok. La vidéo sera intégrée directement dans votre profil.</p>
-                </div>
-            ))}
 
             {/* SKILLS / TAGS */}
             {acc('skills', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>`, 'Compétences / Tags', 'Affichez vos domaines d\'expertise.', (
@@ -746,23 +718,13 @@ export default function ProfileForm({
                 </div>
             ))}
 
-            {/* CONTACT FORM */}
-            {acc('contact_form', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>`, 'Formulaire de Contact', 'Redirigez vers WhatsApp ou Email.', (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                    <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: '#1A1265' }}>Activer le formulaire de contact</span>
-                        <input type="checkbox" checked={profile.show_contact_form || false} onChange={e => setProfile({ ...profile, show_contact_form: e.target.checked })} />
-                    </label>
-                    <p style={{ fontSize: 12, color: '#94A3B8', margin: 0 }}>Les visiteurs pourront rédiger un message qui sera envoyé via WhatsApp ou Email (selon ce qui est configuré sur votre profil).</p>
-                </div>
-            ))}
 
             {/* SECTION MISE EN PAGE */}
             {acc('layout', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10H3M21 6H3M21 14H3M21 18H3"></path></svg>`, 'Mise en page', 'Ordre des sections du profil.', (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                     <p style={{ fontSize: 13, color: '#64748B', marginBottom: 10 }}>Organisez l'ordre d'apparition des sections sur votre profil public.</p>
                     {(() => {
-                        const defaultSections = ['contact_buttons', 'links', 'products', 'business_info', 'gallery', 'video', 'skills', 'testimonials', 'faq', 'events', 'contact_form'];
+                        const defaultSections = ['contact_buttons', 'links', 'products', 'business_info', 'gallery', 'skills', 'testimonials', 'faq', 'events'];
                         const currentOrder = profile.section_order || [];
                         const missing = defaultSections.filter(s => !currentOrder.includes(s));
                         const sections = [...currentOrder, ...missing].filter(s => s !== 'bio' && defaultSections.includes(s));
@@ -772,13 +734,11 @@ export default function ProfileForm({
                             links: 'Réseaux Sociaux & Liens',
                             products: 'Boutique & Catalogue',
                             business_info: 'Infos Business (Horaires/Map)',
-                            gallery: 'Galerie Photos/Vidéos',
-                            video: 'Vidéo de Présentation',
+                            gallery: 'Galerie Photos',
                             skills: 'Compétences / Tags',
                             testimonials: 'Témoignages / Avis',
                             faq: 'FAQ',
-                            events: 'Événements à Venir',
-                            contact_form: 'Formulaire de Contact'
+                            events: 'Événements à Venir'
                         };
                         const move = (index, dir) => {
                             const newOrder = [...sections];
