@@ -586,15 +586,15 @@ export default function AdminDashboard() {
         };
 
         try {
-            // Dessiner la carte arrière (Verso) - décalée plus bas à droite pour visibilité
+            // Dessiner la carte arrière (Verso) - décalée avec un chevauchement élégant
             if (backImage) {
                 const img = await loadImage(backImage);
-                drawPremiumCard(img, 550, 480, 800, 500, 50, 0.08);
+                drawPremiumCard(img, 450, 400, 800, 505, 32, 0.06);
             }
-            // Dessiner la carte avant (Recto) - décalée plus haut à gauche
+            // Dessiner la carte avant (Recto)
             if (frontImage) {
                 const img = await loadImage(frontImage);
-                drawPremiumCard(img, 250, 220, 800, 500, 50, -0.05);
+                drawPremiumCard(img, 300, 280, 800, 505, 32, -0.04);
             }
             
             const finalImage = canvas.toDataURL("image/png");
@@ -1326,7 +1326,7 @@ export default function AdminDashboard() {
                                         .showcase-stack {
                                             position: relative;
                                             width: 500px;
-                                            height: 320px;
+                                            height: 315px;
                                             transform-style: preserve-3d;
                                             animation: floatingShowcase 6s infinite ease-in-out;
                                         }
@@ -1334,17 +1334,17 @@ export default function AdminDashboard() {
                                             position: absolute;
                                             width: 100%;
                                             height: 100%;
-                                            border-radius: 28px;
-                                            box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+                                            border-radius: 18px;
+                                            box-shadow: 0 30px 80px rgba(0,0,0,0.5);
                                             overflow: hidden;
                                             background: #1A1265;
                                             border: 1px solid rgba(255,255,255,0.1);
                                         }
                                         .showcase-back {
-                                            transform: translateZ(-60px) translateX(80px) translateY(80px) rotate(6deg);
+                                            transform: translateZ(-30px) translateX(50px) translateY(50px) rotate(4deg);
                                         }
                                         .showcase-front {
-                                            transform: translateZ(60px) translateX(-60px) translateY(-60px) rotate(-4deg);
+                                            transform: translateZ(30px) translateX(-40px) translateY(-40px) rotate(-2deg);
                                         }
                                     ` }} />
                                     

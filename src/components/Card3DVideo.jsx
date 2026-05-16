@@ -29,7 +29,7 @@ const CardContent = ({ frontImage, backImage }) => {
       t.needsUpdate = true;
     });
     
-    // Correction de l'orientation pour le verso (flip horizontal sur place)
+    // Correction de l'orientation pour le verso (flip horizontal indispensable sur mesh inversé)
     backTexture.center.set(0.5, 0.5);
     backTexture.repeat.set(-1, 1);
   }, [frontTexture, backTexture]);
@@ -37,7 +37,7 @@ const CardContent = ({ frontImage, backImage }) => {
   // Dimensions standard (ratio 1.585)
   const width = 3.37;
   const height = 2.125;
-  const radius = 0.12;
+  const radius = 0.1;
   const thickness = 0.08;
 
   // Forme pour la tranche uniquement
@@ -70,9 +70,9 @@ const CardContent = ({ frontImage, backImage }) => {
         <shapeGeometry args={[shape]} />
         <meshPhysicalMaterial 
           map={frontTexture} 
-          roughness={0.2} 
+          roughness={0.1} 
           metalness={0} 
-          clearcoat={0.8}
+          clearcoat={0.3}
           color="#ffffff"
           transparent={true}
         />
@@ -83,9 +83,9 @@ const CardContent = ({ frontImage, backImage }) => {
         <shapeGeometry args={[shape]} />
         <meshPhysicalMaterial 
           map={backTexture} 
-          roughness={0.2} 
+          roughness={0.1} 
           metalness={0} 
-          clearcoat={0.8}
+          clearcoat={0.3}
           color="#ffffff"
           transparent={true}
         />
