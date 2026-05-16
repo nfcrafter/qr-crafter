@@ -8,13 +8,17 @@ export default function ProfileForm({
     onUploadAvatar,
     onUploadBanner,
     onUploadPDF,
+    onUploadProductImage, // Nouveau : pour les images de produits
     uploadingAvatar = false,
     uploadingBanner = false,
+    uploadingProduct = false,
     toast
 }) {
     const [openSection, setOpenSection] = useState('info');
     const avatarRef = useRef();
     const bannerRef = useRef();
+    const productFileRef = useRef();
+    const [activeProductId, setActiveProductId] = useState(null);
 
     const acc = (id, icon, title, sub, content) => (
         <div className="accordion" key={id} style={{ marginBottom: 12, border: '1px solid #E2E8F0', borderRadius: 16, background: 'white', overflow: 'hidden' }}>
@@ -83,6 +87,37 @@ export default function ProfileForm({
         const links = [...(profile.customLinks || [])];
         links.splice(idx, 1);
         setProfile({ ...profile, customLinks: links });
+    };
+
+    // Product Helpers
+    const addProduct = () => {
+        const products = [...(profile.products || [])];
+        products.push({ id: Date.now(), name: '', price: '', description: '', image_url: '' });
+        setProfile({ ...profile, products });
+    };
+
+    const updateProduct = (id, field, val) => {
+        const products = (profile.products || []).map(p => p.id === id ? { ...p, [field]: val } : p);
+        setProfile({ ...profile, products });
+    };
+
+    const removeProduct = (id) => {
+        const products = (profile.products || []).filter(p => p.id !== id);
+        setProfile({ ...profile, products });
+    };
+
+    // Hours Helpers
+    const DAYS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+    const updateHours = (day, field, val) => {
+        const hours = { ...(profile.business_hours || {}) };
+        if (!hours[day]) hours[day] = { open: '09:00', close: '18:00', active: true };
+        hours[day] = { ...hours[day], [field]: val };
+        setProfile({ ...profile, business_hours: hours });
+    };
+
+    const triggerProductUpload = (id) => {
+        setActiveProductId(id);
+        productFileRef.current.click();
     };
 
     return (
@@ -264,6 +299,98 @@ export default function ProfileForm({
                 </div>
             ))}
 
+            {/* SECTION BUSINESS */}
+            {acc('business', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>`, 'Infos Business', 'Horaires et localisation.', (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                    <div className="field">
+                        <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <span>Localisation (Adresse)</span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                <span style={{ fontSize: 11, fontWeight: 700 }}>Afficher</span>
+                                <input type="checkbox" checked={profile.show_location} onChange={e => setProfile({ ...profile, show_location: e.target.checked })} />
+                            </div>
+                        </label>
+                        <input type="text" value={profile.location_address || ''} onChange={e => setProfile({ ...profile, location_address: e.target.value })} placeholder="Ex: Cotonou, Bénin" />
+                    </div>
+                    <div className="field">
+                        <label>Lien Google Maps (Optionnel)</label>
+                        <input type="url" value={profile.location_map_url || ''} onChange={e => setProfile({ ...profile, location_map_url: e.target.value })} placeholder="https://goo.gl/maps/..." />
+                    </div>
+
+                    <div style={{ borderTop: '1px solid #F1F5F9', paddingTop: 20 }}>
+                        <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                            <span style={{ fontSize: 13, fontWeight: 700, color: '#1A1265' }}>Horaires d'ouverture</span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                <span style={{ fontSize: 11, fontWeight: 700 }}>Afficher</span>
+                                <input type="checkbox" checked={profile.show_hours} onChange={e => setProfile({ ...profile, show_hours: e.target.checked })} />
+                            </div>
+                        </label>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                            {DAYS.map(day => {
+                                const h = profile.business_hours?.[day] || { open: '09:00', close: '18:00', active: true };
+                                return (
+                                    <div key={day} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px', background: h.active ? '#F8FAFC' : 'transparent', borderRadius: 12, opacity: h.active ? 1 : 0.5 }}>
+                                        <input type="checkbox" checked={h.active} onChange={e => updateHours(day, 'active', e.target.checked)} />
+                                        <span style={{ flex: 1, fontSize: 13, fontWeight: 700, color: '#1A1265' }}>{day}</span>
+                                        {h.active && (
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                                                <input type="time" value={h.open} onChange={e => updateHours(day, 'open', e.target.value)} style={{ padding: '4px 8px', fontSize: 12, borderRadius: 8, border: '1px solid #E2E8F0' }} />
+                                                <span style={{ fontSize: 12 }}>-</span>
+                                                <input type="time" value={h.close} onChange={e => updateHours(day, 'close', e.target.value)} style={{ padding: '4px 8px', fontSize: 12, borderRadius: 8, border: '1px solid #E2E8F0' }} />
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            ))}
+
+            {/* SECTION SHOP */}
+            {acc('shop', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>`, 'Boutique & Catalogue', 'Produits et services.', (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                    <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: '#1A1265' }}>Activer la boutique</span>
+                        <input type="checkbox" checked={profile.show_products} onChange={e => setProfile({ ...profile, show_products: e.target.checked })} />
+                    </label>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                        {(profile.products || []).map(p => (
+                            <div key={p.id} style={{ background: '#F8FAFC', borderRadius: 20, padding: 20, border: '1px solid #E2E8F0', position: 'relative' }}>
+                                <button onClick={() => removeProduct(p.id)} style={{ position: 'absolute', top: 12, right: 12, background: 'none', border: 'none', color: '#EF4444', fontSize: 20, cursor: 'pointer' }}>×</button>
+                                
+                                <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
+                                    <div 
+                                        onClick={() => triggerProductUpload(p.id)}
+                                        style={{ width: 80, height: 80, borderRadius: 12, background: 'white', border: '2px dashed #CBD5E1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', overflow: 'hidden', flexShrink: 0, position: 'relative' }}
+                                    >
+                                        {p.image_url ? <img src={p.image_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ width: 24, height: 24, color: '#94A3B8' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>` }} />}
+                                        {uploadingProduct && activeProductId === p.id && <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="loader" style={{ width: 20, height: 20 }}></div></div>}
+                                    </div>
+                                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                                        <div className="field" style={{ marginBottom: 0 }}>
+                                            <label>Nom du produit</label>
+                                            <input type="text" value={p.name} onChange={e => updateProduct(p.id, 'name', e.target.value)} placeholder="Ex: Café Robusta" style={{ background: 'white' }} />
+                                        </div>
+                                        <div className="field" style={{ marginBottom: 0 }}>
+                                            <label>Prix (ex: 5000 FCFA)</label>
+                                            <input type="text" value={p.price} onChange={e => updateProduct(p.id, 'price', e.target.value)} placeholder="0" style={{ background: 'white' }} />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="field" style={{ marginBottom: 0 }}>
+                                    <label>Description courte</label>
+                                    <input type="text" value={p.description} onChange={e => updateProduct(p.id, 'description', e.target.value)} placeholder="Un café intense..." style={{ background: 'white' }} />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <button onClick={addProduct} style={{ width: '100%', padding: 16, borderRadius: 16, border: '2px dashed #CBD5E1', background: 'white', color: '#475569', fontWeight: 700, cursor: 'pointer', fontSize: 14 }}>+ Ajouter un produit / service</button>
+                </div>
+            ))}
+
             {/* SECTION CUSTOM LINKS */}
             {acc('links', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>`, 'Liens Personnalisés', 'Boutique, portfolio, autres liens.', (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -295,7 +422,17 @@ export default function ProfileForm({
             ))}
 
             {/* SECTION AVANCÉE SUPPRIMÉE */}
-
+            <input 
+                ref={productFileRef} 
+                type="file" 
+                hidden 
+                accept="image/*"
+                onChange={e => {
+                    if (e.target.files[0] && activeProductId) {
+                        onUploadProductImage(activeProductId, e.target.files[0]);
+                    }
+                }} 
+            />
 
         </div>
     );

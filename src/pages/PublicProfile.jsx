@@ -175,6 +175,30 @@ export default function PublicProfile() {
 
   const activeCustomLinks = customLinks.filter(l => l.url)
 
+  // Logic for Opening Hours status
+  const getOpenStatus = () => {
+    if (!profile?.business_hours || !profile?.show_hours) return null;
+    const now = new Date();
+    const dayNames = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+    const currentDay = dayNames[now.getDay()];
+    const config = profile.business_hours[currentDay];
+    
+    if (!config || !config.active) return { text: 'Fermé aujourd\'hui', color: '#EF4444' };
+    
+    const [hOpen, mOpen] = config.open.split(':').map(Number);
+    const [hClose, mClose] = config.close.split(':').map(Number);
+    const nowMinutes = now.getHours() * 60 + now.getMinutes();
+    const openMinutes = hOpen * 60 + mOpen;
+    const closeMinutes = hClose * 60 + mClose;
+    
+    if (nowMinutes >= openMinutes && nowMinutes <= closeMinutes) {
+        return { text: `Ouvert · Ferme à ${config.close}`, color: '#10B981' };
+    }
+    return { text: `Fermé · Ouvre à ${config.open}`, color: '#EF4444' };
+  };
+
+  const openStatus = getOpenStatus();
+
   return (
     <div style={{ 
         minHeight: '100vh', 
@@ -315,7 +339,113 @@ export default function PublicProfile() {
           </div>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, animation: 'fadeUp .5s ease' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, animation: 'fadeUp .5s ease' }}>
+          
+          {/* SECTION : BOUTIQUE / CATALOGUE */}
+          {profile?.show_products && profile?.products?.length > 0 && (
+            <div style={{ 
+                background: cardBg, borderRadius: 24, padding: 20, 
+                boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.2)' : '0 4px 20px rgba(0,0,0,0.03)',
+                border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)'
+            }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
+                    <div style={{ width: 32, height: 32, borderRadius: 8, background: themeColor + '15', color: themeColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                    </div>
+                    <h3 style={{ fontSize: 16, fontWeight: 800, color: textColor, margin: 0 }}>Notre Boutique</h3>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    {profile.products.map(p => (
+                        <div key={p.id} className="pl" style={{ 
+                            background: isDark ? 'rgba(255,255,255,0.03)' : '#F8FAFC', 
+                            borderRadius: 16, padding: 12, display: 'flex', gap: 12, alignItems: 'center',
+                            border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid #F1F5F9'
+                        }}>
+                            <div style={{ width: 60, height: 60, borderRadius: 12, overflow: 'hidden', background: '#DDD', flexShrink: 0 }}>
+                                {p.image_url ? <img src={p.image_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#AAA' }}>📦</div>}
+                            </div>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                                <div style={{ fontWeight: 700, fontSize: 14, color: textColor, marginBottom: 2 }}>{p.name}</div>
+                                <div style={{ fontSize: 13, fontWeight: 900, color: themeColor }}>{p.price}</div>
+                            </div>
+                            <button 
+                                onClick={() => {
+                                    const msg = `Bonjour, je souhaite commander "${p.name}" (${p.price}) vu sur votre profil NFCrafter.`;
+                                    window.open(`https://wa.me/${profile.phone?.toString().replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
+                                }}
+                                style={{ background: '#25D366', color: 'white', border: 'none', padding: '8px 12px', borderRadius: 10, fontWeight: 700, fontSize: 12, cursor: 'pointer' }}
+                            >
+                                Commander
+                            </button>
+                        </div>
+                    ))}
+                </div>
+            </div>
+          )}
+
+          {/* SECTION : INFOS BUSINESS (MAP & HORAIRES) */}
+          {(profile?.show_location || profile?.show_hours) && (
+            <div style={{ 
+                background: cardBg, borderRadius: 24, padding: 20, 
+                boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.2)' : '0 4px 20px rgba(0,0,0,0.03)',
+                border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)'
+            }}>
+                {profile.show_location && profile.location_address && (
+                    <div style={{ marginBottom: profile.show_hours ? 20 : 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+                            <div style={{ width: 32, height: 32, borderRadius: 8, background: themeColor + '15', color: themeColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                            </div>
+                            <h3 style={{ fontSize: 15, fontWeight: 800, color: textColor, margin: 0 }}>Nous trouver</h3>
+                        </div>
+                        <div style={{ background: isDark ? 'rgba(255,255,255,0.03)' : '#F8FAFC', borderRadius: 16, padding: 14, border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid #F1F5F9' }}>
+                            <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 12 }}>{profile.location_address}</div>
+                            {profile.location_map_url && (
+                                <a href={profile.location_map_url} target="_blank" rel="noreferrer" style={{ 
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                                    width: '100%', padding: '10px', background: 'white', color: '#111',
+                                    borderRadius: 12, textDecoration: 'none', fontSize: 13, fontWeight: 700,
+                                    boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+                                }}>
+                                    📍 Ouvrir dans Maps
+                                </a>
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                {profile.show_hours && profile.business_hours && (
+                    <div>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                                <div style={{ width: 32, height: 32, borderRadius: 8, background: themeColor + '15', color: themeColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                </div>
+                                <h3 style={{ fontSize: 15, fontWeight: 800, color: textColor, margin: 0 }}>Horaires</h3>
+                            </div>
+                            {openStatus && (
+                                <div style={{ fontSize: 11, fontWeight: 800, color: openStatus.color, background: openStatus.color + '15', padding: '4px 10px', borderRadius: 10 }}>
+                                    {openStatus.text}
+                                </div>
+                            )}
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                            {['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'].map(day => {
+                                const h = profile.business_hours?.[day];
+                                const isToday = new Date().toLocaleDateString('fr-FR', { weekday: 'long' }).toLowerCase() === day.toLowerCase();
+                                return (
+                                    <div key={day} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, opacity: h?.active ? 1 : 0.4, fontWeight: isToday ? 800 : 400 }}>
+                                        <span style={{ color: isToday ? themeColor : subTextColor }}>{day}</span>
+                                        <span style={{ color: textColor }}>{h?.active ? `${h.open} - ${h.close}` : 'Fermé'}</span>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
+            </div>
+          )}
           {(profile?.phone || profile?.email) && (
             <div style={{ display: 'flex', gap: 10 }}>
               {profile?.phone && (

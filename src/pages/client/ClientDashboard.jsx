@@ -23,6 +23,7 @@ export default function ClientDashboard() {
     const [saving, setSaving] = useState(false);
     const [uploadingAvatar, setUploadingAvatar] = useState(false);
     const [uploadingBanner, setUploadingBanner] = useState(false);
+    const [uploadingProduct, setUploadingProduct] = useState(false);
     const [scanCount, setScanCount] = useState(0);
     const [showMobilePreview, setShowMobilePreview] = useState(false);
     const [renamingCardId, setRenamingCardId] = useState(null);
@@ -155,6 +156,17 @@ export default function ClientDashboard() {
         if (error) toast('Erreur : ' + error.message, 'error');
         else { toast('Profil mis à jour !', 'success'); setViewMode('view'); loadUserData(); }
         setSaving(false);
+    }
+
+    async function handleProductImageUpload(productId, file) {
+        setUploadingProduct(true);
+        await uploadFile(file, 'banners', (url) => {
+            setPublicProfile(p => ({
+                ...p,
+                products: (p.products || []).map(prod => prod.id === productId ? { ...prod, image_url: url } : prod)
+            }));
+        });
+        setUploadingProduct(false);
     }
 
     async function uploadFile(file, bucket, onUrl, setUploading) {
@@ -484,8 +496,10 @@ export default function ClientDashboard() {
                                             setProfile={setPublicProfile} 
                                             onUploadAvatar={(f) => uploadFile(f, 'avatars', (url) => setPublicProfile(p => ({...p, photo_url: url})), setUploadingAvatar)} 
                                             onUploadBanner={(f) => uploadFile(f, 'banners', (url) => setPublicProfile(p => ({...p, banner_url: url})), setUploadingBanner)} 
+                                            onUploadProductImage={handleProductImageUpload}
                                             uploadingAvatar={uploadingAvatar} 
                                             uploadingBanner={uploadingBanner} 
+                                            uploadingProduct={uploadingProduct}
                                             toast={toast} 
                                         />
                                         <button onClick={savePublicProfile} disabled={saving} className="btn-primary" style={{ width: '100%', padding: '18px', borderRadius: '20px', marginTop: '40px', background: '#1A1265', fontSize: '16px', boxShadow: '0 10px 20px rgba(26,18,101,0.15)' }}>
@@ -582,6 +596,25 @@ function DashboardPhonePreview({ profile, isDark, textColor, subTextColor, cardB
                 color: textColor,
                 fontFamily: "'Inter', sans-serif"
             }}>
+                {/* Status bar logic for preview */}
+                {(() => {
+                    const getOpenStatus = () => {
+                        if (!profile?.business_hours || !profile?.show_hours) return null;
+                        const now = new Date();
+                        const dayNames = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+                        const currentDay = dayNames[now.getDay()];
+                        const config = profile.business_hours[currentDay];
+                        if (!config || !config.active) return { text: 'Fermé', color: '#EF4444' };
+                        const [hOpen, mOpen] = config.open.split(':').map(Number);
+                        const [hClose, mClose] = config.close.split(':').map(Number);
+                        const nowMin = now.getHours() * 60 + now.getMinutes();
+                        if (nowMin >= (hOpen * 60 + mOpen) && nowMin <= (hClose * 60 + mClose)) return { text: 'Ouvert', color: '#10B981' };
+                        return { text: 'Fermé', color: '#EF4444' };
+                    };
+                    const status = getOpenStatus();
+                    return null; // Just for logic, render below
+                })()}
+
                 {/* Banner */}
                 <div style={{ height: 110, background: profile.primaryColor || '#1A1265', overflow: 'hidden', position: 'relative' }}>
                     {profile.banner_url && <img src={profile.banner_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />}
@@ -610,6 +643,50 @@ function DashboardPhonePreview({ profile, isDark, textColor, subTextColor, cardB
                             color: textColor
                         }}>
                             {profile.bio.split('\n')[0].substring(0, 80)}...
+                        </div>
+                    )}
+
+                    {/* NEW: Boutique Preview */}
+                    {profile.show_products && profile.products?.length > 0 && (
+                        <div style={{ marginTop: 16, background: cardBg, borderRadius: 20, padding: 15, border: '1px solid rgba(0,0,0,0.05)' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                                <div style={{ width: 24, height: 24, borderRadius: 6, background: (profile.primaryColor || '#1A1265') + '15', color: profile.primaryColor || '#1A1265', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path></svg>
+                                </div>
+                                <span style={{ fontSize: 13, fontWeight: 800 }}>Boutique</span>
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                                {profile.products.slice(0, 2).map(p => (
+                                    <div key={p.id} style={{ display: 'flex', gap: 10, alignItems: 'center', background: 'rgba(0,0,0,0.02)', padding: 8, borderRadius: 12 }}>
+                                        <div style={{ width: 40, height: 40, borderRadius: 8, background: '#DDD', overflow: 'hidden' }}>
+                                            {p.image_url && <img src={p.image_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+                                        </div>
+                                        <div style={{ flex: 1, minWidth: 0 }}>
+                                            <div style={{ fontSize: 12, fontWeight: 700, color: textColor, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</div>
+                                            <div style={{ fontSize: 11, color: profile.primaryColor || '#1A1265', fontWeight: 800 }}>{p.price}</div>
+                                        </div>
+                                    </div>
+                                ))}
+                                {profile.products.length > 2 && <div style={{ fontSize: 10, textAlign: 'center', color: subTextColor }}>+ {profile.products.length - 2} autres produits</div>}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* NEW: Business Preview */}
+                    {(profile.show_location || profile.show_hours) && (
+                        <div style={{ marginTop: 16, background: cardBg, borderRadius: 20, padding: 15, border: '1px solid rgba(0,0,0,0.05)' }}>
+                            {profile.show_location && profile.location_address && (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: profile.show_hours ? 12 : 0 }}>
+                                    <div style={{ width: 20, height: 20, color: profile.primaryColor || '#1A1265' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>` }} />
+                                    <div style={{ fontSize: 12, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{profile.location_address}</div>
+                                </div>
+                            )}
+                            {profile.show_hours && (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                                    <div style={{ width: 20, height: 20, color: profile.primaryColor || '#1A1265' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>` }} />
+                                    <div style={{ fontSize: 12, fontWeight: 600 }}>Horaires configurés</div>
+                                </div>
+                            )}
                         </div>
                     )}
 
