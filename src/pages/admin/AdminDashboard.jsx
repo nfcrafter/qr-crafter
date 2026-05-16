@@ -102,6 +102,7 @@ export default function AdminDashboard() {
     const [requestsCount, setRequestsCount] = useState(0);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [platformStats, setPlatformStats] = useState({ totalUsers: 0, activeUsers: 0 });
+    const [showStats, setShowStats] = useState(() => { try { return JSON.parse(localStorage.getItem('nfcrafter_showStats') ?? 'true'); } catch { return true; } });
 
     async function loadPlatformStats() {
         try {
@@ -850,47 +851,58 @@ export default function AdminDashboard() {
                     {(view === 'dashboard' || view === 'requests') && (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                             {view === 'dashboard' && (
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '16px' }}>
-                                    <div style={{ padding: '20px', background: 'white', borderRadius: '16px', border: '1px solid #E2E8F0', boxShadow: '0 4px 15px rgba(0,0,0,0.02)' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                                            <div style={{ width: 32, height: 32, borderRadius: '10px', background: '#EEF2FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                <div style={{ width: 16, height: 16, color: '#6366F1' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>` }} />
+                                <div>
+                                    <button
+                                        onClick={() => { const v = !showStats; setShowStats(v); localStorage.setItem('nfcrafter_showStats', JSON.stringify(v)); }}
+                                        style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0', marginBottom: showStats ? '12px' : '0', color: '#64748B', fontWeight: '800', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}
+                                    >
+                                        <div style={{ width: 16, height: 16, transition: 'transform 0.2s', transform: showStats ? 'rotate(0deg)' : 'rotate(-90deg)' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>` }} />
+                                        Statistiques
+                                    </button>
+                                    {showStats && (
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '16px', animation: 'fadeIn 0.3s ease' }}>
+                                        <div style={{ padding: '20px', background: 'white', borderRadius: '16px', border: '1px solid #E2E8F0', boxShadow: '0 4px 15px rgba(0,0,0,0.02)' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                                                <div style={{ width: 32, height: 32, borderRadius: '10px', background: '#EEF2FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                    <div style={{ width: 16, height: 16, color: '#6366F1' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>` }} />
+                                                </div>
+                                                <div style={{ fontSize: '11px', fontWeight: '800', color: '#64748B', textTransform: 'uppercase', letterSpacing: '1px' }}>Utilisateurs</div>
                                             </div>
-                                            <div style={{ fontSize: '11px', fontWeight: '800', color: '#64748B', textTransform: 'uppercase', letterSpacing: '1px' }}>Utilisateurs</div>
+                                            <div style={{ fontSize: '28px', fontWeight: '900', color: '#1A1265' }}>{platformStats.totalUsers}</div>
+                                            <div style={{ fontSize: '11px', fontWeight: '700', color: '#10B981', marginTop: '4px' }}>{platformStats.activeUsers} actif{platformStats.activeUsers > 1 ? 's' : ''}</div>
                                         </div>
-                                        <div style={{ fontSize: '28px', fontWeight: '900', color: '#1A1265' }}>{platformStats.totalUsers}</div>
-                                        <div style={{ fontSize: '11px', fontWeight: '700', color: '#10B981', marginTop: '4px' }}>{platformStats.activeUsers} actif{platformStats.activeUsers > 1 ? 's' : ''}</div>
-                                    </div>
-                                    <div style={{ padding: '20px', background: 'white', borderRadius: '16px', border: '1px solid #E2E8F0', boxShadow: '0 4px 15px rgba(0,0,0,0.02)' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                                            <div style={{ width: 32, height: 32, borderRadius: '10px', background: '#F0FDF4', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                <div style={{ width: 16, height: 16, color: '#10B981' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2" ry="2"></rect><path d="M7 7h1"></path><path d="M7 11h1"></path><path d="M7 15h1"></path><path d="M11 7h1"></path><path d="M11 11h1"></path><path d="M11 15h1"></path><path d="M15 7h1"></path><path d="M15 11h1"></path><path d="M15 15h1"></path></svg>` }} />
+                                        <div style={{ padding: '20px', background: 'white', borderRadius: '16px', border: '1px solid #E2E8F0', boxShadow: '0 4px 15px rgba(0,0,0,0.02)' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                                                <div style={{ width: 32, height: 32, borderRadius: '10px', background: '#F0FDF4', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                    <div style={{ width: 16, height: 16, color: '#10B981' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2" ry="2"></rect><path d="M7 7h1"></path><path d="M7 11h1"></path><path d="M7 15h1"></path><path d="M11 7h1"></path><path d="M11 11h1"></path><path d="M11 15h1"></path><path d="M15 7h1"></path><path d="M15 11h1"></path><path d="M15 15h1"></path></svg>` }} />
+                                                </div>
+                                                <div style={{ fontSize: '11px', fontWeight: '800', color: '#64748B', textTransform: 'uppercase', letterSpacing: '1px' }}>Cartes</div>
                                             </div>
-                                            <div style={{ fontSize: '11px', fontWeight: '800', color: '#64748B', textTransform: 'uppercase', letterSpacing: '1px' }}>Cartes</div>
+                                            <div style={{ fontSize: '28px', fontWeight: '900', color: '#1A1265' }}>{cards.length}</div>
+                                            <div style={{ fontSize: '11px', fontWeight: '700', color: '#10B981', marginTop: '4px' }}>{cards.filter(c => c.status === 'active').length} active{cards.filter(c => c.status === 'active').length > 1 ? 's' : ''}</div>
                                         </div>
-                                        <div style={{ fontSize: '28px', fontWeight: '900', color: '#1A1265' }}>{cards.length}</div>
-                                        <div style={{ fontSize: '11px', fontWeight: '700', color: '#10B981', marginTop: '4px' }}>{cards.filter(c => c.status === 'active').length} active{cards.filter(c => c.status === 'active').length > 1 ? 's' : ''}</div>
-                                    </div>
-                                    <div style={{ padding: '20px', background: 'white', borderRadius: '16px', border: '1px solid #E2E8F0', boxShadow: '0 4px 15px rgba(0,0,0,0.02)' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                                            <div style={{ width: 32, height: 32, borderRadius: '10px', background: '#FFF7ED', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                <div style={{ width: 16, height: 16, color: '#F59E0B' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>` }} />
+                                        <div style={{ padding: '20px', background: 'white', borderRadius: '16px', border: '1px solid #E2E8F0', boxShadow: '0 4px 15px rgba(0,0,0,0.02)' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                                                <div style={{ width: 32, height: 32, borderRadius: '10px', background: '#FFF7ED', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                    <div style={{ width: 16, height: 16, color: '#F59E0B' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>` }} />
+                                                </div>
+                                                <div style={{ fontSize: '11px', fontWeight: '800', color: '#64748B', textTransform: 'uppercase', letterSpacing: '1px' }}>Scans</div>
                                             </div>
-                                            <div style={{ fontSize: '11px', fontWeight: '800', color: '#64748B', textTransform: 'uppercase', letterSpacing: '1px' }}>Scans</div>
+                                            <div style={{ fontSize: '28px', fontWeight: '900', color: '#1A1265' }}>{Object.values(scans).reduce((a, b) => a + b, 0)}</div>
+                                            <div style={{ fontSize: '11px', fontWeight: '700', color: '#64748B', marginTop: '4px' }}>{Object.keys(scans).length} carte{Object.keys(scans).length > 1 ? 's' : ''} scannée{Object.keys(scans).length > 1 ? 's' : ''}</div>
                                         </div>
-                                        <div style={{ fontSize: '28px', fontWeight: '900', color: '#1A1265' }}>{Object.values(scans).reduce((a, b) => a + b, 0)}</div>
-                                        <div style={{ fontSize: '11px', fontWeight: '700', color: '#64748B', marginTop: '4px' }}>{Object.keys(scans).length} carte{Object.keys(scans).length > 1 ? 's' : ''} scannée{Object.keys(scans).length > 1 ? 's' : ''}</div>
-                                    </div>
-                                    <div style={{ padding: '20px', background: 'linear-gradient(135deg, #1A1265 0%, #312E81 100%)', borderRadius: '16px', color: 'white', boxShadow: '0 10px 25px rgba(26,18,101,0.25)' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                                            <div style={{ width: 32, height: 32, borderRadius: '10px', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                <div style={{ width: 16, height: 16, color: '#A5B4FC' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>` }} />
+                                        <div style={{ padding: '20px', background: 'linear-gradient(135deg, #1A1265 0%, #312E81 100%)', borderRadius: '16px', color: 'white', boxShadow: '0 10px 25px rgba(26,18,101,0.25)' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                                                <div style={{ width: 32, height: 32, borderRadius: '10px', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                    <div style={{ width: 16, height: 16, color: '#A5B4FC' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>` }} />
+                                                </div>
+                                                <div style={{ fontSize: '11px', fontWeight: '800', color: '#A5B4FC', textTransform: 'uppercase', letterSpacing: '1px' }}>Revenu</div>
                                             </div>
-                                            <div style={{ fontSize: '11px', fontWeight: '800', color: '#A5B4FC', textTransform: 'uppercase', letterSpacing: '1px' }}>Revenu</div>
+                                            <div style={{ fontSize: '28px', fontWeight: '900', color: 'white' }}>{totalIncome.toLocaleString('fr-FR')}</div>
+                                            <div style={{ fontSize: '11px', fontWeight: '700', color: '#6EE7B7', marginTop: '4px' }}>f CFA</div>
                                         </div>
-                                        <div style={{ fontSize: '28px', fontWeight: '900', color: 'white' }}>{totalIncome.toLocaleString('fr-FR')}</div>
-                                        <div style={{ fontSize: '11px', fontWeight: '700', color: '#6EE7B7', marginTop: '4px' }}>f CFA</div>
                                     </div>
+                                    )}
                                 </div>
                             )}
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>

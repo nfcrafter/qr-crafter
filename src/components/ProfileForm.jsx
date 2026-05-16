@@ -102,6 +102,7 @@ export default function ProfileForm({
     };
 
     const removeProduct = (id) => {
+        if (!window.confirm('Voulez-vous vraiment supprimer ce produit ?')) return;
         const products = (profile.products || []).filter(p => p.id !== id);
         setProfile({ ...profile, products });
     };
