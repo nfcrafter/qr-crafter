@@ -921,6 +921,7 @@ export default function AdminDashboard() {
                                 <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)} style={{ padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', fontWeight: '600' }} className="desktop-only"><option value="all">Type</option><option value="url">URL</option><option value="wifi">WiFi</option><option value="vcard">VCard</option></select>
                             </div>
                         </div>
+                        </div>
                     )}
                 </div>
                 <div style={{ flex: 1, overflowY: 'auto', padding: '24px 20px 60px' }}>
