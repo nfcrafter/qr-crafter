@@ -793,56 +793,66 @@ function AdminPhonePreview({ profile, qrStyle, qrRef, previewMode, isDark, textC
                                     );
                                 }
                                 if (sectionId === 'links') {
+                                    const activeLinks = SOCIAL_NETWORKS.filter(s => {
+                                        if (s.id === 'phone' || s.id === 'email') return false;
+                                        const val = profile?.[s.id] || profile?.socials?.[s.id];
+                                        if (!val) return false;
+                                        if (typeof val === 'object') return !!val.value;
+                                        return typeof val === 'string' && val.trim().length > 0;
+                                    });
+                                    const activeCustomLinks = (profile.customLinks || []).filter(l => l.url);
+
                                     return (
                                         <div key="links" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                                            {Object.keys(profile.socials || {}).map(key => {
-                                                const net = SOCIAL_NETWORKS.find(n => n.id === key);
-                                                if (!net || !profile.socials[key]?.value) return null;
+                                            {activeLinks.map(link => {
+                                                const rawValue = profile[link.id] || profile?.socials?.[link.id];
+                                                const linkValue = (typeof rawValue === 'object' && rawValue !== null) ? rawValue.value : rawValue;
+                                                const subText = (typeof rawValue === 'object' && rawValue !== null) ? rawValue.subtitle : '';
                                                 return (
-                                                    <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: cardBg, borderRadius: 12, border: '1px solid rgba(0,0,0,0.05)', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-                                                        <div style={{ width: 28, height: 28, borderRadius: 8, background: net.color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                                            <div style={{ width: 14, height: 14, color: net.iconColor || net.color }} dangerouslySetInnerHTML={{ __html: net.svg }} />
-                                                        </div>
+                                                    <div key={link.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: cardBg, borderRadius: 12, border: '1px solid rgba(0,0,0,0.05)', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                                                        <div style={{ width: 28, height: 28, borderRadius: 8, background: link.id === 'snapchat' ? link.color : (isDark ? 'rgba(255,255,255,0.05)' : link.color + '15'), display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }} dangerouslySetInnerHTML={{ __html: `<div style="width:14px;height:14px;color:${link.id === 'snapchat' ? '#000' : (link.iconColor || link.color)}">${link.svg}</div>` }} />
                                                         <div style={{ flex: 1, overflow: 'hidden' }}>
-                                                            <div style={{ fontWeight: 700, fontSize: 11, color: textColor }}>{net.label}</div>
+                                                            <div style={{ fontWeight: 700, fontSize: 11, color: textColor }}>{link.label}</div>
+                                                            {subText && <div style={{ fontSize: 9, color: subTextColor, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: 1 }}>{subText}</div>}
                                                         </div>
                                                         <span style={{ color: '#CBD5E1', fontSize: 12 }}>→</span>
                                                     </div>
                                                 );
                                             })}
-                                            {(profile.customLinks || []).map((link, i) => {
-                                                if (!link.url) return null;
-                                                return (
-                                                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: cardBg, borderRadius: 12, border: '1px solid rgba(0,0,0,0.05)', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-                                                        <div style={{ width: 28, height: 28, borderRadius: 8, background: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, padding: 6 }}>
-                                                            <div style={{ width: '100%', height: '100%', color: profile.primaryColor || '#1A1265' }} dangerouslySetInnerHTML={{ __html: LINK_ICONS.find(i => i.id === link.iconId || i.emoji === link.emoji)?.svg || LINK_ICONS[0].svg }} />
-                                                        </div>
-                                                        <div style={{ flex: 1, overflow: 'hidden' }}>
-                                                            <div style={{ fontWeight: 700, fontSize: 11, color: textColor }}>{link.label || 'Lien'}</div>
-                                                        </div>
-                                                        <span style={{ color: '#CBD5E1', fontSize: 12 }}>→</span>
+                                            {activeCustomLinks.map((link, i) => (
+                                                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: cardBg, borderRadius: 12, border: '1px solid rgba(0,0,0,0.05)', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                                                    <div style={{ width: 28, height: 28, borderRadius: 8, background: isDark ? 'rgba(255,255,255,0.05)' : '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, padding: 6 }}>
+                                                        <div style={{ width: '100%', height: '100%', color: profile.primaryColor || '#1A1265' }} dangerouslySetInnerHTML={{ __html: LINK_ICONS.find(i => i.id === link.iconId || i.emoji === link.emoji)?.svg || LINK_ICONS[0].svg }} />
                                                     </div>
-                                                );
-                                            })}
+                                                    <div style={{ flex: 1, overflow: 'hidden' }}>
+                                                        <div style={{ fontWeight: 700, fontSize: 11, color: textColor }}>{link.label || link.title || 'Lien'}</div>
+                                                    </div>
+                                                    <span style={{ color: '#CBD5E1', fontSize: 12 }}>→</span>
+                                                </div>
+                                            ))}
                                         </div>
                                     );
                                 }
                                 if (sectionId === 'products' && profile.show_products && profile.products?.length > 0) {
                                     return (
-                                        <div key="products" style={{ background: cardBg, borderRadius: 16, padding: 12, border: '1px solid rgba(0,0,0,0.05)' }}>
-                                            <div style={{ fontWeight: 800, fontSize: 11, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
-                                                📦 Boutique
+                                        <div key="products" style={{ background: cardBg, borderRadius: 16, padding: 12, border: '1px solid rgba(0,0,0,0.05)', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
+                                            <div style={{ fontWeight: 800, fontSize: 11, color: textColor, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
+                                                <div style={{ width: 20, height: 20, borderRadius: 5, background: (profile.primaryColor || '#1A1265') + '15', color: profile.primaryColor || '#1A1265', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                                                </div>
+                                                Boutique
                                             </div>
                                             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                                                {profile.products.slice(0, 2).map(p => (
-                                                    <div key={p.id} style={{ display: 'flex', gap: 8, alignItems: 'center', background: 'rgba(0,0,0,0.02)', padding: 6, borderRadius: 10 }}>
-                                                        <div style={{ width: 32, height: 32, borderRadius: 6, background: '#DDD', overflow: 'hidden' }}>
+                                                {profile.products.slice(0, 3).map(p => (
+                                                    <div key={p.id} style={{ display: 'flex', gap: 8, alignItems: 'center', background: isDark ? 'rgba(255,255,255,0.03)' : '#F8FAFC', padding: 6, borderRadius: 10, border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid #F1F5F9' }}>
+                                                        <div style={{ width: 32, height: 32, borderRadius: 6, background: '#DDD', overflow: 'hidden', flexShrink: 0 }}>
                                                             {p.image_url && <img src={p.image_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
                                                         </div>
                                                         <div style={{ flex: 1, minWidth: 0 }}>
-                                                            <div style={{ fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</div>
-                                                            <div style={{ fontSize: 10, color: profile.primaryColor, fontWeight: 800 }}>{p.price}</div>
+                                                            <div style={{ fontSize: 10, fontWeight: 700, color: textColor, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</div>
+                                                            <div style={{ fontSize: 9, color: profile.primaryColor || '#1A1265', fontWeight: 800 }}>{p.price}</div>
                                                         </div>
+                                                        <div style={{ background: '#25D366', color: 'white', padding: '3px 6px', borderRadius: 5, fontSize: 7, fontWeight: 800 }}>CMD</div>
                                                     </div>
                                                 ))}
                                             </div>
@@ -851,9 +861,28 @@ function AdminPhonePreview({ profile, qrStyle, qrRef, previewMode, isDark, textC
                                 }
                                 if (sectionId === 'business_info' && (profile.show_location || profile.show_hours)) {
                                     return (
-                                        <div key="business" style={{ background: cardBg, borderRadius: 16, padding: 12, border: '1px solid rgba(0,0,0,0.05)', fontSize: 11 }}>
-                                            {profile.show_location && <div style={{ marginBottom: profile.show_hours ? 8 : 0 }}>📍 {profile.location_address || 'Adresse'}</div>}
-                                            {profile.show_hours && <div>🕒 Horaires configurés</div>}
+                                        <div key="business" style={{ background: cardBg, borderRadius: 16, padding: 12, border: '1px solid rgba(0,0,0,0.05)', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
+                                            {profile.show_location && profile.location_address && (
+                                                <div style={{ marginBottom: profile.show_hours ? 10 : 0 }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                                                        <div style={{ width: 16, height: 16, color: profile.primaryColor || '#1A1265' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>` }} />
+                                                        <span style={{ fontSize: 10, fontWeight: 800, color: textColor }}>Nous trouver</span>
+                                                    </div>
+                                                    <div style={{ fontSize: 9, color: subTextColor, background: isDark ? 'rgba(255,255,255,0.03)' : '#F8FAFC', padding: 6, borderRadius: 8 }}>{profile.location_address}</div>
+                                                </div>
+                                            )}
+                                            {profile.show_hours && (
+                                                <div>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                                                        <div style={{ width: 16, height: 16, color: profile.primaryColor || '#1A1265' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>` }} />
+                                                        <span style={{ fontSize: 10, fontWeight: 800, color: textColor }}>Horaires</span>
+                                                    </div>
+                                                    <div style={{ fontSize: 9, color: subTextColor, display: 'flex', justifyContent: 'space-between' }}>
+                                                        <span>Aujourd'hui</span>
+                                                        <span style={{ fontWeight: 700, color: '#10B981' }}>Ouvert</span>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     );
                                 }

@@ -459,7 +459,19 @@ export default function CreateCardWizard() {
                                                     <h3 style={{ marginTop: 8, fontWeight: 900, color: '#1A1265', fontSize: 15 }}>{profile.full_name || 'Votre Nom'}</h3>
                                                     <p style={{ fontSize: 11, color: '#64748B' }}>{profile.job_title || 'Profession'}</p>
                                                     <button style={{ width: '100%', marginTop: 12, padding: '10px', borderRadius: 12, background: profile.primaryColor, color: 'white', border: 'none', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>Enregistrer le contact</button>
-                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 16 }}>
+                                                    {profile.bio && (
+                                                        <div key="bio" style={{ 
+                                                            padding: 10, borderRadius: 12, fontSize: 11, lineHeight: 1.5,
+                                                            background: 'rgba(0,0,0,0.02)',
+                                                            border: '1px solid rgba(0,0,0,0.03)',
+                                                            color: '#111',
+                                                            marginTop: 12
+                                                        }}>
+                                                            {profile.bio.split('\n')[0]}...
+                                                        </div>
+                                                    )}
+
+                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 16 }}>
                                                         {(profile.phone || profile.email) && (
                                                             <div style={{ display: 'flex', gap: 6 }}>
                                                                 {profile.phone && (
@@ -476,7 +488,7 @@ export default function CreateCardWizard() {
                                                         )}
                                                         {Object.keys(profile.socials || {}).filter(k => k !== 'phone' && k !== 'email').map(key => {
                                                             const net = SOCIAL_NETWORKS.find(n => n.id === key);
-                                                            if (!net) return null;
+                                                            if (!net || !profile.socials[key]?.value) return null;
                                                             const valObj = profile.socials[key];
                                                             const subText = typeof valObj === 'object' ? valObj.subtitle : '';
                                                             return (
@@ -485,21 +497,59 @@ export default function CreateCardWizard() {
                                                                         dangerouslySetInnerHTML={{ __html: `<div style="width:14px;height:14px;color:${net.iconColor || net.color}">${net.svg}</div>` }} />
                                                                     <div style={{ flex: 1, overflow: 'hidden' }}>
                                                                         <div style={{ fontWeight: 700, fontSize: 11, color: '#0F172A' }}>{net.label}</div>
-                                                                        {subText && <div style={{ fontSize: 9, color: '#64748B', marginTop: 1 }}>{subText}</div>}
+                                                                        {subText && <div style={{ fontSize: 9, color: '#64748B', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{subText}</div>}
                                                                     </div>
                                                                     <span style={{ color: '#CBD5E1', fontSize: 12 }}>→</span>
                                                                 </div>
                                                             );
                                                         })}
-                                                        {(profile.customLinks || []).filter(l => l.label).map((link, i) => (
+                                                        {(profile.customLinks || []).filter(l => l.url).map((link, i) => (
                                                             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: 'white', borderRadius: 12, border: '1px solid #F1F5F9', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
                                                                 <div style={{ width: 28, height: 28, borderRadius: 8, background: '#F8FAFC', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 6 }}>
                                                                     <div style={{ width: '100%', height: '100%', color: profile.primaryColor || '#1A1265' }} dangerouslySetInnerHTML={{ __html: LINK_ICONS.find(i => i.id === link.iconId || i.emoji === link.emoji)?.svg || LINK_ICONS[0].svg }} />
                                                                 </div>
-                                                                <span style={{ fontWeight: 700, fontSize: 11, flex: 1, color: '#0F172A' }}>{link.label}</span>
+                                                                <span style={{ fontWeight: 700, fontSize: 11, flex: 1, color: '#0F172A' }}>{link.label || link.title || 'Lien'}</span>
                                                                 <span style={{ color: '#CBD5E1', fontSize: 12 }}>→</span>
                                                             </div>
                                                         ))}
+
+                                                        {profile.show_products && profile.products?.length > 0 && (
+                                                            <div style={{ background: 'white', borderRadius: 16, padding: 10, border: '1px solid #F1F5F9', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
+                                                                <div style={{ fontWeight: 800, fontSize: 11, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+                                                                    <div style={{ width: 20, height: 20, borderRadius: 5, background: (profile.primaryColor || '#1A1265') + '15', color: profile.primaryColor || '#1A1265', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                                                                    </div>
+                                                                    Boutique
+                                                                </div>
+                                                                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                                                                    {profile.products.slice(0, 2).map(p => (
+                                                                        <div key={p.id} style={{ display: 'flex', gap: 8, alignItems: 'center', background: '#F8FAFC', padding: 6, borderRadius: 10, border: '1px solid #F1F5F9' }}>
+                                                                            <div style={{ width: 32, height: 32, borderRadius: 6, background: '#DDD', overflow: 'hidden', flexShrink: 0 }}>
+                                                                                {p.image_url && <img src={p.image_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+                                                                            </div>
+                                                                            <div style={{ flex: 1, minWidth: 0 }}>
+                                                                                <div style={{ fontSize: 10, fontWeight: 700, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</div>
+                                                                                <div style={{ fontSize: 9, color: profile.primaryColor || '#1A1265', fontWeight: 800 }}>{p.price}</div>
+                                                                            </div>
+                                                                            <div style={{ background: '#25D366', color: 'white', padding: '3px 6px', borderRadius: 5, fontSize: 7, fontWeight: 800 }}>CMD</div>
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        )}
+
+                                                        {(profile.show_location || profile.show_hours) && (
+                                                            <div style={{ background: 'white', borderRadius: 16, padding: 10, border: '1px solid #F1F5F9', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
+                                                                {profile.show_location && profile.location_address && (
+                                                                    <div style={{ marginBottom: profile.show_hours ? 8 : 0 }}>
+                                                                        <div style={{ fontSize: 9, color: '#64748B', background: '#F8FAFC', padding: 6, borderRadius: 8 }}>📍 {profile.location_address}</div>
+                                                                    </div>
+                                                                )}
+                                                                {profile.show_hours && (
+                                                                    <div style={{ fontSize: 9, color: '#10B981', fontWeight: 700 }}>🕒 Horaires configurés</div>
+                                                                )}
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </>
