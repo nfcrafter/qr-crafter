@@ -258,48 +258,40 @@ export default function PublicProfile() {
           <div style={{ padding: '4px 20px 16px' }}>
             <h1 style={{ fontSize: 22, fontWeight: 800, color: textColor, marginBottom: 2 }}>{profile?.full_name || 'Nom complet'}</h1>
             {(profile?.title || profile?.job_title) && <p style={{ fontSize: 13, color: themeColor, fontWeight: 700, marginBottom: 12 }}>{profile.title || profile.job_title}</p>}
-            
-            {profile?.bio && (
-              <div style={{ 
-                background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
-                borderRadius: 16,
-                padding: '14px',
-                border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.03)',
-                fontSize: 14,
-                color: textColor,
-                lineHeight: 1.6,
-                position: 'relative',
-                overflow: 'hidden',
-                maxHeight: isBioExpanded ? 'none' : '100px'
-              }}>
-                {profile.bio.split('\n').map((line, i) => {
-                  const isList = line.trim().startsWith('-');
-                  return (
-                    <div key={i} style={{ 
-                      marginBottom: 8, 
-                      fontWeight: (i === 0 && !isList) ? 600 : 400,
-                      display: isList ? 'flex' : 'block',
-                      gap: isList ? '8px' : '0',
-                      color: (i === 0 && !isList) ? (isDark ? '#F8FAFC' : '#1A1265') : 'inherit'
-                    }}>
-                      {isList && <span style={{ color: themeColor, fontWeight: 900 }}>•</span>}
-                      <span>
-                        {isList ? line.trim().substring(1).trim().split(/(https?:\/\/[^\s]+)/g).map((part, index) => {
-                          if (part.match(/https?:\/\/[^\s]+/)) return <a key={index} href={part} target="_blank" rel="noreferrer" style={{ color: themeColor, textDecoration: 'underline' }}>{part}</a>;
-                          return part;
-                        }) : line.split(/(https?:\/\/[^\s]+)/g).map((part, index) => {
-                          if (part.match(/https?:\/\/[^\s]+/)) return <a key={index} href={part} target="_blank" rel="noreferrer" style={{ color: themeColor, textDecoration: 'underline' }}>{part}</a>;
-                          return part;
-
-            {profile.bio && (
+             {profile?.bio && (
               <div style={{ position: 'relative', marginBottom: 20 }}>
                 <div style={{ 
-                  fontSize: 14, color: textColor, lineHeight: 1.6, opacity: 0.85,
-                  maxHeight: isBioExpanded ? 'none' : '100px',
+                  background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
+                  borderRadius: 16,
+                  padding: '14px',
+                  border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.03)',
+                  fontSize: 14,
+                  color: textColor,
+                  lineHeight: 1.6,
+                  maxHeight: isBioExpanded ? 'none' : '120px',
                   overflow: 'hidden',
                   transition: 'max-height 0.3s ease'
                 }}>
-                  {profile.bio}
+                  {profile.bio.split('\n').map((line, i) => {
+                    const isList = line.trim().startsWith('-');
+                    return (
+                      <div key={i} style={{ 
+                        marginBottom: 8, 
+                        fontWeight: (i === 0 && !isList) ? 600 : 400,
+                        display: isList ? 'flex' : 'block',
+                        gap: isList ? '8px' : '0',
+                        color: (i === 0 && !isList) ? (isDark ? '#F8FAFC' : '#1A1265') : 'inherit'
+                      }}>
+                        {isList && <span style={{ color: themeColor, fontWeight: 900 }}>•</span>}
+                        <span>
+                          {line.split(/(https?:\/\/[^\s]+)/g).map((part, index) => {
+                            if (part.match(/https?:\/\/[^\s]+/)) return <a key={index} href={part} target="_blank" rel="noreferrer" style={{ color: themeColor, textDecoration: 'underline' }}>{part}</a>;
+                            return part;
+                          })}
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
                 {!isBioExpanded && profile.bio.length > 150 && (
                   <div style={{
@@ -307,24 +299,28 @@ export default function PublicProfile() {
                     bottom: 0,
                     left: 0,
                     right: 0,
-                    height: '40px',
+                    height: '60px',
                     background: `linear-gradient(transparent, ${cardBg})`,
                     display: 'flex',
                     alignItems: 'flex-end',
                     justifyContent: 'center',
-                    paddingBottom: '4px'
+                    paddingBottom: '8px',
+                    borderRadius: '0 0 16px 16px'
                   }}>
                     <button 
                       onClick={() => setIsBioExpanded(true)}
                       style={{ 
-                        background: 'none', 
-                        border: 'none', 
+                        background: 'white', 
+                        border: '1px solid #E2E8F0', 
                         color: themeColor, 
                         fontSize: 11, 
                         fontWeight: 800, 
                         cursor: 'pointer',
                         textTransform: 'uppercase',
-                        letterSpacing: '0.5px'
+                        letterSpacing: '0.5px',
+                        padding: '6px 16px',
+                        borderRadius: '20px',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.08)'
                       }}
                     >
                       Lire la suite ↓
