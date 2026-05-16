@@ -134,7 +134,7 @@ export default function Activate() {
                     status: 'active',
                     activation_token: null,
                     admin_profile: updatedProfile,
-                    card_name: customCardName || profile?.full_name || cardInfo?.card_name || 'Mon Profil',
+                    card_name: finalSlug || profile?.full_name || cardInfo?.card_name || 'Mon Profil',
                     url_slug: finalSlug
                 })
                 .ilike('card_id', normalizedId)
@@ -159,7 +159,7 @@ export default function Activate() {
             await supabase.from('user_cards').upsert({ 
                 user_id: user.id, 
                 card_id: normalizedId,
-                profile_name: customCardName || profile?.full_name || 'Mon Profil'
+                profile_name: finalSlug || profile?.full_name || 'Mon Profil'
             });
 
             setLoading(false);
@@ -282,7 +282,7 @@ export default function Activate() {
                                     </label>
                                     
                                     <div style={{ marginBottom: 20 }}>
-                                        <label style={{ display: 'block', marginBottom: 8, fontSize: 13, fontWeight: 700, color: '#333' }}>Lien personnalisé</label>
+                                        <label style={{ display: 'block', marginBottom: 8, fontSize: 13, fontWeight: 700, color: '#333' }}>Lien personnalisé (et nom de la carte)</label>
                                         <div style={{ display: 'flex', alignItems: 'center', background: 'white', borderRadius: '12px', border: `2px solid ${customUrlSlug ? themeColor : '#E2E8F0'}`, overflow: 'hidden', transition: 'all 0.2s' }}>
                                             <div style={{ padding: '16px 8px 16px 16px', background: '#F8FAFC', color: '#64748B', fontWeight: 600, borderRight: '1px solid #E2E8F0', fontSize: 15 }}>
                                                 nfcrafter.com/
@@ -296,45 +296,29 @@ export default function Activate() {
                                                     flex: 1, padding: '16px 12px', border: 'none', fontSize: '15px', 
                                                     outline: 'none', background: 'transparent', fontWeight: '700', color: themeColor
                                                 }}
+                                                autoFocus
                                             />
                                         </div>
-                                        <p style={{ marginTop: 6, fontSize: 11, color: '#64748B' }}>Ce lien sera unique et public. Il ne pourra plus être modifié plus tard.</p>
-                                    </div>
-
-                                    <div style={{ marginBottom: 8 }}>
-                                        <label style={{ display: 'block', marginBottom: 8, fontSize: 13, fontWeight: 700, color: '#333' }}>Nom interne de la carte</label>
-                                        <input 
-                                            type="text" 
-                                            value={customCardName} 
-                                            onChange={e => setCustomCardName(e.target.value)}
-                                            placeholder="Ex: Profil Business, Carte Perso..."
-                                            style={{ 
-                                                width: '100%', padding: '16px', borderRadius: '12px', 
-                                                border: `2px solid ${customCardName ? themeColor : '#E2E8F0'}`, 
-                                                fontSize: '15px', outline: 'none', background: 'white',
-                                                fontWeight: '600', transition: 'all 0.2s'
-                                            }}
-                                        />
-                                        <p style={{ marginTop: 6, fontSize: 11, color: '#64748B' }}>Ce nom vous aidera à distinguer vos différentes cartes en privé.</p>
+                                        <p style={{ marginTop: 6, fontSize: 11, color: '#64748B' }}>Ce lien sera unique. Il servira aussi de nom en interne pour cette carte.</p>
                                     </div>
                                 </div>
 
                                  <button 
                                     className="btn-primary" 
                                     onClick={activateCard} 
-                                    disabled={loading || !customCardName.trim()} 
+                                    disabled={loading || !customUrlSlug.trim()} 
                                     style={{ 
                                         width: '100%', 
                                         padding: '18px', 
                                         fontSize: '17px', 
                                         fontWeight: '800',
-                                        background: customCardName.trim() ? themeColor : '#CBD5E1', 
-                                        boxShadow: customCardName.trim() ? `0 10px 25px ${themeColor}40` : 'none', 
+                                        background: customUrlSlug.trim() ? themeColor : '#CBD5E1', 
+                                        boxShadow: customUrlSlug.trim() ? `0 10px 25px ${themeColor}40` : 'none', 
                                         display: 'flex', 
                                         alignItems: 'center', 
                                         justifyContent: 'center', 
                                         gap: 12,
-                                        cursor: customCardName.trim() ? 'pointer' : 'not-allowed',
+                                        cursor: customUrlSlug.trim() ? 'pointer' : 'not-allowed',
                                         transition: 'all 0.3s'
                                     }}
                                 >
