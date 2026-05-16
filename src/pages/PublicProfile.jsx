@@ -290,12 +290,17 @@ export default function PublicProfile() {
                         }) : line.split(/(https?:\/\/[^\s]+)/g).map((part, index) => {
                           if (part.match(/https?:\/\/[^\s]+/)) return <a key={index} href={part} target="_blank" rel="noreferrer" style={{ color: themeColor, textDecoration: 'underline' }}>{part}</a>;
                           return part;
-                        })}
-                      </span>
-                    </div>
-                  );
-                })}
-                
+
+            {profile.bio && (
+              <div style={{ position: 'relative', marginBottom: 20 }}>
+                <div style={{ 
+                  fontSize: 14, color: textColor, lineHeight: 1.6, opacity: 0.85,
+                  maxHeight: isBioExpanded ? 'none' : '100px',
+                  overflow: 'hidden',
+                  transition: 'max-height 0.3s ease'
+                }}>
+                  {profile.bio}
+                </div>
                 {!isBioExpanded && profile.bio.length > 150 && (
                   <div style={{
                     position: 'absolute',
@@ -303,7 +308,7 @@ export default function PublicProfile() {
                     left: 0,
                     right: 0,
                     height: '40px',
-                    background: `linear-gradient(transparent, ${isDark ? '#1E293B' : '#F8FAFC'})`,
+                    background: `linear-gradient(transparent, ${cardBg})`,
                     display: 'flex',
                     alignItems: 'flex-end',
                     justifyContent: 'center',
@@ -326,27 +331,6 @@ export default function PublicProfile() {
                     </button>
                   </div>
                 )}
-                {isBioExpanded && profile.bio.length > 150 && (
-                  <button 
-                    onClick={() => setIsBioExpanded(false)}
-                    style={{ 
-                      background: 'none', 
-                      border: 'none', 
-                      color: themeColor, 
-                      fontSize: 11, 
-                      fontWeight: 800, 
-                      cursor: 'pointer',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.5px',
-                      marginTop: '8px',
-                      display: 'block',
-                      width: '100%',
-                      textAlign: 'center'
-                    }}
-                  >
-                    Voir moins ↑
-                  </button>
-                )}
               </div>
             )}
           </div>
@@ -365,9 +349,9 @@ export default function PublicProfile() {
           </div>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, animation: 'fadeUp .5s ease' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, animation: 'fadeUp .5s ease', padding: '0 20px' }}>
           {(() => {
-            const defaultSections = ['bio', 'contact_buttons', 'links', 'products', 'business_info', 'gallery', 'video', 'skills', 'testimonials', 'faq', 'events', 'contact_form'];
+            const defaultSections = ['contact_buttons', 'links', 'products', 'business_info', 'gallery', 'skills', 'testimonials', 'faq', 'events'];
             const currentOrder = profile?.section_order || [];
             const missing = defaultSections.filter(s => !currentOrder.includes(s));
             const sections = [...currentOrder, ...missing].filter(s => defaultSections.includes(s));
@@ -398,68 +382,62 @@ export default function PublicProfile() {
                       <a key={link.id} className="pl" href={link.getUrl(linkValue)} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 18px', background: cardBg, borderRadius: 16, textDecoration: 'none', color: textColor, boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)' }}>
                         <div style={{ width: 44, height: 44, borderRadius: 12, flexShrink: 0, background: link.id === 'snapchat' ? link.color : (isDark ? 'rgba(255,255,255,0.05)' : link.color + '18'), display: 'flex', alignItems: 'center', justifyContent: 'center' }} dangerouslySetInnerHTML={{ __html: `<div style="width:22px;height:22px;color:${link.id === 'snapchat' ? '#000000' : (link.iconColor || link.color)}">${link.svg}</div>` }} />
                         <div style={{ flex: 1, overflow: 'hidden' }}>
-                          <div style={{ fontWeight: 700, fontSize: 15, color: textColor }}>{link.label}</div>
-                          {subText && <div style={{ fontSize: 12, color: subTextColor, marginTop: 2 }}>{subText}</div>}
+                          <div style={{ fontWeight: 800, fontSize: 15, color: textColor }}>{link.label}</div>
+                          {subText && <div style={{ fontSize: 12, color: subTextColor, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: 2 }}>{subText}</div>}
                         </div>
-                        <span style={{ color: isDark ? '#475569' : '#CBD5E1', fontSize: 18 }}>→</span>
+                        <span style={{ color: '#CBD5E1', fontSize: 18 }}>→</span>
                       </a>
                     );
                   })}
-                  {activeCustomLinks.map(link => (
-                    <a key={link.id} className="pl" href={link.url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 18px', background: cardBg, borderRadius: 16, textDecoration: 'none', color: textColor, boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)' }}>
-                      <div style={{ width: 44, height: 44, borderRadius: 12, flexShrink: 0, background: isDark ? 'rgba(255,255,255,0.05)' : '#F8FAFC', border: isDark ? 'none' : '1px solid #F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 10 }}>
-                        <div style={{ width: '100%', height: '100%', color: themeColor, display: 'flex' }} dangerouslySetInnerHTML={{ __html: LINK_ICONS.find(i => i.id === link.iconId || i.emoji === link.emoji)?.svg || LINK_ICONS[0].svg }} />
+                  {activeCustomLinks.map((link, i) => (
+                    <a key={i} className="pl" href={link.url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 18px', background: cardBg, borderRadius: 16, textDecoration: 'none', color: textColor, boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)' }}>
+                      <div style={{ width: 44, height: 44, borderRadius: 12, flexShrink: 0, background: isDark ? 'rgba(255,255,255,0.05)' : '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 10 }}>
+                        <div style={{ width: '100%', height: '100%', color: themeColor }} dangerouslySetInnerHTML={{ __html: LINK_ICONS.find(li => li.id === link.iconId || li.emoji === link.emoji)?.svg || LINK_ICONS[0].svg }} />
                       </div>
-                      <span style={{ fontWeight: 700, fontSize: 15, flex: 1 }}>{link.label || link.title}</span>
-                      <span style={{ color: isDark ? '#475569' : '#CBD5E1', fontSize: 18 }}>→</span>
+                      <div style={{ flex: 1, overflow: 'hidden' }}>
+                        <div style={{ fontWeight: 800, fontSize: 15, color: textColor }}>{link.label || 'Lien'}</div>
+                      </div>
+                      <span style={{ color: '#CBD5E1', fontSize: 18 }}>→</span>
                     </a>
                   ))}
                 </div>
               ),
               products: () => profile?.show_products && profile?.products?.length > 0 && (
                 <div key="products" style={{ background: cardBg, borderRadius: 24, padding: 20, boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.2)' : '0 4px 20px rgba(0,0,0,0.03)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
                         <div style={{ width: 32, height: 32, borderRadius: 8, background: themeColor + '15', color: themeColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
                         </div>
-                        <h3 style={{ fontSize: 16, fontWeight: 800, color: textColor, margin: 0 }}>Notre Boutique</h3>
+                        <h3 style={{ fontSize: 16, fontWeight: 800, color: textColor, margin: 0 }}>Boutique</h3>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                         {profile.products.map(p => (
-                            <div key={p.id} className="pl" style={{ background: isDark ? 'rgba(255,255,255,0.03)' : '#F8FAFC', borderRadius: 16, padding: 12, display: 'flex', gap: 12, alignItems: 'center', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid #F1F5F9' }}>
-                                <div style={{ width: 60, height: 60, borderRadius: 12, overflow: 'hidden', background: '#DDD', flexShrink: 0 }}>
-                                    {p.image_url ? <img src={p.image_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#AAA' }}>📦</div>}
+                            <div key={p.id} style={{ display: 'flex', gap: 12, alignItems: 'center', background: isDark ? 'rgba(255,255,255,0.03)' : '#F8FAFC', padding: 10, borderRadius: 18, border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid #F1F5F9' }}>
+                                <div style={{ width: 60, height: 60, borderRadius: 14, background: '#DDD', overflow: 'hidden', flexShrink: 0 }}>
+                                    {p.image_url && <img src={p.image_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />}
                                 </div>
-                                <div style={{ flex: 1, minWidth: 0 }}>
-                                    <div style={{ fontWeight: 700, fontSize: 14, color: textColor, marginBottom: 2 }}>{p.name}</div>
-                                    <div style={{ fontSize: 13, fontWeight: 900, color: themeColor }}>{p.price}</div>
+                                <div style={{ flex: 1 }}>
+                                    <div style={{ fontWeight: 800, fontSize: 14, color: textColor }}>{p.name}</div>
+                                    <div style={{ fontSize: 13, color: themeColor, fontWeight: 900, marginTop: 2 }}>{p.price}</div>
                                 </div>
                                 {p.action_type === 'link' ? (
-                                    <a href={p.link_url} target="_blank" rel="noreferrer" style={{ background: themeColor, color: 'white', textDecoration: 'none', padding: '8px 12px', borderRadius: 10, fontWeight: 700, fontSize: 12 }}>{p.button_text || 'Voir'}</a>
+                                    <a href={p.link_url} target="_blank" rel="noreferrer" style={{ background: themeColor, color: 'white', border: 'none', padding: '8px 16px', borderRadius: 10, fontWeight: 700, fontSize: 12, textDecoration: 'none', cursor: 'pointer' }}>{p.button_text || 'Voir'}</a>
                                 ) : (
                                     <button 
                                         onClick={() => {
                                             let waNumber = '';
-                                            const pWaType = p.wa_type || 'personal'; // default to personal if not set
-
-                                            if (pWaType === 'personal') {
-                                                waNumber = (profile.socials?.whatsapp?.value || profile.phone || '').toString().replace(/\D/g, '');
-                                            } else if (pWaType === 'business') {
-                                                waNumber = (profile.socials?.whatsapp_business?.value || profile.socials?.whatsapp?.value || profile.phone || '').toString().replace(/\D/g, '');
-                                            } else if (pWaType === 'custom' && p.wa_number) {
+                                            if (p.wa_number) {
                                                 waNumber = p.wa_number.replace(/\D/g, '');
                                             } else {
-                                                // Fallback to legacy global logic if product logic fails
                                                 if (profile.wa_order_type === 'whatsapp_social' && profile.socials?.whatsapp?.value) waNumber = profile.socials.whatsapp.value.replace(/\D/g, '');
                                                 else if (profile.wa_order_type === 'business' && profile.socials?.whatsapp_business?.value) waNumber = profile.socials.whatsapp_business.value.replace(/\D/g, '');
                                                 else if (profile.wa_order_type === 'custom' && profile.business_whatsapp_number) waNumber = profile.business_whatsapp_number.replace(/\D/g, '');
                                                 else waNumber = (profile.phone || '').toString().replace(/\D/g, '');
                                             }
-
                                             const msg = `Bonjour, je souhaite commander "${p.name}" (${p.price}) vu sur votre profil NFCrafter.`;
                                             window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`, '_blank');
                                         }}
-                                        style={{ background: '#25D366', color: 'white', border: 'none', padding: '8px 12px', borderRadius: 10, fontWeight: 700, fontSize: 12, cursor: 'pointer' }}
+                                        style={{ background: '#25D366', color: 'white', border: 'none', padding: '8px 16px', borderRadius: 10, fontWeight: 700, fontSize: 12, cursor: 'pointer' }}
                                     >{p.button_text || 'Commander'}</button>
                                 )}
                             </div>
@@ -506,7 +484,7 @@ export default function PublicProfile() {
                     )}
                 </div>
               ),
-              gallery: () => profile?.show_gallery && profile?.gallery?.length > 0 && (
+              gallery: () => profile?.show_gallery && galleryItems.length > 0 && (
                 <div key="gallery" style={{ background: cardBg, borderRadius: 24, padding: 20, boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.2)' : '0 4px 20px rgba(0,0,0,0.03)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
                         <div style={{ width: 32, height: 32, borderRadius: 8, background: themeColor + '15', color: themeColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -515,39 +493,20 @@ export default function PublicProfile() {
                         <h3 style={{ fontSize: 16, fontWeight: 800, color: textColor, margin: 0 }}>Galerie</h3>
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
-                        {profile.gallery.map(item => (
-                            <div key={item.id} style={{ aspectRatio: '1', borderRadius: 12, overflow: 'hidden', background: '#111' }}>
-                                {item.type === 'video' ? (
-                                    <a href={item.url} target="_blank" rel="noreferrer" style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: 28, textDecoration: 'none' }}>▶</a>
-                                ) : (
-                                    <img src={item.url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
-                                )}
+                        {galleryItems.map((item, index) => (
+                            <div 
+                              key={item.id} 
+                              onClick={() => setSelectedImageIndex(index)}
+                              style={{ aspectRatio: '1', borderRadius: 12, overflow: 'hidden', background: '#111', cursor: 'pointer', transition: 'transform .2s' }}
+                              onMouseOver={e => e.currentTarget.style.transform = 'scale(1.02)'}
+                              onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
+                            >
+                                <img src={item.url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
                             </div>
                         ))}
                     </div>
                 </div>
               ),
-              video: () => profile?.show_video && profile?.presentation_video && (() => {
-                const url = profile.presentation_video;
-                let embedUrl = '';
-                if (url.includes('youtube.com/watch')) embedUrl = `https://www.youtube.com/embed/${new URL(url).searchParams.get('v')}`;
-                else if (url.includes('youtu.be/')) embedUrl = `https://www.youtube.com/embed/${url.split('youtu.be/')[1]?.split('?')[0]}`;
-                else if (url.includes('tiktok.com')) embedUrl = url;
-                if (!embedUrl) return null;
-                return (
-                  <div key="video" style={{ background: cardBg, borderRadius: 24, padding: 20, boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.2)' : '0 4px 20px rgba(0,0,0,0.03)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-                          <div style={{ width: 32, height: 32, borderRadius: 8, background: themeColor + '15', color: themeColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
-                          </div>
-                          <h3 style={{ fontSize: 16, fontWeight: 800, color: textColor, margin: 0 }}>Présentation</h3>
-                      </div>
-                      <div style={{ borderRadius: 16, overflow: 'hidden', aspectRatio: '16/9' }}>
-                          <iframe src={embedUrl} style={{ width: '100%', height: '100%', border: 'none' }} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen title="Présentation" />
-                      </div>
-                  </div>
-                );
-              })(),
               skills: () => profile?.show_skills && profile?.skills?.length > 0 && (
                 <div key="skills" style={{ background: cardBg, borderRadius: 24, padding: 20, boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.2)' : '0 4px 20px rgba(0,0,0,0.03)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
@@ -582,20 +541,18 @@ export default function PublicProfile() {
                             ))}
                         </div>
                     )}
-                    <div style={{ padding: '16px', background: isDark ? 'rgba(255,255,255,0.02)' : '#F8FAFC', borderRadius: 16, border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid #E2E8F0' }}>
-                        <h4 style={{ fontSize: 14, fontWeight: 800, color: textColor, marginTop: 0, marginBottom: 12 }}>Laisser un avis</h4>
+                    <div style={{ background: isDark ? 'rgba(255,255,255,0.05)' : '#F8FAFC', borderRadius: 20, padding: 20, border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #E2E8F0' }}>
+                        <h4 style={{ margin: '0 0 15px', fontSize: 15, fontWeight: 800, color: textColor }}>Laissez un avis</h4>
                         <form onSubmit={e => {
                             e.preventDefault();
                             const fd = new FormData(e.target);
                             const name = fd.get('name');
-                            const stars = fd.get('stars');
-                            const msg = fd.get('message');
-                            const waNum = (profile?.socials?.whatsapp?.value || profile?.phone || '').toString().replace(/\D/g, '');
-                            if (waNum) {
-                                window.open(`https://wa.me/${waNum}?text=${encodeURIComponent(`Nouvel Avis (${stars} étoiles) de ${name} :\n\n"${msg}"`)}`, '_blank');
-                            } else if (profile?.email) {
-                                window.location.href = `mailto:${profile.email}?subject=Nouvel avis de ${name}&body=${encodeURIComponent(`Nouvel Avis (${stars} étoiles) de ${name} :\n\n"${msg}"`)}`;
-                            }
+                            const rating = parseInt(fd.get('stars'));
+                            const text = fd.get('message');
+                            const newTestimonials = [...(profile.testimonials || []), { id: Date.now(), name, rating, text, date: new Date().toISOString() }];
+                            updateProfileInSupabase({ testimonials: newTestimonials });
+                            e.target.reset();
+                            alert("Merci pour votre avis !");
                         }} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                             <input name="name" required placeholder="Votre nom" style={{ padding: '10px 14px', borderRadius: 10, border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #CBD5E1', background: isDark ? 'rgba(255,255,255,0.05)' : 'white', color: textColor, fontSize: 13 }} />
                             <select name="stars" required style={{ padding: '10px 14px', borderRadius: 10, border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #CBD5E1', background: isDark ? 'rgba(255,255,255,0.05)' : 'white', color: textColor, fontSize: 13 }}>
@@ -650,32 +607,6 @@ export default function PublicProfile() {
                             </div>
                         ))}
                     </div>
-                </div>
-              ),
-              contact_form: () => profile?.show_contact_form && (
-                <div key="contact_form" style={{ background: cardBg, borderRadius: 24, padding: 20, boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.2)' : '0 4px 20px rgba(0,0,0,0.03)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-                        <div style={{ width: 32, height: 32, borderRadius: 8, background: themeColor + '15', color: themeColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                        </div>
-                        <h3 style={{ fontSize: 16, fontWeight: 800, color: textColor, margin: 0 }}>Contactez-moi</h3>
-                    </div>
-                    <form onSubmit={e => {
-                        e.preventDefault();
-                        const fd = new FormData(e.target);
-                        const name = fd.get('name');
-                        const msg = fd.get('message');
-                        const waNum = (profile?.socials?.whatsapp?.value || profile?.phone || '').toString().replace(/\D/g, '');
-                        if (waNum) {
-                            window.open(`https://wa.me/${waNum}?text=${encodeURIComponent(`Bonjour, je suis ${name}. ${msg}`)}`, '_blank');
-                        } else if (profile?.email) {
-                            window.location.href = `mailto:${profile.email}?subject=Contact via NFCrafter&body=${encodeURIComponent(`Bonjour, je suis ${name}. ${msg}`)}`;
-                        }
-                    }} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                        <input name="name" required placeholder="Votre nom" style={{ padding: '12px 16px', borderRadius: 12, border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #E2E8F0', background: isDark ? 'rgba(255,255,255,0.05)' : '#F8FAFC', color: textColor, fontSize: 14 }} />
-                        <textarea name="message" required placeholder="Votre message..." rows={3} style={{ padding: '12px 16px', borderRadius: 12, border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #E2E8F0', background: isDark ? 'rgba(255,255,255,0.05)' : '#F8FAFC', color: textColor, fontSize: 14, resize: 'vertical', fontFamily: 'inherit' }} />
-                        <button type="submit" className="sb" style={{ padding: '14px', background: themeColor, color: 'white', border: 'none', borderRadius: 14, fontWeight: 700, fontSize: 14, cursor: 'pointer', boxShadow: `0 6px 20px ${themeColor}44`, transition: 'all .18s' }}>Envoyer le message</button>
-                    </form>
                 </div>
               )
             };

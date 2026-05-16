@@ -633,7 +633,7 @@ export default function CardSettings() {
                                         <input type="checkbox" checked={profile.show_gallery} onChange={e => setProfile({ ...profile, show_gallery: e.target.checked })} />
                                     </label>
                                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: 10, marginBottom: 12 }}>
-                                        {(profile.gallery || []).map(g => (
+                                        {(profile.gallery || []).filter(item => item.type !== 'video').map(g => (
                                             <div key={g.id} style={{ aspectRatio: '1', borderRadius: 8, overflow: 'hidden', position: 'relative', border: '1px solid #E2E8F0' }}>
                                                 <img src={g.url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                                 <button onClick={() => removeGalleryItem(g.id)} style={{ position: 'absolute', top: 2, right: 2, background: 'rgba(239, 68, 68, 0.9)', color: 'white', border: 'none', borderRadius: '50%', width: 18, height: 18, fontSize: 10, cursor: 'pointer' }}>×</button>
@@ -645,18 +645,7 @@ export default function CardSettings() {
                                 </div>
                             ))}
 
-                            {acc('video', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>`, 'Vidéo de Présentation', 'Lien YouTube ou TikTok.', (
-                                <div style={{ marginTop: 16 }}>
-                                    <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-                                        <span>Afficher la vidéo</span>
-                                        <input type="checkbox" checked={profile.show_video} onChange={e => setProfile({ ...profile, show_video: e.target.checked })} />
-                                    </label>
-                                    <div className="field">
-                                        <label>Lien Vidéo</label>
-                                        <input type="url" value={profile.presentation_video || ''} onChange={e => setProfile({ ...profile, presentation_video: e.target.value })} placeholder="https://youtube.com/..." />
-                                    </div>
-                                </div>
-                            ))}
+
 
                             {acc('skills', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>`, 'Compétences / Tags', 'Vos points forts.', (
                                 <div style={{ marginTop: 16 }}>
@@ -735,21 +724,13 @@ export default function CardSettings() {
                                 </div>
                             ))}
 
-                            {acc('contact_form', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>`, 'Formulaire de Contact', 'Recevez des messages.', (
-                                <div style={{ marginTop: 16 }}>
-                                    <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                        <span>Activer le formulaire</span>
-                                        <input type="checkbox" checked={profile.show_contact_form} onChange={e => setProfile({ ...profile, show_contact_form: e.target.checked })} />
-                                    </label>
-                                    <p style={{ fontSize: 12, color: '#64748B', marginTop: 10 }}>Les messages vous seront envoyés directement sur WhatsApp ou par Email.</p>
-                                </div>
-                            ))}
+
 
                             {acc('layout', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10H3M21 6H3M21 14H3M21 18H3"></path></svg>`, 'Mise en page', 'Ordre des sections du profil.', (
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                                     <p style={{ fontSize: 13, color: '#64748B', marginBottom: 10 }}>Organisez l'ordre d'apparition des sections sur le profil public.</p>
                                     {(() => {
-                                        const defaultSections = ['contact_buttons', 'links', 'products', 'business_info', 'gallery', 'video', 'skills', 'testimonials', 'faq', 'events', 'contact_form'];
+                                        const defaultSections = ['contact_buttons', 'links', 'products', 'business_info', 'gallery', 'skills', 'testimonials', 'faq', 'events'];
                                         const currentOrder = profile.section_order || [];
                                         const missing = defaultSections.filter(s => !currentOrder.includes(s));
                                         const sections = [...currentOrder, ...missing].filter(s => s !== 'bio' && defaultSections.includes(s));
@@ -759,13 +740,11 @@ export default function CardSettings() {
                                             links: 'Réseaux Sociaux & Liens',
                                             products: 'Boutique & Catalogue',
                                             business_info: 'Infos Business (Horaires/Map)',
-                                            gallery: 'Galerie Photos/Vidéos',
-                                            video: 'Vidéo de Présentation',
+                                            gallery: 'Galerie Photos',
                                             skills: 'Compétences / Tags',
                                             testimonials: 'Témoignages / Avis',
                                             faq: 'FAQ',
-                                            events: 'Événements à Venir',
-                                            contact_form: 'Formulaire de Contact'
+                                            events: 'Événements à Venir'
                                         };
                                         const move = (idx, dir) => {
                                             const newOrder = [...sections];
@@ -1000,7 +979,7 @@ function AdminPhonePreview({ profile, qrStyle, qrRef, previewMode, isDark, textC
                         )}
                         
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 16 }}>
-                            {(profile.section_order || ['contact_buttons', 'links', 'products', 'business_info']).filter(s => s !== 'bio').map(sectionId => {
+                            {(profile.section_order || ['contact_buttons', 'links', 'products', 'business_info', 'gallery', 'skills', 'testimonials', 'faq', 'events']).filter(s => s !== 'bio').map(sectionId => {
                                 if (sectionId === 'contact_buttons' && (profile.phone || profile.email)) {
                                     return (
                                         <div key="contact_buttons" style={{ display: 'flex', gap: 6 }}>
@@ -1100,14 +1079,7 @@ function AdminPhonePreview({ profile, qrStyle, qrRef, previewMode, isDark, textC
                                         </div>
                                     );
                                 }
-                                if (sectionId === 'video' && profile.show_video && profile.presentation_video) {
-                                    return (
-                                        <div key="video" style={{ background: cardBg, borderRadius: 16, padding: 12, border: '1px solid rgba(0,0,0,0.05)' }}>
-                                            <div style={{ fontWeight: 800, fontSize: 11, color: textColor, marginBottom: 8 }}>Vidéo</div>
-                                            <div style={{ aspectRatio: '16/9', background: '#000', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: 20 }}>▶</div>
-                                        </div>
-                                    );
-                                }
+
                                 if (sectionId === 'skills' && profile.show_skills && profile.skills?.length > 0) {
                                     return (
                                         <div key="skills" style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
@@ -1141,15 +1113,7 @@ function AdminPhonePreview({ profile, qrStyle, qrRef, previewMode, isDark, textC
                                         </div>
                                     );
                                 }
-                                if (sectionId === 'contact_form' && profile.show_contact_form) {
-                                    return (
-                                        <div key="contact_form" style={{ background: cardBg, borderRadius: 16, padding: 12, border: '1px solid rgba(0,0,0,0.05)' }}>
-                                            <div style={{ fontWeight: 800, fontSize: 11, color: textColor, marginBottom: 8 }}>Contactez-moi</div>
-                                            <div style={{ height: 24, background: isDark ? 'rgba(255,255,255,0.05)' : '#F8FAFC', borderRadius: 6, marginBottom: 4 }} />
-                                            <div style={{ height: 40, background: profile.primaryColor || '#1A1265', borderRadius: 8 }} />
-                                        </div>
-                                    );
-                                }
+
                                 if (sectionId === 'business_info' && (profile.show_location || profile.show_hours)) {
                                     return (
                                         <div key="business" style={{ background: cardBg, borderRadius: 16, padding: 12, border: '1px solid rgba(0,0,0,0.05)', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
