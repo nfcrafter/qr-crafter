@@ -155,7 +155,12 @@ export default function Activate() {
             console.log('Card activated successfully:', updatedCard[0]);
 
             // 4. Update secondary tables
-            await supabase.from('profiles').update({ card_id: normalizedId }).eq('id', user.id);
+            await supabase.from('profiles').upsert({ 
+                id: user.id,
+                card_id: normalizedId,
+                email: user.email,
+                full_name: profile?.full_name || user.user_metadata?.full_name || cardInfo?.admin_profile?.full_name || 'Utilisateur NFCrafter'
+            });
             await supabase.from('user_cards').upsert({ 
                 user_id: user.id, 
                 card_id: normalizedId,

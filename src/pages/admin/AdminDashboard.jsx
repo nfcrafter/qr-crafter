@@ -101,11 +101,29 @@ export default function AdminDashboard() {
 
     const [requestsCount, setRequestsCount] = useState(0);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [platformStats, setPlatformStats] = useState({ totalUsers: 0, activeUsers: 0 });
+
+    async function loadPlatformStats() {
+        try {
+            const [profilesRes, cardsRes] = await Promise.all([
+                supabase.from('profiles').select('id', { count: 'exact', head: true }),
+                supabase.from('cards').select('owner_id')
+            ]);
+            const profileCount = profilesRes.count || 0;
+            const uniqueOwners = [...new Set((cardsRes.data || []).map(c => c.owner_id).filter(Boolean))];
+            const totalUsers = Math.max(profileCount, uniqueOwners.length);
+            const activeUsers = uniqueOwners.length;
+            setPlatformStats({ totalUsers, activeUsers });
+        } catch (e) {
+            console.error('Stats error:', e);
+        }
+    }
 
     useEffect(() => {
         if (view === 'dashboard') {
             loadData();
             loadFolders();
+            loadPlatformStats();
         } else if (view === 'users') {
             loadUsers();
         } else if (view === 'requests') {
@@ -243,26 +261,55 @@ export default function AdminDashboard() {
     async function loadUsers() {
         setLoading(true);
         try {
-            const [{ data: profilesData }, { data: userCardsData }, { data: cardsData }] = await Promise.all([
+            const [profilesRes, userCardsRes, cardsRes] = await Promise.all([
                 supabase.from('profiles').select('*').order('created_at', { ascending: false }),
                 supabase.from('user_cards').select('*'),
                 supabase.from('cards').select('*')
             ]);
             
-            if (profilesData) {
-                const mappedUsers = profilesData.map(p => {
-                    const userCardsLinks = (userCardsData || []).filter(uc => uc.user_id === p.id);
-                    const userCards = userCardsLinks.map(uc => (cardsData || []).find(c => c.card_id === uc.card_id)).filter(Boolean);
-                    
-                    return {
-                        ...p,
+            if (profilesRes.error) console.error("Profiles Error:", profilesRes.error);
+
+            const profilesData = profilesRes.data || [];
+            const userCardsData = userCardsRes.data || [];
+            const cardsData = cardsRes.data || [];
+            
+            // Map known profiles
+            const mappedProfiles = profilesData.map(p => {
+                const userCardsLinks = userCardsData.filter(uc => uc.user_id === p.id);
+                let userCards = userCardsLinks.map(uc => cardsData.find(c => c.card_id === uc.card_id)).filter(Boolean);
+                
+                if (userCards.length === 0) {
+                    userCards = cardsData.filter(c => c.owner_id === p.id);
+                }
+                
+                return {
+                    ...p,
+                    cards: userCards
+                };
+            });
+
+            // Reconstruct missing users directly from cards (if profiles table missed them during activation)
+            const allOwnerIds = [...new Set(cardsData.map(c => c.owner_id).filter(Boolean))];
+            const reconstructedUsers = [];
+
+            for (const ownerId of allOwnerIds) {
+                // If this owner is not in the profiles table, build a synthetic user from their cards
+                if (!mappedProfiles.find(p => p.id === ownerId)) {
+                    const userCards = cardsData.filter(c => c.owner_id === ownerId);
+                    const firstCardProfile = userCards[0]?.admin_profile || {};
+                    reconstructedUsers.push({
+                        id: ownerId,
+                        full_name: firstCardProfile.full_name || userCards[0]?.card_name || 'Utilisateur (Reconstruit)',
+                        email: firstCardProfile.email || 'Email non disponible',
+                        photo_url: firstCardProfile.photo_url || null,
+                        created_at: userCards[0]?.created_at || new Date().toISOString(),
                         cards: userCards
-                    };
-                });
-                setUsers(mappedUsers);
-            } else {
-                setUsers([]);
+                    });
+                }
             }
+
+            const finalUsers = [...mappedProfiles, ...reconstructedUsers].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            setUsers(finalUsers);
         } catch (error) {
             console.error('Error loading users:', error);
             toast('Erreur chargement utilisateurs : ' + error.message, 'error');
@@ -803,18 +850,46 @@ export default function AdminDashboard() {
                     {(view === 'dashboard' || view === 'requests') && (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                             {view === 'dashboard' && (
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '16px' }}>
                                     <div style={{ padding: '20px', background: 'white', borderRadius: '16px', border: '1px solid #E2E8F0', boxShadow: '0 4px 15px rgba(0,0,0,0.02)' }}>
-                                        <div style={{ fontSize: '12px', fontWeight: '800', color: '#64748B', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>Cartes Totales</div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                                            <div style={{ width: 32, height: 32, borderRadius: '10px', background: '#EEF2FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                <div style={{ width: 16, height: 16, color: '#6366F1' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>` }} />
+                                            </div>
+                                            <div style={{ fontSize: '11px', fontWeight: '800', color: '#64748B', textTransform: 'uppercase', letterSpacing: '1px' }}>Utilisateurs</div>
+                                        </div>
+                                        <div style={{ fontSize: '28px', fontWeight: '900', color: '#1A1265' }}>{platformStats.totalUsers}</div>
+                                        <div style={{ fontSize: '11px', fontWeight: '700', color: '#10B981', marginTop: '4px' }}>{platformStats.activeUsers} actif{platformStats.activeUsers > 1 ? 's' : ''}</div>
+                                    </div>
+                                    <div style={{ padding: '20px', background: 'white', borderRadius: '16px', border: '1px solid #E2E8F0', boxShadow: '0 4px 15px rgba(0,0,0,0.02)' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                                            <div style={{ width: 32, height: 32, borderRadius: '10px', background: '#F0FDF4', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                <div style={{ width: 16, height: 16, color: '#10B981' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2" ry="2"></rect><path d="M7 7h1"></path><path d="M7 11h1"></path><path d="M7 15h1"></path><path d="M11 7h1"></path><path d="M11 11h1"></path><path d="M11 15h1"></path><path d="M15 7h1"></path><path d="M15 11h1"></path><path d="M15 15h1"></path></svg>` }} />
+                                            </div>
+                                            <div style={{ fontSize: '11px', fontWeight: '800', color: '#64748B', textTransform: 'uppercase', letterSpacing: '1px' }}>Cartes</div>
+                                        </div>
                                         <div style={{ fontSize: '28px', fontWeight: '900', color: '#1A1265' }}>{cards.length}</div>
+                                        <div style={{ fontSize: '11px', fontWeight: '700', color: '#10B981', marginTop: '4px' }}>{cards.filter(c => c.status === 'active').length} active{cards.filter(c => c.status === 'active').length > 1 ? 's' : ''}</div>
                                     </div>
                                     <div style={{ padding: '20px', background: 'white', borderRadius: '16px', border: '1px solid #E2E8F0', boxShadow: '0 4px 15px rgba(0,0,0,0.02)' }}>
-                                        <div style={{ fontSize: '12px', fontWeight: '800', color: '#64748B', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>Cartes Actives</div>
-                                        <div style={{ fontSize: '28px', fontWeight: '900', color: '#10B981' }}>{cards.filter(c => c.status === 'active').length}</div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                                            <div style={{ width: 32, height: 32, borderRadius: '10px', background: '#FFF7ED', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                <div style={{ width: 16, height: 16, color: '#F59E0B' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>` }} />
+                                            </div>
+                                            <div style={{ fontSize: '11px', fontWeight: '800', color: '#64748B', textTransform: 'uppercase', letterSpacing: '1px' }}>Scans</div>
+                                        </div>
+                                        <div style={{ fontSize: '28px', fontWeight: '900', color: '#1A1265' }}>{Object.values(scans).reduce((a, b) => a + b, 0)}</div>
+                                        <div style={{ fontSize: '11px', fontWeight: '700', color: '#64748B', marginTop: '4px' }}>{Object.keys(scans).length} carte{Object.keys(scans).length > 1 ? 's' : ''} scannée{Object.keys(scans).length > 1 ? 's' : ''}</div>
                                     </div>
-                                    <div style={{ padding: '20px', background: '#1A1265', borderRadius: '16px', color: 'white', boxShadow: '0 10px 25px rgba(26,18,101,0.2)' }}>
-                                        <div style={{ fontSize: '12px', fontWeight: '800', color: '#A5B4FC', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>Scans Totaux</div>
-                                        <div style={{ fontSize: '28px', fontWeight: '900', color: '#38BDF8' }}>{Object.values(scans).reduce((a, b) => a + b, 0)}</div>
+                                    <div style={{ padding: '20px', background: 'linear-gradient(135deg, #1A1265 0%, #312E81 100%)', borderRadius: '16px', color: 'white', boxShadow: '0 10px 25px rgba(26,18,101,0.25)' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                                            <div style={{ width: 32, height: 32, borderRadius: '10px', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                <div style={{ width: 16, height: 16, color: '#A5B4FC' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>` }} />
+                                            </div>
+                                            <div style={{ fontSize: '11px', fontWeight: '800', color: '#A5B4FC', textTransform: 'uppercase', letterSpacing: '1px' }}>Revenu</div>
+                                        </div>
+                                        <div style={{ fontSize: '28px', fontWeight: '900', color: 'white' }}>{totalIncome.toLocaleString('fr-FR')}</div>
+                                        <div style={{ fontSize: '11px', fontWeight: '700', color: '#6EE7B7', marginTop: '4px' }}>f CFA</div>
                                     </div>
                                 </div>
                             )}
