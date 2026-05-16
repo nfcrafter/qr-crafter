@@ -169,18 +169,24 @@ export default function ClientDashboard() {
         setUploadingProduct(false);
     }
 
+    async function handleGalleryImageUpload(file, onUrl) {
+        await uploadFile(file, 'banners', onUrl);
+    }
+
     async function uploadFile(file, bucket, onUrl, setUploading) {
+        if (!file) return;
         const isFunc = typeof setUploading === 'function';
         if (isFunc) setUploading(true);
         try {
-            // Check if bucket is pdfs, if not default to banners/avatars
             const targetBucket = bucket || 'banners';
-            const fileName = `${Math.random()}.${file.name.split('.').pop()}`;
+            // Use more robust filename
+            const ext = file.name.split('.').pop();
+            const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${ext}`;
             
             const { error: uploadError } = await supabase.storage
                 .from(targetBucket)
                 .upload(fileName, file, {
-                    contentType: file.type, // Explicitly set content type
+                    contentType: file.type,
                     upsert: true
                 });
 
@@ -188,10 +194,10 @@ export default function ClientDashboard() {
             
             const { data: { publicUrl } } = supabase.storage.from(targetBucket).getPublicUrl(fileName);
             onUrl(publicUrl);
-            toast('Fichier téléchargé !', 'success');
+            toast('Image ajoutée avec succès !', 'success');
         } catch (e) { 
             console.error('Upload error:', e);
-            toast('Erreur upload : ' + e.message, 'error'); 
+            toast('Erreur d\'envoi : ' + (e.message || 'Problème de connexion'), 'error'); 
         }
         finally { if (isFunc) setUploading(false); }
     }
@@ -491,6 +497,7 @@ export default function ClientDashboard() {
                                             onUploadAvatar={(f) => uploadFile(f, 'avatars', (url) => setPublicProfile(p => ({...p, photo_url: url})), setUploadingAvatar)} 
                                             onUploadBanner={(f) => uploadFile(f, 'banners', (url) => setPublicProfile(p => ({...p, banner_url: url})), setUploadingBanner)} 
                                             onUploadProductImage={handleProductImageUpload}
+                                            onUploadGalleryImage={handleGalleryImageUpload}
                                             uploadingAvatar={uploadingAvatar} 
                                             uploadingBanner={uploadingBanner} 
                                             uploadingProduct={uploadingProduct}

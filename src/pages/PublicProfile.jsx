@@ -341,6 +341,28 @@ export default function PublicProfile() {
                     </button>
                   </div>
                 )}
+                {isBioExpanded && (
+                  <div style={{ display: 'flex', justifyContent: 'center', marginTop: '12px' }}>
+                    <button 
+                      onClick={() => setIsBioExpanded(false)}
+                      style={{ 
+                        background: 'white', 
+                        border: '1px solid #E2E8F0', 
+                        color: themeColor, 
+                        fontSize: 11, 
+                        fontWeight: 800, 
+                        cursor: 'pointer',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.5px',
+                        padding: '6px 16px',
+                        borderRadius: '20px',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.08)'
+                      }}
+                    >
+                      Voir moins ↑
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -436,14 +458,22 @@ export default function PublicProfile() {
                                     <button 
                                         onClick={() => {
                                             let waNumber = '';
-                                            if (p.wa_number) {
+                                            const waType = p.wa_type || 'personal';
+                                            
+                                            if (waType === 'custom' && p.wa_number) {
                                                 waNumber = p.wa_number.replace(/\D/g, '');
+                                            } else if (waType === 'business') {
+                                                waNumber = (profile.socials?.whatsapp_business?.value || '').replace(/\D/g, '');
                                             } else {
-                                                if (profile.wa_order_type === 'whatsapp_social' && profile.socials?.whatsapp?.value) waNumber = profile.socials.whatsapp.value.replace(/\D/g, '');
-                                                else if (profile.wa_order_type === 'business' && profile.socials?.whatsapp_business?.value) waNumber = profile.socials.whatsapp_business.value.replace(/\D/g, '');
-                                                else if (profile.wa_order_type === 'custom' && profile.business_whatsapp_number) waNumber = profile.business_whatsapp_number.replace(/\D/g, '');
-                                                else waNumber = (profile.phone || '').toString().replace(/\D/g, '');
+                                                // Default to personal whatsapp or phone
+                                                waNumber = (profile.socials?.whatsapp?.value || profile.phone || '').toString().replace(/\D/g, '');
                                             }
+
+                                            if (!waNumber) {
+                                                // Ultimate fallback
+                                                waNumber = (profile.phone || '').toString().replace(/\D/g, '');
+                                            }
+
                                             const msg = `Bonjour, je souhaite commander "${p.name}" (${p.price}) vu sur votre profil NFCrafter.`;
                                             window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`, '_blank');
                                         }}

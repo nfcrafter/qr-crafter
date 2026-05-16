@@ -9,7 +9,8 @@ export default function ProfileForm({
     onUploadAvatar,
     onUploadBanner,
     onUploadPDF,
-    onUploadProductImage, // Nouveau : pour les images de produits
+    onUploadProductImage,
+    onUploadGalleryImage,
     uploadingAvatar = false,
     uploadingBanner = false,
     uploadingProduct = false,
@@ -531,53 +532,6 @@ export default function ProfileForm({
                         ))}
                     </div>
 
-                    <div style={{ padding: 16, background: '#F8FAFC', borderRadius: 16, marginTop: 16, border: '1px solid #E2E8F0' }}>
-                        <div style={{ fontSize: 12, fontWeight: 800, color: '#1A1265', marginBottom: 12, textTransform: 'uppercase' }}>WhatsApp pour commandes</div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                            <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', fontSize: 14, opacity: profile.socials?.whatsapp?.value ? 1 : 0.5 }}>
-                                <input 
-                                    type="radio" 
-                                    name="wa_type" 
-                                    disabled={!profile.socials?.whatsapp?.value}
-                                    checked={profile.wa_order_type === 'whatsapp_social'} 
-                                    onChange={() => setProfile({...profile, wa_order_type: 'whatsapp_social'})}
-                                />
-                                WhatsApp Personnel {profile.socials?.whatsapp?.value ? `(${profile.socials.whatsapp.value})` : '(Non configuré)'}
-                            </label>
-                            
-                            <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', fontSize: 14, opacity: profile.socials?.whatsapp_business?.value ? 1 : 0.5 }}>
-                                <input 
-                                    type="radio" 
-                                    name="wa_type" 
-                                    disabled={!profile.socials?.whatsapp_business?.value}
-                                    checked={profile.wa_order_type === 'business'} 
-                                    onChange={() => setProfile({...profile, wa_order_type: 'business'})}
-                                />
-                                WhatsApp Business {profile.socials?.whatsapp_business?.value ? `(${profile.socials.whatsapp_business.value})` : '(Non configuré)'}
-                            </label>
-
-                            <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', fontSize: 14 }}>
-                                <input 
-                                    type="radio" 
-                                    name="wa_type" 
-                                    checked={profile.wa_order_type === 'custom'} 
-                                    onChange={() => setProfile({...profile, wa_order_type: 'custom'})}
-                                />
-                                Autre numéro spécifique
-                            </label>
-
-                            {profile.wa_order_type === 'custom' && (
-                                <input 
-                                    type="tel" 
-                                    placeholder="Ex: +22969000000"
-                                    value={profile.business_whatsapp_number || ''}
-                                    onChange={e => setProfile({...profile, business_whatsapp_number: e.target.value})}
-                                    style={{ width: '100%', padding: '10px 14px', borderRadius: 10, border: '1px solid #E2E8F0', fontSize: 14 }}
-                                />
-                            )}
-                        </div>
-                    </div>
-
                     <button onClick={addProduct} style={{ width: '100%', padding: 16, borderRadius: 16, border: '2px dashed #CBD5E1', background: 'white', color: '#1A1265', fontWeight: 700, cursor: 'pointer', fontSize: 14, marginTop: 12 }}>+ Ajouter un produit</button>
                 </div>
             ))}
@@ -761,18 +715,24 @@ export default function ProfileForm({
             ))}
 
             <input ref={galleryFileRef} type="file" hidden accept="image/*" onChange={e => {
-                if (e.target.files[0] && onUploadBanner) {
-                    const file = e.target.files[0];
+                const file = e.target.files[0];
+                if (file && onUploadGalleryImage) {
+                    const tempId = Date.now();
+                    // Add optimistic local item
                     const reader = new FileReader();
                     reader.onload = (re) => {
-                        const items = [...(profile.gallery || []), { id: Date.now(), url: re.target.result, caption: '', type: 'image' }];
-                        setProfile({ ...profile, gallery: items });
-                        // Also upload to storage for persistence
-                        if (onUploadBanner) {
-                            onUploadBanner({ target: { files: [file] } }, (url) => {
-                                setProfile(prev => ({...prev, gallery: (prev.gallery || []).map(g => g.id === items[items.length-1].id ? {...g, url} : g)}));
-                            });
-                        }
+                        setProfile(prev => ({
+                            ...prev,
+                            gallery: [...(prev.gallery || []), { id: tempId, url: re.target.result, caption: '', type: 'image', uploading: true }]
+                        }));
+                        
+                        // Real upload
+                        onUploadGalleryImage(file, (url) => {
+                            setProfile(prev => ({
+                                ...prev,
+                                gallery: (prev.gallery || []).map(g => g.id === tempId ? { ...g, url, uploading: false } : g)
+                            }));
+                        });
                     };
                     reader.readAsDataURL(file);
                 }
