@@ -20,26 +20,13 @@ export default function LandingPage() {
     const [selectedColorIndex, setSelectedColorIndex] = useState(0);
     const [cardType, setCardType] = useState('physical'); // 'physical', 'digital', 'pro', 'corporate'
     const [activeDemoTab, setActiveDemoTab] = useState('visitor'); // 'visitor' or 'dashboard'
-    
-    // Custom cursor trace position
-    const [mousePos, setMousePos] = useState({ x: -100, y: -100 });
-    const [cursorVisible, setCursorVisible] = useState(false);
 
     useEffect(() => {
         const handleScroll = () => {
             setScrolled(window.scrollY > 20);
         };
-        const handleMouseMove = (e) => {
-            setMousePos({ x: e.clientX, y: e.clientY });
-            setCursorVisible(true);
-        };
-        const handleMouseLeave = () => {
-            setCursorVisible(false);
-        };
 
         window.addEventListener('scroll', handleScroll);
-        window.addEventListener('mousemove', handleMouseMove);
-        document.body.addEventListener('mouseleave', handleMouseLeave);
 
         supabase.auth.getSession().then(({ data: { session } }) => {
             setSession(session);
@@ -50,8 +37,6 @@ export default function LandingPage() {
 
         return () => {
             window.removeEventListener('scroll', handleScroll);
-            window.removeEventListener('mousemove', handleMouseMove);
-            document.body.removeEventListener('mouseleave', handleMouseLeave);
             subscription?.unsubscribe();
         };
     }, []);
@@ -78,25 +63,6 @@ export default function LandingPage() {
     return (
         <div style={{ background: '#F8FAFC', minHeight: '100vh', width: '100%', overflowX: 'hidden', fontFamily: "'Outfit', 'Inter', sans-serif", color: '#0F172A', position: 'relative' }}>
             
-            {/* Custom cursor desktop (Indigo themed) */}
-            {cursorVisible && (
-                <div style={{
-                    position: 'fixed',
-                    left: mousePos.x,
-                    top: mousePos.y,
-                    width: '12px',
-                    height: '12px',
-                    borderRadius: '50%',
-                    background: '#1A1265',
-                    pointerEvents: 'none',
-                    transform: 'translate(-50%, -50%)',
-                    zIndex: 9999,
-                    boxShadow: '0 0 15px rgba(26, 18, 101, 0.3)',
-                    transition: 'width 0.2s, height 0.2s',
-                    opacity: 0.8
-                }} />
-            )}
-
             {/* Glowing background orbs for frosted glass pop */}
             <div style={{ position: 'absolute', top: '10%', left: '5%', width: '40vw', height: '40vw', borderRadius: '50%', background: '#EEF2FF', filter: 'blur(100px)', zIndex: 0, pointerEvents: 'none' }}></div>
             <div style={{ position: 'absolute', top: '40%', right: '5%', width: '35vw', height: '35vw', borderRadius: '50%', background: '#F5F3FF', filter: 'blur(100px)', zIndex: 0, pointerEvents: 'none' }}></div>
@@ -741,7 +707,7 @@ export default function LandingPage() {
                             Choisissez <span style={{ color: '#1A1265' }}>votre identité.</span>
                         </h2>
                         <p style={{ color: '#475569', fontSize: '18px', maxWidth: '600px', margin: '0 auto' }}>
-                            Configurez la couleur de votre carte physique et validez votre offre.
+                            Configurez la couleur de votre carte physique et valisez votre offre.
                         </p>
                     </div>
 
