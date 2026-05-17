@@ -23,7 +23,6 @@ export default function LandingPage() {
     
     // States for Hero Audacious flipping color-shifting card
     const [heroColorIndex, setHeroColorIndex] = useState(0);
-    const [heroIsFlipped, setHeroIsFlipped] = useState(false);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -40,19 +39,21 @@ export default function LandingPage() {
         });
 
         // Loop for audacious hero card flip & color change
-        const heroInterval = setInterval(() => {
-            setHeroIsFlipped(prev => !prev);
-            
-            // Swap color exactly at the 90deg perpendicular midpoint (600ms) for a seamless color shift
-            setTimeout(() => {
+        // Animation is 6s full rotation (360deg). Edge points are at 1.5s (90deg) and 4.5s (270deg).
+        // Change color every 3s (half-turn), starting with a 1.5s initial offset.
+        let colorInterval;
+        const offsetTimeout = setTimeout(() => {
+            setHeroColorIndex(prev => (prev + 1) % CARD_COLORS.length);
+            colorInterval = setInterval(() => {
                 setHeroColorIndex(prev => (prev + 1) % CARD_COLORS.length);
-            }, 600);
-        }, 3500);
+            }, 3000);
+        }, 1500);
 
         return () => {
             window.removeEventListener('scroll', handleScroll);
             subscription?.unsubscribe();
-            clearInterval(heroInterval);
+            clearTimeout(offsetTimeout);
+            if (colorInterval) clearInterval(colorInterval);
         };
     }, []);
 
@@ -246,6 +247,21 @@ export default function LandingPage() {
                         gap: 24px !important;
                     }
                 }
+
+                @keyframes continuousSpin {
+                    0% { transform: rotateY(0deg); }
+                    100% { transform: rotateY(360deg); }
+                }
+
+                .spin-card-3d {
+                    width: 100%;
+                    height: 100%;
+                    position: relative;
+                    transform-style: preserve-3d;
+                    animation: continuousSpin 6s linear infinite;
+                    border-radius: 16px;
+                    box-shadow: 0 30px 60px rgba(26, 18, 101, 0.18);
+                }
             `}</style>
 
             {/* 1. NAVIGATION BAR */}
@@ -358,16 +374,7 @@ export default function LandingPage() {
                                 zIndex: 5,
                             }}>
                                 {/* Card Flipper Div */}
-                                <div style={{
-                                    width: '100%',
-                                    height: '100%',
-                                    position: 'relative',
-                                    transformStyle: 'preserve-3d',
-                                    transition: 'transform 1.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                                    transform: `rotateY(${heroIsFlipped ? 180 : 0}deg)`,
-                                    borderRadius: '16px',
-                                    boxShadow: '0 30px 60px rgba(26, 18, 101, 0.18)'
-                                }}>
+                                <div className="spin-card-3d">
                                     {/* Front Side (Recto) */}
                                     <div style={{
                                         position: 'absolute',
