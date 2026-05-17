@@ -177,21 +177,80 @@ export default function LandingPage() {
                     box-shadow: 0 10px 30px rgba(26, 18, 101, 0.05);
                 }
 
-                /* Responsive designs */
+                /* Responsive designs & Global fixes */
+                .responsive-section {
+                    padding: 120px 0;
+                }
+                .responsive-h2 {
+                    font-size: 44px;
+                    line-height: 1.2;
+                }
+                .responsive-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                    gap: 48px;
+                }
+
                 @media (max-width: 768px) {
+                    .responsive-section {
+                        padding: 60px 0 !important;
+                    }
+                    .responsive-h2 {
+                        font-size: 28px !important;
+                    }
                     .bento-grid {
                         grid-template-columns: 1fr !important;
+                        gap: 16px !important;
+                    }
+                    .bento-card {
+                        grid-column: span 1 !important;
+                        min-height: auto !important;
+                        padding: 24px !important;
                     }
                     .hero-title {
-                        font-size: 40px !important;
-                        line-height: 1.1 !important;
+                        font-size: 38px !important;
+                        line-height: 1.15 !important;
+                    }
+                    .desktop-menu {
+                        display: none !important;
+                    }
+                    .hero-buttons {
+                        flex-direction: column !important;
+                        width: 100% !important;
+                        gap: 12px !important;
+                    }
+                    .hero-buttons a {
+                        width: 100% !important;
+                        text-align: center !important;
+                        padding: 16px 24px !important;
+                    }
+                    .glass-nav {
+                        height: 70px !important;
+                    }
+                    .nav-container {
+                        padding: 0 16px !important;
+                    }
+                    .nav-actions {
+                        gap: 8px !important;
+                    }
+                    .nav-actions button, .nav-actions a {
+                        padding: 8px 14px !important;
+                        font-size: 13px !important;
+                    }
+                    .card-visual-wrapper {
+                        transform: scale(0.85);
+                        margin: -20px 0;
+                    }
+                    .config-wrapper {
+                        grid-template-columns: 1fr !important;
+                        gap: 24px !important;
                     }
                 }
             `}</style>
 
             {/* 1. NAVIGATION BAR */}
             <nav className="glass-nav" style={{ position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 100, height: '80px', display: 'flex', alignItems: 'center' }}>
-                <div style={{ maxWidth: '1200px', width: '100%', margin: '0 auto', padding: '0 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div className="nav-container" style={{ maxWidth: '1200px', width: '100%', margin: '0 auto', padding: '0 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
                         <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'linear-gradient(135deg, #1A1265, #6366F1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', fontSize: '20px', color: 'white', boxShadow: '0 0 20px rgba(26, 18, 101, 0.2)' }}>N</div>
                         <span style={{ fontSize: '22px', fontWeight: '900', letterSpacing: '-0.03em', background: 'linear-gradient(90deg, #1A1265, #6366F1)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>NFCrafter</span>
@@ -204,7 +263,7 @@ export default function LandingPage() {
                         <a href="#faq" style={{ color: '#475569', textDecoration: 'none', fontSize: '15px', fontWeight: '500', transition: 'color 0.2s' }} onMouseOver={e => e.target.style.color = '#1A1265'} onMouseOut={e => e.target.style.color = '#475569'}>FAQ</a>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                    <div className="nav-actions" style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
                         {session ? (
                             <button onClick={() => navigate('/dashboard')} style={{ background: 'transparent', border: '1px solid rgba(26, 18, 101, 0.15)', color: '#1A1265', padding: '10px 20px', borderRadius: '12px', fontWeight: '600', fontSize: '14px', cursor: 'pointer' }}>Tableau de bord</button>
                         ) : (
@@ -230,13 +289,13 @@ export default function LandingPage() {
             </nav>
 
             {/* 2. HERO SECTION — AUDACIOUS 3D CARD FLIP LOOP (Light White Glass theme) */}
-            <section style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifycontent: 'center', paddingTop: '120px', position: 'relative', overflow: 'hidden' }}>
-                <div style={{ maxWidth: '1200px', width: '100%', margin: '0 auto', padding: '0 24px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '48px', alignItems: 'center', position: 'relative', zIndex: 10 }}>
+            <section className="responsive-section" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingTop: '100px', position: 'relative', overflow: 'hidden' }}>
+                <div style={{ maxWidth: '1200px', width: '100%', margin: '0 auto', padding: '0 24px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '48px', alignItems: 'center', position: 'relative', zIndex: 10 }}>
                     {/* Hero Left Content */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', border: '1px solid rgba(26, 18, 101, 0.15)', background: 'rgba(26, 18, 101, 0.03)', padding: '6px 16px', borderRadius: '100px', width: 'fit-content' }}>
                             <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#1A1265', animation: 'pulseBadge 2s infinite' }}></span>
-                            <span style={{ fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '2px', color: '#1A1265' }}>L'identité digitale des pros d'élite</span>
+                            <span style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '2px', color: '#1A1265' }}>L'identité digitale des pros d'élite</span>
                         </div>
 
                         <h1 className="hero-title" style={{ fontSize: '64px', fontWeight: '900', letterSpacing: '-0.04em', lineHeight: '1.05', margin: 0, color: '#0F172A' }}>
@@ -244,11 +303,11 @@ export default function LandingPage() {
                             <span style={{ background: 'linear-gradient(90deg, #1A1265, #6366F1)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>carte de visite. À vie.</span>
                         </h1>
 
-                        <p style={{ fontSize: '18px', color: '#475569', lineHeight: '1.6', margin: 0, maxWidth: '500px' }}>
+                        <p style={{ fontSize: '17px', color: '#475569', lineHeight: '1.6', margin: 0, maxWidth: '500px' }}>
                             Partagez vos contacts en 1 seconde. Vendez vos services directement via WhatsApp. Impressionnez vos futurs clients sans jamais avoir besoin de réimprimer.
                         </p>
 
-                        <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '12px' }}>
+                        <div className="hero-buttons" style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '12px' }}>
                             <a href="#tarifs" style={{
                                 background: 'linear-gradient(135deg, #1A1265, #6366F1)',
                                 color: 'white',
@@ -278,22 +337,22 @@ export default function LandingPage() {
                             </a>
                         </div>
 
-                        <div style={{ display: 'flex', gap: '20px', color: '#475569', fontSize: '13px', marginTop: '16px' }}>
+                        <div style={{ display: 'flex', gap: '20px', color: '#475569', fontSize: '13px', marginTop: '16px', flexWrap: 'wrap' }}>
                             <span>✓ Paiement Unique</span>
                             <span>• Aucun Abonnement</span>
                             <span>• Expédié sous 48h à Cotonou</span>
                         </div>
                     </div>
 
-                    {/* Hero Right Visuals - Audacious Color-shifting 3D Flipper */}
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', minHeight: '400px' }}>
-                        <div style={{ position: 'relative', width: '320px', height: '400px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    {/* Hero Right Visuals - Audacious Color-shifting 3D Flipper with responsive scale wrapper */}
+                    <div className="card-visual-wrapper" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
+                        <div style={{ position: 'relative', width: '280px', height: '400px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                             
                             {/* Perspective Card Container */}
                             <div style={{
                                 perspective: '1000px',
-                                width: '320px',
-                                height: '200px',
+                                width: '280px',
+                                height: '175px',
                                 position: 'absolute',
                                 top: '40px',
                                 zIndex: 5,
@@ -306,7 +365,7 @@ export default function LandingPage() {
                                     transformStyle: 'preserve-3d',
                                     transition: 'transform 1.2s cubic-bezier(0.4, 0, 0.2, 1)',
                                     transform: `rotateY(${heroIsFlipped ? 180 : 0}deg)`,
-                                    borderRadius: '18px',
+                                    borderRadius: '16px',
                                     boxShadow: '0 30px 60px rgba(26, 18, 101, 0.18)'
                                 }}>
                                     {/* Front Side (Recto) */}
@@ -315,7 +374,7 @@ export default function LandingPage() {
                                         width: '100%',
                                         height: '100%',
                                         backfaceVisibility: 'hidden',
-                                        borderRadius: '18px',
+                                        borderRadius: '16px',
                                         overflow: 'hidden'
                                     }}>
                                         <img 
@@ -335,7 +394,7 @@ export default function LandingPage() {
                                         height: '100%',
                                         backfaceVisibility: 'hidden',
                                         transform: 'rotateY(180deg)',
-                                        borderRadius: '18px',
+                                        borderRadius: '16px',
                                         overflow: 'hidden'
                                     }}>
                                         <img 
@@ -352,14 +411,14 @@ export default function LandingPage() {
 
                             {/* Phone Mockup floating slightly below */}
                             <div style={{
-                                width: '180px',
-                                height: '360px',
+                                width: '170px',
+                                height: '340px',
                                 background: '#0D0D12',
-                                borderRadius: '32px',
+                                borderRadius: '28px',
                                 border: '6px solid #1F2937',
                                 position: 'absolute',
                                 bottom: '0px',
-                                right: '-30px',
+                                right: '-20px',
                                 zIndex: 2,
                                 boxShadow: '0 20px 50px rgba(0,0,0,0.15)',
                                 overflow: 'hidden',
@@ -368,9 +427,9 @@ export default function LandingPage() {
                                 flexDirection: 'column',
                                 alignItems: 'center'
                             }}>
-                                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'linear-gradient(135deg, #1A1265, #6366F1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', fontSize: '14px', color: 'white', marginBottom: '12px' }}>R</div>
-                                <div style={{ width: '100px', height: '10px', background: 'white', borderRadius: '4px', marginBottom: '6px' }}></div>
-                                <div style={{ width: '60px', height: '6px', background: '#9CA3AF', borderRadius: '4px', marginBottom: '20px' }}></div>
+                                <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'linear-gradient(135deg, #1A1265, #6366F1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', fontSize: '13px', color: 'white', marginBottom: '12px' }}>R</div>
+                                <div style={{ width: '80px', height: '10px', background: 'white', borderRadius: '4px', marginBottom: '6px' }}></div>
+                                <div style={{ width: '50px', height: '6px', background: '#9CA3AF', borderRadius: '4px', marginBottom: '20px' }}></div>
                                 <div style={{ width: '100%', height: '32px', background: '#6366F1', borderRadius: '8px', marginBottom: '8px' }}></div>
                                 <div style={{ width: '100%', height: '24px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', marginBottom: '6px' }}></div>
                                 <div style={{ width: '100%', height: '24px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', marginBottom: '6px' }}></div>
@@ -380,7 +439,7 @@ export default function LandingPage() {
                 </div>
 
                 {/* Infinite Ticker Banner */}
-                <div style={{ background: 'rgba(26, 18, 101, 0.03)', borderTop: '1px solid rgba(26, 18, 101, 0.05)', borderBottom: '1px solid rgba(26, 18, 101, 0.05)', padding: '20px 0', marginTop: '120px', overflow: 'hidden' }}>
+                <div style={{ background: 'rgba(26, 18, 101, 0.03)', borderTop: '1px solid rgba(26, 18, 101, 0.05)', borderBottom: '1px solid rgba(26, 18, 101, 0.05)', padding: '20px 0', marginTop: '100px', overflow: 'hidden' }}>
                     <div className="ticker-row">
                         {[1, 2, 3, 4].map(idx => (
                             <React.Fragment key={idx}>
@@ -396,26 +455,26 @@ export default function LandingPage() {
             </section>
 
             {/* 3. SECTION PROBLÈME — CONSTAT BRUTAL */}
-            <section style={{ padding: '120px 0', background: 'rgba(255,255,255,0.5)', position: 'relative', borderTop: '1px solid rgba(26, 18, 101, 0.03)', borderBottom: '1px solid rgba(26, 18, 101, 0.03)' }}>
+            <section className="responsive-section" style={{ background: 'rgba(255,255,255,0.5)', position: 'relative', borderTop: '1px solid rgba(26, 18, 101, 0.03)', borderBottom: '1px solid rgba(26, 18, 101, 0.03)' }}>
                 <div style={{ maxWidth: '1200px', width: '100%', margin: '0 auto', padding: '0 24px' }}>
-                    <div style={{ textAlign: 'center', marginBottom: '80px' }}>
-                        <h2 style={{ fontSize: '44px', fontWeight: '900', fontFamily: 'Outfit', color: '#0F172A', letterSpacing: '-0.02em', margin: '0 0 16px 0' }}>
+                    <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+                        <h2 className="responsive-h2" style={{ fontWeight: '900', color: '#0F172A', letterSpacing: '-0.02em', margin: '0 0 16px 0' }}>
                             Les cartes papier vous font <span style={{ color: '#DC2626' }}>perdre des clients</span>.
                         </h2>
-                        <p style={{ color: '#475569', fontSize: '18px', maxWidth: '600px', margin: '0 auto' }}>
+                        <p style={{ color: '#475569', fontSize: '17px', maxWidth: '600px', margin: '0 auto' }}>
                             Chaque rencontre physique manquée est une opportunité d'affaires qui s'envole.
                         </p>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '32px' }}>
+                    <div className="responsive-grid">
                         {/* Column Left - The Nightmare of Paper */}
-                        <div className="glass-card" style={{ padding: '40px', display: 'flex', flexDirection: 'column', gap: '24px', borderLeft: '4px solid #EF4444' }}>
-                            <h3 style={{ color: '#EF4444', fontSize: '24px', fontWeight: '800', margin: 0 }}>Avant NFCrafter</h3>
+                        <div className="glass-card" style={{ padding: '32px', display: 'flex', flexDirection: 'column', gap: '24px', borderLeft: '4px solid #EF4444' }}>
+                            <h3 style={{ color: '#EF4444', fontSize: '22px', fontWeight: '800', margin: 0 }}>Avant NFCrafter</h3>
                             
                             <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
                                 <div style={{ background: 'rgba(239, 68, 68, 0.08)', color: '#EF4444', padding: '10px', borderRadius: '12px', fontWeight: 'bold' }}>✕</div>
                                 <div>
-                                    <h4 style={{ margin: '0 0 6px 0', fontSize: '18px', color: '#0F172A' }}>88% finissent à la poubelle</h4>
+                                    <h4 style={{ margin: '0 0 6px 0', fontSize: '17px', color: '#0F172A' }}>88% finissent à la poubelle</h4>
                                     <p style={{ margin: 0, color: '#475569', fontSize: '14px', lineHeight: '1.5' }}>Les cartes papier se perdent ou finissent froissées dans un sac en moins de 7 jours.</p>
                                 </div>
                             </div>
@@ -423,7 +482,7 @@ export default function LandingPage() {
                             <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
                                 <div style={{ background: 'rgba(239, 68, 68, 0.08)', color: '#EF4444', padding: '10px', borderRadius: '12px', fontWeight: 'bold' }}>✕</div>
                                 <div>
-                                    <h4 style={{ margin: '0 0 6px 0', fontSize: '18px', color: '#0F172A' }}>La dictée pénible du numéro</h4>
+                                    <h4 style={{ margin: '0 0 6px 0', fontSize: '17px', color: '#0F172A' }}>La dictée pénible du numéro</h4>
                                     <p style={{ margin: 0, color: '#475569', fontSize: '14px', lineHeight: '1.5' }}>"Zéro-Six..." Vous épelez pendant 5 minutes. Le prospect note mal votre nom et ne vous rappelle jamais.</p>
                                 </div>
                             </div>
@@ -431,20 +490,20 @@ export default function LandingPage() {
                             <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
                                 <div style={{ background: 'rgba(239, 68, 68, 0.08)', color: '#EF4444', padding: '10px', borderRadius: '12px', fontWeight: 'bold' }}>✕</div>
                                 <div>
-                                    <h4 style={{ margin: '0 0 6px 0', fontSize: '18px', color: '#0F172A' }}>Coûteuse réimpression</h4>
+                                    <h4 style={{ margin: '0 0 6px 0', fontSize: '17px', color: '#0F172A' }}>Coûteuse réimpression</h4>
                                     <p style={{ margin: 0, color: '#475569', fontSize: '14px', lineHeight: '1.5' }}>Un simple changement de numéro ou de logo vous oblige à réimprimer tout un lot (10 000f perdus).</p>
                                 </div>
                             </div>
                         </div>
 
                         {/* Column Right - The Revolution NFCrafter */}
-                        <div className="glass-card" style={{ padding: '40px', display: 'flex', flexDirection: 'column', gap: '24px', borderLeft: '4px solid #1A1265' }}>
-                            <h3 style={{ color: '#1A1265', fontSize: '24px', fontWeight: '800', margin: 0 }}>Avec NFCrafter</h3>
+                        <div className="glass-card" style={{ padding: '32px', display: 'flex', flexDirection: 'column', gap: '24px', borderLeft: '4px solid #1A1265' }}>
+                            <h3 style={{ color: '#1A1265', fontSize: '22px', fontWeight: '800', margin: 0 }}>Avec NFCrafter</h3>
                             
                             <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
                                 <div style={{ background: 'rgba(26, 18, 101, 0.05)', color: '#1A1265', padding: '10px', borderRadius: '12px', fontWeight: 'bold' }}>✓</div>
                                 <div>
-                                    <h4 style={{ margin: '0 0 6px 0', fontSize: '18px', color: '#0F172A' }}>Un simple "Tap" magique</h4>
+                                    <h4 style={{ margin: '0 0 6px 0', fontSize: '17px', color: '#0F172A' }}>Un simple "Tap" magique</h4>
                                     <p style={{ margin: 0, color: '#475569', fontSize: '14px', lineHeight: '1.5' }}>La carte effleure le téléphone de votre prospect, votre profil professionnel s'ouvre en 1 seconde chrono.</p>
                                 </div>
                             </div>
@@ -452,7 +511,7 @@ export default function LandingPage() {
                             <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
                                 <div style={{ background: 'rgba(26, 18, 101, 0.05)', color: '#1A1265', padding: '10px', borderRadius: '12px', fontWeight: 'bold' }}>✓</div>
                                 <div>
-                                    <h4 style={{ margin: '0 0 6px 0', fontSize: '18px', color: '#0F172A' }}>Enregistrement direct</h4>
+                                    <h4 style={{ margin: '0 0 6px 0', fontSize: '17px', color: '#0F172A' }}>Enregistrement direct</h4>
                                     <p style={{ margin: 0, color: '#475569', fontSize: '14px', lineHeight: '1.5' }}>Votre contact (numéro, email, site web) est enregistré automatiquement dans leur répertoire sans aucune erreur.</p>
                                 </div>
                             </div>
@@ -460,7 +519,7 @@ export default function LandingPage() {
                             <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
                                 <div style={{ background: 'rgba(26, 18, 101, 0.05)', color: '#1A1265', padding: '10px', borderRadius: '12px', fontWeight: 'bold' }}>✓</div>
                                 <div>
-                                    <h4 style={{ margin: '0 0 6px 0', fontSize: '18px', color: '#0F172A' }}>Boutique WhatsApp & Commande</h4>
+                                    <h4 style={{ margin: '0 0 6px 0', fontSize: '17px', color: '#0F172A' }}>Boutique WhatsApp & Commande</h4>
                                     <p style={{ margin: 0, color: '#475569', fontSize: '14px', lineHeight: '1.5' }}>Le client navigue dans votre mini-site, choisit un produit, commande via WhatsApp, et vous le livrez.</p>
                                 </div>
                             </div>
@@ -470,9 +529,9 @@ export default function LandingPage() {
             </section>
 
             {/* REAL-LIFE PRODUCT GALLERY SECTION (Using gallery-1 to gallery-8) */}
-            <section style={{ padding: '100px 0', overflow: 'hidden', background: '#F8FAFC' }}>
-                <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', marginBottom: '48px', textAlign: 'center' }}>
-                    <h2 style={{ fontSize: '36px', fontWeight: '800', color: '#0F172A' }}>Nos cartes en action</h2>
+            <section style={{ padding: '80px 0', overflow: 'hidden', background: '#F8FAFC' }}>
+                <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', marginBottom: '36px', textAlign: 'center' }}>
+                    <h2 className="responsive-h2" style={{ fontWeight: '800', color: '#0F172A' }}>Nos cartes en action</h2>
                     <p style={{ color: '#475569', marginTop: '8px' }}>Découvrez la qualité réelle et les finitions exceptionnelles de nos cartes Signature.</p>
                 </div>
                 
@@ -502,13 +561,13 @@ export default function LandingPage() {
             </section>
 
             {/* 4. SECTION ECOSYSTÈME — BENTO GRID WITH 10 FULL FEATURES (White Glass Theme) */}
-            <section id="features" style={{ padding: '120px 0', position: 'relative' }}>
+            <section id="features" className="responsive-section" style={{ position: 'relative' }}>
                 <div style={{ maxWidth: '1200px', width: '100%', margin: '0 auto', padding: '0 24px' }}>
-                    <div style={{ textAlign: 'center', marginBottom: '80px' }}>
-                        <h2 style={{ fontSize: '44px', fontWeight: '900', fontFamily: 'Outfit', color: '#0F172A', letterSpacing: '-0.02em', margin: '0 0 16px 0' }}>
+                    <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+                        <h2 className="responsive-h2" style={{ fontWeight: '900', fontFamily: 'Outfit', color: '#0F172A', letterSpacing: '-0.02em', margin: '0 0 16px 0' }}>
                             Pas juste une carte. <span style={{ color: '#1A1265' }}>Un écosystème complet.</span>
                         </h2>
-                        <p style={{ color: '#475569', fontSize: '18px', maxWidth: '600px', margin: '0 auto' }}>
+                        <p style={{ color: '#475569', fontSize: '17px', maxWidth: '600px', margin: '0 auto' }}>
                             Découvrez les 10 fonctionnalités clés de NFCrafter qui propulsent votre visibilité et vos ventes au Bénin.
                         </p>
                     </div>
@@ -517,24 +576,24 @@ export default function LandingPage() {
                     <div className="bento-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px' }}>
                         
                         {/* 1. Partage NFC (L - 2 columns) */}
-                        <div className="bento-card" style={{ gridColumn: 'span 2', minHeight: '340px' }}>
+                        <div className="bento-card" style={{ gridColumn: 'span 2', minHeight: '320px' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '20px' }}>
                                 <div style={{ maxWidth: '380px' }}>
                                     <span style={{ color: '#1A1265', fontWeight: '700', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '2px', display: 'block', marginBottom: '8px' }}>Fonctionnalité 1</span>
-                                    <h3 style={{ fontSize: '26px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Technologie NFC Sans App</h3>
+                                    <h3 style={{ fontSize: '24px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Technologie NFC Sans App</h3>
                                     <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.6', margin: 0 }}>Partagez vos coordonnées instantanément en effleurant n'importe quel smartphone moderne. Aucune application à télécharger pour votre interlocuteur. Transmission 1 seconde.</p>
                                 </div>
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(26, 18, 101, 0.05)', padding: '24px', borderRadius: '20px' }}>
-                                    <div style={{ width: '48px', height: '48px', color: '#1A1265' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>` }} />
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(26, 18, 101, 0.05)', padding: '20px', borderRadius: '20px' }}>
+                                    <div style={{ width: '40px', height: '40px', color: '#1A1265' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>` }} />
                                 </div>
                             </div>
                         </div>
 
                         {/* 2. QR Code de Secours (S - 1 column) */}
-                        <div className="bento-card" style={{ minHeight: '340px' }}>
+                        <div className="bento-card" style={{ minHeight: '320px' }}>
                             <div>
                                 <span style={{ color: '#1A1265', fontWeight: '700', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '2px', display: 'block', marginBottom: '8px' }}>Fonctionnalité 2</span>
-                                <h3 style={{ fontSize: '24px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>QR Code Universel</h3>
+                                <h3 style={{ fontSize: '22px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>QR Code Universel</h3>
                             </div>
                             <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>
                                 Gravé au dos de votre carte de signature, il assure 100% de compatibilité, même avec les téléphones plus anciens sans puce NFC.
@@ -542,10 +601,10 @@ export default function LandingPage() {
                         </div>
 
                         {/* 3. Boutique WhatsApp sans commission (S - 1 column) */}
-                        <div className="bento-card" style={{ minHeight: '320px' }}>
+                        <div className="bento-card" style={{ minHeight: '300px' }}>
                             <div>
                                 <span style={{ color: '#1A1265', fontWeight: '700', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '2px', display: 'block', marginBottom: '8px' }}>Fonctionnalité 3</span>
-                                <h3 style={{ fontSize: '24px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Boutique WhatsApp</h3>
+                                <h3 style={{ fontSize: '22px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Boutique WhatsApp</h3>
                             </div>
                             <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>
                                 Vendez vos produits directement. Vos clients consultent vos images, choisissent et commandent directement sur WhatsApp. ZÉRO commission sur vos ventes.
@@ -553,10 +612,10 @@ export default function LandingPage() {
                         </div>
 
                         {/* 4. Mini-Site Pro Inclus (M - 1 column) */}
-                        <div className="bento-card" style={{ minHeight: '320px' }}>
+                        <div className="bento-card" style={{ minHeight: '300px' }}>
                             <div>
                                 <span style={{ color: '#1A1265', fontWeight: '700', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '2px', display: 'block', marginBottom: '8px' }}>Fonctionnalité 4</span>
-                                <h3 style={{ fontSize: '24px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Mini-Site Web Pro</h3>
+                                <h3 style={{ fontSize: '22px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Mini-Site Web Pro</h3>
                             </div>
                             <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>
                                 Votre vitrine professionnelle créée automatiquement en ligne. Présentez vos horaires, votre localisation et vos formulaires de contact.
@@ -564,10 +623,10 @@ export default function LandingPage() {
                         </div>
 
                         {/* 5. Google Business Profile & Référencement (M - 1 column) */}
-                        <div className="bento-card" style={{ minHeight: '320px' }}>
+                        <div className="bento-card" style={{ minHeight: '300px' }}>
                             <div>
                                 <span style={{ color: '#1A1265', fontWeight: '700', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '2px', display: 'block', marginBottom: '8px' }}>Fonctionnalité 5</span>
-                                <h3 style={{ fontSize: '24px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Avis & Google Business</h3>
+                                <h3 style={{ fontSize: '22px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Avis & Google Business</h3>
                             </div>
                             <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>
                                 Récupérez des avis clients Google instantanément lors des rencontres physiques, et apparaissez plus haut dans les recherches locales.
@@ -575,10 +634,10 @@ export default function LandingPage() {
                         </div>
 
                         {/* 6. Portfolio & Galerie d'images */}
-                        <div className="bento-card" style={{ minHeight: '320px' }}>
+                        <div className="bento-card" style={{ minHeight: '300px' }}>
                             <div>
                                 <span style={{ color: '#1A1265', fontWeight: '700', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '2px', display: 'block', marginBottom: '8px' }}>Fonctionnalité 6</span>
-                                <h3 style={{ fontSize: '24px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Portfolio Visuel</h3>
+                                <h3 style={{ fontSize: '22px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Portfolio Visuel</h3>
                             </div>
                             <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>
                                 Exposez vos réalisations en haute définition (books, photos de projets, réalisations graphiques, plats).
@@ -586,10 +645,10 @@ export default function LandingPage() {
                         </div>
 
                         {/* 7. Certifications & Badges */}
-                        <div className="bento-card" style={{ minHeight: '320px' }}>
+                        <div className="bento-card" style={{ minHeight: '300px' }}>
                             <div>
                                 <span style={{ color: '#1A1265', fontWeight: '700', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '2px', display: 'block', marginBottom: '8px' }}>Fonctionnalité 7</span>
-                                <h3 style={{ fontSize: '24px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Certifications & Badges</h3>
+                                <h3 style={{ fontSize: '22px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Certifications & Badges</h3>
                             </div>
                             <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>
                                 Affichez vos diplômes officiels ou labels de compétences pour inspirer une confiance immédiate chez vos prospects.
@@ -597,10 +656,10 @@ export default function LandingPage() {
                         </div>
 
                         {/* 8. Statistiques scans live */}
-                        <div className="bento-card" style={{ minHeight: '320px' }}>
+                        <div className="bento-card" style={{ minHeight: '300px' }}>
                             <div>
                                 <span style={{ color: '#1A1265', fontWeight: '700', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '2px', display: 'block', marginBottom: '8px' }}>Fonctionnalité 8</span>
-                                <h3 style={{ fontSize: '24px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Analytics Temps Réel</h3>
+                                <h3 style={{ fontSize: '22px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Analytics Temps Réel</h3>
                             </div>
                             <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>
                                 Suivez vos statistiques de scan en direct pour mesurer l'efficacité de votre networking lors de vos événements.
@@ -608,10 +667,10 @@ export default function LandingPage() {
                         </div>
 
                         {/* 9. Mise à jour illimitée à vie */}
-                        <div className="bento-card" style={{ minHeight: '320px' }}>
+                        <div className="bento-card" style={{ minHeight: '300px' }}>
                             <div>
                                 <span style={{ color: '#1A1265', fontWeight: '700', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '2px', display: 'block', marginBottom: '8px' }}>Fonctionnalité 9</span>
-                                <h3 style={{ fontSize: '24px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Mise à jour Gratuite</h3>
+                                <h3 style={{ fontSize: '22px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Mise à jour Gratuite</h3>
                             </div>
                             <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>
                                 Modifiez vos numéros, réseaux et tarifs en 2 clics. Votre profil est actualisé instantanément, sans aucune réimpression.
@@ -619,10 +678,10 @@ export default function LandingPage() {
                         </div>
 
                         {/* 10. Prise de RDV simplifiée */}
-                        <div className="bento-card" style={{ minHeight: '320px' }}>
+                        <div className="bento-card" style={{ minHeight: '300px' }}>
                             <div>
                                 <span style={{ color: '#1A1265', fontWeight: '700', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '2px', display: 'block', marginBottom: '8px' }}>Fonctionnalité 10</span>
-                                <h3 style={{ fontSize: '24px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Prise de Rendez-vous</h3>
+                                <h3 style={{ fontSize: '22px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Prise de Rendez-vous</h3>
                             </div>
                             <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>
                                 Intégrez un calendrier (type Calendly) ou un formulaire de réservation de services directement sur votre profil public.
@@ -634,27 +693,27 @@ export default function LandingPage() {
             </section>
 
             {/* 5. DÉMO LIVE — SCANNEZ & VOYEZ */}
-            <section id="demo" style={{ padding: '120px 0', background: 'rgba(255,255,255,0.5)', position: 'relative', borderTop: '1px solid rgba(26, 18, 101, 0.03)', borderBottom: '1px solid rgba(26, 18, 101, 0.03)' }}>
+            <section id="demo" className="responsive-section" style={{ background: 'rgba(255,255,255,0.5)', position: 'relative', borderTop: '1px solid rgba(26, 18, 101, 0.03)', borderBottom: '1px solid rgba(26, 18, 101, 0.03)' }}>
                 <div style={{ maxWidth: '1200px', width: '100%', margin: '0 auto', padding: '0 24px' }}>
-                    <div style={{ textAlign: 'center', marginBottom: '80px' }}>
-                        <h2 style={{ fontSize: '44px', fontWeight: '900', fontFamily: 'Outfit', color: '#0F172A', letterSpacing: '-0.02em', margin: '0 0 16px 0' }}>
+                    <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+                        <h2 className="responsive-h2" style={{ fontWeight: '900', fontFamily: 'Outfit', color: '#0F172A', letterSpacing: '-0.02em', margin: '0 0 16px 0' }}>
                             Voici ce que <span style={{ color: '#1A1265' }}>vos contacts verront.</span>
                         </h2>
-                        <p style={{ color: '#475569', fontSize: '18px', maxWidth: '600px', margin: '0 auto' }}>
+                        <p style={{ color: '#475569', fontSize: '17px', maxWidth: '600px', margin: '0 auto' }}>
                             Découvrez notre interface mobile d'exception et le panneau d'administration.
                         </p>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '64px', alignItems: 'center' }}>
+                    <div className="responsive-grid" style={{ gap: '40px', alignItems: 'center' }}>
                         
                         {/* Left Side - Interactive 3D Phone Mockup */}
                         <div style={{ display: 'flex', justifyContent: 'center' }}>
                             <div style={{
-                                width: '280px',
-                                height: '560px',
+                                width: '270px',
+                                height: '540px',
                                 background: '#0F172A',
-                                borderRadius: '44px',
-                                border: '10px solid #1F2937',
+                                borderRadius: '36px',
+                                border: '8px solid #1F2937',
                                 boxShadow: '0 30px 80px rgba(26, 18, 101, 0.08)',
                                 position: 'relative',
                                 overflow: 'hidden',
@@ -663,27 +722,27 @@ export default function LandingPage() {
                                 flexDirection: 'column'
                             }}>
                                 {/* Notch */}
-                                <div style={{ position: 'absolute', top: '0', left: '50%', transform: 'translateX(-50%)', width: '100px', height: '20px', background: '#1F2937', borderBottomLeftRadius: '14px', borderBottomRightRadius: '14px', zIndex: 10 }}></div>
+                                <div style={{ position: 'absolute', top: '0', left: '50%', transform: 'translateX(-50%)', width: '90px', height: '18px', background: '#1F2937', borderBottomLeftRadius: '12px', borderBottomRightRadius: '12px', zIndex: 10 }}></div>
 
                                 {activeDemoTab === 'visitor' ? (
                                     /* Visitor View Mockup */
                                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', overflowY: 'auto' }}>
-                                        <div style={{ width: '70px', height: '70px', borderRadius: '50%', background: 'linear-gradient(135deg, #1A1265, #6366F1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', fontSize: '24px', color: 'white', marginTop: '20px', marginBottom: '12px', boxShadow: '0 0 20px rgba(99, 102, 241, 0.3)' }}>R</div>
-                                        <h3 style={{ margin: '0 0 4px 0', fontSize: '18px', fontWeight: '800', color: 'white' }}>Romuald K.</h3>
-                                        <span style={{ fontSize: '12px', color: '#6366F1', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '16px' }}>Architecte d'intérieur</span>
+                                        <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'linear-gradient(135deg, #1A1265, #6366F1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', fontSize: '22px', color: 'white', marginTop: '20px', marginBottom: '12px', boxShadow: '0 0 20px rgba(99, 102, 241, 0.3)' }}>R</div>
+                                        <h3 style={{ margin: '0 0 4px 0', fontSize: '17px', fontWeight: '800', color: 'white' }}>Romuald K.</h3>
+                                        <span style={{ fontSize: '11px', color: '#6366F1', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '16px' }}>Architecte d'intérieur</span>
 
-                                        <button style={{ width: '100%', background: '#6366F1', color: 'white', border: 'none', padding: '14px', borderRadius: '12px', fontWeight: '800', fontSize: '13px', cursor: 'pointer', marginBottom: '20px' }}>
+                                        <button style={{ width: '100%', background: '#6366F1', color: 'white', border: 'none', padding: '12px', borderRadius: '10px', fontWeight: '800', fontSize: '13px', cursor: 'pointer', marginBottom: '20px' }}>
                                             Enregistrer le Contact
                                         </button>
 
                                         {/* Fake Links */}
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
                                             <div style={{ background: 'rgba(255,255,255,0.05)', padding: '12px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                <div style={{ width: '20px', height: '20px', background: '#6366F1', borderRadius: '4px' }}></div>
+                                                <div style={{ width: '18px', height: '18px', background: '#6366F1', borderRadius: '4px' }}></div>
                                                 <span style={{ fontSize: '12px', color: 'white' }}>Mon Portfolio en Ligne</span>
                                             </div>
                                             <div style={{ background: 'rgba(255,255,255,0.05)', padding: '12px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                <div style={{ width: '20px', height: '20px', background: '#6366F1', borderRadius: '4px' }}></div>
+                                                <div style={{ width: '18px', height: '18px', background: '#6366F1', borderRadius: '4px' }}></div>
                                                 <span style={{ fontSize: '12px', color: 'white' }}>Boutique de nos créations</span>
                                             </div>
                                         </div>
@@ -691,18 +750,18 @@ export default function LandingPage() {
                                 ) : (
                                     /* Owner View Mockup (Dashboard) */
                                     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                                        <h4 style={{ fontSize: '16px', fontWeight: '900', margin: '20px 0 12px 0', color: '#6366F1' }}>Éditer le profil</h4>
+                                        <h4 style={{ fontSize: '15px', fontWeight: '900', margin: '20px 0 12px 0', color: '#6366F1' }}>Éditer le profil</h4>
                                         
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                            <div style={{ border: '1px dashed rgba(99, 102, 241, 0.4)', background: 'rgba(99, 102, 241, 0.05)', padding: '12px', borderRadius: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                            <div style={{ border: '1px dashed rgba(99, 102, 241, 0.4)', background: 'rgba(99, 102, 241, 0.05)', padding: '10px', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                                 <span style={{ fontSize: '11px', color: 'white' }}>✥ En-tête de profil</span>
                                                 <span style={{ fontSize: '10px', color: '#9CA3AF' }}>Modifier</span>
                                             </div>
-                                            <div style={{ border: '1px dashed rgba(99, 102, 241, 0.4)', background: 'rgba(99, 102, 241, 0.05)', padding: '12px', borderRadius: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <div style={{ border: '1px dashed rgba(99, 102, 241, 0.4)', background: 'rgba(99, 102, 241, 0.05)', padding: '10px', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                                 <span style={{ fontSize: '11px', color: 'white' }}>✥ Bouton Contact</span>
                                                 <span style={{ fontSize: '10px', color: '#9CA3AF' }}>Modifier</span>
                                             </div>
-                                            <div style={{ border: '1px dashed rgba(99, 102, 241, 0.4)', background: 'rgba(99, 102, 241, 0.05)', padding: '12px', borderRadius: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <div style={{ border: '1px dashed rgba(99, 102, 241, 0.4)', background: 'rgba(99, 102, 241, 0.05)', padding: '10px', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                                 <span style={{ fontSize: '11px', color: 'white' }}>✥ Section Portfolio</span>
                                                 <span style={{ fontSize: '10px', color: '#9CA3AF' }}>Modifier</span>
                                             </div>
@@ -713,10 +772,10 @@ export default function LandingPage() {
                         </div>
 
                         {/* Right Side - Toggles */}
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                             <div>
-                                <h3 style={{ fontSize: '32px', fontWeight: '800', fontFamily: 'Outfit', color: '#0F172A', margin: '0 0 16px 0' }}>Basculez entre les vues</h3>
-                                <p style={{ color: '#475569', fontSize: '16px', lineHeight: '1.6', margin: 0 }}>
+                                <h3 className="responsive-h2" style={{ fontWeight: '800', fontFamily: 'Outfit', color: '#0F172A', margin: '0 0 16px 0' }}>Basculez entre les vues</h3>
+                                <p style={{ color: '#475569', fontSize: '15px', lineHeight: '1.6', margin: 0 }}>
                                     Visualisez le site du côté visiteur ou accédez à l'administration simplifiée pour modifier vos contenus en direct depuis votre dashboard NFCrafter.
                                 </p>
                             </div>
@@ -727,8 +786,8 @@ export default function LandingPage() {
                                     background: activeDemoTab === 'visitor' ? 'linear-gradient(135deg, #1A1265, #6366F1)' : 'rgba(26, 18, 101, 0.03)',
                                     border: activeDemoTab === 'visitor' ? 'none' : '1px solid rgba(26, 18, 101, 0.15)',
                                     color: activeDemoTab === 'visitor' ? 'white' : '#1A1265',
-                                    padding: '16px',
-                                    borderRadius: '16px',
+                                    padding: '14px',
+                                    borderRadius: '12px',
                                     fontWeight: '800',
                                     cursor: 'pointer',
                                     transition: 'all 0.3s ease'
@@ -740,8 +799,8 @@ export default function LandingPage() {
                                     background: activeDemoTab === 'dashboard' ? 'linear-gradient(135deg, #1A1265, #6366F1)' : 'rgba(26, 18, 101, 0.03)',
                                     border: activeDemoTab === 'dashboard' ? 'none' : '1px solid rgba(26, 18, 101, 0.15)',
                                     color: activeDemoTab === 'dashboard' ? 'white' : '#1A1265',
-                                    padding: '16px',
-                                    borderRadius: '16px',
+                                    padding: '14px',
+                                    borderRadius: '12px',
                                     fontWeight: '800',
                                     cursor: 'pointer',
                                     transition: 'all 0.3s ease'
@@ -755,28 +814,28 @@ export default function LandingPage() {
             </section>
 
             {/* 6. CONFIGURATEUR DE CARTE — CLEAN DYNAMIC PHOTO DISPLAY (Loads specific color-combined image) */}
-            <section id="tarifs" style={{ padding: '120px 0', position: 'relative' }}>
+            <section id="tarifs" className="responsive-section" style={{ position: 'relative', overflow: 'hidden' }}>
                 {/* Dynamic radial glow behind color select */}
                 <div style={{ position: 'absolute', top: '50%', left: '30%', transform: 'translate(-50%, -50%)', width: '500px', height: '500px', borderRadius: '50%', background: `radial-gradient(circle, ${buttonColor}12 0%, transparent 70%)`, filter: 'blur(50px)', pointerEvents: 'none', zIndex: 0, transition: 'background 0.5s ease' }} />
 
                 <div style={{ maxWidth: '1200px', width: '100%', margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 10 }}>
-                    <div style={{ textAlign: 'center', marginBottom: '80px' }}>
-                        <h2 style={{ fontSize: '44px', fontWeight: '900', fontFamily: 'Outfit', color: '#0F172A', letterSpacing: '-0.02em', margin: '0 0 16px 0' }}>
+                    <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+                        <h2 className="responsive-h2" style={{ fontWeight: '900', fontFamily: 'Outfit', color: '#0F172A', letterSpacing: '-0.02em', margin: '0 0 16px 0' }}>
                             Choisissez <span style={{ color: '#1A1265' }}>votre identité.</span>
                         </h2>
-                        <p style={{ color: '#475569', fontSize: '18px', maxWidth: '600px', margin: '0 auto' }}>
+                        <p style={{ color: '#475569', fontSize: '17px', maxWidth: '600px', margin: '0 auto' }}>
                             Configurez la couleur de votre carte physique et valisez votre offre.
                         </p>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '48px', alignItems: 'center' }}>
+                    <div className="config-wrapper" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '48px', alignItems: 'center' }}>
                         
                         {/* Configurator Visualizer Left - Static display of the dynamic color combined image */}
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                             <div style={{
                                 width: '100%',
-                                maxWidth: '420px',
-                                borderRadius: '24px',
+                                maxWidth: '380px',
+                                borderRadius: '20px',
                                 boxShadow: '0 30px 60px rgba(26, 18, 101, 0.1)',
                                 overflow: 'hidden',
                                 background: '#FFFFFF',
@@ -795,42 +854,42 @@ export default function LandingPage() {
                         </div>
 
                         {/* Configurator Controls Right */}
-                        <div className="glass-card" style={{ padding: '40px', display: 'flex', flexDirection: 'column', gap: '32px' }}>
+                        <div className="glass-card" style={{ padding: '32px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
                             {/* Step 1: Pack Selection */}
                             <div>
-                                <span style={{ color: '#475569', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: '16px' }}>Étape 1 : Choisir le Pack</span>
-                                <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                                <span style={{ color: '#475569', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: '12px' }}>Étape 1 : Choisir le Pack</span>
+                                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                                     <div onClick={() => setCardType('digital')} style={{
                                         flex: 1,
-                                        minWidth: '140px',
+                                        minWidth: '130px',
                                         border: cardType === 'digital' ? '2px solid #1A1265' : '1px solid rgba(26, 18, 101, 0.1)',
                                         background: cardType === 'digital' ? 'rgba(26, 18, 101, 0.03)' : 'transparent',
-                                        padding: '20px',
-                                        borderRadius: '16px',
+                                        padding: '16px',
+                                        borderRadius: '12px',
                                         cursor: 'pointer',
                                         display: 'flex',
                                         flexDirection: 'column',
-                                        gap: '6px'
+                                        gap: '4px'
                                     }}>
-                                        <span style={{ fontWeight: '800', fontSize: '15px', color: '#0F172A' }}>Pack Digital</span>
-                                        <span style={{ color: '#1A1265', fontWeight: '900', fontSize: '18px' }}>7 000 FCFA</span>
+                                        <span style={{ fontWeight: '800', fontSize: '14px', color: '#0F172A' }}>Pack Digital</span>
+                                        <span style={{ color: '#1A1265', fontWeight: '900', fontSize: '16px' }}>7 000 FCFA</span>
                                     </div>
                                     <div onClick={() => setCardType('physical')} style={{
                                         flex: 1,
-                                        minWidth: '140px',
+                                        minWidth: '130px',
                                         border: cardType === 'physical' ? '2px solid #1A1265' : '1px solid rgba(26, 18, 101, 0.1)',
                                         background: cardType === 'physical' ? 'rgba(26, 18, 101, 0.03)' : 'transparent',
-                                        padding: '20px',
-                                        borderRadius: '16px',
+                                        padding: '16px',
+                                        borderRadius: '12px',
                                         cursor: 'pointer',
                                         display: 'flex',
                                         flexDirection: 'column',
-                                        gap: '6px',
+                                        gap: '4px',
                                         position: 'relative'
                                     }}>
-                                        <div style={{ position: 'absolute', top: '-10px', right: '10px', background: '#1A1265', color: 'white', fontSize: '9px', fontWeight: '800', padding: '2px 8px', borderRadius: '100px', textTransform: 'uppercase' }}>Populaire</div>
-                                        <span style={{ fontWeight: '800', fontSize: '15px', color: '#0F172A' }}>Pack Signature NFC</span>
-                                        <span style={{ color: '#1A1265', fontWeight: '900', fontSize: '18px' }}>10 000 FCFA</span>
+                                        <div style={{ position: 'absolute', top: '-10px', right: '10px', background: '#1A1265', color: 'white', fontSize: '8px', fontWeight: '800', padding: '2px 6px', borderRadius: '100px', textTransform: 'uppercase' }}>Populaire</div>
+                                        <span style={{ fontWeight: '800', fontSize: '14px', color: '#0F172A' }}>Pack Signature</span>
+                                        <span style={{ color: '#1A1265', fontWeight: '900', fontSize: '16px' }}>10 000 FCFA</span>
                                     </div>
                                 </div>
                             </div>
@@ -838,15 +897,15 @@ export default function LandingPage() {
                             {/* Step 2: Color Picker (Only visible if physical pack is selected) */}
                             {cardType === 'physical' && (
                                 <div>
-                                    <span style={{ color: '#475569', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: '16px' }}>Étape 2 : Couleur de la carte — <span style={{ color: '#1A1265' }}>{activeColor.name}</span></span>
-                                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                                    <span style={{ color: '#475569', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: '12px' }}>Étape 2 : Couleur de la carte — <span style={{ color: '#1A1265' }}>{activeColor.name}</span></span>
+                                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                                         {CARD_COLORS.map((color, index) => (
                                             <div
                                                 key={color.id}
                                                 onClick={() => setSelectedColorIndex(index)}
                                                 style={{
-                                                    width: '36px',
-                                                    height: '36px',
+                                                    width: '32px',
+                                                    height: '32px',
                                                     borderRadius: '50%',
                                                     background: color.hex,
                                                     cursor: 'pointer',
@@ -868,10 +927,10 @@ export default function LandingPage() {
                                 background: buttonColor,
                                 color: buttonTextColor,
                                 border: 'none',
-                                padding: '20px',
-                                borderRadius: '16px',
+                                padding: '16px',
+                                borderRadius: '14px',
                                 fontWeight: '900',
-                                fontSize: '16px',
+                                fontSize: '15px',
                                 cursor: 'pointer',
                                 boxShadow: `0 10px 30px ${buttonColor}30`,
                                 transition: 'all 0.3s ease'
@@ -884,40 +943,40 @@ export default function LandingPage() {
             </section>
 
             {/* 7. PREUVE SOCIALE — BULLS DE MESSAGE */}
-            <section style={{ padding: '120px 0', background: 'rgba(255,255,255,0.5)', position: 'relative', borderTop: '1px solid rgba(26, 18, 101, 0.03)', borderBottom: '1px solid rgba(26, 18, 101, 0.03)' }}>
+            <section className="responsive-section" style={{ background: 'rgba(255,255,255,0.5)', position: 'relative', borderTop: '1px solid rgba(26, 18, 101, 0.03)', borderBottom: '1px solid rgba(26, 18, 101, 0.03)' }}>
                 <div style={{ maxWidth: '1200px', width: '100%', margin: '0 auto', padding: '0 24px' }}>
-                    <div style={{ textAlign: 'center', marginBottom: '80px' }}>
-                        <h2 style={{ fontSize: '44px', fontWeight: '900', fontFamily: 'Outfit', color: '#0F172A', letterSpacing: '-0.02em', margin: '0 0 16px 0' }}>
+                    <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+                        <h2 className="responsive-h2" style={{ fontWeight: '900', fontFamily: 'Outfit', color: '#0F172A', letterSpacing: '-0.02em', margin: '0 0 16px 0' }}>
                             Les professionnels qui avancent <span style={{ color: '#1A1265' }}>utilisent NFCrafter.</span>
                         </h2>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '32px' }}>
+                    <div className="responsive-grid" style={{ gap: '32px' }}>
                         {/* Testimonial Bubble 1 */}
-                        <div className="glass-card" style={{ padding: '32px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                        <div className="glass-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
                             <div style={{ display: 'flex', gap: '4px', color: '#1A1265' }}>★★★★★</div>
-                            <p style={{ margin: 0, color: '#475569', fontSize: '15px', lineHeight: '1.6', fontStyle: 'italic' }}>
+                            <p style={{ margin: 0, color: '#475569', fontSize: '14px', lineHeight: '1.6', fontStyle: 'italic' }}>
                                 "Avant, je distribuais mes cartes de visite papier lors des cocktails d'affaires et la plupart finissaient jetées. Maintenant, les gens scannent ma carte NFCrafter, mon contact est directement mémorisé et ils parcourent mes conceptions de meubles. En 2 semaines, j'ai conclu 3 contrats importants !"
                             </p>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                 <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'linear-gradient(135deg, #1A1265, #6366F1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', color: 'white' }}>R</div>
                                 <div>
-                                    <h4 style={{ margin: 0, fontSize: '15px', fontWeight: '800', color: '#0F172A' }}>Romuald K.</h4>
+                                    <h4 style={{ margin: 0, fontSize: '14px', fontWeight: '800', color: '#0F172A' }}>Romuald K.</h4>
                                     <span style={{ fontSize: '12px', color: '#475569' }}>Architecte, Cotonou</span>
                                 </div>
                             </div>
                         </div>
 
                         {/* Testimonial Bubble 2 */}
-                        <div className="glass-card" style={{ padding: '32px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                        <div className="glass-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
                             <div style={{ display: 'flex', gap: '4px', color: '#1A1265' }}>★★★★★</div>
-                            <p style={{ margin: 0, color: '#475569', fontSize: '15px', lineHeight: '1.6', fontStyle: 'italic' }}>
+                            <p style={{ margin: 0, color: '#475569', fontSize: '14px', lineHeight: '1.6', fontStyle: 'italic' }}>
                                 "La boutique WhatsApp intégrée à mon profil NFCrafter a complètement boosté mes ventes. Zéro commission, mes clientes parcourent mes articles et commandent d'un simple message WhatsApp. Je recommande les yeux fermés !"
                             </p>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                 <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'linear-gradient(135deg, #1A1265, #6366F1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', color: 'white' }}>M</div>
                                 <div>
-                                    <h4 style={{ margin: 0, fontSize: '15px', fontWeight: '800', color: '#0F172A' }}>Mariam D.</h4>
+                                    <h4 style={{ margin: 0, fontSize: '14px', fontWeight: '800', color: '#0F172A' }}>Mariam D.</h4>
                                     <span style={{ fontSize: '12px', color: '#475569' }}>Vendeuse de Prêt-à-porter, Calavi</span>
                                 </div>
                             </div>
@@ -927,48 +986,48 @@ export default function LandingPage() {
             </section>
 
             {/* 8. TABLEAU COMPARATIF */}
-            <section style={{ padding: '120px 0', position: 'relative' }}>
+            <section className="responsive-section" style={{ position: 'relative' }}>
                 <div style={{ maxWidth: '1200px', width: '100%', margin: '0 auto', padding: '0 24px' }}>
-                    <div style={{ textAlign: 'center', marginBottom: '80px' }}>
-                        <h2 style={{ fontSize: '44px', fontWeight: '900', fontFamily: 'Outfit', color: '#0F172A', letterSpacing: '-0.02em', margin: '0 0 16px 0' }}>
+                    <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+                        <h2 className="responsive-h2" style={{ fontWeight: '900', fontFamily: 'Outfit', color: '#0F172A', letterSpacing: '-0.02em', margin: '0 0 16px 0' }}>
                             Pourquoi NFCrafter <span style={{ color: '#1A1265' }}>écrase la concurrence.</span>
                         </h2>
                     </div>
 
-                    <div style={{ overflowX: 'auto' }}>
+                    <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
                         <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '600px', color: '#0F172A' }}>
                             <thead>
                                 <tr style={{ borderBottom: '1px solid rgba(26, 18, 101, 0.08)' }}>
-                                    <th style={{ textAlign: 'left', padding: '20px', color: '#475569' }}>Critères</th>
-                                    <th style={{ textAlign: 'center', padding: '20px', color: '#475569' }}>Cartes Papier</th>
-                                    <th style={{ textAlign: 'center', padding: '20px', color: '#475569' }}>Site E-commerce classique</th>
-                                    <th style={{ textAlign: 'center', padding: '20px', color: '#1A1265', background: 'rgba(26, 18, 101, 0.03)', fontWeight: '900' }}>🏆 NFCrafter</th>
+                                    <th style={{ textAlign: 'left', padding: '16px', color: '#475569', fontSize: '14px' }}>Critères</th>
+                                    <th style={{ textAlign: 'center', padding: '16px', color: '#475569', fontSize: '14px' }}>Cartes Papier</th>
+                                    <th style={{ textAlign: 'center', padding: '16px', color: '#475569', fontSize: '14px' }}>Site E-commerce classique</th>
+                                    <th style={{ textAlign: 'center', padding: '16px', color: '#1A1265', background: 'rgba(26, 18, 101, 0.03)', fontWeight: '900', fontSize: '14px' }}>🏆 NFCrafter</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr style={{ borderBottom: '1px solid rgba(26, 18, 101, 0.05)' }}>
-                                    <td style={{ padding: '20px', fontWeight: '700' }}>Partage instantané</td>
-                                    <td style={{ textAlign: 'center', padding: '20px', color: '#EF4444' }}>✕</td>
-                                    <td style={{ textAlign: 'center', padding: '20px', color: '#EF4444' }}>✕</td>
-                                    <td style={{ textAlign: 'center', padding: '20px', color: '#10B981', background: 'rgba(26, 18, 101, 0.03)', fontWeight: 'bold' }}>✓ Oui (NFC)</td>
+                                    <td style={{ padding: '16px', fontWeight: '700', fontSize: '14px' }}>Partage instantané</td>
+                                    <td style={{ textAlign: 'center', padding: '16px', color: '#EF4444' }}>✕</td>
+                                    <td style={{ textAlign: 'center', padding: '16px', color: '#EF4444' }}>✕</td>
+                                    <td style={{ textAlign: 'center', padding: '16px', color: '#10B981', background: 'rgba(26, 18, 101, 0.03)', fontWeight: 'bold', fontSize: '14px' }}>✓ Oui (NFC)</td>
                                 </tr>
                                 <tr style={{ borderBottom: '1px solid rgba(26, 18, 101, 0.05)' }}>
-                                    <td style={{ padding: '20px', fontWeight: '700' }}>Boutique intégrée</td>
-                                    <td style={{ textAlign: 'center', padding: '20px', color: '#EF4444' }}>✕</td>
-                                    <td style={{ textAlign: 'center', padding: '20px', color: '#10B981' }}>✓</td>
-                                    <td style={{ textAlign: 'center', padding: '20px', color: '#10B981', background: 'rgba(26, 18, 101, 0.03)', fontWeight: 'bold' }}>✓ Incluse</td>
+                                    <td style={{ padding: '16px', fontWeight: '700', fontSize: '14px' }}>Boutique intégrée</td>
+                                    <td style={{ textAlign: 'center', padding: '16px', color: '#EF4444' }}>✕</td>
+                                    <td style={{ textAlign: 'center', padding: '16px', color: '#10B981' }}>✓</td>
+                                    <td style={{ textAlign: 'center', padding: '16px', color: '#10B981', background: 'rgba(26, 18, 101, 0.03)', fontWeight: 'bold', fontSize: '14px' }}>✓ Incluse</td>
                                 </tr>
                                 <tr style={{ borderBottom: '1px solid rgba(26, 18, 101, 0.05)' }}>
-                                    <td style={{ padding: '20px', fontWeight: '700' }}>Frais ou commission</td>
-                                    <td style={{ textAlign: 'center', padding: '20px' }}>N/A</td>
-                                    <td style={{ textAlign: 'center', padding: '20px', color: '#EF4444' }}>15% à 20%</td>
-                                    <td style={{ textAlign: 'center', padding: '20px', color: '#10B981', background: 'rgba(26, 18, 101, 0.03)', fontWeight: 'bold' }}>✓ 0% commission</td>
+                                    <td style={{ padding: '16px', fontWeight: '700', fontSize: '14px' }}>Frais ou commission</td>
+                                    <td style={{ textAlign: 'center', padding: '16px', fontSize: '14px' }}>N/A</td>
+                                    <td style={{ textAlign: 'center', padding: '16px', color: '#EF4444', fontSize: '14px' }}>15% à 20%</td>
+                                    <td style={{ textAlign: 'center', padding: '16px', color: '#10B981', background: 'rgba(26, 18, 101, 0.03)', fontWeight: 'bold', fontSize: '14px' }}>✓ 0% commission</td>
                                 </tr>
                                 <tr style={{ borderBottom: '1px solid rgba(26, 18, 101, 0.05)' }}>
-                                    <td style={{ padding: '20px', fontWeight: '700' }}>Durée de vie</td>
-                                    <td style={{ textAlign: 'center', padding: '20px', color: '#EF4444' }}>Se perd / se déchire</td>
-                                    <td style={{ textAlign: 'center', padding: '20px' }}>N/A</td>
-                                    <td style={{ textAlign: 'center', padding: '20px', color: '#10B981', background: 'rgba(26, 18, 101, 0.03)', fontWeight: 'bold' }}>✓ À vie</td>
+                                    <td style={{ padding: '16px', fontWeight: '700', fontSize: '14px' }}>Durée de vie</td>
+                                    <td style={{ textAlign: 'center', padding: '16px', color: '#EF4444', fontSize: '14px' }}>Se perd / se déchire</td>
+                                    <td style={{ textAlign: 'center', padding: '16px', fontSize: '14px' }}>N/A</td>
+                                    <td style={{ textAlign: 'center', padding: '16px', color: '#10B981', background: 'rgba(26, 18, 101, 0.03)', fontWeight: 'bold', fontSize: '14px' }}>✓ À vie</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -977,38 +1036,38 @@ export default function LandingPage() {
             </section>
 
             {/* 9. FOIRE AUX QUESTIONS (FAQ) */}
-            <section id="faq" style={{ padding: '120px 0', background: 'rgba(255,255,255,0.5)', borderTop: '1px solid rgba(26, 18, 101, 0.03)' }}>
+            <section id="faq" className="responsive-section" style={{ background: 'rgba(255,255,255,0.5)', borderTop: '1px solid rgba(26, 18, 101, 0.03)' }}>
                 <div style={{ maxWidth: '800px', width: '100%', margin: '0 auto', padding: '0 24px' }}>
-                    <div style={{ textAlign: 'center', marginBottom: '80px' }}>
-                        <h2 style={{ fontSize: '44px', fontWeight: '900', fontFamily: 'Outfit', color: '#0F172A', letterSpacing: '-0.02em', margin: '0' }}>
+                    <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+                        <h2 className="responsive-h2" style={{ fontWeight: '900', fontFamily: 'Outfit', color: '#0F172A', letterSpacing: '-0.02em', margin: '0' }}>
                             Questions <span style={{ color: '#1A1265' }}>Fréquentes</span>
                         </h2>
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                         <details>
-                            <summary style={{ padding: '24px', fontWeight: '800', color: '#0F172A', cursor: 'pointer', display: 'flex', justifycontent: 'space-between' }}>
+                            <summary style={{ padding: '20px', fontWeight: '800', color: '#0F172A', cursor: 'pointer' }}>
                                 Est-ce compatible avec tous les téléphones ?
                             </summary>
-                            <div style={{ padding: '0 24px 24px 24px', color: '#475569', fontSize: '15px', lineHeight: '1.6' }}>
+                            <div style={{ padding: '0 20px 20px 20px', color: '#475569', fontSize: '14px', lineHeight: '1.6' }}>
                                 Oui. Les téléphones récents disposent du NFC (un simple contact physique suffit). Pour les smartphones plus anciens, le QR code universel gravé au dos de votre carte assure une compatibilité totale.
                             </div>
                         </details>
 
                         <details>
-                            <summary style={{ padding: '24px', fontWeight: '800', color: '#0F172A', cursor: 'pointer', display: 'flex', justifycontent: 'space-between' }}>
+                            <summary style={{ padding: '20px', fontWeight: '800', color: '#0F172A', cursor: 'pointer' }}>
                                 Comment fonctionne la boutique WhatsApp ?
                             </summary>
-                            <div style={{ padding: '0 24px 24px 24px', color: '#475569', fontSize: '15px', lineHeight: '1.6' }}>
+                            <div style={{ padding: '0 20px 20px 20px', color: '#475569', fontSize: '14px', lineHeight: '1.6' }}>
                                 Vous ajoutez vos articles avec photos et prix dans votre Espace Client NFCrafter. Vos clients parcourent votre boutique sur leur téléphone et cliquent sur commander. Cela vous envoie un message WhatsApp pré-rempli pour convenir de la livraison.
                             </div>
                         </details>
 
                         <details>
-                            <summary style={{ padding: '24px', fontWeight: '800', color: '#0F172A', cursor: 'pointer', display: 'flex', justifycontent: 'space-between' }}>
+                            <summary style={{ padding: '20px', fontWeight: '800', color: '#0F172A', cursor: 'pointer' }}>
                                 Que se passe-t-il si je change de numéro ou d'adresse ?
                             </summary>
-                            <div style={{ padding: '0 24px 24px 24px', color: '#475569', fontSize: '15px', lineHeight: '1.6' }}>
+                            <div style={{ padding: '0 20px 20px 20px', color: '#475569', fontSize: '14px', lineHeight: '1.6' }}>
                                 Pas besoin de réimprimer votre carte ! Vous vous connectez à votre tableau de bord NFCrafter, vous modifiez vos coordonnées en 2 clics et la mise à jour est instantanée pour toutes les personnes détenant votre carte physique.
                             </div>
                         </details>
@@ -1017,16 +1076,16 @@ export default function LandingPage() {
             </section>
 
             {/* 10. FOOTER CTA */}
-            <section style={{ padding: '120px 0', background: 'linear-gradient(180deg, #F8FAFC 0%, #EEF2FF 100%)', textAlign: 'center', position: 'relative' }}>
+            <section className="responsive-section" style={{ background: 'linear-gradient(180deg, #F8FAFC 0%, #EEF2FF 100%)', textAlign: 'center', position: 'relative' }}>
                 <div style={{ maxWidth: '1200px', width: '100%', margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 10 }}>
-                    <h2 style={{ fontSize: '48px', fontWeight: '900', marginBottom: '24px', fontFamily: 'Outfit', color: '#0F172A' }}>
+                    <h2 className="responsive-h2" style={{ fontWeight: '900', marginBottom: '24px', fontFamily: 'Outfit', color: '#0F172A' }}>
                         Le futur du networking <span style={{ color: '#1A1265' }}>vous attend.</span>
                     </h2>
-                    <p style={{ color: '#475569', fontSize: '18px', maxWidth: '600px', margin: '0 auto 40px auto', lineHeight: '1.6' }}>
+                    <p style={{ color: '#475569', fontSize: '17px', maxWidth: '600px', margin: '0 auto 40px auto', lineHeight: '1.6' }}>
                         Commandez votre carte Signature NFC en quelques secondes et commencez à impressionner vos futurs clients.
                     </p>
 
-                    <div style={{ display: 'flex', gap: '16px', justifycontent: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
+                    <div className="hero-buttons" style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
                         <a href="#tarifs" style={{
                             background: 'linear-gradient(135deg, #1A1265, #6366F1)',
                             color: 'white',
@@ -1057,7 +1116,7 @@ export default function LandingPage() {
 
             {/* 11. FOOTER */}
             <footer style={{ background: '#F8FAFC', padding: '40px 0', borderTop: '1px solid rgba(26, 18, 101, 0.05)' }}>
-                <div style={{ maxWidth: '1200px', width: '100%', margin: '0 auto', padding: '0 24px', display: 'flex', justifycontent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px', justifyContent: 'space-between' }}>
+                <div style={{ maxWidth: '1200px', width: '100%', margin: '0 auto', padding: '0 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <span style={{ fontSize: '18px', fontWeight: '900', color: '#1A1265' }}>NFCrafter</span>
                     </div>
