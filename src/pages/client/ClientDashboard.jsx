@@ -28,7 +28,9 @@ export default function ClientDashboard() {
     const [showMobilePreview, setShowMobilePreview] = useState(false);
     const [renamingCardId, setRenamingCardId] = useState(null);
     const [newName, setNewName] = useState('');
-    const editorRef = useRef(null);  // ← Must be here, BEFORE any early returns
+    const [feedbacks, setFeedbacks] = useState([]);
+    const [feedbacksLoading, setFeedbacksLoading] = useState(false);
+    const editorRef = useRef(null);
     
     // Lock body scroll when mobile preview is open
     useEffect(() => {
@@ -119,6 +121,18 @@ export default function ClientDashboard() {
 
                 setViewMode('view');
                 setIsMobileMenuOpen(false);
+
+                // Load feedbacks for this card
+                setFeedbacksLoading(true);
+                supabase
+                    .from('feedbacks')
+                    .select('*')
+                    .eq('card_id', selectedCardId)
+                    .order('created_at', { ascending: false })
+                    .then(({ data }) => {
+                        setFeedbacks(data || []);
+                        setFeedbacksLoading(false);
+                    });
             }
         }
     }, [selectedCardId]);
@@ -470,6 +484,69 @@ export default function ClientDashboard() {
                                 </div>
                             </div>
 
+                            {/* Feedbacks Inbox */}
+                            <div style={{ background: 'white', padding: '32px', borderRadius: '24px', border: '1px solid #E2E8F0' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
+                                    <div>
+                                        <h2 style={{ fontSize: '18px', fontWeight: '900', color: '#1A1265', margin: '0 0 4px 0', display: 'flex', alignItems: 'center', gap: 10 }}>
+                                            📬 Retours reçus
+                                            {feedbacks.filter(f => !f.is_read).length > 0 && (
+                                                <span style={{ background: '#EF4444', color: 'white', fontSize: 11, fontWeight: 800, padding: '2px 8px', borderRadius: 100 }}>
+                                                    {feedbacks.filter(f => !f.is_read).length} nouveau{feedbacks.filter(f => !f.is_read).length > 1 ? 'x' : ''}
+                                                </span>
+                                            )}
+                                        </h2>
+                                        <p style={{ fontSize: 13, color: '#64748B', margin: 0 }}>Messages privés envoyés par vos visiteurs</p>
+                                    </div>
+                                    {feedbacks.some(f => !f.is_read) && (
+                                        <button
+                                            onClick={async () => {
+                                                await supabase.from('feedbacks').update({ is_read: true }).eq('card_id', selectedCardId);
+                                                setFeedbacks(feedbacks.map(f => ({ ...f, is_read: true })));
+                                                toast('Tous marqués comme lus', 'success');
+                                            }}
+                                            style={{ fontSize: 12, fontWeight: 700, color: '#1A1265', background: '#F1F5F9', border: 'none', borderRadius: 10, padding: '8px 16px', cursor: 'pointer' }}
+                                        >
+                                            Tout marquer comme lu
+                                        </button>
+                                    )}
+                                </div>
+
+                                {feedbacksLoading ? (
+                                    <div style={{ textAlign: 'center', padding: 30, color: '#94A3B8', fontSize: 14 }}>Chargement...</div>
+                                ) : feedbacks.length === 0 ? (
+                                    <div style={{ textAlign: 'center', padding: '40px 20px', background: '#F8FAFC', borderRadius: 16, border: '1px dashed #E2E8F0' }}>
+                                        <div style={{ fontSize: 32, marginBottom: 12 }}>💬</div>
+                                        <div style={{ color: '#94A3B8', fontSize: 14, fontWeight: 600 }}>Aucun retour reçu pour l'instant</div>
+                                        <div style={{ color: '#CBD5E1', fontSize: 13, marginTop: 4 }}>Activez le formulaire dans "Retours clients" pour en recevoir.</div>
+                                    </div>
+                                ) : (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                                        {feedbacks.map(fb => (
+                                            <div key={fb.id} style={{ padding: '16px 20px', background: fb.is_read ? '#F8FAFC' : '#EFF6FF', borderRadius: 16, border: fb.is_read ? '1px solid #E2E8F0' : '1px solid #BFDBFE', position: 'relative' }}>
+                                                {!fb.is_read && <div style={{ position: 'absolute', top: 16, right: 16, width: 8, height: 8, borderRadius: '50%', background: '#3B82F6' }} />}
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                                                    <div style={{ fontWeight: 800, fontSize: 14, color: '#1A1265' }}>{fb.name}</div>
+                                                    <div style={{ color: '#F59E0B', fontSize: 13 }}>{'★'.repeat(fb.rating)}{'☆'.repeat(5 - fb.rating)}</div>
+                                                    <div style={{ marginLeft: 'auto', fontSize: 11, color: '#94A3B8' }}>{new Date(fb.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</div>
+                                                </div>
+                                                <p style={{ margin: 0, fontSize: 14, color: '#374151', lineHeight: 1.5 }}>{fb.message}</p>
+                                                {!fb.is_read && (
+                                                    <button
+                                                        onClick={async () => {
+                                                            await supabase.from('feedbacks').update({ is_read: true }).eq('id', fb.id);
+                                                            setFeedbacks(feedbacks.map(f => f.id === fb.id ? { ...f, is_read: true } : f));
+                                                        }}
+                                                        style={{ marginTop: 10, fontSize: 11, fontWeight: 700, color: '#6366F1', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                                                    >
+                                                        ✓ Marquer comme lu
+                                                    </button>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
 
                             {/* Editor */}
                             <div ref={editorRef} className="editor-card" style={{ background: 'white', padding: '40px', borderRadius: '32px', border: '1px solid #E2E8F0', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>

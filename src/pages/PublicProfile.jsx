@@ -572,51 +572,43 @@ export default function PublicProfile() {
                         <div style={{ width: 32, height: 32, borderRadius: 8, background: themeColor + '15', color: themeColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                         </div>
-                        <h3 style={{ fontSize: 16, fontWeight: 800, color: textColor, margin: 0 }}>Témoignages</h3>
+                        <h3 style={{ fontSize: 16, fontWeight: 800, color: textColor, margin: 0 }}>{profile.feedback_title || 'Faites-nous un retour'}</h3>
                     </div>
-                    {profile?.testimonials?.length > 0 && (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 20 }}>
-                            {profile.testimonials.map(t => (
-                                <div key={t.id} style={{ background: isDark ? 'rgba(255,255,255,0.03)' : '#F8FAFC', borderRadius: 16, padding: 16, border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid #F1F5F9' }}>
-                                    <div style={{ display: 'flex', gap: 4, marginBottom: 8 }}>{[1,2,3,4,5].map(n => <span key={n} style={{ color: t.rating >= n ? '#F59E0B' : '#E2E8F0', fontSize: 16 }}>★</span>)}</div>
-                                    <p style={{ fontSize: 14, color: textColor, lineHeight: 1.6, margin: '0 0 10px', fontStyle: 'italic' }}>"{t.text}"</p>
-                                    <div style={{ fontSize: 13, fontWeight: 700, color: themeColor }}>— {t.name}</div>
-                                </div>
-                            ))}
+                    {testimonialSuccess ? (
+                        <div style={{ padding: '20px', background: '#10B98115', border: '1px solid #10B98133', borderRadius: 16, textAlign: 'center', color: '#10B981', fontWeight: 700, animation: 'fadeUp .4s ease' }}>
+                            ✓ Merci pour votre retour !
                         </div>
-                    )}
-                    <div style={{ background: isDark ? 'rgba(255,255,255,0.05)' : '#F8FAFC', borderRadius: 20, padding: 20, border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #E2E8F0' }}>
-                        <h4 style={{ margin: '0 0 15px', fontSize: 15, fontWeight: 800, color: textColor }}>Laissez un avis</h4>
-                        {testimonialSuccess ? (
-                            <div style={{ padding: '20px', background: '#10B98115', border: '1px solid #10B98133', borderRadius: 16, textAlign: 'center', color: '#10B981', fontWeight: 700, animation: 'fadeUp .4s ease' }}>
-                                ✓ Merci pour votre avis !
-                            </div>
-                        ) : (
-                            <form onSubmit={e => {
-                                e.preventDefault();
-                                const fd = new FormData(e.target);
-                                const name = fd.get('name');
-                                const rating = parseInt(fd.get('stars'));
-                                const text = fd.get('message');
-                                const newTestimonials = [{ id: Date.now(), name, rating, text, date: new Date().toISOString() }, ...(profile.testimonials || [])];
-                                updateProfileInSupabase({ testimonials: newTestimonials });
+                    ) : (
+                        <form onSubmit={async e => {
+                            e.preventDefault();
+                            const fd = new FormData(e.target);
+                            const name = fd.get('name');
+                            const rating = parseInt(fd.get('stars'));
+                            const message = fd.get('message');
+                            const { error } = await supabase.from('feedbacks').insert({
+                                card_id: lookupValue,
+                                name,
+                                rating,
+                                message
+                            });
+                            if (!error) {
                                 setTestimonialSuccess(true);
                                 setTimeout(() => setTestimonialSuccess(false), 5000);
                                 e.target.reset();
-                            }} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                                <input name="name" required placeholder="Votre nom" style={{ padding: '10px 14px', borderRadius: 10, border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #CBD5E1', background: isDark ? 'rgba(255,255,255,0.05)' : 'white', color: textColor, fontSize: 13 }} />
-                                <select name="stars" required style={{ padding: '10px 14px', borderRadius: 10, border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #CBD5E1', background: isDark ? 'rgba(255,255,255,0.05)' : 'white', color: textColor, fontSize: 13 }}>
-                                    <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
-                                    <option value="4">⭐⭐⭐⭐ (4/5)</option>
-                                    <option value="3">⭐⭐⭐ (3/5)</option>
-                                    <option value="2">⭐⭐ (2/5)</option>
-                                    <option value="1">⭐ (1/5)</option>
-                                </select>
-                                <textarea name="message" required placeholder="Votre avis..." rows={2} style={{ padding: '10px 14px', borderRadius: 10, border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #CBD5E1', background: isDark ? 'rgba(255,255,255,0.05)' : 'white', color: textColor, fontSize: 13, resize: 'vertical', fontFamily: 'inherit' }} />
-                                <button type="submit" className="sb" style={{ padding: '10px', background: themeColor, color: 'white', border: 'none', borderRadius: 10, fontWeight: 700, fontSize: 13, cursor: 'pointer', opacity: 0.9 }}>Soumettre</button>
-                            </form>
-                        )}
-                    </div>
+                            }
+                        }} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                            <input name="name" required placeholder="Votre nom" style={{ padding: '10px 14px', borderRadius: 10, border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #CBD5E1', background: isDark ? 'rgba(255,255,255,0.05)' : 'white', color: textColor, fontSize: 13 }} />
+                            <select name="stars" required style={{ padding: '10px 14px', borderRadius: 10, border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #CBD5E1', background: isDark ? 'rgba(255,255,255,0.05)' : 'white', color: textColor, fontSize: 13 }}>
+                                <option value="5">⭐⭐⭐⭐⭐ Excellent (5/5)</option>
+                                <option value="4">⭐⭐⭐⭐ Très bien (4/5)</option>
+                                <option value="3">⭐⭐⭐ Bien (3/5)</option>
+                                <option value="2">⭐⭐ Passable (2/5)</option>
+                                <option value="1">⭐ À améliorer (1/5)</option>
+                            </select>
+                            <textarea name="message" required placeholder="Votre message..." rows={3} style={{ padding: '10px 14px', borderRadius: 10, border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #CBD5E1', background: isDark ? 'rgba(255,255,255,0.05)' : 'white', color: textColor, fontSize: 13, resize: 'vertical', fontFamily: 'inherit' }} />
+                            <button type="submit" className="sb" style={{ padding: '10px', background: themeColor, color: 'white', border: 'none', borderRadius: 10, fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>Envoyer →</button>
+                        </form>
+                    )}
                 </div>
               ),
               faq: () => profile?.show_faq && profile?.faq?.length > 0 && (

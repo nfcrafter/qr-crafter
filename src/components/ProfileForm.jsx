@@ -608,26 +608,27 @@ export default function ProfileForm({
                 </div>
             ))}
 
-            {/* TESTIMONIALS */}
-            {acc('testimonials', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>`, 'Témoignages / Avis', 'Avis reçus de vos visiteurs.', (
+            {/* FEEDBACK PRIVÉ */}
+            {acc('testimonials', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>`, 'Retours clients', 'Formulaire de feedback privé.', (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                    <p style={{ fontSize: 13, color: '#64748B', marginBottom: 5 }}>Les avis sont soumis directement par vos visiteurs sur votre profil public. Vous pouvez gérer ici ceux qui s'affichent.</p>
+                    <div style={{ padding: '12px 16px', background: '#EFF6FF', borderRadius: 12, border: '1px solid #BFDBFE', fontSize: 13, color: '#1D4ED8', lineHeight: 1.5 }}>
+                        📬 Les visiteurs remplissent ce formulaire sur votre profil. Les messages vous arrivent <strong>en privé</strong> dans l'onglet "Retours reçus" de votre dashboard. Rien n'est affiché publiquement.
+                    </div>
                     <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: '#1A1265' }}>Afficher les témoignages</span>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: '#1A1265' }}>Activer le formulaire de retour</span>
                         <input type="checkbox" checked={profile.show_testimonials || false} onChange={e => setProfile({ ...profile, show_testimonials: e.target.checked })} />
                     </label>
-                    {(profile.testimonials || []).length === 0 ? (
-                        <div style={{ padding: '20px', textAlign: 'center', background: '#F8FAFC', borderRadius: 16, border: '1px dashed #E2E8F0', color: '#94A3B8', fontSize: 13 }}>Aucun avis reçu pour le moment.</div>
-                    ) : (
-                        (profile.testimonials || []).map(t => (
-                            <div key={t.id} style={{ background: '#F8FAFC', borderRadius: 16, padding: 16, border: '1px solid #E2E8F0', position: 'relative' }}>
-                                <button onClick={() => removeTestimonial(t.id)} style={{ position: 'absolute', top: 10, right: 10, width: 28, height: 28, borderRadius: '50%', background: '#FEE2E2', color: '#EF4444', border: 'none', cursor: 'pointer', fontSize: 12 }}>✕</button>
-                                <div style={{ fontWeight: 800, color: '#1A1265', fontSize: 14, marginBottom: 4 }}>{t.name}</div>
-                                <div style={{ color: '#F59E0B', fontSize: 12, marginBottom: 8 }}>{'★'.repeat(t.rating)}{'☆'.repeat(5-t.rating)}</div>
-                                <div style={{ fontSize: 13, color: '#475569', fontStyle: 'italic' }}>"{t.text}"</div>
-                            </div>
-                        ))
-                    )}
+                    <div className="field" style={{ marginBottom: 0 }}>
+                        <label>Titre du formulaire (affiché aux visiteurs)</label>
+                        <input
+                            type="text"
+                            value={profile.feedback_title || ''}
+                            onChange={e => setProfile({ ...profile, feedback_title: e.target.value })}
+                            placeholder="Faites-nous un retour"
+                            style={{ background: 'white' }}
+                        />
+                        <div style={{ fontSize: 11, color: '#94A3B8', marginTop: 4 }}>Laissez vide pour utiliser le texte par défaut : "Faites-nous un retour"</div>
+                    </div>
                 </div>
             ))}
 
