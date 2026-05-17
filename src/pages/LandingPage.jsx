@@ -20,6 +20,8 @@ export default function LandingPage() {
     const [selectedColorIndex, setSelectedColorIndex] = useState(0);
     const [cardType, setCardType] = useState('physical'); // 'physical', 'digital', 'pro', 'corporate'
     const [activeDemoTab, setActiveDemoTab] = useState('visitor'); // 'visitor' or 'dashboard'
+    const [isFlipped, setIsFlipped] = useState(false);
+    const [imageError, setImageError] = useState(false);
     
     // Custom cursor trace position
     const [mousePos, setMousePos] = useState({ x: -100, y: -100 });
@@ -177,6 +179,46 @@ export default function LandingPage() {
                     gap: 40px;
                 }
 
+                .gallery-row {
+                    display: flex;
+                    gap: 20px;
+                    width: max-content;
+                    animation: infiniteScroll 45s linear infinite;
+                }
+                .gallery-row:hover {
+                    animation-play-state: paused;
+                }
+
+                /* Card Flip Styling */
+                .flip-container {
+                    perspective: 1000px;
+                    width: 100%;
+                    max-width: 380px;
+                    aspect-ratio: 1.58;
+                }
+                .flipper {
+                    position: relative;
+                    width: 100%;
+                    height: 100%;
+                    transition: transform 0.6s;
+                    transform-style: preserve-3d;
+                }
+                .flipper.flipped {
+                    transform: rotateY(180deg);
+                }
+                .card-front, .card-back {
+                    position: absolute;
+                    width: 100%;
+                    height: 100%;
+                    backface-visibility: hidden;
+                    border-radius: 20px;
+                    overflow: hidden;
+                    box-shadow: 0 20px 45px rgba(26, 18, 101, 0.12);
+                }
+                .card-back {
+                    transform: rotateY(180deg);
+                }
+
                 /* Custom Scrollbar */
                 ::-webkit-scrollbar { width: 8px; }
                 ::-webkit-scrollbar-track { background: #F8FAFC; }
@@ -306,34 +348,29 @@ export default function LandingPage() {
                         </div>
                     </div>
 
-                    {/* Hero Right Visuals - 3D Card Animation */}
+                    {/* Hero Right Visuals - 3D Card Animation using actual card assets */}
                     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', minHeight: '400px' }}>
                         <div style={{ position: 'relative', width: '320px', height: '400px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                            {/* Rotative Card 3D (Indigo Theme) */}
+                            {/* Realistic physical card floating */}
                             <div className="spinning-card" style={{
                                 width: '280px',
                                 height: '176px',
-                                background: '#111118',
                                 borderRadius: '18px',
-                                border: '1px solid rgba(26, 18, 101, 0.1)',
                                 boxShadow: '0 30px 60px rgba(26, 18, 101, 0.15)',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                justifyContent: 'space-between',
-                                padding: '24px',
                                 position: 'absolute',
                                 top: '40px',
                                 zIndex: 5,
-                                transformStyle: 'preserve-3d'
+                                transformStyle: 'preserve-3d',
+                                overflow: 'hidden'
                             }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'linear-gradient(135deg, #1A1265, #6366F1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', color: 'white' }}>N</div>
-                                    <span style={{ fontSize: '11px', color: '#6366F1', fontWeight: '700', letterSpacing: '2px' }}>SIGNATURE</span>
-                                </div>
-                                <div>
-                                    <h4 style={{ margin: 0, fontSize: '18px', fontWeight: '800', letterSpacing: '-0.02em', color: '#FFFFFF' }}>Romuald K.</h4>
-                                    <span style={{ fontSize: '11px', color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '1px' }}>Architecte d'intérieur</span>
-                                </div>
+                                <img 
+                                    src="/assets/cards/black-recto.png" 
+                                    alt="NFCrafter Noir" 
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '18px' }}
+                                    onError={(e) => {
+                                        e.target.style.display = 'none';
+                                    }}
+                                />
                             </div>
 
                             {/* Phone Mockup floating slightly below */}
@@ -452,6 +489,38 @@ export default function LandingPage() {
                             </div>
                         </div>
                     </div>
+                </div>
+            </section>
+
+            {/* REAL-LIFE PRODUCT GALLERY SECTION (Using gallery-1 to gallery-8) */}
+            <section style={{ padding: '100px 0', overflow: 'hidden', background: '#F8FAFC' }}>
+                <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', marginBottom: '48px', textAlign: 'center' }}>
+                    <h2 style={{ fontSize: '36px', fontWeight: '800', color: '#0F172A' }}>Nos cartes en action</h2>
+                    <p style={{ color: '#475569', marginTop: '8px' }}>Découvrez la qualité réelle et les finitions exceptionnelles de nos cartes Signature.</p>
+                </div>
+                
+                <div className="gallery-row">
+                    {[1, 2, 3, 4, 5, 6, 7, 8].map(num => (
+                        <div key={num} className="glass-card" style={{ width: '280px', height: '180px', flexShrink: 0, overflow: 'hidden', padding: '8px', background: 'rgba(255,255,255,0.8)' }}>
+                            <img 
+                                src={`/gallery-${num}.jpg`} 
+                                alt={`NFCrafter Real ${num}`} 
+                                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '16px' }}
+                                onError={(e) => { e.target.src = '/placeholder-qr-custom.jpg'; }}
+                            />
+                        </div>
+                    ))}
+                    {/* Repeat for seamless infinite scrolling */}
+                    {[1, 2, 3, 4, 5, 6, 7, 8].map(num => (
+                        <div key={`dup-${num}`} className="glass-card" style={{ width: '280px', height: '180px', flexShrink: 0, overflow: 'hidden', padding: '8px', background: 'rgba(255,255,255,0.8)' }}>
+                            <img 
+                                src={`/gallery-${num}.jpg`} 
+                                alt={`NFCrafter Real ${num}`} 
+                                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '16px' }}
+                                onError={(e) => { e.target.src = '/placeholder-qr-custom.jpg'; }}
+                            />
+                        </div>
+                    ))}
                 </div>
             </section>
 
@@ -708,7 +777,7 @@ export default function LandingPage() {
                 </div>
             </section>
 
-            {/* 6. CONFIGURATEUR DE CARTE — PIECE MAITRESSE (Indigo Glowing backdrop) */}
+            {/* 6. CONFIGURATEUR DE CARTE — DYNAMIC PHOTO SWITCH & FLIP */}
             <section id="tarifs" style={{ padding: '120px 0', position: 'relative' }}>
                 {/* Dynamic radial glow behind color select */}
                 <div style={{ position: 'absolute', top: '50%', left: '30%', transform: 'translate(-50%, -50%)', width: '500px', height: '500px', borderRadius: '50%', background: `radial-gradient(circle, ${buttonColor}12 0%, transparent 70%)`, filter: 'blur(50px)', pointerEvents: 'none', zIndex: 0, transition: 'background 0.5s ease' }} />
@@ -725,33 +794,67 @@ export default function LandingPage() {
 
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '48px', alignItems: 'center' }}>
                         
-                        {/* Configurator Visualizer Left */}
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                            <div style={{
-                                width: '100%',
-                                maxWidth: '380px',
-                                aspectRatio: '1.58',
-                                background: activeColor.hex,
-                                borderRadius: '24px',
-                                border: '1px solid rgba(255, 255, 255, 0.15)',
-                                boxShadow: '0 30px 60px rgba(26, 18, 101, 0.12)',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                justifyContent: 'space-between',
-                                padding: '32px',
-                                position: 'relative',
-                                transition: 'background 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
-                                overflow: 'hidden'
-                            }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: activeColor.id === 'white' ? '#111827' : 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', fontSize: '22px', color: activeColor.id === 'white' ? 'white' : '#0F172A' }}>N</div>
-                                    <span style={{ fontSize: '12px', color: activeColor.id === 'white' ? '#111827' : '#9CA3AF', fontWeight: '700', letterSpacing: '2px' }}>SIGNATURE</span>
-                                </div>
-                                <div>
-                                    <h4 style={{ margin: 0, fontSize: '22px', fontWeight: '900', letterSpacing: '-0.02em', color: activeColor.id === 'white' ? '#111827' : '#FFFFFF' }}>NFCrafter</h4>
-                                    <span style={{ fontSize: '12px', color: activeColor.id === 'white' ? '#4B5563' : '#9CA3AF', textTransform: 'uppercase', letterSpacing: '1px' }}>{activeColor.name}</span>
+                        {/* Configurator Visualizer Left with 3D Flip Card */}
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '20px' }}>
+                            <div className="flip-container">
+                                <div className={`flipper ${isFlipped ? 'flipped' : ''}`}>
+                                    {/* Front Card Image */}
+                                    <div className="card-front" style={{ background: activeColor.hex }}>
+                                        {!imageError ? (
+                                            <img 
+                                                src={activeColor.imgRecto} 
+                                                alt={`${activeColor.name} Recto`}
+                                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                onError={() => setImageError(true)}
+                                            />
+                                        ) : (
+                                            /* Solid backup visual fallback */
+                                            <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '32px' }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                    <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: 'white', color: '#0F172A', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', fontSize: '22px' }}>N</div>
+                                                    <span style={{ fontSize: '12px', color: 'white', fontWeight: '700', letterSpacing: '2px' }}>SIGNATURE</span>
+                                                </div>
+                                                <div>
+                                                    <h4 style={{ margin: 0, fontSize: '22px', fontWeight: '900', color: 'white' }}>NFCrafter</h4>
+                                                    <span style={{ fontSize: '12px', color: 'white', opacity: 0.8, textTransform: 'uppercase' }}>{activeColor.name}</span>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                    
+                                    {/* Back Card Image (Flip view) */}
+                                    <div className="card-back" style={{ background: activeColor.hex }}>
+                                        <img 
+                                            src={activeColor.imgVerso} 
+                                            alt={`${activeColor.name} Verso`}
+                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                            onError={(e) => { e.target.src = '/placeholder-qr-custom.jpg'; }}
+                                        />
+                                    </div>
                                 </div>
                             </div>
+                            
+                            <button 
+                                onClick={() => setIsFlipped(!isFlipped)} 
+                                style={{
+                                    background: 'rgba(26, 18, 101, 0.05)',
+                                    border: '1px solid rgba(26, 18, 101, 0.1)',
+                                    padding: '8px 20px',
+                                    borderRadius: '30px',
+                                    color: '#1A1265',
+                                    fontWeight: '700',
+                                    fontSize: '13px',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px',
+                                    transition: 'all 0.2s'
+                                }}
+                                onMouseOver={e => e.currentTarget.style.background = 'rgba(26, 18, 101, 0.1)'}
+                                onMouseOut={e => e.currentTarget.style.background = 'rgba(26, 18, 101, 0.05)'}
+                            >
+                                🔄 Voir le {isFlipped ? 'recto (face)' : 'verso (dos)'}
+                            </button>
                         </div>
 
                         {/* Configurator Controls Right */}
@@ -803,7 +906,11 @@ export default function LandingPage() {
                                         {CARD_COLORS.map((color, index) => (
                                             <div
                                                 key={color.id}
-                                                onClick={() => setSelectedColorIndex(index)}
+                                                onClick={() => {
+                                                    setSelectedColorIndex(index);
+                                                    setIsFlipped(false);
+                                                    setImageError(false);
+                                                }}
                                                 style={{
                                                     width: '36px',
                                                     height: '36px',
