@@ -3,14 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
 const CARD_COLORS = [
-    { id: 'black', name: 'Noir Onyx', hex: '#111827', imgRecto: '/assets/cards/black-recto.png', imgVerso: '/assets/cards/black-verso.png' },
-    { id: 'white', name: 'Blanc Neige', hex: '#F9FAFB', hexText: '#111827', imgRecto: '/assets/cards/white-recto.png', imgVerso: '/assets/cards/white-verso.png' },
-    { id: 'blue', name: 'Bleu Océan', hex: '#2563EB', imgRecto: '/assets/cards/blue-recto.png', imgVerso: '/assets/cards/blue-verso.png' },
-    { id: 'gold', name: 'Or Premium', hex: '#D97706', imgRecto: '/assets/cards/gold-recto.png', imgVerso: '/assets/cards/gold-verso.png' },
-    { id: 'red', name: 'Rouge Rubis', hex: '#DC2626', imgRecto: '/assets/cards/red-recto.png', imgVerso: '/assets/cards/red-verso.png' },
-    { id: 'green', name: 'Vert Émeraude', hex: '#059669', imgRecto: '/assets/cards/green-recto.png', imgVerso: '/assets/cards/green-verso.png' },
-    { id: 'purple', name: 'Violet Améthyste', hex: '#7C3AED', imgRecto: '/assets/cards/purple-recto.png', imgVerso: '/assets/cards/purple-verso.png' },
-    { id: 'pink', name: 'Rose Poudré', hex: '#DB2777', imgRecto: '/assets/cards/pink-recto.png', imgVerso: '/assets/cards/pink-verso.png' }
+    { id: 'black', name: 'Noir Onyx', hex: '#111827', imgCombined: '/assets/cards/black-combined.png' },
+    { id: 'white', name: 'Blanc Neige', hex: '#F9FAFB', hexText: '#111827', imgCombined: '/assets/cards/white-combined.png' },
+    { id: 'blue', name: 'Bleu Océan', hex: '#2563EB', imgCombined: '/assets/cards/blue-combined.png' },
+    { id: 'gold', name: 'Or Premium', hex: '#D97706', imgCombined: '/assets/cards/gold-combined.png' },
+    { id: 'red', name: 'Rouge Rubis', hex: '#DC2626', imgCombined: '/assets/cards/red-combined.png' },
+    { id: 'green', name: 'Vert Émeraude', hex: '#059669', imgCombined: '/assets/cards/green-combined.png' },
+    { id: 'purple', name: 'Violet Améthyste', hex: '#7C3AED', imgCombined: '/assets/cards/purple-combined.png' },
+    { id: 'pink', name: 'Rose Poudré', hex: '#DB2777', imgCombined: '/assets/cards/pink-combined.png' }
 ];
 
 export default function LandingPage() {
@@ -20,8 +20,6 @@ export default function LandingPage() {
     const [selectedColorIndex, setSelectedColorIndex] = useState(0);
     const [cardType, setCardType] = useState('physical'); // 'physical', 'digital', 'pro', 'corporate'
     const [activeDemoTab, setActiveDemoTab] = useState('visitor'); // 'visitor' or 'dashboard'
-    const [isFlipped, setIsFlipped] = useState(false);
-    const [imageError, setImageError] = useState(false);
     
     // Custom cursor trace position
     const [mousePos, setMousePos] = useState({ x: -100, y: -100 });
@@ -154,20 +152,6 @@ export default function LandingPage() {
                     box-shadow: 0 30px 60px rgba(26, 18, 101, 0.12);
                 }
 
-                /* 3D Animations & Wobbles */
-                @keyframes cardSpin3D {
-                    0% { transform: perspective(1000px) rotateY(0deg) rotateX(10deg); }
-                    50% { transform: perspective(1000px) rotateY(180deg) rotateX(-5deg); }
-                    100% { transform: perspective(1000px) rotateY(360deg) rotateX(10deg); }
-                }
-                .spinning-card {
-                    animation: cardSpin3D 15s linear infinite;
-                    transform-style: preserve-3d;
-                }
-                .spinning-card:hover {
-                    animation-play-state: paused;
-                }
-
                 @keyframes infiniteScroll {
                     0% { transform: translateX(0); }
                     100% { transform: translateX(-50%); }
@@ -187,36 +171,6 @@ export default function LandingPage() {
                 }
                 .gallery-row:hover {
                     animation-play-state: paused;
-                }
-
-                /* Card Flip Styling */
-                .flip-container {
-                    perspective: 1000px;
-                    width: 100%;
-                    max-width: 380px;
-                    aspect-ratio: 1.58;
-                }
-                .flipper {
-                    position: relative;
-                    width: 100%;
-                    height: 100%;
-                    transition: transform 0.6s;
-                    transform-style: preserve-3d;
-                }
-                .flipper.flipped {
-                    transform: rotateY(180deg);
-                }
-                .card-front, .card-back {
-                    position: absolute;
-                    width: 100%;
-                    height: 100%;
-                    backface-visibility: hidden;
-                    border-radius: 20px;
-                    overflow: hidden;
-                    box-shadow: 0 20px 45px rgba(26, 18, 101, 0.12);
-                }
-                .card-back {
-                    transform: rotateY(180deg);
                 }
 
                 /* Custom Scrollbar */
@@ -348,27 +302,26 @@ export default function LandingPage() {
                         </div>
                     </div>
 
-                    {/* Hero Right Visuals - 3D Card Animation using actual card assets */}
+                    {/* Hero Right Visuals - Static High-End Mockup */}
                     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', minHeight: '400px' }}>
                         <div style={{ position: 'relative', width: '320px', height: '400px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                            {/* Realistic physical card floating */}
-                            <div className="spinning-card" style={{
-                                width: '280px',
-                                height: '176px',
+                            {/* Realistic physical combined card photo (No animation) */}
+                            <div style={{
+                                width: '320px',
+                                height: '200px',
                                 borderRadius: '18px',
                                 boxShadow: '0 30px 60px rgba(26, 18, 101, 0.15)',
                                 position: 'absolute',
                                 top: '40px',
                                 zIndex: 5,
-                                transformStyle: 'preserve-3d',
                                 overflow: 'hidden'
                             }}>
                                 <img 
-                                    src="/assets/cards/black-recto.png" 
-                                    alt="NFCrafter Noir" 
+                                    src="/card-recto.png" 
+                                    alt="NFCrafter Cartes Physique Recto Verso" 
                                     style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '18px' }}
                                     onError={(e) => {
-                                        e.target.style.display = 'none';
+                                        e.target.src = '/placeholder-qr-custom.jpg';
                                     }}
                                 />
                             </div>
@@ -382,7 +335,7 @@ export default function LandingPage() {
                                 border: '6px solid #1F2937',
                                 position: 'absolute',
                                 bottom: '0px',
-                                right: '-20px',
+                                right: '-30px',
                                 zIndex: 2,
                                 boxShadow: '0 20px 50px rgba(0,0,0,0.15)',
                                 overflow: 'hidden',
@@ -777,7 +730,7 @@ export default function LandingPage() {
                 </div>
             </section>
 
-            {/* 6. CONFIGURATEUR DE CARTE — DYNAMIC PHOTO SWITCH & FLIP */}
+            {/* 6. CONFIGURATEUR DE CARTE — CLEAN DYNAMIC PHOTO DISPLAY (Loads specific color-combined image) */}
             <section id="tarifs" style={{ padding: '120px 0', position: 'relative' }}>
                 {/* Dynamic radial glow behind color select */}
                 <div style={{ position: 'absolute', top: '50%', left: '30%', transform: 'translate(-50%, -50%)', width: '500px', height: '500px', borderRadius: '50%', background: `radial-gradient(circle, ${buttonColor}12 0%, transparent 70%)`, filter: 'blur(50px)', pointerEvents: 'none', zIndex: 0, transition: 'background 0.5s ease' }} />
@@ -794,67 +747,27 @@ export default function LandingPage() {
 
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '48px', alignItems: 'center' }}>
                         
-                        {/* Configurator Visualizer Left with 3D Flip Card */}
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '20px' }}>
-                            <div className="flip-container">
-                                <div className={`flipper ${isFlipped ? 'flipped' : ''}`}>
-                                    {/* Front Card Image */}
-                                    <div className="card-front" style={{ background: activeColor.hex }}>
-                                        {!imageError ? (
-                                            <img 
-                                                src={activeColor.imgRecto} 
-                                                alt={`${activeColor.name} Recto`}
-                                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                                onError={() => setImageError(true)}
-                                            />
-                                        ) : (
-                                            /* Solid backup visual fallback */
-                                            <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '32px' }}>
-                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                    <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: 'white', color: '#0F172A', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', fontSize: '22px' }}>N</div>
-                                                    <span style={{ fontSize: '12px', color: 'white', fontWeight: '700', letterSpacing: '2px' }}>SIGNATURE</span>
-                                                </div>
-                                                <div>
-                                                    <h4 style={{ margin: 0, fontSize: '22px', fontWeight: '900', color: 'white' }}>NFCrafter</h4>
-                                                    <span style={{ fontSize: '12px', color: 'white', opacity: 0.8, textTransform: 'uppercase' }}>{activeColor.name}</span>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                    
-                                    {/* Back Card Image (Flip view) */}
-                                    <div className="card-back" style={{ background: activeColor.hex }}>
-                                        <img 
-                                            src={activeColor.imgVerso} 
-                                            alt={`${activeColor.name} Verso`}
-                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                            onError={(e) => { e.target.src = '/placeholder-qr-custom.jpg'; }}
-                                        />
-                                    </div>
-                                </div>
+                        {/* Configurator Visualizer Left - Static display of the dynamic color combined image */}
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                            <div style={{
+                                width: '100%',
+                                maxWidth: '420px',
+                                borderRadius: '24px',
+                                boxShadow: '0 30px 60px rgba(26, 18, 101, 0.1)',
+                                overflow: 'hidden',
+                                background: '#FFFFFF',
+                                border: '1px solid rgba(26, 18, 101, 0.05)'
+                            }}>
+                                <img 
+                                    src={activeColor.imgCombined} 
+                                    alt={`NFCrafter Carte ${activeColor.name} Recto Verso Réel`} 
+                                    style={{ width: '100%', height: 'auto', display: 'block', transition: 'opacity 0.3s ease' }}
+                                    onError={(e) => {
+                                        /* Falls back to generic card-recto image if color-combined photo not loaded yet */
+                                        e.target.src = '/card-recto.png';
+                                    }}
+                                />
                             </div>
-                            
-                            <button 
-                                onClick={() => setIsFlipped(!isFlipped)} 
-                                style={{
-                                    background: 'rgba(26, 18, 101, 0.05)',
-                                    border: '1px solid rgba(26, 18, 101, 0.1)',
-                                    padding: '8px 20px',
-                                    borderRadius: '30px',
-                                    color: '#1A1265',
-                                    fontWeight: '700',
-                                    fontSize: '13px',
-                                    cursor: 'pointer',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '6px',
-                                    transition: 'all 0.2s'
-                                }}
-                                onMouseOver={e => e.currentTarget.style.background = 'rgba(26, 18, 101, 0.1)'}
-                                onMouseOut={e => e.currentTarget.style.background = 'rgba(26, 18, 101, 0.05)'}
-                            >
-                                🔄 Voir le {isFlipped ? 'recto (face)' : 'verso (dos)'}
-                            </button>
                         </div>
 
                         {/* Configurator Controls Right */}
@@ -906,11 +819,7 @@ export default function LandingPage() {
                                         {CARD_COLORS.map((color, index) => (
                                             <div
                                                 key={color.id}
-                                                onClick={() => {
-                                                    setSelectedColorIndex(index);
-                                                    setIsFlipped(false);
-                                                    setImageError(false);
-                                                }}
+                                                onClick={() => setSelectedColorIndex(index)}
                                                 style={{
                                                     width: '36px',
                                                     height: '36px',
