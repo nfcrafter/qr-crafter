@@ -13,6 +13,82 @@ const CARD_COLORS = [
     { id: 'pink', name: 'Rose Poudré', hex: '#DB2777', imgCombined: '/assets/cards/pink-combined.png', imgRecto: '/assets/cards/pink-recto.png', imgVerso: '/assets/cards/pink-verso.png' }
 ];
 
+const HERO_PROFILES = [
+    {
+        name: 'Romuald K.',
+        role: "Architecte d'intérieur",
+        color: '#111827',
+        avatarBg: 'linear-gradient(135deg, #1F2937, #111827)',
+        accent: '#D97706',
+        letter: 'R',
+        links: ['Mon Portfolio Mobilier', 'Prendre RDV (3D/Plan)']
+    },
+    {
+        name: 'Dr. Clara M.',
+        role: 'Chirurgien Dentiste',
+        color: '#FFFFFF',
+        textColor: '#111827',
+        avatarBg: 'linear-gradient(135deg, #06B6D4, #3B82F6)',
+        accent: '#06B6D4',
+        letter: 'C',
+        links: ['Cabinet & Tarifs', 'Prendre RDV en ligne']
+    },
+    {
+        name: 'Thomas L.',
+        role: 'Développeur Fullstack',
+        color: '#2563EB',
+        avatarBg: 'linear-gradient(135deg, #2563EB, #1D4ED8)',
+        accent: '#2563EB',
+        letter: 'T',
+        links: ['Mon GitHub / Portfolio', 'Mes Services de Dev']
+    },
+    {
+        name: 'Me. Antoine S.',
+        role: "Avocat d'Affaires",
+        color: '#D97706',
+        avatarBg: 'linear-gradient(135deg, #F59E0B, #D97706)',
+        accent: '#D97706',
+        letter: 'A',
+        links: ['Mon Cabinet à Cotonou', 'Consultation juridique']
+    },
+    {
+        name: 'Chef Damien B.',
+        role: 'Gastronomie & Traiteur',
+        color: '#DC2626',
+        avatarBg: 'linear-gradient(135deg, #EF4444, #DC2626)',
+        accent: '#DC2626',
+        letter: 'D',
+        links: ['Menu de la semaine', 'Commander un Buffet']
+    },
+    {
+        name: 'Boutique Bio',
+        role: 'Épicerie & Bien-être',
+        color: '#059669',
+        avatarBg: 'linear-gradient(135deg, #10B981, #059669)',
+        accent: '#059669',
+        letter: 'B',
+        links: ['Catalogue Produits', 'Commander sur WhatsApp']
+    },
+    {
+        name: 'Sonia G.',
+        role: 'Photographe & Vidéaste',
+        color: '#7C3AED',
+        avatarBg: 'linear-gradient(135deg, #8B5CF6, #7C3AED)',
+        accent: '#7C3AED',
+        letter: 'S',
+        links: ['Galerie Mariages / Pro', 'Réserver une Séance']
+    },
+    {
+        name: 'Mélissa K.',
+        role: 'Beauty Studio & Spa',
+        color: '#DB2777',
+        avatarBg: 'linear-gradient(135deg, #EC4899, #DB2777)',
+        accent: '#DB2777',
+        letter: 'M',
+        links: ['Tarifs Soins & Ongles', 'Réserver un massage']
+    }
+];
+
 export default function LandingPage() {
     const navigate = useNavigate();
     const [scrolled, setScrolled] = useState(false);
@@ -420,9 +496,9 @@ export default function LandingPage() {
                             <div style={{
                                 width: '170px',
                                 height: '340px',
-                                background: '#0D0D12',
+                                background: HERO_PROFILES[heroColorIndex].color === '#FFFFFF' ? '#F8FAFC' : '#0D0D12',
                                 borderRadius: '28px',
-                                border: '6px solid #1F2937',
+                                border: HERO_PROFILES[heroColorIndex].color === '#FFFFFF' ? '6px solid #E2E8F0' : '6px solid #1F2937',
                                 position: 'absolute',
                                 bottom: '0px',
                                 right: '-20px',
@@ -432,14 +508,105 @@ export default function LandingPage() {
                                 padding: '16px 12px',
                                 display: 'flex',
                                 flexDirection: 'column',
-                                alignItems: 'center'
+                                alignItems: 'center',
+                                transition: 'all 0.5s ease'
                             }}>
-                                <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'linear-gradient(135deg, #1A1265, #6366F1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', fontSize: '13px', color: 'white', marginBottom: '12px' }}>R</div>
-                                <div style={{ width: '80px', height: '10px', background: 'white', borderRadius: '4px', marginBottom: '6px' }}></div>
-                                <div style={{ width: '50px', height: '6px', background: '#9CA3AF', borderRadius: '4px', marginBottom: '20px' }}></div>
-                                <div style={{ width: '100%', height: '32px', background: '#6366F1', borderRadius: '8px', marginBottom: '8px' }}></div>
-                                <div style={{ width: '100%', height: '24px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', marginBottom: '6px' }}></div>
-                                <div style={{ width: '100%', height: '24px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', marginBottom: '6px' }}></div>
+                                {/* Avatar */}
+                                <div style={{
+                                    width: '36px',
+                                    height: '36px',
+                                    borderRadius: '50%',
+                                    background: HERO_PROFILES[heroColorIndex].avatarBg,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontWeight: '900',
+                                    fontSize: '13px',
+                                    color: 'white',
+                                    marginBottom: '12px',
+                                    boxShadow: `0 4px 10px ${HERO_PROFILES[heroColorIndex].accent}30`,
+                                    transition: 'all 0.5s ease'
+                                }}>
+                                    {HERO_PROFILES[heroColorIndex].letter}
+                                </div>
+
+                                {/* Name */}
+                                <div style={{
+                                    fontSize: '12px',
+                                    fontWeight: '800',
+                                    color: HERO_PROFILES[heroColorIndex].textColor || 'white',
+                                    marginBottom: '3px',
+                                    textAlign: 'center',
+                                    transition: 'all 0.5s ease'
+                                }}>
+                                    {HERO_PROFILES[heroColorIndex].name}
+                                </div>
+
+                                {/* Role */}
+                                <div style={{
+                                    fontSize: '9px',
+                                    fontWeight: '600',
+                                    color: HERO_PROFILES[heroColorIndex].accent,
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.5px',
+                                    marginBottom: '16px',
+                                    textAlign: 'center',
+                                    transition: 'all 0.5s ease'
+                                }}>
+                                    {HERO_PROFILES[heroColorIndex].role}
+                                </div>
+
+                                {/* Action button */}
+                                <div style={{
+                                    width: '100%',
+                                    height: '28px',
+                                    background: HERO_PROFILES[heroColorIndex].accent,
+                                    color: 'white',
+                                    borderRadius: '8px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: '9px',
+                                    fontWeight: '800',
+                                    marginBottom: '14px',
+                                    boxShadow: `0 4px 10px ${HERO_PROFILES[heroColorIndex].accent}30`,
+                                    transition: 'all 0.5s ease'
+                                }}>
+                                    Enregistrer
+                                </div>
+
+                                {/* Dynamic custom links */}
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', width: '100%' }}>
+                                    {HERO_PROFILES[heroColorIndex].links.map((link, idx) => (
+                                        <div key={idx} style={{
+                                            background: HERO_PROFILES[heroColorIndex].color === '#FFFFFF' ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.05)',
+                                            padding: '8px 10px',
+                                            borderRadius: '8px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '8px',
+                                            transition: 'all 0.5s ease',
+                                            border: HERO_PROFILES[heroColorIndex].color === '#FFFFFF' ? '1px solid rgba(0,0,0,0.04)' : 'none'
+                                        }}>
+                                            <div style={{
+                                                width: '6px',
+                                                height: '6px',
+                                                borderRadius: '50%',
+                                                background: HERO_PROFILES[heroColorIndex].accent,
+                                                transition: 'all 0.5s ease'
+                                            }}></div>
+                                            <span style={{
+                                                fontSize: '9px',
+                                                fontWeight: '600',
+                                                color: HERO_PROFILES[heroColorIndex].textColor || 'white',
+                                                whiteSpace: 'nowrap',
+                                                overflow: 'hidden',
+                                                textOverflow: 'ellipsis',
+                                                transition: 'all 0.5s ease'
+                                            }}>{link}</span>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     </div>
