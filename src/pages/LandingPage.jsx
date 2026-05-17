@@ -21,7 +21,8 @@ const HERO_PROFILES = [
         avatarBg: 'linear-gradient(135deg, #1F2937, #111827)',
         accent: '#D97706',
         letter: 'R',
-        links: ['Mon Portfolio Mobilier', 'Prendre RDV (3D/Plan)']
+        links: ['Mon Portfolio Mobilier', 'Prendre RDV (3D/Plan)'],
+        profileImage: '/assets/cards/black-profile.png'
     },
     {
         name: 'Dr. Clara M.',
@@ -31,7 +32,8 @@ const HERO_PROFILES = [
         avatarBg: 'linear-gradient(135deg, #06B6D4, #3B82F6)',
         accent: '#06B6D4',
         letter: 'C',
-        links: ['Cabinet & Tarifs', 'Prendre RDV en ligne']
+        links: ['Cabinet & Tarifs', 'Prendre RDV en ligne'],
+        profileImage: '/assets/cards/white-profile.png'
     },
     {
         name: 'Thomas L.',
@@ -40,7 +42,8 @@ const HERO_PROFILES = [
         avatarBg: 'linear-gradient(135deg, #2563EB, #1D4ED8)',
         accent: '#2563EB',
         letter: 'T',
-        links: ['Mon GitHub / Portfolio', 'Mes Services de Dev']
+        links: ['Mon GitHub / Portfolio', 'Mes Services de Dev'],
+        profileImage: '/assets/cards/blue-profile.png'
     },
     {
         name: 'Me. Antoine S.',
@@ -49,7 +52,8 @@ const HERO_PROFILES = [
         avatarBg: 'linear-gradient(135deg, #F59E0B, #D97706)',
         accent: '#D97706',
         letter: 'A',
-        links: ['Mon Cabinet à Cotonou', 'Consultation juridique']
+        links: ['Mon Cabinet à Cotonou', 'Consultation juridique'],
+        profileImage: '/assets/cards/gold-profile.png'
     },
     {
         name: 'Chef Damien B.',
@@ -58,7 +62,8 @@ const HERO_PROFILES = [
         avatarBg: 'linear-gradient(135deg, #EF4444, #DC2626)',
         accent: '#DC2626',
         letter: 'D',
-        links: ['Menu de la semaine', 'Commander un Buffet']
+        links: ['Menu de la semaine', 'Commander un Buffet'],
+        profileImage: '/assets/cards/red-profile.png'
     },
     {
         name: 'Boutique Bio',
@@ -67,7 +72,8 @@ const HERO_PROFILES = [
         avatarBg: 'linear-gradient(135deg, #10B981, #059669)',
         accent: '#059669',
         letter: 'B',
-        links: ['Catalogue Produits', 'Commander sur WhatsApp']
+        links: ['Catalogue Produits', 'Commander sur WhatsApp'],
+        profileImage: '/assets/cards/green-profile.png'
     },
     {
         name: 'Sonia G.',
@@ -76,7 +82,8 @@ const HERO_PROFILES = [
         avatarBg: 'linear-gradient(135deg, #8B5CF6, #7C3AED)',
         accent: '#7C3AED',
         letter: 'S',
-        links: ['Galerie Mariages / Pro', 'Réserver une Séance']
+        links: ['Galerie Mariages / Pro', 'Réserver une Séance'],
+        profileImage: '/assets/cards/purple-profile.png'
     },
     {
         name: 'Mélissa K.',
@@ -85,7 +92,8 @@ const HERO_PROFILES = [
         avatarBg: 'linear-gradient(135deg, #EC4899, #DB2777)',
         accent: '#DB2777',
         letter: 'M',
-        links: ['Tarifs Soins & Ongles', 'Réserver un massage']
+        links: ['Tarifs Soins & Ongles', 'Réserver un massage'],
+        profileImage: '/assets/cards/pink-profile.png'
     }
 ];
 
@@ -492,7 +500,7 @@ export default function LandingPage() {
                                 </div>
                             </div>
 
-                            {/* Phone Mockup floating slightly below */}
+                            {/* Phone Mockup floating slightly below - now displaying exact screenshot image */}
                             <div style={{
                                 width: '170px',
                                 height: '340px',
@@ -509,124 +517,20 @@ export default function LandingPage() {
                                 flexDirection: 'column',
                                 transition: 'all 0.5s ease'
                             }}>
-                                {/* Banner - matching PublicProfile banner style */}
-                                <div style={{
-                                    width: '100%',
-                                    height: '62px',
-                                    background: HERO_PROFILES[heroColorIndex].avatarBg,
-                                    opacity: 0.85,
-                                    transition: 'all 0.5s ease'
-                                }} />
-
-                                {/* Profile Content Wrapper */}
-                                <div style={{
-                                    padding: '0 12px 16px',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'center',
-                                    width: '100%'
-                                }}>
-                                    {/* Avatar - overlapping the banner */}
-                                    <div style={{
-                                        width: '36px',
-                                        height: '36px',
-                                        borderRadius: '50%',
-                                        background: HERO_PROFILES[heroColorIndex].avatarBg,
-                                        border: HERO_PROFILES[heroColorIndex].color === '#FFFFFF' ? '2.5px solid #F8FAFC' : '2.5px solid #0D0D12',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        fontWeight: '900',
-                                        fontSize: '13px',
-                                        color: 'white',
-                                        marginTop: '-18px',
-                                        marginBottom: '10px',
-                                        boxShadow: `0 4px 10px ${HERO_PROFILES[heroColorIndex].accent}30`,
-                                        transition: 'all 0.5s ease',
-                                        zIndex: 5
-                                    }}>
-                                        {HERO_PROFILES[heroColorIndex].letter}
-                                    </div>
-
-                                    {/* Name */}
-                                    <div style={{
-                                        fontSize: '12px',
-                                        fontWeight: '800',
-                                        color: HERO_PROFILES[heroColorIndex].textColor || 'white',
-                                        marginBottom: '3px',
-                                        textAlign: 'center',
-                                        transition: 'all 0.5s ease'
-                                    }}>
-                                        {HERO_PROFILES[heroColorIndex].name}
-                                    </div>
-
-                                    {/* Role */}
-                                    <div style={{
-                                        fontSize: '9px',
-                                        fontWeight: '600',
-                                        color: HERO_PROFILES[heroColorIndex].accent,
-                                        textTransform: 'uppercase',
-                                        letterSpacing: '0.5px',
-                                        marginBottom: '14px',
-                                        textAlign: 'center',
-                                        transition: 'all 0.5s ease'
-                                    }}>
-                                        {HERO_PROFILES[heroColorIndex].role}
-                                    </div>
-
-                                    {/* Action button */}
-                                    <div style={{
-                                        width: '100%',
-                                        height: '28px',
-                                        background: HERO_PROFILES[heroColorIndex].accent,
-                                        color: 'white',
-                                        borderRadius: '8px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        fontSize: '9px',
-                                        fontWeight: '800',
-                                        marginBottom: '12px',
-                                        boxShadow: `0 4px 10px ${HERO_PROFILES[heroColorIndex].accent}30`,
-                                        transition: 'all 0.5s ease',
-                                        cursor: 'pointer'
-                                    }}>
-                                        Enregistrer
-                                    </div>
-
-                                    {/* Dynamic custom links */}
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', width: '100%' }}>
-                                        {HERO_PROFILES[heroColorIndex].links.map((link, idx) => (
-                                            <div key={idx} style={{
-                                                background: HERO_PROFILES[heroColorIndex].color === '#FFFFFF' ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.05)',
-                                                padding: '8px 10px',
-                                                borderRadius: '8px',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '8px',
-                                                transition: 'all 0.5s ease',
-                                                border: HERO_PROFILES[heroColorIndex].color === '#FFFFFF' ? '1px solid rgba(0,0,0,0.04)' : 'none'
-                                            }}>
-                                                <div style={{
-                                                    width: '6px',
-                                                    height: '6px',
-                                                    borderRadius: '50%',
-                                                    background: HERO_PROFILES[heroColorIndex].accent,
-                                                    transition: 'all 0.5s ease'
-                                                }}></div>
-                                                <span style={{
-                                                    fontSize: '9px',
-                                                    fontWeight: '600',
-                                                    color: HERO_PROFILES[heroColorIndex].textColor || 'white',
-                                                    whiteSpace: 'nowrap',
-                                                    overflow: 'hidden',
-                                                    textOverflow: 'ellipsis',
-                                                    transition: 'all 0.5s ease'
-                                                }}>{link}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
+                                <img 
+                                    src={HERO_PROFILES[heroColorIndex].profileImage} 
+                                    alt={`NFCrafter Profil Rendu Réel - ${HERO_PROFILES[heroColorIndex].name}`}
+                                    style={{ 
+                                        width: '100%', 
+                                        height: '100%', 
+                                        objectFit: 'cover', 
+                                        transition: 'opacity 0.3s ease'
+                                    }}
+                                    onError={(e) => {
+                                        // Excellent fallback if screenshot not yet uploaded
+                                        e.target.src = '/placeholder-public-profile.jpg';
+                                    }}
+                                />
                             </div>
                         </div>
                     </div>
