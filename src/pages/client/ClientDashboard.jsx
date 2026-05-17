@@ -399,7 +399,10 @@ export default function ClientDashboard() {
                         <div style={{ width: '80px', height: '80px', margin: '0 auto 24px auto', color: '#1A1265' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a3 3 0 0 0-3-3H5a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V8Z"></path><path d="M10 12h.01"></path><path d="M16 2v2"></path><path d="M6 2v2"></path></svg>` }} />
                         <h1 style={{ fontSize: '28px', fontWeight: '900', color: '#1A1265', marginBottom: '16px' }}>Bienvenue</h1>
                         <p style={{ color: '#64748B', lineHeight: '1.6', marginBottom: '32px' }}>Vous n'avez pas encore de profil actif. Cliquez ci-dessous pour commander votre premier profil digital.</p>
-                        <button onClick={() => handleWhatsAppOrder()} className="btn-primary" style={{ padding: '16px 40px', borderRadius: '100px', background: '#25D366', border: 'none' }}>🚀 Commander ma carte</button>
+                        <button onClick={() => handleWhatsAppOrder()} className="btn-primary" style={{ padding: '16px 40px', borderRadius: '100px', background: '#25D366', border: 'none', display: 'inline-flex', alignItems: 'center', gap: '10px' }}>
+                                            <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>` }} />
+                                            Commander ma carte
+                                        </button>
                     </div>
                 ) : (
                     <div className="dashboard-grid" style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 340px', gap: '40px', alignItems: 'start', overflowX: 'hidden' }}>
@@ -423,7 +426,7 @@ export default function ClientDashboard() {
                                 }}>
                                     <div style={{ flex: 1, minWidth: '280px' }}>
                                         <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                            <span style={{ fontSize: '24px' }}>✨</span> Configurez votre profil
+                                            <div style={{ width: 22, height: 22, flexShrink: 0 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>` }} /> Configurez votre profil
                                         </h3>
                                         <p style={{ fontSize: '14px', opacity: 0.9, lineHeight: '1.6' }}>
                                             Votre carte est active ! Ajoutez vos contacts et réseaux sociaux pour que vos futurs contacts puissent vous enregistrer en un clic.
@@ -489,7 +492,8 @@ export default function ClientDashboard() {
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
                                     <div>
                                         <h2 style={{ fontSize: '18px', fontWeight: '900', color: '#1A1265', margin: '0 0 4px 0', display: 'flex', alignItems: 'center', gap: 10 }}>
-                                            📬 Retours reçus
+                                            <div style={{ width: 20, height: 20, flexShrink: 0 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>` }} />
+                                            Retours reçus
                                             {feedbacks.filter(f => !f.is_read).length > 0 && (
                                                 <span style={{ background: '#EF4444', color: 'white', fontSize: 11, fontWeight: 800, padding: '2px 8px', borderRadius: 100 }}>
                                                     {feedbacks.filter(f => !f.is_read).length} nouveau{feedbacks.filter(f => !f.is_read).length > 1 ? 'x' : ''}
@@ -516,7 +520,7 @@ export default function ClientDashboard() {
                                     <div style={{ textAlign: 'center', padding: 30, color: '#94A3B8', fontSize: 14 }}>Chargement...</div>
                                 ) : feedbacks.length === 0 ? (
                                     <div style={{ textAlign: 'center', padding: '40px 20px', background: '#F8FAFC', borderRadius: 16, border: '1px dashed #E2E8F0' }}>
-                                        <div style={{ fontSize: 32, marginBottom: 12 }}>💬</div>
+                                        <div style={{ width: 48, height: 48, margin: '0 auto 12px', color: '#CBD5E1' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>` }} />
                                         <div style={{ color: '#94A3B8', fontSize: 14, fontWeight: 600 }}>Aucun retour reçu pour l'instant</div>
                                         <div style={{ color: '#CBD5E1', fontSize: 13, marginTop: 4 }}>Activez le formulaire dans "Retours clients" pour en recevoir.</div>
                                     </div>
@@ -580,8 +584,13 @@ export default function ClientDashboard() {
                                             uploadingProduct={uploadingProduct}
                                             toast={toast} 
                                         />
-                                        <button onClick={savePublicProfile} disabled={saving} className="btn-primary" style={{ width: '100%', padding: '18px', borderRadius: '20px', marginTop: '40px', background: '#1A1265', fontSize: '16px', boxShadow: '0 10px 20px rgba(26,18,101,0.15)' }}>
-                                            {saving ? 'Enregistrement...' : '✅ Enregistrer les modifications'}
+                                        <button onClick={savePublicProfile} disabled={saving} className="btn-primary" style={{ width: '100%', padding: '18px', borderRadius: '20px', marginTop: '40px', background: '#1A1265', fontSize: '16px', boxShadow: '0 10px 20px rgba(26,18,101,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+                                            {saving ? 'Enregistrement...' : (
+                                                <>
+                                                    <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>` }} />
+                                                    Enregistrer les modifications
+                                                </>
+                                            )}
                                         </button>
                                     </div>
                                 ) : (
@@ -646,6 +655,8 @@ export default function ClientDashboard() {
                 .animate-fade-in { animation: fadeIn 0.4s ease-out; }
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
                 
+                html, body { overflow-x: hidden !important; max-width: 100vw !important; }
+
                 @media (max-width: 1100px) {
                     .dashboard-grid { grid-template-columns: 1fr !important; }
                     .desktop-preview { display: none !important; }
