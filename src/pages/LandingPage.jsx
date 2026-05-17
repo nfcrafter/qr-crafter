@@ -505,107 +505,127 @@ export default function LandingPage() {
                                 zIndex: 2,
                                 boxShadow: '0 20px 50px rgba(0,0,0,0.15)',
                                 overflow: 'hidden',
-                                padding: '16px 12px',
                                 display: 'flex',
                                 flexDirection: 'column',
-                                alignItems: 'center',
                                 transition: 'all 0.5s ease'
                             }}>
-                                {/* Avatar */}
-                                <div style={{
-                                    width: '36px',
-                                    height: '36px',
-                                    borderRadius: '50%',
-                                    background: HERO_PROFILES[heroColorIndex].avatarBg,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    fontWeight: '900',
-                                    fontSize: '13px',
-                                    color: 'white',
-                                    marginBottom: '12px',
-                                    boxShadow: `0 4px 10px ${HERO_PROFILES[heroColorIndex].accent}30`,
-                                    transition: 'all 0.5s ease'
-                                }}>
-                                    {HERO_PROFILES[heroColorIndex].letter}
-                                </div>
-
-                                {/* Name */}
-                                <div style={{
-                                    fontSize: '12px',
-                                    fontWeight: '800',
-                                    color: HERO_PROFILES[heroColorIndex].textColor || 'white',
-                                    marginBottom: '3px',
-                                    textAlign: 'center',
-                                    transition: 'all 0.5s ease'
-                                }}>
-                                    {HERO_PROFILES[heroColorIndex].name}
-                                </div>
-
-                                {/* Role */}
-                                <div style={{
-                                    fontSize: '9px',
-                                    fontWeight: '600',
-                                    color: HERO_PROFILES[heroColorIndex].accent,
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '0.5px',
-                                    marginBottom: '16px',
-                                    textAlign: 'center',
-                                    transition: 'all 0.5s ease'
-                                }}>
-                                    {HERO_PROFILES[heroColorIndex].role}
-                                </div>
-
-                                {/* Action button */}
+                                {/* Banner - matching PublicProfile banner style */}
                                 <div style={{
                                     width: '100%',
-                                    height: '28px',
-                                    background: HERO_PROFILES[heroColorIndex].accent,
-                                    color: 'white',
-                                    borderRadius: '8px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    fontSize: '9px',
-                                    fontWeight: '800',
-                                    marginBottom: '14px',
-                                    boxShadow: `0 4px 10px ${HERO_PROFILES[heroColorIndex].accent}30`,
+                                    height: '62px',
+                                    background: HERO_PROFILES[heroColorIndex].avatarBg,
+                                    opacity: 0.85,
                                     transition: 'all 0.5s ease'
-                                }}>
-                                    Enregistrer
-                                </div>
+                                }} />
 
-                                {/* Dynamic custom links */}
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', width: '100%' }}>
-                                    {HERO_PROFILES[heroColorIndex].links.map((link, idx) => (
-                                        <div key={idx} style={{
-                                            background: HERO_PROFILES[heroColorIndex].color === '#FFFFFF' ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.05)',
-                                            padding: '8px 10px',
-                                            borderRadius: '8px',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '8px',
-                                            transition: 'all 0.5s ease',
-                                            border: HERO_PROFILES[heroColorIndex].color === '#FFFFFF' ? '1px solid rgba(0,0,0,0.04)' : 'none'
-                                        }}>
-                                            <div style={{
-                                                width: '6px',
-                                                height: '6px',
-                                                borderRadius: '50%',
-                                                background: HERO_PROFILES[heroColorIndex].accent,
-                                                transition: 'all 0.5s ease'
-                                            }}></div>
-                                            <span style={{
-                                                fontSize: '9px',
-                                                fontWeight: '600',
-                                                color: HERO_PROFILES[heroColorIndex].textColor || 'white',
-                                                whiteSpace: 'nowrap',
-                                                overflow: 'hidden',
-                                                textOverflow: 'ellipsis',
-                                                transition: 'all 0.5s ease'
-                                            }}>{link}</span>
-                                        </div>
-                                    ))}
+                                {/* Profile Content Wrapper */}
+                                <div style={{
+                                    padding: '0 12px 16px',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    width: '100%'
+                                }}>
+                                    {/* Avatar - overlapping the banner */}
+                                    <div style={{
+                                        width: '36px',
+                                        height: '36px',
+                                        borderRadius: '50%',
+                                        background: HERO_PROFILES[heroColorIndex].avatarBg,
+                                        border: HERO_PROFILES[heroColorIndex].color === '#FFFFFF' ? '2.5px solid #F8FAFC' : '2.5px solid #0D0D12',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontWeight: '900',
+                                        fontSize: '13px',
+                                        color: 'white',
+                                        marginTop: '-18px',
+                                        marginBottom: '10px',
+                                        boxShadow: `0 4px 10px ${HERO_PROFILES[heroColorIndex].accent}30`,
+                                        transition: 'all 0.5s ease',
+                                        zIndex: 5
+                                    }}>
+                                        {HERO_PROFILES[heroColorIndex].letter}
+                                    </div>
+
+                                    {/* Name */}
+                                    <div style={{
+                                        fontSize: '12px',
+                                        fontWeight: '800',
+                                        color: HERO_PROFILES[heroColorIndex].textColor || 'white',
+                                        marginBottom: '3px',
+                                        textAlign: 'center',
+                                        transition: 'all 0.5s ease'
+                                    }}>
+                                        {HERO_PROFILES[heroColorIndex].name}
+                                    </div>
+
+                                    {/* Role */}
+                                    <div style={{
+                                        fontSize: '9px',
+                                        fontWeight: '600',
+                                        color: HERO_PROFILES[heroColorIndex].accent,
+                                        textTransform: 'uppercase',
+                                        letterSpacing: '0.5px',
+                                        marginBottom: '14px',
+                                        textAlign: 'center',
+                                        transition: 'all 0.5s ease'
+                                    }}>
+                                        {HERO_PROFILES[heroColorIndex].role}
+                                    </div>
+
+                                    {/* Action button */}
+                                    <div style={{
+                                        width: '100%',
+                                        height: '28px',
+                                        background: HERO_PROFILES[heroColorIndex].accent,
+                                        color: 'white',
+                                        borderRadius: '8px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontSize: '9px',
+                                        fontWeight: '800',
+                                        marginBottom: '12px',
+                                        boxShadow: `0 4px 10px ${HERO_PROFILES[heroColorIndex].accent}30`,
+                                        transition: 'all 0.5s ease',
+                                        cursor: 'pointer'
+                                    }}>
+                                        Enregistrer
+                                    </div>
+
+                                    {/* Dynamic custom links */}
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', width: '100%' }}>
+                                        {HERO_PROFILES[heroColorIndex].links.map((link, idx) => (
+                                            <div key={idx} style={{
+                                                background: HERO_PROFILES[heroColorIndex].color === '#FFFFFF' ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.05)',
+                                                padding: '8px 10px',
+                                                borderRadius: '8px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '8px',
+                                                transition: 'all 0.5s ease',
+                                                border: HERO_PROFILES[heroColorIndex].color === '#FFFFFF' ? '1px solid rgba(0,0,0,0.04)' : 'none'
+                                            }}>
+                                                <div style={{
+                                                    width: '6px',
+                                                    height: '6px',
+                                                    borderRadius: '50%',
+                                                    background: HERO_PROFILES[heroColorIndex].accent,
+                                                    transition: 'all 0.5s ease'
+                                                }}></div>
+                                                <span style={{
+                                                    fontSize: '9px',
+                                                    fontWeight: '600',
+                                                    color: HERO_PROFILES[heroColorIndex].textColor || 'white',
+                                                    whiteSpace: 'nowrap',
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis',
+                                                    transition: 'all 0.5s ease'
+                                                }}>{link}</span>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         </div>
