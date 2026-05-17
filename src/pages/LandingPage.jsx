@@ -3,14 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
 const CARD_COLORS = [
-    { id: 'black', name: 'Noir Onyx', hex: '#111827', imgCombined: '/assets/cards/black-combined.png' },
-    { id: 'white', name: 'Blanc Neige', hex: '#F9FAFB', hexText: '#111827', imgCombined: '/assets/cards/white-combined.png' },
-    { id: 'blue', name: 'Bleu Océan', hex: '#2563EB', imgCombined: '/assets/cards/blue-combined.png' },
-    { id: 'gold', name: 'Or Premium', hex: '#D97706', imgCombined: '/assets/cards/gold-combined.png' },
-    { id: 'red', name: 'Rouge Rubis', hex: '#DC2626', imgCombined: '/assets/cards/red-combined.png' },
-    { id: 'green', name: 'Vert Émeraude', hex: '#059669', imgCombined: '/assets/cards/green-combined.png' },
-    { id: 'purple', name: 'Violet Améthyste', hex: '#7C3AED', imgCombined: '/assets/cards/purple-combined.png' },
-    { id: 'pink', name: 'Rose Poudré', hex: '#DB2777', imgCombined: '/assets/cards/pink-combined.png' }
+    { id: 'black', name: 'Noir Onyx', hex: '#111827', imgCombined: '/assets/cards/black-combined.png', imgRecto: '/assets/cards/black-recto.png', imgVerso: '/assets/cards/black-verso.png' },
+    { id: 'white', name: 'Blanc Neige', hex: '#F9FAFB', hexText: '#111827', imgCombined: '/assets/cards/white-combined.png', imgRecto: '/assets/cards/white-recto.png', imgVerso: '/assets/cards/white-verso.png' },
+    { id: 'blue', name: 'Bleu Océan', hex: '#2563EB', imgCombined: '/assets/cards/blue-combined.png', imgRecto: '/assets/cards/blue-recto.png', imgVerso: '/assets/cards/blue-verso.png' },
+    { id: 'gold', name: 'Or Premium', hex: '#D97706', imgCombined: '/assets/cards/gold-combined.png', imgRecto: '/assets/cards/gold-recto.png', imgVerso: '/assets/cards/gold-verso.png' },
+    { id: 'red', name: 'Rouge Rubis', hex: '#DC2626', imgCombined: '/assets/cards/red-combined.png', imgRecto: '/assets/cards/red-recto.png', imgVerso: '/assets/cards/red-verso.png' },
+    { id: 'green', name: 'Vert Émeraude', hex: '#059669', imgCombined: '/assets/cards/green-combined.png', imgRecto: '/assets/cards/green-recto.png', imgVerso: '/assets/cards/green-verso.png' },
+    { id: 'purple', name: 'Violet Améthyste', hex: '#7C3AED', imgCombined: '/assets/cards/purple-combined.png', imgRecto: '/assets/cards/purple-recto.png', imgVerso: '/assets/cards/purple-verso.png' },
+    { id: 'pink', name: 'Rose Poudré', hex: '#DB2777', imgCombined: '/assets/cards/pink-combined.png', imgRecto: '/assets/cards/pink-recto.png', imgVerso: '/assets/cards/pink-verso.png' }
 ];
 
 export default function LandingPage() {
@@ -20,6 +20,10 @@ export default function LandingPage() {
     const [selectedColorIndex, setSelectedColorIndex] = useState(0);
     const [cardType, setCardType] = useState('physical'); // 'physical', 'digital', 'pro', 'corporate'
     const [activeDemoTab, setActiveDemoTab] = useState('visitor'); // 'visitor' or 'dashboard'
+    
+    // States for Hero Audacious flipping color-shifting card
+    const [heroColorIndex, setHeroColorIndex] = useState(0);
+    const [heroIsFlipped, setHeroIsFlipped] = useState(false);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -35,9 +39,20 @@ export default function LandingPage() {
             setSession(session);
         });
 
+        // Loop for audacious hero card flip & color change
+        const heroInterval = setInterval(() => {
+            setHeroIsFlipped(prev => !prev);
+            
+            // Swap color exactly at the 90deg perpendicular midpoint (600ms) for a seamless color shift
+            setTimeout(() => {
+                setHeroColorIndex(prev => (prev + 1) % CARD_COLORS.length);
+            }, 600);
+        }, 3500);
+
         return () => {
             window.removeEventListener('scroll', handleScroll);
             subscription?.unsubscribe();
+            clearInterval(heroInterval);
         };
     }, []);
 
@@ -59,6 +74,8 @@ export default function LandingPage() {
         }
         return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
     };
+
+    const heroCard = CARD_COLORS[heroColorIndex];
 
     return (
         <div style={{ background: '#F8FAFC', minHeight: '100vh', width: '100%', overflowX: 'hidden', fontFamily: "'Outfit', 'Inter', sans-serif", color: '#0F172A', position: 'relative' }}>
@@ -212,7 +229,7 @@ export default function LandingPage() {
                 </div>
             </nav>
 
-            {/* 2. HERO SECTION — WOW EFFECT (Light White Glass theme) */}
+            {/* 2. HERO SECTION — AUDACIOUS 3D CARD FLIP LOOP (Light White Glass theme) */}
             <section style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifycontent: 'center', paddingTop: '120px', position: 'relative', overflow: 'hidden' }}>
                 <div style={{ maxWidth: '1200px', width: '100%', margin: '0 auto', padding: '0 24px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '48px', alignItems: 'center', position: 'relative', zIndex: 10 }}>
                     {/* Hero Left Content */}
@@ -268,28 +285,69 @@ export default function LandingPage() {
                         </div>
                     </div>
 
-                    {/* Hero Right Visuals - Static High-End Mockup */}
+                    {/* Hero Right Visuals - Audacious Color-shifting 3D Flipper */}
                     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', minHeight: '400px' }}>
                         <div style={{ position: 'relative', width: '320px', height: '400px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                            {/* Realistic physical combined card photo (No animation) */}
+                            
+                            {/* Perspective Card Container */}
                             <div style={{
+                                perspective: '1000px',
                                 width: '320px',
                                 height: '200px',
-                                borderRadius: '18px',
-                                boxShadow: '0 30px 60px rgba(26, 18, 101, 0.15)',
                                 position: 'absolute',
                                 top: '40px',
                                 zIndex: 5,
-                                overflow: 'hidden'
                             }}>
-                                <img 
-                                    src="/card-recto.png" 
-                                    alt="NFCrafter Cartes Physique Recto Verso" 
-                                    style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '18px' }}
-                                    onError={(e) => {
-                                        e.target.src = '/placeholder-qr-custom.jpg';
-                                    }}
-                                />
+                                {/* Card Flipper Div */}
+                                <div style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    position: 'relative',
+                                    transformStyle: 'preserve-3d',
+                                    transition: 'transform 1.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                                    transform: `rotateY(${heroIsFlipped ? 180 : 0}deg)`,
+                                    borderRadius: '18px',
+                                    boxShadow: '0 30px 60px rgba(26, 18, 101, 0.18)'
+                                }}>
+                                    {/* Front Side (Recto) */}
+                                    <div style={{
+                                        position: 'absolute',
+                                        width: '100%',
+                                        height: '100%',
+                                        backfaceVisibility: 'hidden',
+                                        borderRadius: '18px',
+                                        overflow: 'hidden'
+                                    }}>
+                                        <img 
+                                            src={heroCard.imgRecto} 
+                                            alt={`NFCrafter Carte ${heroCard.name} Recto`} 
+                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                            onError={(e) => {
+                                                e.target.src = '/card-recto.png';
+                                            }}
+                                        />
+                                    </div>
+
+                                    {/* Back Side (Verso) */}
+                                    <div style={{
+                                        position: 'absolute',
+                                        width: '100%',
+                                        height: '100%',
+                                        backfaceVisibility: 'hidden',
+                                        transform: 'rotateY(180deg)',
+                                        borderRadius: '18px',
+                                        overflow: 'hidden'
+                                    }}>
+                                        <img 
+                                            src={heroCard.imgVerso} 
+                                            alt={`NFCrafter Carte ${heroCard.name} Verso`} 
+                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                            onError={(e) => {
+                                                e.target.src = '/card-recto.png';
+                                            }}
+                                        />
+                                    </div>
+                                </div>
                             </div>
 
                             {/* Phone Mockup floating slightly below */}
