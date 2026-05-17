@@ -30,6 +30,7 @@ export default function ClientDashboard() {
     const [newName, setNewName] = useState('');
     const [feedbacks, setFeedbacks] = useState([]);
     const [feedbacksLoading, setFeedbacksLoading] = useState(false);
+    const [scanStats, setScanStats] = useState([]);
     const editorRef = useRef(null);
     
     // Lock body scroll when mobile preview is open
@@ -133,6 +134,28 @@ export default function ClientDashboard() {
                         setFeedbacks(data || []);
                         setFeedbacksLoading(false);
                     });
+
+                // Load scan stats (last 14 days)
+                const since = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
+                supabase
+                    .from('scan_logs')
+                    .select('created_at')
+                    .eq('card_id', selectedCardId)
+                    .gte('created_at', since)
+                    .then(({ data }) => {
+                        if (!data) return;
+                        const counts = {};
+                        for (let i = 13; i >= 0; i--) {
+                            const d = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
+                            const key = d.toISOString().split('T')[0];
+                            counts[key] = 0;
+                        }
+                        data.forEach(row => {
+                            const key = row.created_at.split('T')[0];
+                            if (counts[key] !== undefined) counts[key]++;
+                        });
+                        setScanStats(Object.entries(counts).map(([date, count]) => ({ date, count })));
+                    });
             }
         }
     }, [selectedCardId]);
@@ -186,6 +209,19 @@ export default function ClientDashboard() {
     async function handleGalleryImageUpload(file, onUrl) {
         await uploadFile(file, 'banners', onUrl);
     }
+
+    // Supabase Realtime — notify on new feedbacks
+    useEffect(() => {
+        if (!selectedCardId) return;
+        const channel = supabase
+            .channel(`feedbacks-${selectedCardId}`)
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'feedbacks', filter: `card_id=eq.${selectedCardId}` }, (payload) => {
+                setFeedbacks(prev => [payload.new, ...prev]);
+                toast('Nouveau retour reçu !', 'success');
+            })
+            .subscribe();
+        return () => supabase.removeChannel(channel);
+    }, [selectedCardId]);
 
     async function uploadFile(file, bucket, onUrl, setUploading) {
         if (!file) return;
@@ -473,6 +509,9 @@ export default function ClientDashboard() {
                                         <button onClick={async () => { if (navigator.share) { try { await navigator.share({ title: 'NFCrafter', url: publicUrl }); } catch (e) {} } else { window.open(`https://wa.me/?text=${encodeURIComponent(publicUrl)}`, '_blank'); } }} style={{ flex: 1, padding: '12px', borderRadius: '12px', background: '#25D366', color: 'white', border: 'none', fontWeight: '700', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                                             <div style={{ width: 16, height: 16 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>` }} /> Partager
                                         </button>
+                                        <button onClick={downloadQR} title="Télécharger QR Code" style={{ padding: '12px', borderRadius: '12px', background: '#F5F3FF', color: '#7C3AED', border: 'none', fontWeight: '700', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <div style={{ width: 16, height: 16 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><path d="M14 14h3v3h3v-3M14 17v3M17 14v3"></path></svg>` }} />
+                                        </button>
                                     </div>
                                 </div>
 
@@ -543,7 +582,8 @@ export default function ClientDashboard() {
                                                         }}
                                                         style={{ marginTop: 10, fontSize: 11, fontWeight: 700, color: '#6366F1', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
                                                     >
-                                                        ✓ Marquer comme lu
+                                                        <div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>` }} />
+                                                        Marquer comme lu
                                                     </button>
                                                 )}
                                             </div>

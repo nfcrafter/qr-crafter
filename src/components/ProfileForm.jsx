@@ -168,6 +168,19 @@ export default function ProfileForm({
     const addSkill = () => { if (!skillInput.trim()) return; setProfile({ ...profile, skills: [...(profile.skills || []), skillInput.trim()] }); setSkillInput(''); };
     const removeSkill = (idx) => { const s = [...(profile.skills || [])]; s.splice(idx, 1); setProfile({ ...profile, skills: s }); };
 
+    // Portfolio
+    const portfolioFileRef = useRef();
+    const [activePortfolioId, setActivePortfolioId] = useState(null);
+    const addPortfolioItem = () => setProfile({ ...profile, portfolio: [...(profile.portfolio || []), { id: Date.now(), title: '', description: '', image_url: '', link: '' }] });
+    const updatePortfolioItem = (id, f, v) => setProfile({ ...profile, portfolio: (profile.portfolio || []).map(p => p.id === id ? { ...p, [f]: v } : p) });
+    const removePortfolioItem = (id) => { openConfirm('Supprimer', 'Supprimer cette réalisation ?', () => setProfile({ ...profile, portfolio: (profile.portfolio || []).filter(p => p.id !== id) })); };
+    const triggerPortfolioUpload = (id) => { setActivePortfolioId(id); portfolioFileRef.current.click(); };
+
+    // Certifications
+    const addCertification = () => setProfile({ ...profile, certifications: [...(profile.certifications || []), { id: Date.now(), name: '', issuer: '', year: new Date().getFullYear().toString(), color: '#4F46E5' }] });
+    const updateCertification = (id, f, v) => setProfile({ ...profile, certifications: (profile.certifications || []).map(c => c.id === id ? { ...c, [f]: v } : c) });
+    const removeCertification = (id) => { openConfirm('Supprimer', 'Supprimer cette certification ?', () => setProfile({ ...profile, certifications: (profile.certifications || []).filter(c => c.id !== id) })); };
+
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             {/* SECTION APPARENCE */}
@@ -673,13 +686,63 @@ export default function ProfileForm({
                 </div>
             ))}
 
+            {/* PORTFOLIO */}
+            {acc('portfolio', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>`, 'Portfolio / Réalisations', 'Montrez vos meilleures réalisations.', (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: '#1A1265' }}>Afficher le portfolio</span>
+                        <input type="checkbox" checked={profile.show_portfolio || false} onChange={e => setProfile({ ...profile, show_portfolio: e.target.checked })} />
+                    </label>
+                    {(profile.portfolio || []).map(item => (
+                        <div key={item.id} style={{ background: '#F8FAFC', borderRadius: 16, padding: 16, border: '1px solid #E2E8F0', position: 'relative' }}>
+                            <button onClick={() => removePortfolioItem(item.id)} style={{ position: 'absolute', top: 10, right: 10, width: 28, height: 28, borderRadius: '50%', background: '#FEE2E2', color: '#EF4444', border: 'none', cursor: 'pointer', fontSize: 12 }}>✕</button>
+                            {item.image_url && <img src={item.image_url} style={{ width: '100%', height: 120, objectFit: 'cover', borderRadius: 10, marginBottom: 10 }} alt="" />}
+                            <button onClick={() => triggerPortfolioUpload(item.id)} style={{ width: '100%', padding: '10px', borderRadius: 10, border: '1px dashed #CBD5E1', background: 'white', color: '#64748B', cursor: 'pointer', fontSize: 12, marginBottom: 10 }}>{item.image_url ? 'Changer l\'image' : '+ Ajouter une image'}</button>
+                            <div className="field" style={{ marginBottom: 10 }}><label>Titre du projet</label><input type="text" value={item.title} onChange={e => updatePortfolioItem(item.id, 'title', e.target.value)} placeholder="Ex: Site web Boutique ABC" style={{ background: 'white' }} /></div>
+                            <div className="field" style={{ marginBottom: 10 }}><label>Description</label><textarea value={item.description} onChange={e => updatePortfolioItem(item.id, 'description', e.target.value)} placeholder="Décrivez ce projet..." rows={2} style={{ background: 'white', width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #E2E8F0', resize: 'vertical', fontFamily: 'inherit', fontSize: 13 }} /></div>
+                            <div className="field" style={{ marginBottom: 0 }}><label>Lien (optionnel)</label><input type="url" value={item.link} onChange={e => updatePortfolioItem(item.id, 'link', e.target.value)} placeholder="https://..." style={{ background: 'white' }} /></div>
+                        </div>
+                    ))}
+                    <button onClick={addPortfolioItem} style={{ width: '100%', padding: 14, borderRadius: 14, border: '2px dashed #CBD5E1', background: 'white', color: '#475569', fontWeight: 700, cursor: 'pointer', fontSize: 13 }}>+ Ajouter une réalisation</button>
+                </div>
+            ))}
+
+            {/* CERTIFICATIONS */}
+            {acc('certifications', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"></circle><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"></path></svg>`, 'Certifications / Badges', 'Affichez vos certifications professionnelles.', (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: '#1A1265' }}>Afficher les certifications</span>
+                        <input type="checkbox" checked={profile.show_certifications || false} onChange={e => setProfile({ ...profile, show_certifications: e.target.checked })} />
+                    </label>
+                    {(profile.certifications || []).map(cert => (
+                        <div key={cert.id} style={{ background: '#F8FAFC', borderRadius: 16, padding: 16, border: '1px solid #E2E8F0', position: 'relative' }}>
+                            <button onClick={() => removeCertification(cert.id)} style={{ position: 'absolute', top: 10, right: 10, width: 28, height: 28, borderRadius: '50%', background: '#FEE2E2', color: '#EF4444', border: 'none', cursor: 'pointer', fontSize: 12 }}>✕</button>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
+                                <div className="field" style={{ marginBottom: 0 }}><label>Nom</label><input type="text" value={cert.name} onChange={e => updateCertification(cert.id, 'name', e.target.value)} placeholder="Ex: Google Analytics" style={{ background: 'white' }} /></div>
+                                <div className="field" style={{ marginBottom: 0 }}><label>Organisme</label><input type="text" value={cert.issuer} onChange={e => updateCertification(cert.id, 'issuer', e.target.value)} placeholder="Ex: Google" style={{ background: 'white' }} /></div>
+                            </div>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                                <div className="field" style={{ marginBottom: 0 }}><label>Année</label><input type="text" value={cert.year} onChange={e => updateCertification(cert.id, 'year', e.target.value)} placeholder="2024" style={{ background: 'white' }} /></div>
+                                <div className="field" style={{ marginBottom: 0 }}>
+                                    <label>Couleur du badge</label>
+                                    <div style={{ display: 'flex', gap: 8 }}>
+                                        <input type="color" value={cert.color || '#4F46E5'} onChange={e => updateCertification(cert.id, 'color', e.target.value)} style={{ width: 44, height: 44, padding: 0, border: 'none', borderRadius: 10, cursor: 'pointer' }} />
+                                        <input type="text" value={cert.color || '#4F46E5'} onChange={e => updateCertification(cert.id, 'color', e.target.value)} style={{ flex: 1, fontSize: 13 }} />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                    <button onClick={addCertification} style={{ width: '100%', padding: 14, borderRadius: 14, border: '2px dashed #CBD5E1', background: 'white', color: '#475569', fontWeight: 700, cursor: 'pointer', fontSize: 13 }}>+ Ajouter une certification</button>
+                </div>
+            ))}
 
             {/* SECTION MISE EN PAGE */}
             {acc('layout', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10H3M21 6H3M21 14H3M21 18H3"></path></svg>`, 'Mise en page', 'Ordre des sections du profil.', (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                     <p style={{ fontSize: 13, color: '#64748B', marginBottom: 10 }}>Organisez l'ordre d'apparition des sections sur votre profil public.</p>
                     {(() => {
-                        const defaultSections = ['contact_buttons', 'links', 'products', 'business_info', 'gallery', 'skills', 'testimonials', 'faq', 'events'];
+                        const defaultSections = ['contact_buttons', 'links', 'products', 'business_info', 'gallery', 'skills', 'testimonials', 'faq', 'events', 'portfolio', 'certifications'];
                         const currentOrder = profile.section_order || [];
                         const missing = defaultSections.filter(s => !currentOrder.includes(s));
                         const sections = [...currentOrder, ...missing].filter(s => s !== 'bio' && defaultSections.includes(s));
@@ -691,9 +754,11 @@ export default function ProfileForm({
                             business_info: 'Infos Business (Horaires/Map)',
                             gallery: 'Galerie Photos',
                             skills: 'Compétences / Tags',
-                            testimonials: 'Témoignages / Avis',
+                            testimonials: 'Retours clients (formulaire)',
                             faq: 'FAQ',
-                            events: 'Événements à Venir'
+                            events: 'Événements à Venir',
+                            portfolio: 'Portfolio / Réalisations',
+                            certifications: 'Certifications / Badges'
                         };
                         const move = (index, dir) => {
                             const newOrder = [...sections];
@@ -714,6 +779,15 @@ export default function ProfileForm({
                     })()}
                 </div>
             ))}
+
+            <input ref={portfolioFileRef} type="file" hidden accept="image/*" onChange={e => {
+                const file = e.target.files[0];
+                if (file && onUploadGalleryImage && activePortfolioId) {
+                    onUploadGalleryImage(file, (url) => {
+                        updatePortfolioItem(activePortfolioId, 'image_url', url);
+                    });
+                }
+            }} />
 
             <input ref={galleryFileRef} type="file" hidden accept="image/*" onChange={e => {
                 const file = e.target.files[0];

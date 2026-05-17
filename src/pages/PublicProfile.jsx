@@ -383,7 +383,7 @@ export default function PublicProfile() {
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, animation: 'fadeUp .5s ease', padding: '0 20px' }}>
           {(() => {
-            const defaultSections = ['contact_buttons', 'links', 'products', 'business_info', 'gallery', 'skills', 'testimonials', 'faq', 'events'];
+            const defaultSections = ['contact_buttons', 'links', 'products', 'business_info', 'gallery', 'skills', 'testimonials', 'faq', 'events', 'portfolio', 'certifications'];
             const currentOrder = profile?.section_order || [];
             const missing = defaultSections.filter(s => !currentOrder.includes(s));
             const sections = [...currentOrder, ...missing].filter(s => defaultSections.includes(s));
@@ -647,6 +647,51 @@ export default function PublicProfile() {
                                 {ev.location && <div style={{ fontSize: 13, color: subTextColor, marginBottom: 6 }}>📍 {ev.location}</div>}
                                 {ev.description && <div style={{ fontSize: 13, color: textColor, lineHeight: 1.5, marginBottom: ev.link ? 10 : 0 }}>{ev.description}</div>}
                                 {ev.link && <a href={ev.link} target="_blank" rel="noreferrer" style={{ display: 'inline-block', marginTop: 4, padding: '8px 16px', background: themeColor, color: 'white', borderRadius: 10, textDecoration: 'none', fontSize: 13, fontWeight: 700 }}>S'inscrire →</a>}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+              ),
+              portfolio: () => profile?.show_portfolio && profile?.portfolio?.length > 0 && (
+                <div key="portfolio" style={{ background: cardBg, borderRadius: 24, padding: 20, boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.2)' : '0 4px 20px rgba(0,0,0,0.03)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+                        <div style={{ width: 32, height: 32, borderRadius: 8, background: themeColor + '15', color: themeColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                        </div>
+                        <h3 style={{ fontSize: 16, fontWeight: 800, color: textColor, margin: 0 }}>Portfolio</h3>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                        {profile.portfolio.map(item => (
+                            <div key={item.id} className="pl" style={{ background: isDark ? 'rgba(255,255,255,0.03)' : '#F8FAFC', borderRadius: 18, overflow: 'hidden', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid #F1F5F9' }}>
+                                {item.image_url && <img src={item.image_url} style={{ width: '100%', height: 160, objectFit: 'cover' }} alt={item.title} />}
+                                <div style={{ padding: 14 }}>
+                                    {item.title && <div style={{ fontWeight: 800, fontSize: 15, color: textColor, marginBottom: 6 }}>{item.title}</div>}
+                                    {item.description && <p style={{ fontSize: 13, color: subTextColor, lineHeight: 1.6, margin: '0 0 10px' }}>{item.description}</p>}
+                                    {item.link && <a href={item.link} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', background: themeColor, color: 'white', borderRadius: 10, textDecoration: 'none', fontSize: 13, fontWeight: 700 }}>Voir le projet →</a>}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+              ),
+              certifications: () => profile?.show_certifications && profile?.certifications?.length > 0 && (
+                <div key="certifications" style={{ background: cardBg, borderRadius: 24, padding: 20, boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.2)' : '0 4px 20px rgba(0,0,0,0.03)', border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+                        <div style={{ width: 32, height: 32, borderRadius: 8, background: themeColor + '15', color: themeColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="6"></circle><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"></path></svg>
+                        </div>
+                        <h3 style={{ fontSize: 16, fontWeight: 800, color: textColor, margin: 0 }}>Certifications</h3>
+                    </div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+                        {profile.certifications.map(cert => (
+                            <div key={cert.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 16px', background: (cert.color || '#4F46E5') + '15', borderRadius: 14, border: `1px solid ${cert.color || '#4F46E5'}30` }}>
+                                <div style={{ width: 32, height: 32, borderRadius: 8, background: cert.color || '#4F46E5', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                </div>
+                                <div>
+                                    <div style={{ fontWeight: 800, fontSize: 13, color: textColor }}>{cert.name}</div>
+                                    {(cert.issuer || cert.year) && <div style={{ fontSize: 11, color: subTextColor, marginTop: 2 }}>{cert.issuer}{cert.issuer && cert.year ? ' · ' : ''}{cert.year}</div>}
+                                </div>
                             </div>
                         ))}
                     </div>
