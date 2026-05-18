@@ -474,8 +474,8 @@ export default function ClientDashboard() {
                     width: 280,
                     height: 280,
                     data: vCardData,
-                    dotsOptions: { color: publicProfile.primaryColor || "#1A1265", type: "rounded" },
-                    cornersSquareOptions: { color: publicProfile.primaryColor || "#1A1265", type: "extra-rounded" },
+                    dotsOptions: { color: "#000000", type: "rounded" },
+                    cornersSquareOptions: { color: "#000000", type: "extra-rounded" },
                     backgroundOptions: { color: "#FFFFFF" }
                 });
                 qrCode.append(offlineQrRef.current);
@@ -656,7 +656,7 @@ export default function ClientDashboard() {
                                         </button>
                     </div>
                 ) : (
-                    <div className="dashboard-grid" style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 340px', gap: '40px', alignItems: 'start', overflowX: 'hidden' }}>
+                    <div className="dashboard-grid" style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 340px', gap: '40px', alignItems: 'start' }}>
                         
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
                             
