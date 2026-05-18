@@ -105,10 +105,67 @@ export default function ClientDashboard() {
     async function loadUserData() {
         try {
             setLoading(true);
+            
+            // Check if we are offline or if navigator says we are offline
+            if (!navigator.onLine) {
+                console.log("[PWA] Offline detected, loading from localStorage");
+                const cachedUser = localStorage.getItem('nfc_cached_user');
+                const cachedCards = localStorage.getItem('nfc_cached_cards');
+                
+                if (cachedUser && cachedCards) {
+                    const parsedUser = JSON.parse(cachedUser);
+                    const parsedCards = JSON.parse(cachedCards);
+                    
+                    setUser(parsedUser);
+                    setUserCards(parsedCards);
+                    
+                    if (parsedCards.length > 0) {
+                        const currentId = activatedId || selectedCardId || parsedCards[0].card_id;
+                        const card = parsedCards.find(c => c.card_id === currentId) || parsedCards[0];
+                        setSelectedCardId(card.card_id);
+                        setPublicProfile({
+                            banner_url: '', photo_url: '', full_name: '', job_title: '', bio: '',
+                            phone: '', email: '', primaryColor: '#1A1265',
+                            socials: {}, customLinks: [], url: '', qr_type: 'profile',
+                            ...(card.admin_profile || {})
+                        });
+                    }
+                    return; // Stop here, loaded offline successfully!
+                }
+            }
+
             const { data: authData, error: authError } = await supabase.auth.getUser();
-            if (authError || !authData?.user) { navigate('/login'); return; }
+            
+            if (authError || !authData?.user) {
+                // If it's a network error (e.g., fetch failed due to offline), load from cache
+                if (authError && authError.message && (authError.message.includes('Fetch') || authError.message.includes('Failed'))) {
+                    const cachedUser = localStorage.getItem('nfc_cached_user');
+                    const cachedCards = localStorage.getItem('nfc_cached_cards');
+                    if (cachedUser && cachedCards) {
+                        setUser(JSON.parse(cachedUser));
+                        const parsedCards = JSON.parse(cachedCards);
+                        setUserCards(parsedCards);
+                        if (parsedCards.length > 0) {
+                            const currentId = activatedId || selectedCardId || parsedCards[0].card_id;
+                            const card = parsedCards.find(c => c.card_id === currentId) || parsedCards[0];
+                            setSelectedCardId(card.card_id);
+                            setPublicProfile({
+                                banner_url: '', photo_url: '', full_name: '', job_title: '', bio: '',
+                                phone: '', email: '', primaryColor: '#1A1265',
+                                socials: {}, customLinks: [], url: '', qr_type: 'profile',
+                                ...(card.admin_profile || {})
+                            });
+                        }
+                        return;
+                    }
+                }
+                navigate('/login');
+                return;
+            }
+            
             const authUser = authData.user;
             setUser(authUser);
+            localStorage.setItem('nfc_cached_user', JSON.stringify(authUser));
 
             // Fetch cards where owner_id is the user — only source of truth
             const { data: ownedCards, error: ownedError } = await supabase
@@ -119,7 +176,11 @@ export default function ClientDashboard() {
 
             // Don't throw on error — just use empty array and show empty state
             const finalCards = ownedError ? [] : (ownedCards || []);
-            if (ownedError) console.warn("Cards fetch warning:", ownedError.message);
+            if (ownedError) {
+                console.warn("Cards fetch warning:", ownedError.message);
+            } else {
+                localStorage.setItem('nfc_cached_cards', JSON.stringify(finalCards));
+            }
 
             setUserCards(finalCards);
 
@@ -145,6 +206,12 @@ export default function ClientDashboard() {
             }
         } catch (err) {
             console.error("Dashboard Load Error:", err);
+            const cachedUser = localStorage.getItem('nfc_cached_user');
+            const cachedCards = localStorage.getItem('nfc_cached_cards');
+            if (cachedUser && cachedCards) {
+                setUser(JSON.parse(cachedUser));
+                setUserCards(JSON.parse(cachedCards));
+            }
         } finally {
             setLoading(false);
         }
@@ -161,49 +228,54 @@ export default function ClientDashboard() {
                     ...(card.admin_profile || {})
                 });
 
-                // Update scan count when card changes
-                supabase
-                    .from('scan_logs')
-                    .select('*', { count: 'exact', head: true })
-                    .eq('card_id', selectedCardId)
-                    .then(({ count }) => setScanCount(count || 0));
-
                 setViewMode('view');
                 setIsMobileMenuOpen(false);
 
-                // Load feedbacks for this card
-                setFeedbacksLoading(true);
-                supabase
-                    .from('feedbacks')
-                    .select('*')
-                    .eq('card_id', selectedCardId)
-                    .order('created_at', { ascending: false })
-                    .then(({ data }) => {
-                        setFeedbacks(data || []);
-                        setFeedbacksLoading(false);
-                    });
+                if (navigator.onLine) {
+                    // Update scan count when card changes — only online
+                    supabase
+                        .from('scan_logs')
+                        .select('*', { count: 'exact', head: true })
+                        .eq('card_id', selectedCardId)
+                        .then(({ count }) => setScanCount(count || 0))
+                        .catch(() => {});
 
-                // Load scan stats (last 14 days)
-                const since = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
-                supabase
-                    .from('scan_logs')
-                    .select('created_at')
-                    .eq('card_id', selectedCardId)
-                    .gte('created_at', since)
-                    .then(({ data }) => {
-                        if (!data) return;
-                        const counts = {};
-                        for (let i = 13; i >= 0; i--) {
-                            const d = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
-                            const key = d.toISOString().split('T')[0];
-                            counts[key] = 0;
-                        }
-                        data.forEach(row => {
-                            const key = row.created_at.split('T')[0];
-                            if (counts[key] !== undefined) counts[key]++;
-                        });
-                        setScanStats(Object.entries(counts).map(([date, count]) => ({ date, count })));
-                    });
+                    // Load feedbacks for this card — only online
+                    setFeedbacksLoading(true);
+                    supabase
+                        .from('feedbacks')
+                        .select('*')
+                        .eq('card_id', selectedCardId)
+                        .order('created_at', { ascending: false })
+                        .then(({ data }) => {
+                            setFeedbacks(data || []);
+                            setFeedbacksLoading(false);
+                        })
+                        .catch(() => setFeedbacksLoading(false));
+
+                    // Load scan stats (last 14 days) — only online
+                    const since = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
+                    supabase
+                        .from('scan_logs')
+                        .select('created_at')
+                        .eq('card_id', selectedCardId)
+                        .gte('created_at', since)
+                        .then(({ data }) => {
+                            if (!data) return;
+                            const counts = {};
+                            for (let i = 13; i >= 0; i--) {
+                                const d = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
+                                const key = d.toISOString().split('T')[0];
+                                counts[key] = 0;
+                            }
+                            data.forEach(row => {
+                                const key = row.created_at.split('T')[0];
+                                if (counts[key] !== undefined) counts[key]++;
+                            });
+                            setScanStats(Object.entries(counts).map(([date, count]) => ({ date, count })));
+                        })
+                        .catch(() => {});
+                }
             }
         }
     }, [selectedCardId]);
