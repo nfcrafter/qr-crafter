@@ -1,19 +1,16 @@
-const CACHE_NAME = 'nfcrafter-v1';
+const CACHE_NAME = 'nfcrafter-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
   '/logo.png',
-  '/favicon.svg',
-  '/src/main.jsx',
-  '/src/App.jsx',
-  '/src/index.css'
+  '/favicon.svg'
 ];
 
-// Install Event - cache core shell assets
+// Install Event - cache initial app shell
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[Service Worker] Caching App Shell');
+      console.log('[Service Worker] Caching initial shell');
       return cache.addAll(ASSETS_TO_CACHE);
     })
   );
@@ -37,34 +34,35 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch Event - network first, fallback to cache for pages/assets
+// Fetch Event - dynamic caching with Network-First strategy
 self.addEventListener('fetch', (event) => {
-  // Only handle HTTP/HTTPS (ignore chrome-extension:// etc.)
-  if (!event.request.url.startsWith(self.location.origin)) {
+  // Only handle GET requests and HTTP/HTTPS schemes
+  if (event.request.method !== 'GET' || !event.request.url.startsWith(self.location.origin)) {
     return;
   }
 
   event.respondWith(
     fetch(event.request)
-      .then((response) => {
-        // If successful, clone and put in cache
-        if (response && response.status === 200 && response.type === 'basic') {
-          const responseToCache = response.clone();
+      .then((networkResponse) => {
+        // If the request was successful, copy it to the cache
+        if (networkResponse && networkResponse.status === 200) {
+          const responseToCache = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => {
             cache.put(event.request, responseToCache);
           });
         }
-        return response;
+        return networkResponse;
       })
       .catch(() => {
-        // If offline, try cache
+        // If network fails (offline), look in the cache
         return caches.match(event.request).then((cachedResponse) => {
           if (cachedResponse) {
             return cachedResponse;
           }
-          // If the request is for a page/document, return index.html for SPA router
+          
+          // SPA Routing Fallback: serve /index.html when navigating offline
           if (event.request.mode === 'navigate') {
-            return caches.match('/index.html');
+            return caches.match('/') || caches.match('/index.html');
           }
         });
       })

@@ -569,7 +569,7 @@ export default function ClientDashboard() {
                             {/* PWA Install Banner */}
                             {showInstallBtn && (
                                 <div style={{ 
-                                    background: 'linear-gradient(135deg, #7C3AED 0%, #1A1265 100%)', 
+                                    background: 'linear-gradient(135deg, #EF4444 0%, #1A1265 100%)', 
                                     padding: '24px 32px', 
                                     borderRadius: '24px', 
                                     color: 'white', 
@@ -577,30 +577,31 @@ export default function ClientDashboard() {
                                     alignItems: 'center', 
                                     justifyContent: 'space-between', 
                                     gap: '24px',
-                                    boxShadow: '0 20px 40px rgba(124,58,237,0.15)',
+                                    boxShadow: '0 20px 40px rgba(239,68,68,0.15)',
                                     animation: 'fadeIn 0.6s ease-out',
-                                    flexWrap: 'wrap'
+                                    flexWrap: 'wrap',
+                                    border: '2px solid #EF4444'
                                 }}>
                                     <div style={{ flex: 1, minWidth: '280px' }}>
-                                        <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                            <span style={{ fontSize: '20px' }}>📲</span> Installez l'application NFCrafter
+                                        <h3 style={{ fontSize: '18px', fontWeight: '900', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                            <span style={{ fontSize: '20px' }}>⚠️</span> ACTION OBLIGATOIRE : Ajoutez NFCrafter à votre écran
                                         </h3>
-                                        <p style={{ fontSize: '14px', opacity: 0.9, lineHeight: '1.6' }}>
-                                            Ajoutez l'application sur votre écran d'accueil pour un accès instantané et la gestion de vos contacts même hors-ligne.
+                                        <p style={{ fontSize: '14px', opacity: 0.95, lineHeight: '1.6', margin: 0 }}>
+                                            Pour pouvoir partager vos coordonnées et vos réseaux sociaux <strong>sans aucune connexion Internet (hors-ligne complet)</strong> et accéder instantanément à vos informations, vous devez impérativement ajouter NFCrafter à votre écran d'accueil.
                                         </p>
                                     </div>
                                     <button 
                                         onClick={handleInstallApp}
                                         style={{ 
                                             background: 'white', 
-                                            color: '#7C3AED', 
-                                            padding: '12px 24px', 
+                                            color: '#EF4444', 
+                                            padding: '14px 28px', 
                                             borderRadius: '14px', 
                                             border: 'none', 
-                                            fontWeight: '800', 
+                                            fontWeight: '900', 
                                             cursor: 'pointer',
                                             fontSize: '14px',
-                                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                                            boxShadow: '0 10px 20px rgba(0,0,0,0.15)',
                                             transition: 'transform 0.2s',
                                             whiteSpace: 'nowrap'
                                         }}
@@ -615,7 +616,7 @@ export default function ClientDashboard() {
                             {/* iOS PWA Install Guide Banner */}
                             {showIOSInstallGuide && (
                                 <div style={{ 
-                                    background: 'linear-gradient(135deg, #7C3AED 0%, #1A1265 100%)', 
+                                    background: 'linear-gradient(135deg, #EF4444 0%, #1A1265 100%)', 
                                     padding: '24px 32px', 
                                     borderRadius: '24px', 
                                     color: 'white', 
@@ -623,37 +624,21 @@ export default function ClientDashboard() {
                                     alignItems: 'center', 
                                     justifyContent: 'space-between', 
                                     gap: '24px',
-                                    boxShadow: '0 20px 40px rgba(124,58,237,0.15)',
+                                    boxShadow: '0 20px 40px rgba(239,68,68,0.15)',
                                     animation: 'fadeIn 0.6s ease-out',
-                                    flexWrap: 'wrap'
+                                    flexWrap: 'wrap',
+                                    border: '2px solid #EF4444'
                                 }}>
                                     <div style={{ flex: 1, minWidth: '280px' }}>
-                                        <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                            <span style={{ fontSize: '20px' }}>📲</span> Installez NFCrafter sur votre iPhone
+                                        <h3 style={{ fontSize: '18px', fontWeight: '900', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                            <span style={{ fontSize: '20px' }}>⚠️</span> ACTION OBLIGATOIRE : Installez NFCrafter sur votre iPhone
                                         </h3>
-                                        <p style={{ fontSize: '14px', opacity: 0.9, lineHeight: '1.6', margin: 0 }}>
-                                            Appuyez sur l'icône de partage <span style={{ background: 'rgba(255,255,255,0.2)', padding: '2px 6px', borderRadius: '6px' }}>⎋</span> (en bas de Safari), puis faites défiler vers le bas et choisissez <strong style={{ textDecoration: 'underline' }}>"Sur l'écran d'accueil"</strong>.
+                                        <p style={{ fontSize: '14px', opacity: 0.95, lineHeight: '1.6', margin: 0 }}>
+                                            Pour pouvoir partager votre profil <strong>sans aucune connexion Internet (hors-ligne complet)</strong> et y accéder instantanément, vous devez impérativement l'ajouter à votre écran d'accueil.
+                                            <br /><br />
+                                            👉 <strong>Comment faire :</strong> Appuyez sur l'icône de partage <span style={{ background: 'rgba(255,255,255,0.2)', padding: '4px 8px', borderRadius: '6px', fontWeight: 'bold' }}>⎋</span> (tout en bas de votre écran dans Safari), faites défiler vers le bas et choisissez <strong style={{ textDecoration: 'underline' }}>"Sur l'écran d'accueil"</strong>.
                                         </p>
                                     </div>
-                                    <button 
-                                        onClick={() => setShowIOSInstallGuide(false)}
-                                        style={{ 
-                                            background: 'rgba(255,255,255,0.15)', 
-                                            color: 'white', 
-                                            padding: '10px 20px', 
-                                            borderRadius: '12px', 
-                                            border: '1px solid rgba(255,255,255,0.3)', 
-                                            fontWeight: '700', 
-                                            cursor: 'pointer',
-                                            fontSize: '13px',
-                                            transition: 'background 0.2s',
-                                            whiteSpace: 'nowrap'
-                                        }}
-                                        onMouseOver={e => e.currentTarget.style.background = 'rgba(255,255,255,0.25)'}
-                                        onMouseOut={e => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'}
-                                    >
-                                        Compris
-                                    </button>
                                 </div>
                             )}
 
