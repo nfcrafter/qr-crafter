@@ -26,6 +26,9 @@ if ('serviceWorker' in navigator && !isLocalhost) {
             .then(reg => {
                 console.log('[PWA] Service Worker registered successfully', reg.scope);
                 
+                // Force check for updates immediately
+                reg.update().catch(() => {});
+                
                 // Ensure dynamic Vite assets (like /assets/index-XXXX.js) are cached by the SW
                 const cacheActiveAssets = () => {
                     const scripts = Array.from(document.querySelectorAll('script[src]')).map(s => s.src);
