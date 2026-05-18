@@ -474,8 +474,8 @@ export default function ClientDashboard() {
                     width: 280,
                     height: 280,
                     data: vCardData,
-                    dotsOptions: { color: "#000000", type: "rounded" },
-                    cornersSquareOptions: { color: "#000000", type: "extra-rounded" },
+                    dotsOptions: { color: "#1A1265", type: "rounded" },
+                    cornersSquareOptions: { color: "#1A1265", type: "extra-rounded" },
                     backgroundOptions: { color: "#FFFFFF" }
                 });
                 qrCode.append(offlineQrRef.current);

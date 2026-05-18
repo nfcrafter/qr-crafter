@@ -240,7 +240,8 @@ export default function PublicProfile() {
         background: bgColor, 
         fontFamily: "'Inter', 'Outfit', sans-serif",
         transition: 'all 0.3s ease',
-        color: textColor
+        color: textColor,
+        overflowX: 'hidden'
     }}>
       {isOwner && (
         <div 
@@ -279,6 +280,29 @@ export default function PublicProfile() {
         .pl { transition: transform .18s, box-shadow .18s; }
         .pl:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important; }
         .sb:hover { filter: brightness(1.1); transform: translateY(-1px); }
+        .gallery-scroll::-webkit-scrollbar {
+          display: none;
+        }
+        .gallery-scroll {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+          display: flex;
+          gap: 10px;
+          overflow-x: auto;
+          scroll-snap-type: x mandatory;
+          -webkit-overflow-scrolling: touch;
+          padding: 4px 0;
+        }
+        .gallery-item {
+          scroll-snap-align: start;
+          flex: 0 0 140px;
+          height: 140px;
+          border-radius: 16px;
+          overflow: hidden;
+          background: #111;
+          cursor: pointer;
+          transition: transform .2s;
+        }
       `}</style>
 
       {/* Banner */}
@@ -583,12 +607,12 @@ export default function PublicProfile() {
                         </div>
                         <h3 style={{ fontSize: 16, fontWeight: 800, color: textColor, margin: 0 }}>{profile.section_titles?.gallery || 'Galerie'}</h3>
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+                    <div className="gallery-scroll">
                         {items.map((item, index) => (
                             <div 
                               key={item.id} 
+                              className="gallery-item"
                               onClick={() => setSelectedImageIndex(index)}
-                              style={{ aspectRatio: '1', borderRadius: 12, overflow: 'hidden', background: '#111', cursor: 'pointer', transition: 'transform .2s' }}
                               onMouseOver={e => e.currentTarget.style.transform = 'scale(1.02)'}
                               onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
                             >

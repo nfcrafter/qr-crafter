@@ -22,6 +22,9 @@ export default function ProfileForm({
     const productFileRef = useRef();
     const [activeProductId, setActiveProductId] = useState(null);
     const [confirmModal, setConfirmModal] = useState({ isOpen: false, title: '', message: '', onConfirm: null });
+    const [draggedOverIndex, setDraggedOverIndex] = useState(null);
+    const certificationFileRef = useRef();
+    const [activeCertificationId, setActiveCertificationId] = useState(null);
 
     const openConfirm = (title, message, onConfirm) => setConfirmModal({ isOpen: true, title, message, onConfirm });
 
@@ -180,6 +183,7 @@ export default function ProfileForm({
     const addCertification = () => setProfile({ ...profile, certifications: [...(profile.certifications || []), { id: Date.now(), name: '', issuer: '', year: new Date().getFullYear().toString(), color: '#4F46E5' }] });
     const updateCertification = (id, f, v) => setProfile({ ...profile, certifications: (profile.certifications || []).map(c => c.id === id ? { ...c, [f]: v } : c) });
     const removeCertification = (id) => { openConfirm('Supprimer', 'Supprimer cette certification ?', () => setProfile({ ...profile, certifications: (profile.certifications || []).filter(c => c.id !== id) })); };
+    const triggerCertificationUpload = (id) => { setActiveCertificationId(id); certificationFileRef.current.click(); };
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -271,7 +275,18 @@ export default function ProfileForm({
                         <input type="text" value={profile.job_title || ''} onChange={e => setProfile({ ...profile, job_title: e.target.value })} placeholder="Ex: Designer, Entrepreneur..." />
                     </div>
                     <div className="field">
-                        <label>Description (Bio)</label>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                            <label style={{ margin: 0 }}>Description (Bio)</label>
+                            {profile.bio && (
+                                <button 
+                                    type="button" 
+                                    onClick={() => setProfile({ ...profile, bio: '' })}
+                                    style={{ background: 'none', border: 'none', color: '#EF4444', fontSize: 11, fontWeight: 700, cursor: 'pointer', padding: 0 }}
+                                >
+                                    Supprimer la bio
+                                </button>
+                            )}
+                        </div>
                         <textarea rows={3} value={profile.bio || ''} onChange={e => setProfile({ ...profile, bio: e.target.value })} placeholder="Parlez-nous de vous..." />
                         <div style={{ marginTop: 6, fontSize: 11, color: '#64748B', display: 'flex', gap: 6, alignItems: 'center' }}>
                             <div style={{ width: 14, height: 14, color: '#F59E0B' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></svg>` }} />
@@ -294,31 +309,53 @@ export default function ProfileForm({
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
                         <div>
                             <label style={{ fontSize: 13, fontWeight: 700, color: '#1A1265', marginBottom: 8, display: 'block' }}>Photo de profil</label>
-                            <div 
-                                onClick={() => avatarRef.current.click()}
-                                style={{ 
-                                    width: 80, height: 80, borderRadius: '50%', background: '#F1F5F9', 
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-                                    border: '2px dashed #CBD5E1', overflow: 'hidden', position: 'relative'
-                                }}
-                            >
-                                {profile.photo_url ? <img src={profile.photo_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ width: 28, height: 28, color: '#94A3B8' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>` }} />}
-                                {uploadingAvatar && <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="loader" style={{ width: 20, height: 20 }}></div></div>}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                                <div 
+                                    onClick={() => avatarRef.current.click()}
+                                    style={{ 
+                                        width: 80, height: 80, borderRadius: '50%', background: '#F1F5F9', 
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                                        border: '2px dashed #CBD5E1', overflow: 'hidden', position: 'relative', flexShrink: 0
+                                    }}
+                                >
+                                    {profile.photo_url ? <img src={profile.photo_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ width: 28, height: 28, color: '#94A3B8' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>` }} />}
+                                    {uploadingAvatar && <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="loader" style={{ width: 20, height: 20 }}></div></div>}
+                                </div>
+                                {profile.photo_url && (
+                                    <button 
+                                        type="button"
+                                        onClick={(e) => { e.stopPropagation(); setProfile({ ...profile, photo_url: '' }); }}
+                                        style={{ background: '#FEE2E2', border: 'none', color: '#EF4444', borderRadius: 8, padding: '8px 12px', cursor: 'pointer', fontWeight: 700, fontSize: 11 }}
+                                    >
+                                        Supprimer
+                                    </button>
+                                )}
                             </div>
                             <input ref={avatarRef} type="file" hidden onChange={e => e.target.files[0] && onUploadAvatar(e.target.files[0])} />
                         </div>
                         <div>
                             <label style={{ fontSize: 13, fontWeight: 700, color: '#1A1265', marginBottom: 8, display: 'block' }}>Bannière</label>
-                            <div 
-                                onClick={() => bannerRef.current.click()}
-                                style={{ 
-                                    height: 80, borderRadius: 12, background: '#F1F5F9', 
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-                                    border: '2px dashed #CBD5E1', overflow: 'hidden', position: 'relative'
-                                }}
-                            >
-                                {profile.banner_url ? <img src={profile.banner_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ width: 28, height: 28, color: '#94A3B8' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>` }} />}
-                                {uploadingBanner && <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="loader" style={{ width: 20, height: 20 }}></div></div>}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                                <div 
+                                    onClick={() => bannerRef.current.click()}
+                                    style={{ 
+                                        height: 80, borderRadius: 12, background: '#F1F5F9', flex: 1,
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                                        border: '2px dashed #CBD5E1', overflow: 'hidden', position: 'relative'
+                                    }}
+                                >
+                                    {profile.banner_url ? <img src={profile.banner_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ width: 28, height: 28, color: '#94A3B8' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>` }} />}
+                                    {uploadingBanner && <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="loader" style={{ width: 20, height: 20 }}></div></div>}
+                                </div>
+                                {profile.banner_url && (
+                                    <button 
+                                        type="button"
+                                        onClick={(e) => { e.stopPropagation(); setProfile({ ...profile, banner_url: '' }); }}
+                                        style={{ background: '#FEE2E2', border: 'none', color: '#EF4444', borderRadius: 8, padding: '8px 12px', cursor: 'pointer', fontWeight: 700, fontSize: 11 }}
+                                    >
+                                        Supprimer
+                                    </button>
+                                )}
                             </div>
                             <input ref={bannerRef} type="file" hidden onChange={e => e.target.files[0] && onUploadBanner(e.target.files[0])} />
                         </div>
@@ -784,7 +821,10 @@ export default function ProfileForm({
                             </div>
                             <div className="field" style={{ marginBottom: 10 }}><label>Lieu</label><input type="text" value={ev.location} onChange={e => updateEvent(ev.id, 'location', e.target.value)} placeholder="Cotonou, Bénin" style={{ background: 'white' }} /></div>
                             <div className="field" style={{ marginBottom: 10 }}><label>Description</label><textarea value={ev.description} onChange={e => updateEvent(ev.id, 'description', e.target.value)} placeholder="Détails..." rows={2} style={{ background: 'white', width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #E2E8F0', resize: 'vertical', fontFamily: 'inherit' }} /></div>
-                            <div className="field" style={{ marginBottom: 0 }}><label>Lien (optionnel)</label><input type="url" value={ev.link} onChange={e => updateEvent(ev.id, 'link', e.target.value)} placeholder="https://..." style={{ background: 'white' }} /></div>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                                <div className="field" style={{ marginBottom: 0 }}><label>Lien (optionnel)</label><input type="url" value={ev.link} onChange={e => updateEvent(ev.id, 'link', e.target.value)} placeholder="https://..." style={{ background: 'white' }} /></div>
+                                <div className="field" style={{ marginBottom: 0 }}><label>Texte du bouton (optionnel)</label><input type="text" value={ev.button_text || ''} onChange={e => updateEvent(ev.id, 'button_text', e.target.value)} placeholder="S'inscrire" style={{ background: 'white' }} /></div>
+                            </div>
                         </div>
                     ))}
                     <button onClick={addEvent} style={{ width: '100%', padding: 14, borderRadius: 14, border: '2px dashed #CBD5E1', background: 'white', color: '#475569', fontWeight: 700, cursor: 'pointer', fontSize: 13 }}>+ Ajouter un événement</button>
@@ -816,8 +856,19 @@ export default function ProfileForm({
                     {(profile.portfolio || []).map(item => (
                         <div key={item.id} style={{ background: '#F9FAFB', borderRadius: 16, padding: 16, border: '1px solid #E2E8F0', position: 'relative' }}>
                             <button onClick={() => removePortfolioItem(item.id)} style={{ position: 'absolute', top: 10, right: 10, width: 28, height: 28, borderRadius: '50%', background: '#FEE2E2', color: '#EF4444', border: 'none', cursor: 'pointer', fontSize: 12 }}>✕</button>
-                            {item.image_url && <img src={item.image_url} style={{ width: '100%', height: 120, objectFit: 'cover', borderRadius: 10, marginBottom: 10 }} alt="" />}
-                            <button onClick={() => triggerPortfolioUpload(item.id)} style={{ width: '100%', padding: '10px', borderRadius: 10, border: '1px dashed #CBD5E1', background: 'white', color: '#64748B', cursor: 'pointer', fontSize: 12, marginBottom: 10 }}>{item.image_url ? 'Changer l\'image' : '+ Ajouter une image'}</button>
+                            {item.image_url ? (
+                                <div style={{ position: 'relative', marginBottom: 10 }}>
+                                    <img src={item.image_url} style={{ width: '100%', height: 120, objectFit: 'cover', borderRadius: 10 }} alt="" />
+                                    <button 
+                                        type="button" 
+                                        onClick={() => updatePortfolioItem(item.id, 'image_url', '')} 
+                                        style={{ position: 'absolute', bottom: 10, right: 10, padding: '4px 10px', background: '#FEE2E2', color: '#EF4444', border: 'none', borderRadius: 6, fontSize: 10, fontWeight: 700, cursor: 'pointer' }}
+                                    >
+                                        Supprimer l'image
+                                    </button>
+                                </div>
+                            ) : null}
+                            <button onClick={() => triggerPortfolioUpload(item.id)} style={{ width: '100%', padding: '10px', borderRadius: 10, border: '1px dashed #CBD5E1', background: 'white', color: '#64748B', cursor: 'pointer', fontSize: 12, marginBottom: 10 }}>{item.image_url ? 'Changer l\'image' : '+ Ajouter une image (Optionnel)'}</button>
                             <div className="field" style={{ marginBottom: 10 }}><label>Titre du projet</label><input type="text" value={item.title} onChange={e => updatePortfolioItem(item.id, 'title', e.target.value)} placeholder="Ex: Site web Boutique ABC" style={{ background: 'white' }} /></div>
                             <div className="field" style={{ marginBottom: 10 }}><label>Description</label><textarea value={item.description} onChange={e => updatePortfolioItem(item.id, 'description', e.target.value)} placeholder="Décrivez ce projet..." rows={2} style={{ background: 'white', width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #E2E8F0', resize: 'vertical', fontFamily: 'inherit', fontSize: 13 }} /></div>
                             <div className="field" style={{ marginBottom: 0 }}><label>Lien (optionnel)</label><input type="url" value={item.link} onChange={e => updatePortfolioItem(item.id, 'link', e.target.value)} placeholder="https://..." style={{ background: 'white' }} /></div>
@@ -856,7 +907,7 @@ export default function ProfileForm({
                                 <div className="field" style={{ marginBottom: 0 }}><label>Nom</label><input type="text" value={cert.name} onChange={e => updateCertification(cert.id, 'name', e.target.value)} placeholder="Ex: Google Analytics" style={{ background: 'white' }} /></div>
                                 <div className="field" style={{ marginBottom: 0 }}><label>Organisme</label><input type="text" value={cert.issuer} onChange={e => updateCertification(cert.id, 'issuer', e.target.value)} placeholder="Ex: Google" style={{ background: 'white' }} /></div>
                             </div>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
                                 <div className="field" style={{ marginBottom: 0 }}><label>Année</label><input type="text" value={cert.year} onChange={e => updateCertification(cert.id, 'year', e.target.value)} placeholder="2024" style={{ background: 'white' }} /></div>
                                 <div className="field" style={{ marginBottom: 0 }}>
                                     <label>Couleur du badge</label>
@@ -866,6 +917,21 @@ export default function ProfileForm({
                                     </div>
                                 </div>
                             </div>
+                            {cert.image_url ? (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+                                    <img src={cert.image_url} style={{ width: 44, height: 44, objectFit: 'cover', borderRadius: 8 }} alt="" />
+                                    <button 
+                                        type="button" 
+                                        onClick={() => updateCertification(cert.id, 'image_url', '')} 
+                                        style={{ padding: '4px 10px', background: '#FEE2E2', color: '#EF4444', border: 'none', borderRadius: 6, fontSize: 10, fontWeight: 700, cursor: 'pointer' }}
+                                    >
+                                        Supprimer le logo
+                                    </button>
+                                </div>
+                            ) : null}
+                            <button onClick={() => triggerCertificationUpload(cert.id)} style={{ width: '100%', padding: '10px', borderRadius: 10, border: '1px dashed #CBD5E1', background: 'white', color: '#64748B', cursor: 'pointer', fontSize: 12, marginBottom: 10 }}>
+                                {cert.image_url ? "Changer le logo/badge" : "+ Ajouter un logo/badge (Optionnel)"}
+                            </button>
                         </div>
                     ))}
                     <button onClick={addCertification} style={{ width: '100%', padding: 14, borderRadius: 14, border: '2px dashed #CBD5E1', background: 'white', color: '#475569', fontWeight: 700, cursor: 'pointer', fontSize: 13 }}>+ Ajouter une certification</button>
@@ -875,7 +941,7 @@ export default function ProfileForm({
             {/* SECTION MISE EN PAGE */}
             {acc('layout', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10H3M21 6H3M21 14H3M21 18H3"></path></svg>`, 'Mise en page', 'Ordre des sections et titres du profil.', (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                    <p style={{ fontSize: 13, color: '#64748B', marginBottom: 10 }}>Organisez l'ordre d'apparition des sections sur votre profil public.</p>
+                    <p style={{ fontSize: 13, color: '#64748B', marginBottom: 10 }}>Organisez l'ordre d'apparition des sections sur votre profil public (glissez-déposez ou utilisez les flèches).</p>
                     {(() => {
                         const defaultSections = ['contact_buttons', 'links', 'products', 'business_info', 'gallery', 'skills', 'testimonials', 'faq', 'events', 'portfolio', 'certifications'];
                         const currentOrder = profile.section_order || [];
@@ -902,10 +968,61 @@ export default function ProfileForm({
                             newOrder[index + dir] = temp;
                             setProfile({ ...profile, section_order: newOrder });
                         };
+                        const handleDrop = (dragIndex, dropIndex) => {
+                            if (dragIndex === dropIndex) return;
+                            const newOrder = [...sections];
+                            const draggedItem = newOrder[dragIndex];
+                            newOrder.splice(dragIndex, 1);
+                            newOrder.splice(dropIndex, 0, draggedItem);
+                            setProfile({ ...profile, section_order: newOrder });
+                            setDraggedOverIndex(null);
+                        };
                         return (
                             <>
                                 {sections.map((s, i) => (
-                                    <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', background: '#F9FAFB', borderRadius: 12, border: '1px solid #E2E8F0' }}>
+                                    <div 
+                                        key={s} 
+                                        draggable
+                                        onDragStart={(e) => {
+                                            e.dataTransfer.effectAllowed = 'move';
+                                            e.dataTransfer.setData('text/plain', i.toString());
+                                            e.currentTarget.style.opacity = '0.4';
+                                        }}
+                                        onDragEnd={(e) => {
+                                            e.currentTarget.style.opacity = '1';
+                                            setDraggedOverIndex(null);
+                                        }}
+                                        onDragOver={(e) => {
+                                            e.preventDefault();
+                                            if (draggedOverIndex !== i) {
+                                                setDraggedOverIndex(i);
+                                            }
+                                        }}
+                                        onDragLeave={() => {
+                                            if (draggedOverIndex === i) {
+                                                setDraggedOverIndex(null);
+                                            }
+                                        }}
+                                        onDrop={(e) => {
+                                            const dragIdx = parseInt(e.dataTransfer.getData('text/plain'), 10);
+                                            handleDrop(dragIdx, i);
+                                        }}
+                                        style={{ 
+                                            display: 'flex', 
+                                            alignItems: 'center', 
+                                            gap: 12, 
+                                            padding: '12px 16px', 
+                                            background: draggedOverIndex === i ? '#EEF2FF' : '#F9FAFB', 
+                                            borderRadius: 12, 
+                                            border: draggedOverIndex === i ? '1px dashed #6366F1' : '1px solid #E2E8F0',
+                                            cursor: 'grab',
+                                            transition: 'background 0.2s, border 0.2s',
+                                            transform: draggedOverIndex === i ? 'scale(1.01)' : 'scale(1)'
+                                        }}
+                                    >
+                                        <div style={{ color: '#94A3B8', display: 'flex', alignItems: 'center', cursor: 'grab' }}>
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><circle cx="9" cy="5" r="1.5"></circle><circle cx="9" cy="12" r="1.5"></circle><circle cx="9" cy="19" r="1.5"></circle><circle cx="15" cy="5" r="1.5"></circle><circle cx="15" cy="12" r="1.5"></circle><circle cx="15" cy="19" r="1.5"></circle></svg>
+                                        </div>
                                         <div style={{ flex: 1, fontWeight: 700, fontSize: 14, color: '#1A1265' }}>{sectionLabels[s] || s}</div>
                                         <div style={{ display: 'flex', gap: 4 }}>
                                             <button disabled={i === 0} onClick={() => move(i, -1)} style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid #E2E8F0', background: 'white', cursor: i === 0 ? 'default' : 'pointer', opacity: i === 0 ? 0.3 : 1 }}>↑</button>
@@ -924,6 +1041,15 @@ export default function ProfileForm({
                 if (file && onUploadGalleryImage && activePortfolioId) {
                     onUploadGalleryImage(file, (url) => {
                         updatePortfolioItem(activePortfolioId, 'image_url', url);
+                    });
+                }
+            }} />
+
+            <input ref={certificationFileRef} type="file" hidden accept="image/*" onChange={e => {
+                const file = e.target.files[0];
+                if (file && onUploadGalleryImage && activeCertificationId) {
+                    onUploadGalleryImage(file, (url) => {
+                        updateCertification(activeCertificationId, 'image_url', url);
                     });
                 }
             }} />
