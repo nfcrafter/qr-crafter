@@ -566,79 +566,89 @@ export default function ClientDashboard() {
                         
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
                             
-                            {/* PWA Install Banner */}
-                            {showInstallBtn && (
+                            {/* Compact PWA Android Banner */}
+                            {showInstallBtn && !localStorage.getItem('nfc_pwa_dismissed') && (
                                 <div style={{ 
-                                    background: 'linear-gradient(135deg, #EF4444 0%, #1A1265 100%)', 
-                                    padding: '24px 32px', 
-                                    borderRadius: '24px', 
-                                    color: 'white', 
+                                    background: '#FEF2F2', 
+                                    padding: '12px 20px', 
+                                    borderRadius: '16px', 
+                                    color: '#991B1B', 
                                     display: 'flex', 
                                     alignItems: 'center', 
                                     justifyContent: 'space-between', 
-                                    gap: '24px',
-                                    boxShadow: '0 20px 40px rgba(239,68,68,0.15)',
-                                    animation: 'fadeIn 0.6s ease-out',
-                                    flexWrap: 'wrap',
-                                    border: '2px solid #EF4444'
+                                    gap: '16px',
+                                    boxShadow: '0 4px 12px rgba(239,68,68,0.05)',
+                                    animation: 'fadeIn 0.4s ease-out',
+                                    border: '1px solid #FEE2E2',
+                                    fontSize: '13px'
                                 }}>
-                                    <div style={{ flex: 1, minWidth: '280px' }}>
-                                        <h3 style={{ fontSize: '18px', fontWeight: '900', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                            <span style={{ fontSize: '20px' }}>⚠️</span> ACTION OBLIGATOIRE : Ajoutez NFCrafter à votre écran
-                                        </h3>
-                                        <p style={{ fontSize: '14px', opacity: 0.95, lineHeight: '1.6', margin: 0 }}>
-                                            Pour pouvoir partager vos coordonnées et vos réseaux sociaux <strong>sans aucune connexion Internet (hors-ligne complet)</strong> et accéder instantanément à vos informations, vous devez impérativement ajouter NFCrafter à votre écran d'accueil.
-                                        </p>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
+                                        <span style={{ fontSize: '16px' }}>⚠️</span>
+                                        <span>
+                                            <strong>Recommandé :</strong> Ajoutez NFCrafter à votre écran pour le partage 100% hors-ligne (sans internet).
+                                        </span>
                                     </div>
-                                    <button 
-                                        onClick={handleInstallApp}
-                                        style={{ 
-                                            background: 'white', 
-                                            color: '#EF4444', 
-                                            padding: '14px 28px', 
-                                            borderRadius: '14px', 
-                                            border: 'none', 
-                                            fontWeight: '900', 
-                                            cursor: 'pointer',
-                                            fontSize: '14px',
-                                            boxShadow: '0 10px 20px rgba(0,0,0,0.15)',
-                                            transition: 'transform 0.2s',
-                                            whiteSpace: 'nowrap'
-                                        }}
-                                        onMouseOver={e => e.currentTarget.style.transform = 'scale(1.05)'}
-                                        onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
-                                    >
-                                        Installer sur mon écran
-                                    </button>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                        <button 
+                                            onClick={handleInstallApp}
+                                            style={{ 
+                                                background: '#EF4444', 
+                                                color: 'white', 
+                                                padding: '6px 12px', 
+                                                borderRadius: '8px', 
+                                                border: 'none', 
+                                                fontWeight: '800', 
+                                                cursor: 'pointer',
+                                                fontSize: '12px',
+                                                whiteSpace: 'nowrap'
+                                            }}
+                                        >
+                                            Installer
+                                        </button>
+                                        <button 
+                                            onClick={() => {
+                                                localStorage.setItem('nfc_pwa_dismissed', 'true');
+                                                setShowInstallBtn(false);
+                                            }}
+                                            style={{ background: 'transparent', border: 'none', color: '#991B1B', cursor: 'pointer', fontWeight: '700', fontSize: '12px' }}
+                                        >
+                                            Masquer
+                                        </button>
+                                    </div>
                                 </div>
                             )}
 
-                            {/* iOS PWA Install Guide Banner */}
-                            {showIOSInstallGuide && (
+                            {/* Compact PWA iOS Banner */}
+                            {showIOSInstallGuide && !localStorage.getItem('nfc_pwa_dismissed') && (
                                 <div style={{ 
-                                    background: 'linear-gradient(135deg, #EF4444 0%, #1A1265 100%)', 
-                                    padding: '24px 32px', 
-                                    borderRadius: '24px', 
-                                    color: 'white', 
+                                    background: '#FEF2F2', 
+                                    padding: '12px 20px', 
+                                    borderRadius: '16px', 
+                                    color: '#991B1B', 
                                     display: 'flex', 
                                     alignItems: 'center', 
                                     justifyContent: 'space-between', 
-                                    gap: '24px',
-                                    boxShadow: '0 20px 40px rgba(239,68,68,0.15)',
-                                    animation: 'fadeIn 0.6s ease-out',
-                                    flexWrap: 'wrap',
-                                    border: '2px solid #EF4444'
+                                    gap: '16px',
+                                    boxShadow: '0 4px 12px rgba(239,68,68,0.05)',
+                                    animation: 'fadeIn 0.4s ease-out',
+                                    border: '1px solid #FEE2E2',
+                                    fontSize: '13px'
                                 }}>
-                                    <div style={{ flex: 1, minWidth: '280px' }}>
-                                        <h3 style={{ fontSize: '18px', fontWeight: '900', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                            <span style={{ fontSize: '20px' }}>⚠️</span> ACTION OBLIGATOIRE : Installez NFCrafter sur votre iPhone
-                                        </h3>
-                                        <p style={{ fontSize: '14px', opacity: 0.95, lineHeight: '1.6', margin: 0 }}>
-                                            Pour pouvoir partager votre profil <strong>sans aucune connexion Internet (hors-ligne complet)</strong> et y accéder instantanément, vous devez impérativement l'ajouter à votre écran d'accueil.
-                                            <br /><br />
-                                            👉 <strong>Comment faire :</strong> Appuyez sur l'icône de partage <span style={{ background: 'rgba(255,255,255,0.2)', padding: '4px 8px', borderRadius: '6px', fontWeight: 'bold' }}>⎋</span> (tout en bas de votre écran dans Safari), faites défiler vers le bas et choisissez <strong style={{ textDecoration: 'underline' }}>"Sur l'écran d'accueil"</strong>.
-                                        </p>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
+                                        <span style={{ fontSize: '16px' }}>⚠️</span>
+                                        <span>
+                                            <strong>iPhone :</strong> Pour le partage hors-ligne, ajoutez NFCrafter à votre écran : appuyez sur <span style={{ background: '#FCA5A5', padding: '1px 4px', borderRadius: '4px', color: '#991B1B', fontWeight: 'bold' }}>⎋</span> (partage Safari) puis <strong>"Sur l'écran d'accueil"</strong>.
+                                        </span>
                                     </div>
+                                    <button 
+                                        onClick={() => {
+                                            localStorage.setItem('nfc_pwa_dismissed', 'true');
+                                            setShowIOSInstallGuide(false);
+                                        }}
+                                        style={{ background: 'transparent', border: 'none', color: '#991B1B', cursor: 'pointer', fontWeight: '700', fontSize: '12px', whiteSpace: 'nowrap' }}
+                                    >
+                                        Déjà installé / Masquer
+                                    </button>
                                 </div>
                             )}
 
