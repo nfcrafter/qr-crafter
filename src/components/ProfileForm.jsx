@@ -63,9 +63,17 @@ export default function ProfileForm({
     // Helpers
     const toggleSocial = (id) => {
         const newSocials = { ...(profile.socials || {}) };
-        if (newSocials[id] !== undefined) delete newSocials[id];
-        else newSocials[id] = { value: '', subtitle: '' };
-        setProfile({ ...profile, socials: newSocials });
+        if (newSocials[id] !== undefined) {
+            const net = SOCIAL_NETWORKS.find(n => n.id === id);
+            openConfirm('Désactiver le réseau social', `Voulez-vous vraiment retirer ${net?.label || id} de votre profil ?`, () => {
+                const nextSocials = { ...(profile.socials || {}) };
+                delete nextSocials[id];
+                setProfile({ ...profile, socials: nextSocials });
+            });
+        } else {
+            newSocials[id] = { value: '', subtitle: '' };
+            setProfile({ ...profile, socials: newSocials });
+        }
     };
 
     const updateSocial = (id, field, val) => {
@@ -92,9 +100,12 @@ export default function ProfileForm({
     };
 
     const removeCustomLink = (idx) => {
-        const links = [...(profile.customLinks || [])];
-        links.splice(idx, 1);
-        setProfile({ ...profile, customLinks: links });
+        const link = profile.customLinks?.[idx];
+        openConfirm('Supprimer le lien personnalisé', `Voulez-vous vraiment supprimer le lien "${link?.label || 'sans titre'}" ?`, () => {
+            const links = [...(profile.customLinks || [])];
+            links.splice(idx, 1);
+            setProfile({ ...profile, customLinks: links });
+        });
     };
 
     // Product Helpers
@@ -280,7 +291,7 @@ export default function ProfileForm({
                             {profile.bio && (
                                 <button 
                                     type="button" 
-                                    onClick={() => setProfile({ ...profile, bio: '' })}
+                                    onClick={() => openConfirm('Supprimer la bio', 'Voulez-vous vraiment supprimer votre description (bio) ?', () => setProfile({ ...profile, bio: '' }))}
                                     style={{ background: 'none', border: 'none', color: '#EF4444', fontSize: 11, fontWeight: 700, cursor: 'pointer', padding: 0 }}
                                 >
                                     Supprimer la bio
@@ -324,7 +335,7 @@ export default function ProfileForm({
                                 {profile.photo_url && (
                                     <button 
                                         type="button"
-                                        onClick={(e) => { e.stopPropagation(); setProfile({ ...profile, photo_url: '' }); }}
+                                        onClick={(e) => { e.stopPropagation(); openConfirm('Supprimer la photo', 'Voulez-vous vraiment supprimer votre photo de profil ?', () => setProfile({ ...profile, photo_url: '' })); }}
                                         style={{ background: '#FEE2E2', border: 'none', color: '#EF4444', borderRadius: 8, padding: '8px 12px', cursor: 'pointer', fontWeight: 700, fontSize: 11 }}
                                     >
                                         Supprimer
@@ -350,7 +361,7 @@ export default function ProfileForm({
                                 {profile.banner_url && (
                                     <button 
                                         type="button"
-                                        onClick={(e) => { e.stopPropagation(); setProfile({ ...profile, banner_url: '' }); }}
+                                        onClick={(e) => { e.stopPropagation(); openConfirm('Supprimer la bannière', 'Voulez-vous vraiment supprimer votre bannière de profil ?', () => setProfile({ ...profile, banner_url: '' })); }}
                                         style={{ background: '#FEE2E2', border: 'none', color: '#EF4444', borderRadius: 8, padding: '8px 12px', cursor: 'pointer', fontWeight: 700, fontSize: 11 }}
                                     >
                                         Supprimer
@@ -861,7 +872,7 @@ export default function ProfileForm({
                                     <img src={item.image_url} style={{ width: '100%', height: 120, objectFit: 'cover', borderRadius: 10 }} alt="" />
                                     <button 
                                         type="button" 
-                                        onClick={() => updatePortfolioItem(item.id, 'image_url', '')} 
+                                        onClick={() => openConfirm('Supprimer l\'image', 'Voulez-vous vraiment supprimer l\'image de cette réalisation ?', () => updatePortfolioItem(item.id, 'image_url', ''))} 
                                         style={{ position: 'absolute', bottom: 10, right: 10, padding: '4px 10px', background: '#FEE2E2', color: '#EF4444', border: 'none', borderRadius: 6, fontSize: 10, fontWeight: 700, cursor: 'pointer' }}
                                     >
                                         Supprimer l'image
@@ -922,7 +933,7 @@ export default function ProfileForm({
                                     <img src={cert.image_url} style={{ width: 44, height: 44, objectFit: 'cover', borderRadius: 8 }} alt="" />
                                     <button 
                                         type="button" 
-                                        onClick={() => updateCertification(cert.id, 'image_url', '')} 
+                                        onClick={() => openConfirm('Supprimer le logo', 'Voulez-vous vraiment supprimer le logo de cette certification ?', () => updateCertification(cert.id, 'image_url', ''))} 
                                         style={{ padding: '4px 10px', background: '#FEE2E2', color: '#EF4444', border: 'none', borderRadius: 6, fontSize: 10, fontWeight: 700, cursor: 'pointer' }}
                                     >
                                         Supprimer le logo

@@ -405,7 +405,17 @@ export default function ClientDashboard() {
                 data: link,
                 dotsOptions: { color: "#1A1265", type: "rounded" },
                 cornersSquareOptions: { color: "#1A1265", type: "extra-rounded" },
-                backgroundOptions: { color: "#FFFFFF" }
+                backgroundOptions: { color: "#FFFFFF" },
+                image: "/logo.png",
+                imageOptions: {
+                    crossOrigin: "anonymous",
+                    hideBackgroundDots: true,
+                    imageSize: 0.3,
+                    margin: 5
+                },
+                qrOptions: {
+                    errorCorrectionLevel: "H"
+                }
             });
             qrCode.download({ name: `nfcrafter-qr-${selectedCard?.url_slug || selectedCardId}`, extension: "png" });
         });
@@ -476,7 +486,17 @@ export default function ClientDashboard() {
                     data: vCardData,
                     dotsOptions: { color: "#1A1265", type: "rounded" },
                     cornersSquareOptions: { color: "#1A1265", type: "extra-rounded" },
-                    backgroundOptions: { color: "#FFFFFF" }
+                    backgroundOptions: { color: "#FFFFFF" },
+                    image: "/logo.png",
+                    imageOptions: {
+                        crossOrigin: "anonymous",
+                        hideBackgroundDots: true,
+                        imageSize: 0.3,
+                        margin: 5
+                    },
+                    qrOptions: {
+                        errorCorrectionLevel: "H"
+                    }
                 });
                 qrCode.append(offlineQrRef.current);
             });
