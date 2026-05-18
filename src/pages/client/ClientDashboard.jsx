@@ -644,7 +644,7 @@ export default function ClientDashboard() {
             </aside>
 
             {/* Main Content (Right) */}
-            <main className="main-content" style={{ flex: 1, marginLeft: '280px', padding: '40px', maxWidth: '100%', overflowX: 'hidden' }}>
+            <main className="main-content" style={{ flex: 1, marginLeft: '280px', padding: '40px', maxWidth: '100%', height: '100vh', overflowY: 'auto' }}>
                 {userCards.length === 0 ? (
                     <div style={{ maxWidth: '600px', margin: '40px auto', textAlign: 'center', background: 'white', padding: '60px 40px', borderRadius: '32px', border: '1px solid #E2E8F0' }}>
                         <div style={{ width: '80px', height: '80px', margin: '0 auto 24px auto', color: '#1A1265' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a3 3 0 0 0-3-3H5a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V8Z"></path><path d="M10 12h.01"></path><path d="M16 2v2"></path><path d="M6 2v2"></path></svg>` }} />
