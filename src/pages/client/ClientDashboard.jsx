@@ -35,11 +35,30 @@ export default function ClientDashboard() {
     const [isOfflineModalOpen, setIsOfflineModalOpen] = useState(false);
     const [deferredPrompt, setDeferredPrompt] = useState(null);
     const [showInstallBtn, setShowInstallBtn] = useState(false);
+    const [isIOS, setIsIOS] = useState(false);
+    const [showIOSInstallGuide, setShowIOSInstallGuide] = useState(false);
     const editorRef = useRef(null);
     const offlineQrRef = useRef(null);
     
     // Listen for PWA installation prompt
     useEffect(() => {
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+        
+        if (isStandalone) {
+            setShowInstallBtn(false);
+            setShowIOSInstallGuide(false);
+            return;
+        }
+
+        // Detect iOS
+        const checkIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                         (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        
+        if (checkIOS) {
+            setIsIOS(true);
+            setShowIOSInstallGuide(true);
+        }
+
         const handleBeforeInstallPrompt = (e) => {
             console.log('[PWA] beforeinstallprompt event fired');
             e.preventDefault();
@@ -47,11 +66,6 @@ export default function ClientDashboard() {
             setShowInstallBtn(true);
         };
         window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-
-        // Check if app is already running in standalone mode (installed)
-        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
-            setShowInstallBtn(false);
-        }
 
         return () => {
             window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
@@ -594,6 +608,51 @@ export default function ClientDashboard() {
                                         onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
                                     >
                                         Installer sur mon écran
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* iOS PWA Install Guide Banner */}
+                            {showIOSInstallGuide && (
+                                <div style={{ 
+                                    background: 'linear-gradient(135deg, #7C3AED 0%, #1A1265 100%)', 
+                                    padding: '24px 32px', 
+                                    borderRadius: '24px', 
+                                    color: 'white', 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    justifyContent: 'space-between', 
+                                    gap: '24px',
+                                    boxShadow: '0 20px 40px rgba(124,58,237,0.15)',
+                                    animation: 'fadeIn 0.6s ease-out',
+                                    flexWrap: 'wrap'
+                                }}>
+                                    <div style={{ flex: 1, minWidth: '280px' }}>
+                                        <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                            <span style={{ fontSize: '20px' }}>📲</span> Installez NFCrafter sur votre iPhone
+                                        </h3>
+                                        <p style={{ fontSize: '14px', opacity: 0.9, lineHeight: '1.6', margin: 0 }}>
+                                            Appuyez sur l'icône de partage <span style={{ background: 'rgba(255,255,255,0.2)', padding: '2px 6px', borderRadius: '6px' }}>⎋</span> (en bas de Safari), puis faites défiler vers le bas et choisissez <strong style={{ textDecoration: 'underline' }}>"Sur l'écran d'accueil"</strong>.
+                                        </p>
+                                    </div>
+                                    <button 
+                                        onClick={() => setShowIOSInstallGuide(false)}
+                                        style={{ 
+                                            background: 'rgba(255,255,255,0.15)', 
+                                            color: 'white', 
+                                            padding: '10px 20px', 
+                                            borderRadius: '12px', 
+                                            border: '1px solid rgba(255,255,255,0.3)', 
+                                            fontWeight: '700', 
+                                            cursor: 'pointer',
+                                            fontSize: '13px',
+                                            transition: 'background 0.2s',
+                                            whiteSpace: 'nowrap'
+                                        }}
+                                        onMouseOver={e => e.currentTarget.style.background = 'rgba(255,255,255,0.25)'}
+                                        onMouseOut={e => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'}
+                                    >
+                                        Compris
                                     </button>
                                 </div>
                             )}
