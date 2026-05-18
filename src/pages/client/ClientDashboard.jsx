@@ -676,7 +676,7 @@ export default function ClientDashboard() {
                                     fontSize: '13px',
                                     lineHeight: '1.5'
                                 }}>
-                                    <span style={{ fontSize: '18px' }}>📶</span>
+                                    <div style={{ width: 20, height: 20, color: '#B45309', display: 'flex', alignItems: 'center', flexShrink: 0 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="1" y1="1" x2="23" y2="23"></line><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.5M5 12.5a10.94 10.94 0 0 1 5.17-2.39M10.71 5.05A16 16 0 0 1 22.58 9M1.42 9a15.91 15.91 0 0 1 4.7-2.88M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"></svg>` }} />
                                     <span>
                                         <strong>Mode hors-ligne actif :</strong> Votre QR Code et vos coordonnées vCard restent 100% opérationnels pour le partage de contacts. Cependant, vous devez vous connecter à Internet pour modifier votre profil ou enregistrer de nouvelles modifications.
                                     </span>
@@ -700,7 +700,7 @@ export default function ClientDashboard() {
                                     fontSize: '13px'
                                 }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
-                                        <span style={{ fontSize: '16px' }}>⚠️</span>
+                                        <div style={{ width: 18, height: 18, color: '#991B1B', display: 'flex', alignItems: 'center', flexShrink: 0 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>` }} />
                                         <span>
                                             <strong>Recommandé :</strong> Ajoutez NFCrafter à votre écran pour le partage 100% hors-ligne (sans internet).
                                         </span>
@@ -752,7 +752,7 @@ export default function ClientDashboard() {
                                     fontSize: '13px'
                                 }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
-                                        <span style={{ fontSize: '16px' }}>⚠️</span>
+                                        <div style={{ width: 18, height: 18, color: '#991B1B', display: 'flex', alignItems: 'center', flexShrink: 0 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>` }} />
                                         <span>
                                             <strong>iPhone :</strong> Pour le partage hors-ligne, ajoutez NFCrafter à votre écran : appuyez sur <span style={{ background: '#FCA5A5', padding: '1px 4px', borderRadius: '4px', color: '#991B1B', fontWeight: 'bold' }}>⎋</span> (partage Safari) puis <strong>"Sur l'écran d'accueil"</strong>.
                                         </span>
@@ -837,31 +837,31 @@ export default function ClientDashboard() {
                                         <button onClick={async () => { if (navigator.share) { try { await navigator.share({ title: 'NFCrafter', url: publicUrl }); } catch (e) {} } else { window.open(`https://wa.me/?text=${encodeURIComponent(publicUrl)}`, '_blank'); } }} style={{ flex: 1, padding: '12px', borderRadius: '12px', background: '#25D366', color: 'white', border: 'none', fontWeight: '700', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                                             <div style={{ width: 16, height: 16 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>` }} /> Partager
                                         </button>
-                                        <button onClick={downloadQR} title="Télécharger QR Code" style={{ padding: '12px', borderRadius: '12px', background: '#F5F3FF', color: '#7C3AED', border: 'none', fontWeight: '700', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                            <div style={{ width: 16, height: 16 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><path d="M14 14h3v3h3v-3M14 17v3M17 14v3"></path></svg>` }} />
-                                        </button>
                                     </div>
                                     <button 
                                         onClick={() => setIsOfflineModalOpen(true)}
                                         style={{ 
                                             width: '100%', 
-                                            padding: '12px', 
-                                            borderRadius: '12px', 
+                                            padding: '16px 24px', 
+                                            borderRadius: '18px', 
                                             background: 'linear-gradient(135deg, #1A1265 0%, #3B82F6 100%)', 
                                             color: 'white', 
                                             border: 'none', 
                                             fontWeight: '800', 
                                             cursor: 'pointer', 
-                                            fontSize: '13px', 
+                                            fontSize: '14px', 
                                             display: 'flex', 
                                             alignItems: 'center', 
                                             justifyContent: 'center', 
-                                            gap: '8px',
-                                            boxShadow: '0 4px 12px rgba(26,18,101,0.1)',
-                                            marginTop: '4px'
+                                            gap: '10px',
+                                            boxShadow: '0 8px 20px rgba(26,18,101,0.15)',
+                                            marginTop: '8px',
+                                            transition: 'transform 0.2s, box-shadow 0.2s'
                                         }}
+                                        onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 25px rgba(26,18,101,0.25)'; }}
+                                        onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(26,18,101,0.15)'; }}
                                     >
-                                        <div style={{ width: 16, height: 16 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2" ry="2"></rect><line x1="7" y1="8" x2="17" y2="8"></line><line x1="7" y1="12" x2="17" y2="12"></line><line x1="7" y1="16" x2="13" y2="16"></line></svg>` }} />
+                                        <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2" ry="2"></rect><line x1="7" y1="8" x2="17" y2="8"></line><line x1="7" y1="12" x2="17" y2="12"></line><line x1="7" y1="16" x2="13" y2="16"></line></svg>` }} />
                                         Partage Hors-Ligne (vCard)
                                     </button>
                                 </div>
@@ -1089,18 +1089,18 @@ export default function ClientDashboard() {
                             background: '#F0FDF4', 
                             border: '1px solid #BBF7D0', 
                             color: '#15803D', 
-                            padding: '12px 16px', 
-                            borderRadius: '16px', 
+                            padding: '8px 16px', 
+                            borderRadius: '100px', 
                             fontSize: '13px', 
                             fontWeight: '700', 
-                            display: 'flex', 
+                            display: 'inline-flex', 
                             alignItems: 'center', 
                             gap: '8px',
-                            width: '100%',
-                            justifyContent: 'center'
+                            justifyContent: 'center',
+                            boxShadow: '0 2px 8px rgba(21, 128, 61, 0.05)'
                         }}>
-                            <span style={{ fontSize: '16px' }}>⚡</span>
-                            Fonctionne 100% sans connexion internet
+                            <div style={{ width: 14, height: 14, color: '#15803D', display: 'flex', alignItems: 'center' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>` }} />
+                            <span>Fonctionne 100% sans connexion internet</span>
                         </div>
                     </div>
                 </Modal>

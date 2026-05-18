@@ -386,6 +386,21 @@ export default function ProfileForm({
             {/* SECTION BUSINESS */}
             {acc('business', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>`, 'Infos Business', 'Horaires et localisation.', (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                    <div className="field" style={{ marginBottom: 0 }}>
+                        <label>Titre personnalisé de la section Localisation</label>
+                        <input 
+                            type="text" 
+                            value={profile.section_titles?.business_info_find || ''} 
+                            onChange={e => {
+                                const titles = { ...(profile.section_titles || {}) };
+                                titles.business_info_find = e.target.value;
+                                setProfile({ ...profile, section_titles: titles });
+                            }} 
+                            placeholder="Par défaut : Nous trouver" 
+                            style={{ background: 'white' }}
+                        />
+                    </div>
+
                     <div className="field">
                         <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                             <span>Localisation (Adresse)</span>
@@ -402,6 +417,21 @@ export default function ProfileForm({
                     </div>
 
                     <div style={{ borderTop: '1px solid #F1F5F9', paddingTop: 20 }}>
+                        <div className="field" style={{ marginBottom: 16 }}>
+                            <label>Titre personnalisé de la section Horaires</label>
+                            <input 
+                                type="text" 
+                                value={profile.section_titles?.business_info_hours || ''} 
+                                onChange={e => {
+                                    const titles = { ...(profile.section_titles || {}) };
+                                    titles.business_info_hours = e.target.value;
+                                    setProfile({ ...profile, section_titles: titles });
+                                }} 
+                                placeholder="Par défaut : Horaires" 
+                                style={{ background: 'white' }}
+                            />
+                        </div>
+
                         <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
                             <span style={{ fontSize: 13, fontWeight: 700, color: '#1A1265' }}>Horaires d'ouverture</span>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -434,6 +464,21 @@ export default function ProfileForm({
             {/* SECTION SHOP */}
             {acc('shop', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>`, 'Boutique & Catalogue', 'Produits et services.', (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                    <div className="field" style={{ marginBottom: 0 }}>
+                        <label>Nom personnalisé de la section</label>
+                        <input 
+                            type="text" 
+                            value={profile.section_titles?.products || ''} 
+                            onChange={e => {
+                                const titles = { ...(profile.section_titles || {}) };
+                                titles.products = e.target.value;
+                                setProfile({ ...profile, section_titles: titles });
+                            }} 
+                            placeholder="Par défaut : Boutique" 
+                            style={{ background: 'white' }}
+                        />
+                    </div>
+
                     <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <span style={{ fontSize: 13, fontWeight: 700, color: '#1A1265' }}>Activer la boutique</span>
                         <input type="checkbox" checked={profile.show_products} onChange={e => setProfile({ ...profile, show_products: e.target.checked })} />
@@ -582,6 +627,21 @@ export default function ProfileForm({
             {/* GALLERY */}
             {acc('gallery', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>`, 'Galerie Photos', 'Montrez vos plus belles images.', (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    <div className="field" style={{ marginBottom: 0 }}>
+                        <label>Nom personnalisé de la section</label>
+                        <input 
+                            type="text" 
+                            value={profile.section_titles?.gallery || ''} 
+                            onChange={e => {
+                                const titles = { ...(profile.section_titles || {}) };
+                                titles.gallery = e.target.value;
+                                setProfile({ ...profile, section_titles: titles });
+                            }} 
+                            placeholder="Par défaut : Galerie" 
+                            style={{ background: 'white' }}
+                        />
+                    </div>
+
                     <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <span style={{ fontSize: 13, fontWeight: 700, color: '#1A1265' }}>Activer la galerie</span>
                         <input type="checkbox" checked={profile.show_gallery || false} onChange={e => setProfile({ ...profile, show_gallery: e.target.checked })} />
@@ -602,6 +662,21 @@ export default function ProfileForm({
             {/* SKILLS / TAGS */}
             {acc('skills', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>`, 'Compétences / Tags', 'Affichez vos domaines d\'expertise.', (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    <div className="field" style={{ marginBottom: 0 }}>
+                        <label>Nom personnalisé de la section</label>
+                        <input 
+                            type="text" 
+                            value={profile.section_titles?.skills || ''} 
+                            onChange={e => {
+                                const titles = { ...(profile.section_titles || {}) };
+                                titles.skills = e.target.value;
+                                setProfile({ ...profile, section_titles: titles });
+                            }} 
+                            placeholder="Par défaut : Compétences" 
+                            style={{ background: 'white' }}
+                        />
+                    </div>
+
                     <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <span style={{ fontSize: 13, fontWeight: 700, color: '#1A1265' }}>Afficher les compétences</span>
                         <input type="checkbox" checked={profile.show_skills || false} onChange={e => setProfile({ ...profile, show_skills: e.target.checked })} />
@@ -648,6 +723,21 @@ export default function ProfileForm({
             {/* FAQ */}
             {acc('faq', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`, 'FAQ', 'Questions fréquemment posées.', (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    <div className="field" style={{ marginBottom: 0 }}>
+                        <label>Nom personnalisé de la section</label>
+                        <input 
+                            type="text" 
+                            value={profile.section_titles?.faq || ''} 
+                            onChange={e => {
+                                const titles = { ...(profile.section_titles || {}) };
+                                titles.faq = e.target.value;
+                                setProfile({ ...profile, section_titles: titles });
+                            }} 
+                            placeholder="Par défaut : FAQ" 
+                            style={{ background: 'white' }}
+                        />
+                    </div>
+
                     <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <span style={{ fontSize: 13, fontWeight: 700, color: '#1A1265' }}>Afficher la FAQ</span>
                         <input type="checkbox" checked={profile.show_faq || false} onChange={e => setProfile({ ...profile, show_faq: e.target.checked })} />
@@ -666,6 +756,21 @@ export default function ProfileForm({
             {/* EVENTS */}
             {acc('events', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>`, 'Événements à Venir', 'Annoncez vos prochains événements.', (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    <div className="field" style={{ marginBottom: 0 }}>
+                        <label>Nom personnalisé de la section</label>
+                        <input 
+                            type="text" 
+                            value={profile.section_titles?.events || ''} 
+                            onChange={e => {
+                                const titles = { ...(profile.section_titles || {}) };
+                                titles.events = e.target.value;
+                                setProfile({ ...profile, section_titles: titles });
+                            }} 
+                            placeholder="Par défaut : Événements" 
+                            style={{ background: 'white' }}
+                        />
+                    </div>
+
                     <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <span style={{ fontSize: 13, fontWeight: 700, color: '#1A1265' }}>Afficher les événements</span>
                         <input type="checkbox" checked={profile.show_events || false} onChange={e => setProfile({ ...profile, show_events: e.target.checked })} />
@@ -689,6 +794,21 @@ export default function ProfileForm({
             {/* PORTFOLIO */}
             {acc('portfolio', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>`, 'Portfolio / Réalisations', 'Montrez vos meilleures réalisations.', (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    <div className="field" style={{ marginBottom: 0 }}>
+                        <label>Nom personnalisé de la section</label>
+                        <input 
+                            type="text" 
+                            value={profile.section_titles?.portfolio || ''} 
+                            onChange={e => {
+                                const titles = { ...(profile.section_titles || {}) };
+                                titles.portfolio = e.target.value;
+                                setProfile({ ...profile, section_titles: titles });
+                            }} 
+                            placeholder="Par défaut : Portfolio" 
+                            style={{ background: 'white' }}
+                        />
+                    </div>
+
                     <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <span style={{ fontSize: 13, fontWeight: 700, color: '#1A1265' }}>Afficher le portfolio</span>
                         <input type="checkbox" checked={profile.show_portfolio || false} onChange={e => setProfile({ ...profile, show_portfolio: e.target.checked })} />
@@ -710,6 +830,21 @@ export default function ProfileForm({
             {/* CERTIFICATIONS */}
             {acc('certifications', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"></circle><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"></path></svg>`, 'Certifications / Badges', 'Affichez vos certifications professionnelles.', (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    <div className="field" style={{ marginBottom: 0 }}>
+                        <label>Nom personnalisé de la section</label>
+                        <input 
+                            type="text" 
+                            value={profile.section_titles?.certifications || ''} 
+                            onChange={e => {
+                                const titles = { ...(profile.section_titles || {}) };
+                                titles.certifications = e.target.value;
+                                setProfile({ ...profile, section_titles: titles });
+                            }} 
+                            placeholder="Par défaut : Certifications" 
+                            style={{ background: 'white' }}
+                        />
+                    </div>
+
                     <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <span style={{ fontSize: 13, fontWeight: 700, color: '#1A1265' }}>Afficher les certifications</span>
                         <input type="checkbox" checked={profile.show_certifications || false} onChange={e => setProfile({ ...profile, show_certifications: e.target.checked })} />
@@ -778,40 +913,6 @@ export default function ProfileForm({
                                         </div>
                                     </div>
                                 ))}
-
-                                <div style={{ marginTop: 24, borderTop: '1px solid #E2E8F0', paddingTop: 20 }}>
-                                    <h4 style={{ fontSize: 14, fontWeight: 800, color: '#1A1265', marginBottom: 12 }}>Personnaliser les titres des sections</h4>
-                                    <p style={{ fontSize: 12, color: '#64748B', marginBottom: 16 }}>Modifiez les titres par défaut des sections pour qu'ils correspondent à votre activité.</p>
-                                    
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                                        {[
-                                            { id: 'products', label: 'Boutique / Catalogue', defaultTitle: 'Boutique' },
-                                            { id: 'skills', label: 'Compétences / Tags', defaultTitle: 'Compétences' },
-                                            { id: 'gallery', label: 'Galerie Photos', defaultTitle: 'Galerie' },
-                                            { id: 'faq', label: 'FAQ', defaultTitle: 'FAQ' },
-                                            { id: 'events', label: 'Événements', defaultTitle: 'Événements' },
-                                            { id: 'portfolio', label: 'Portfolio', defaultTitle: 'Portfolio' },
-                                            { id: 'certifications', label: 'Certifications', defaultTitle: 'Certifications' },
-                                            { id: 'business_info_find', label: 'Titre "Nous trouver"', defaultTitle: 'Nous trouver' },
-                                            { id: 'business_info_hours', label: 'Titre "Horaires"', defaultTitle: 'Horaires' }
-                                        ].map(item => (
-                                            <div key={item.id} className="field" style={{ marginBottom: 0 }}>
-                                                <label style={{ fontSize: 12 }}>{item.label}</label>
-                                                <input 
-                                                    type="text" 
-                                                    value={profile.section_titles?.[item.id] || ''} 
-                                                    onChange={e => {
-                                                        const titles = { ...(profile.section_titles || {}) };
-                                                        titles[item.id] = e.target.value;
-                                                        setProfile({ ...profile, section_titles: titles });
-                                                    }} 
-                                                    placeholder={`Par défaut : ${item.defaultTitle}`}
-                                                    style={{ fontSize: 13, background: 'white' }}
-                                                />
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
                             </>
                         );
                     })()}

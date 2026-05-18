@@ -258,8 +258,8 @@ export default function Activate() {
                 
                 {isOffline ? (
                     <div style={{ marginTop: '16px' }}>
-                        <div style={{ textAlign: 'center', padding: '30px 20px', color: '#B45309', fontSize: '48px' }}>
-                            📶
+                        <div style={{ textAlign: 'center', padding: '30px 20px', display: 'flex', justifyContent: 'center' }}>
+                            <div style={{ width: 64, height: 64, color: '#B45309', display: 'flex', alignItems: 'center', justifyContent: 'center' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="1" y1="1" x2="23" y2="23"></line><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.5M5 12.5a10.94 10.94 0 0 1 5.17-2.39M10.71 5.05A16 16 0 0 1 22.58 9M1.42 9a15.91 15.91 0 0 1 4.7-2.88M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"></svg>` }} />
                         </div>
                         <div style={{ padding: '24px', background: '#FFFBEB', borderRadius: '20px', color: '#B45309', border: '1px solid #FEF3C7', textAlign: 'left' }}>
                             <div style={{ fontSize: '17px', fontWeight: '800', marginBottom: 8 }}>Connexion Internet requise</div>
