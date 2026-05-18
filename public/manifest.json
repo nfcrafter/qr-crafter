@@ -1,0 +1,17 @@
+{
+  "short_name": "NFCrafter",
+  "name": "NFCrafter Smart Cards",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#F8FAFC",
+  "theme_color": "#1A1265",
+  "display": "standalone",
+  "orientation": "portrait"
+}

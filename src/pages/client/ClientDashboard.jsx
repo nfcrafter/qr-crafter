@@ -6,6 +6,7 @@ import { useToast } from '../../components/Toast.jsx';
 import ProfileForm from '../../components/ProfileForm.jsx';
 import PhonePreview from '../../components/PhonePreview.jsx';
 import { SOCIAL_NETWORKS, LINK_ICONS } from '../../constants/socials.js';
+import Modal from '../../components/Modal.jsx';
 
 export default function ClientDashboard() {
     const navigate = useNavigate();
@@ -31,7 +32,9 @@ export default function ClientDashboard() {
     const [feedbacks, setFeedbacks] = useState([]);
     const [feedbacksLoading, setFeedbacksLoading] = useState(false);
     const [scanStats, setScanStats] = useState([]);
+    const [isOfflineModalOpen, setIsOfflineModalOpen] = useState(false);
     const editorRef = useRef(null);
+    const offlineQrRef = useRef(null);
     
     // Lock body scroll when mobile preview is open
     useEffect(() => {
@@ -268,6 +271,79 @@ export default function ClientDashboard() {
             qrCode.download({ name: `nfcrafter-qr-${selectedCard?.url_slug || selectedCardId}`, extension: "png" });
         });
     };
+
+    const generateVCardData = () => {
+        const lines = [
+            'BEGIN:VCARD',
+            'VERSION:3.0',
+            `N:${publicProfile.full_name || 'Contact'};;;;`,
+            `FN:${publicProfile.full_name || 'Contact'}`
+        ];
+
+        if (publicProfile.job_title) {
+            lines.push(`TITLE:${publicProfile.job_title}`);
+        }
+        
+        if (publicProfile.bio) {
+            const cleanBio = publicProfile.bio.replace(/\r?\n/g, ' ');
+            lines.push(`NOTE:${cleanBio}`);
+        }
+
+        if (publicProfile.phone) {
+            lines.push(`TEL;TYPE=CELL:${publicProfile.phone}`);
+        }
+
+        if (publicProfile.email) {
+            lines.push(`EMAIL;TYPE=INTERNET:${publicProfile.email}`);
+        }
+
+        const selectedCard = userCards.find(c => c.card_id === selectedCardId);
+        const cardUrl = selectedCard ? (selectedCard.url_slug ? `${window.location.origin}/${selectedCard.url_slug}` : `${window.location.origin}/u/${selectedCardId}`) : '';
+        
+        if (cardUrl) {
+            lines.push(`URL:${cardUrl}`);
+        }
+
+        // Add standard socials
+        if (publicProfile.socials) {
+            Object.entries(publicProfile.socials).forEach(([key, val]) => {
+                let value = '';
+                if (val && typeof val === 'object') {
+                    value = val.value;
+                } else if (typeof val === 'string') {
+                    value = val;
+                }
+                if (value && value.trim()) {
+                    lines.push(`X-SOCIALPROFILE;TYPE=${key.toUpperCase()}:${value}`);
+                }
+            });
+        }
+
+        lines.push('END:VCARD');
+        return lines.join('\n');
+    };
+
+    useEffect(() => {
+        if (isOfflineModalOpen && offlineQrRef.current) {
+            // Clear any existing children of offlineQrRef.current
+            offlineQrRef.current.innerHTML = '';
+            
+            const vCardData = generateVCardData();
+            
+            import('qr-code-styling').then(QRCodeStyling => {
+                const qrCode = new QRCodeStyling.default({
+                    width: 280,
+                    height: 280,
+                    data: vCardData,
+                    dotsOptions: { color: publicProfile.primaryColor || "#1A1265", type: "rounded" },
+                    cornersSquareOptions: { color: publicProfile.primaryColor || "#1A1265", type: "extra-rounded" },
+                    backgroundOptions: { color: "#FFFFFF" }
+                });
+                qrCode.append(offlineQrRef.current);
+            });
+        }
+    }, [isOfflineModalOpen, publicProfile]);
+
 
     if (loading) return (
         <div style={{ minHeight: '100vh', width: '100vw', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F8FAFC', position: 'fixed', top: 0, left: 0, zIndex: 9999 }}>
@@ -513,6 +589,29 @@ export default function ClientDashboard() {
                                             <div style={{ width: 16, height: 16 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><path d="M14 14h3v3h3v-3M14 17v3M17 14v3"></path></svg>` }} />
                                         </button>
                                     </div>
+                                    <button 
+                                        onClick={() => setIsOfflineModalOpen(true)}
+                                        style={{ 
+                                            width: '100%', 
+                                            padding: '12px', 
+                                            borderRadius: '12px', 
+                                            background: 'linear-gradient(135deg, #1A1265 0%, #3B82F6 100%)', 
+                                            color: 'white', 
+                                            border: 'none', 
+                                            fontWeight: '800', 
+                                            cursor: 'pointer', 
+                                            fontSize: '13px', 
+                                            display: 'flex', 
+                                            alignItems: 'center', 
+                                            justifyContent: 'center', 
+                                            gap: '8px',
+                                            boxShadow: '0 4px 12px rgba(26,18,101,0.1)',
+                                            marginTop: '4px'
+                                        }}
+                                    >
+                                        <div style={{ width: 16, height: 16 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2" ry="2"></rect><line x1="7" y1="8" x2="17" y2="8"></line><line x1="7" y1="12" x2="17" y2="12"></line><line x1="7" y1="16" x2="13" y2="16"></line></svg>` }} />
+                                        Partage Hors-Ligne (vCard)
+                                    </button>
                                 </div>
 
                                 <div style={{ background: 'white', padding: '24px', borderRadius: '24px', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -687,6 +786,54 @@ export default function ClientDashboard() {
                         <span>Aperçu</span>
                     </button>
                 )}
+
+                {/* Modal de Partage Hors-Ligne */}
+                <Modal
+                    isOpen={isOfflineModalOpen}
+                    title="Partage Hors-Ligne"
+                    onClose={() => setIsOfflineModalOpen(false)}
+                >
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', textAlign: 'center' }}>
+                        <p style={{ fontSize: '14px', color: '#64748B', margin: 0, lineHeight: '1.5' }}>
+                            Faites scanner ce code pour ajouter vos coordonnées et liens directement dans les contacts de votre interlocuteur sans connexion Internet.
+                        </p>
+                        
+                        {/* Conteneur du QR code */}
+                        <div 
+                            ref={offlineQrRef} 
+                            style={{ 
+                                background: '#FFFFFF', 
+                                padding: '12px', 
+                                borderRadius: '20px', 
+                                boxShadow: '0 10px 35px rgba(26,18,101,0.06)',
+                                border: '1px solid #EEF2FF',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: '304px',
+                                height: '304px'
+                            }} 
+                        />
+                        
+                        <div style={{ 
+                            background: '#F0FDF4', 
+                            border: '1px solid #BBF7D0', 
+                            color: '#15803D', 
+                            padding: '12px 16px', 
+                            borderRadius: '16px', 
+                            fontSize: '13px', 
+                            fontWeight: '700', 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: '8px',
+                            width: '100%',
+                            justifyContent: 'center'
+                        }}>
+                            <span style={{ fontSize: '16px' }}>⚡</span>
+                            Fonctionne 100% sans connexion internet
+                        </div>
+                    </div>
+                </Modal>
             </main>
 
             <style>{`
