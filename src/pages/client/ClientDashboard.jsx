@@ -339,7 +339,7 @@ export default function ClientDashboard() {
 
     async function handleProductImageUpload(productId, file) {
         setUploadingProduct(true);
-        await uploadFile(file, 'banners', (url) => {
+        await uploadFile(file, 'products', (url) => {
             setPublicProfile(p => ({
                 ...p,
                 products: (p.products || []).map(prod => prod.id === productId ? { ...prod, image_url: url } : prod)
@@ -349,7 +349,7 @@ export default function ClientDashboard() {
     }
 
     async function handleGalleryImageUpload(file, onUrl) {
-        await uploadFile(file, 'banners', onUrl);
+        await uploadFile(file, 'gallery', onUrl);
     }
 
     // Supabase Realtime — notify on new feedbacks
@@ -1253,7 +1253,7 @@ function DashboardPhonePreview({ profile, isDark, textColor, subTextColor, cardB
                                             <div style={{ width: 24, height: 24, borderRadius: 6, background: (profile.primaryColor || '#1A1265') + '15', color: profile.primaryColor || '#1A1265', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
                                             </div>
-                                            <span style={{ fontSize: 13, fontWeight: 800, color: textColor }}>Boutique</span>
+                                            <span style={{ fontSize: 13, fontWeight: 800, color: textColor }}>{profile.section_titles?.products || 'Boutique'}</span>
                                         </div>
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                                             {profile.products.slice(0, 3).map(p => (
@@ -1281,7 +1281,7 @@ function DashboardPhonePreview({ profile, isDark, textColor, subTextColor, cardB
                                             <div style={{ marginBottom: profile.show_hours ? 12 : 0 }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
                                                     <div style={{ width: 20, height: 20, color: profile.primaryColor || '#1A1265' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>` }} />
-                                                    <span style={{ fontSize: 12, fontWeight: 800, color: textColor }}>Nous trouver</span>
+                                                    <span style={{ fontSize: 12, fontWeight: 800, color: textColor }}>{profile.section_titles?.business_info_find || 'Nous trouver'}</span>
                                                 </div>
                                                 <div style={{ fontSize: 11, color: subTextColor, background: isDark ? 'rgba(255,255,255,0.03)' : '#F8FAFC', padding: 8, borderRadius: 10 }}>{profile.location_address}</div>
                                             </div>
@@ -1290,7 +1290,7 @@ function DashboardPhonePreview({ profile, isDark, textColor, subTextColor, cardB
                                             <div>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
                                                     <div style={{ width: 20, height: 20, color: profile.primaryColor || '#1A1265' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>` }} />
-                                                    <span style={{ fontSize: 12, fontWeight: 800, color: textColor }}>Horaires</span>
+                                                    <span style={{ fontSize: 12, fontWeight: 800, color: textColor }}>{profile.section_titles?.business_info_hours || 'Horaires'}</span>
                                                 </div>
                                                 <div style={{ fontSize: 11, color: subTextColor, display: 'flex', justifyContent: 'space-between' }}>
                                                     <span>Aujourd'hui</span>

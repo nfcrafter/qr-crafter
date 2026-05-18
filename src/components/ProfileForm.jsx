@@ -738,7 +738,7 @@ export default function ProfileForm({
             ))}
 
             {/* SECTION MISE EN PAGE */}
-            {acc('layout', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10H3M21 6H3M21 14H3M21 18H3"></path></svg>`, 'Mise en page', 'Ordre des sections du profil.', (
+            {acc('layout', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10H3M21 6H3M21 14H3M21 18H3"></path></svg>`, 'Mise en page', 'Ordre des sections et titres du profil.', (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                     <p style={{ fontSize: 13, color: '#64748B', marginBottom: 10 }}>Organisez l'ordre d'apparition des sections sur votre profil public.</p>
                     {(() => {
@@ -767,15 +767,53 @@ export default function ProfileForm({
                             newOrder[index + dir] = temp;
                             setProfile({ ...profile, section_order: newOrder });
                         };
-                        return sections.map((s, i) => (
-                            <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', background: '#F8FAFC', borderRadius: 12, border: '1px solid #E2E8F0' }}>
-                                <div style={{ flex: 1, fontWeight: 700, fontSize: 14, color: '#1A1265' }}>{sectionLabels[s] || s}</div>
-                                <div style={{ display: 'flex', gap: 4 }}>
-                                    <button disabled={i === 0} onClick={() => move(i, -1)} style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid #E2E8F0', background: 'white', cursor: i === 0 ? 'default' : 'pointer', opacity: i === 0 ? 0.3 : 1 }}>↑</button>
-                                    <button disabled={i === sections.length - 1} onClick={() => move(i, 1)} style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid #E2E8F0', background: 'white', cursor: i === sections.length - 1 ? 'default' : 'pointer', opacity: i === sections.length - 1 ? 0.3 : 1 }}>↓</button>
+                        return (
+                            <>
+                                {sections.map((s, i) => (
+                                    <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', background: '#F8FAFC', borderRadius: 12, border: '1px solid #E2E8F0' }}>
+                                        <div style={{ flex: 1, fontWeight: 700, fontSize: 14, color: '#1A1265' }}>{sectionLabels[s] || s}</div>
+                                        <div style={{ display: 'flex', gap: 4 }}>
+                                            <button disabled={i === 0} onClick={() => move(i, -1)} style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid #E2E8F0', background: 'white', cursor: i === 0 ? 'default' : 'pointer', opacity: i === 0 ? 0.3 : 1 }}>↑</button>
+                                            <button disabled={i === sections.length - 1} onClick={() => move(i, 1)} style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid #E2E8F0', background: 'white', cursor: i === sections.length - 1 ? 'default' : 'pointer', opacity: i === sections.length - 1 ? 0.3 : 1 }}>↓</button>
+                                        </div>
+                                    </div>
+                                ))}
+
+                                <div style={{ marginTop: 24, borderTop: '1px solid #E2E8F0', paddingTop: 20 }}>
+                                    <h4 style={{ fontSize: 14, fontWeight: 800, color: '#1A1265', marginBottom: 12 }}>Personnaliser les titres des sections</h4>
+                                    <p style={{ fontSize: 12, color: '#64748B', marginBottom: 16 }}>Modifiez les titres par défaut des sections pour qu'ils correspondent à votre activité.</p>
+                                    
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                                        {[
+                                            { id: 'products', label: 'Boutique / Catalogue', defaultTitle: 'Boutique' },
+                                            { id: 'skills', label: 'Compétences / Tags', defaultTitle: 'Compétences' },
+                                            { id: 'gallery', label: 'Galerie Photos', defaultTitle: 'Galerie' },
+                                            { id: 'faq', label: 'FAQ', defaultTitle: 'FAQ' },
+                                            { id: 'events', label: 'Événements', defaultTitle: 'Événements' },
+                                            { id: 'portfolio', label: 'Portfolio', defaultTitle: 'Portfolio' },
+                                            { id: 'certifications', label: 'Certifications', defaultTitle: 'Certifications' },
+                                            { id: 'business_info_find', label: 'Titre "Nous trouver"', defaultTitle: 'Nous trouver' },
+                                            { id: 'business_info_hours', label: 'Titre "Horaires"', defaultTitle: 'Horaires' }
+                                        ].map(item => (
+                                            <div key={item.id} className="field" style={{ marginBottom: 0 }}>
+                                                <label style={{ fontSize: 12 }}>{item.label}</label>
+                                                <input 
+                                                    type="text" 
+                                                    value={profile.section_titles?.[item.id] || ''} 
+                                                    onChange={e => {
+                                                        const titles = { ...(profile.section_titles || {}) };
+                                                        titles[item.id] = e.target.value;
+                                                        setProfile({ ...profile, section_titles: titles });
+                                                    }} 
+                                                    placeholder={`Par défaut : ${item.defaultTitle}`}
+                                                    style={{ fontSize: 13, background: 'white' }}
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-                        ));
+                            </>
+                        );
                     })()}
                 </div>
             ))}
