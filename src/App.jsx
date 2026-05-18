@@ -59,6 +59,17 @@ export default function App() {
     }, [])
 
     function handleSession(session) {
+        if (!session && !navigator.onLine) {
+            const cachedUser = localStorage.getItem('nfc_cached_user');
+            if (cachedUser) {
+                console.log("[PWA App] Restoring offline session from cached user");
+                const parsedUser = JSON.parse(cachedUser);
+                setSession({ user: parsedUser });
+                setIsAdmin(parsedUser.email === ADMIN_EMAIL);
+                return;
+            }
+        }
+        
         setSession(session ?? null)
         if (session) {
             setIsAdmin(session.user.email === ADMIN_EMAIL)
