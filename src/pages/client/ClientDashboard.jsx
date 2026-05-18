@@ -33,9 +33,40 @@ export default function ClientDashboard() {
     const [feedbacksLoading, setFeedbacksLoading] = useState(false);
     const [scanStats, setScanStats] = useState([]);
     const [isOfflineModalOpen, setIsOfflineModalOpen] = useState(false);
+    const [deferredPrompt, setDeferredPrompt] = useState(null);
+    const [showInstallBtn, setShowInstallBtn] = useState(false);
     const editorRef = useRef(null);
     const offlineQrRef = useRef(null);
     
+    // Listen for PWA installation prompt
+    useEffect(() => {
+        const handleBeforeInstallPrompt = (e) => {
+            console.log('[PWA] beforeinstallprompt event fired');
+            e.preventDefault();
+            setDeferredPrompt(e);
+            setShowInstallBtn(true);
+        };
+        window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+        // Check if app is already running in standalone mode (installed)
+        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+            setShowInstallBtn(false);
+        }
+
+        return () => {
+            window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+        };
+    }, []);
+
+    const handleInstallApp = async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`[PWA] User choice outcome: ${outcome}`);
+        setDeferredPrompt(null);
+        setShowInstallBtn(false);
+    };
+
     // Lock body scroll when mobile preview is open
     useEffect(() => {
         if (showMobilePreview) {
@@ -521,6 +552,52 @@ export default function ClientDashboard() {
                         
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
                             
+                            {/* PWA Install Banner */}
+                            {showInstallBtn && (
+                                <div style={{ 
+                                    background: 'linear-gradient(135deg, #7C3AED 0%, #1A1265 100%)', 
+                                    padding: '24px 32px', 
+                                    borderRadius: '24px', 
+                                    color: 'white', 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    justifyContent: 'space-between', 
+                                    gap: '24px',
+                                    boxShadow: '0 20px 40px rgba(124,58,237,0.15)',
+                                    animation: 'fadeIn 0.6s ease-out',
+                                    flexWrap: 'wrap'
+                                }}>
+                                    <div style={{ flex: 1, minWidth: '280px' }}>
+                                        <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                            <span style={{ fontSize: '20px' }}>📲</span> Installez l'application NFCrafter
+                                        </h3>
+                                        <p style={{ fontSize: '14px', opacity: 0.9, lineHeight: '1.6' }}>
+                                            Ajoutez l'application sur votre écran d'accueil pour un accès instantané et la gestion de vos contacts même hors-ligne.
+                                        </p>
+                                    </div>
+                                    <button 
+                                        onClick={handleInstallApp}
+                                        style={{ 
+                                            background: 'white', 
+                                            color: '#7C3AED', 
+                                            padding: '12px 24px', 
+                                            borderRadius: '14px', 
+                                            border: 'none', 
+                                            fontWeight: '800', 
+                                            cursor: 'pointer',
+                                            fontSize: '14px',
+                                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                                            transition: 'transform 0.2s',
+                                            whiteSpace: 'nowrap'
+                                        }}
+                                        onMouseOver={e => e.currentTarget.style.transform = 'scale(1.05)'}
+                                        onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
+                                    >
+                                        Installer sur mon écran
+                                    </button>
+                                </div>
+                            )}
+
                             {/* Incomplete Profile Banner */}
                             {isProfileIncomplete && viewMode === 'view' && (
                                 <div style={{ 
