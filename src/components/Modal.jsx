@@ -23,14 +23,35 @@ export default function Modal({ isOpen, title, children, onClose, onConfirm, con
                 <div style={{ color: '#64748B', lineHeight: '1.6', marginBottom: '32px', fontSize: '15px' }}>
                     {children}
                 </div>
-                <div style={{ display: 'flex', gap: '12px' }}>
-                    <button className="btn-ghost" style={{ flex: 1 }} onClick={onClose}>Annuler</button>
+                <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+                    <button 
+                        style={{ 
+                            flex: onConfirm ? 1 : 'none', 
+                            minWidth: onConfirm ? 'auto' : '160px',
+                            padding: '12px 24px', 
+                            borderRadius: '14px', 
+                            border: '1px solid #E2E8F0', 
+                            background: '#F8FAFC', 
+                            color: '#475569', 
+                            fontWeight: '700', 
+                            cursor: 'pointer',
+                            fontSize: '14px',
+                            transition: 'all 0.2s'
+                        }} 
+                        onClick={onClose}
+                        onMouseOver={e => { e.currentTarget.style.background = '#F1F5F9'; e.currentTarget.style.color = '#1E293B'; }}
+                        onMouseOut={e => { e.currentTarget.style.background = '#F8FAFC'; e.currentTarget.style.color = '#475569'; }}
+                    >
+                        {onConfirm ? 'Annuler' : 'Fermer'}
+                    </button>
                     {onConfirm && (
                         <button 
                             style={{ 
-                                flex: 1, padding: '12px', borderRadius: '12px', border: 'none', 
+                                flex: 1, padding: '12px 24px', borderRadius: '14px', border: 'none', 
                                 background: type === 'warning' ? '#EF4444' : confirmColor, 
-                                color: 'white', fontWeight: '700', cursor: 'pointer' 
+                                color: 'white', fontWeight: '700', cursor: 'pointer',
+                                fontSize: '14px',
+                                transition: 'all 0.2s'
                             }} 
                             onClick={() => { onConfirm(); onClose(); }}
                         >
