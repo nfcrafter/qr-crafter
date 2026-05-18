@@ -485,7 +485,7 @@ export default function ClientDashboard() {
 
 
     if (loading) return (
-        <div style={{ minHeight: '100vh', width: '100vw', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F8FAFC', position: 'fixed', top: 0, left: 0, zIndex: 9999 }}>
+        <div style={{ minHeight: '100vh', width: '100vw', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#FFFFFF', position: 'fixed', top: 0, left: 0, zIndex: 9999 }}>
             <div className="loader" style={{ width: 40, height: 40, border: '4px solid #EEF2FF', borderTopColor: '#1A1265', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
             <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
         </div>
@@ -516,7 +516,7 @@ export default function ClientDashboard() {
     );
 
     return (
-        <div style={{ display: 'flex', minHeight: '100vh', background: '#F8FAFC', maxWidth: '100vw', overflowX: 'hidden' }}>
+        <div style={{ display: 'flex', minHeight: '100vh', background: '#FFFFFF', maxWidth: '100vw', overflowX: 'hidden' }}>
             
             {/* Header Mobile Only */}
             <div className="mobile-header" style={{ position: 'fixed', top: 0, left: 0, right: 0, height: '70px', background: 'white', borderBottom: '1px solid #E2E8F0', zIndex: 100, display: 'none', alignItems: 'center', justifyContent: 'space-between', padding: '0 20px' }}>
@@ -638,7 +638,7 @@ export default function ClientDashboard() {
 
                 </div>
 
-                <div style={{ padding: '24px', background: '#F8FAFC' }}>
+                <div style={{ padding: '24px', background: '#FFFFFF' }}>
                     <button onClick={() => { localStorage.removeItem('nfc_cached_user'); localStorage.removeItem('nfc_cached_cards'); supabase.auth.signOut(); navigate('/login'); }} style={{ width: '100%', padding: '14px', borderRadius: '14px', background: 'white', color: '#EF4444', border: '1px solid #FEE2E2', fontWeight: '800', cursor: 'pointer', fontSize: '13px', boxShadow: '0 4px 6px rgba(239, 68, 68, 0.05)' }}>Déconnexion</button>
                 </div>
             </aside>
@@ -772,17 +772,18 @@ export default function ClientDashboard() {
                             {/* Incomplete Profile Banner */}
                             {isProfileIncomplete && viewMode === 'view' && (
                                 <div style={{ 
-                                    background: 'linear-gradient(135deg, #1A1265 0%, #3B82F6 100%)', 
+                                    background: '#FFFDF5', 
                                     padding: '24px 32px', 
                                     borderRadius: '24px', 
-                                    color: 'white', 
+                                    color: '#B45309', 
                                     display: 'flex', 
                                     alignItems: 'center', 
                                     justifyContent: 'space-between', 
                                     gap: '24px',
-                                    boxShadow: '0 20px 40px rgba(26,18,101,0.15)',
+                                    boxShadow: '0 10px 30px rgba(180,83,9,0.05)',
                                     animation: 'fadeIn 0.6s ease-out',
-                                    flexWrap: 'wrap'
+                                    flexWrap: 'wrap',
+                                    border: '1px solid #FDE68A'
                                 }}>
                                     <div style={{ flex: 1, minWidth: '280px' }}>
                                         <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -804,15 +805,15 @@ export default function ClientDashboard() {
                                             }, 100);
                                         }}
                                         style={{ 
-                                            background: 'white', 
-                                            color: '#1A1265', 
+                                            background: '#B45309', 
+                                            color: 'white', 
                                             padding: '12px 24px', 
                                             borderRadius: '14px', 
                                             border: 'none', 
                                             fontWeight: '800', 
                                             cursor: 'pointer',
                                             fontSize: '14px',
-                                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                                            boxShadow: '0 4px 12px rgba(180,83,9,0.2)',
                                             transition: 'transform 0.2s',
                                             whiteSpace: 'nowrap'
                                         }}
@@ -844,7 +845,7 @@ export default function ClientDashboard() {
                                             width: '100%', 
                                             padding: '16px 24px', 
                                             borderRadius: '18px', 
-                                            background: 'linear-gradient(135deg, #1A1265 0%, #3B82F6 100%)', 
+                                            background: 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)', 
                                             color: 'white', 
                                             border: 'none', 
                                             fontWeight: '800', 
@@ -854,7 +855,7 @@ export default function ClientDashboard() {
                                             alignItems: 'center', 
                                             justifyContent: 'center', 
                                             gap: '10px',
-                                            boxShadow: '0 8px 20px rgba(26,18,101,0.15)',
+                                            boxShadow: '0 8px 20px rgba(99,102,241,0.15)',
                                             marginTop: '8px',
                                             transition: 'transform 0.2s, box-shadow 0.2s'
                                         }}
@@ -909,7 +910,7 @@ export default function ClientDashboard() {
                                 {feedbacksLoading ? (
                                     <div style={{ textAlign: 'center', padding: 30, color: '#94A3B8', fontSize: 14 }}>Chargement...</div>
                                 ) : feedbacks.length === 0 ? (
-                                    <div style={{ textAlign: 'center', padding: '40px 20px', background: '#F8FAFC', borderRadius: 16, border: '1px dashed #E2E8F0' }}>
+                                    <div style={{ textAlign: 'center', padding: '40px 20px', background: '#F9FAFB', borderRadius: 16, border: '1px dashed #E2E8F0' }}>
                                         <div style={{ width: 48, height: 48, margin: '0 auto 12px', color: '#CBD5E1' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>` }} />
                                         <div style={{ color: '#94A3B8', fontSize: 14, fontWeight: 600 }}>Aucun retour reçu pour l'instant</div>
                                         <div style={{ color: '#CBD5E1', fontSize: 13, marginTop: 4 }}>Activez le formulaire dans "Retours clients" pour en recevoir.</div>
@@ -917,7 +918,7 @@ export default function ClientDashboard() {
                                 ) : (
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                                         {feedbacks.map(fb => (
-                                            <div key={fb.id} style={{ padding: '16px 20px', background: fb.is_read ? '#F8FAFC' : '#EFF6FF', borderRadius: 16, border: fb.is_read ? '1px solid #E2E8F0' : '1px solid #BFDBFE', position: 'relative' }}>
+                                            <div key={fb.id} style={{ padding: '16px 20px', background: fb.is_read ? '#F9FAFB' : '#EFF6FF', borderRadius: 16, border: fb.is_read ? '1px solid #E2E8F0' : '1px solid #BFDBFE', position: 'relative' }}>
                                                 {!fb.is_read && <div style={{ position: 'absolute', top: 16, right: 16, width: 8, height: 8, borderRadius: '50%', background: '#3B82F6' }} />}
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
                                                     <div style={{ fontWeight: 800, fontSize: 14, color: '#1A1265' }}>{fb.name}</div>
@@ -958,7 +959,7 @@ export default function ClientDashboard() {
                                             }
                                             setViewMode(viewMode === 'view' ? 'edit' : 'view');
                                         }} 
-                                        style={{ padding: '12px 28px', borderRadius: '16px', background: viewMode === 'edit' ? '#F1F5F9' : '#1A1265', color: viewMode === 'edit' ? '#1A1265' : 'white', border: 'none', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', transition: '0.2s' }}
+                                        style={{ padding: '12px 28px', borderRadius: '16px', background: viewMode === 'edit' ? '#F1F5F9' : 'var(--primary)', color: viewMode === 'edit' ? 'var(--primary)' : 'white', border: 'none', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', transition: '0.2s' }}
                                     >
                                         {viewMode === 'edit' ? (
                                             <>Annuler</>
@@ -984,7 +985,7 @@ export default function ClientDashboard() {
                                             uploadingProduct={uploadingProduct}
                                             toast={toast} 
                                         />
-                                        <button onClick={savePublicProfile} disabled={saving} className="btn-primary" style={{ width: '100%', padding: '18px', borderRadius: '20px', marginTop: '40px', background: '#1A1265', fontSize: '16px', boxShadow: '0 10px 20px rgba(26,18,101,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+                                        <button onClick={savePublicProfile} disabled={saving} className="btn-primary" style={{ width: '100%', padding: '18px', borderRadius: '20px', marginTop: '40px', background: 'var(--primary)', fontSize: '16px', boxShadow: '0 10px 20px rgba(26,18,101,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
                                             {saving ? 'Enregistrement...' : (
                                                 <>
                                                     <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>` }} />
@@ -994,7 +995,7 @@ export default function ClientDashboard() {
                                         </button>
                                     </div>
                                 ) : (
-                                    <div style={{ textAlign: 'center', padding: '60px 0', background: '#F8FAFC', borderRadius: '28px', border: '2px dashed #E2E8F0' }}>
+                                    <div style={{ textAlign: 'center', padding: '60px 0', background: '#F9FAFB', borderRadius: '28px', border: '2px dashed #E2E8F0' }}>
                                         <div style={{ width: '48px', height: '48px', margin: '0 auto 16px auto', color: '#6366F1' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>` }} />
                                         <p style={{ color: '#64748B', fontWeight: '500', marginBottom: '24px' }}>Votre profil est en ligne et prêt à être partagé.</p>
                                         <button 
@@ -1026,8 +1027,8 @@ export default function ClientDashboard() {
 
                 {/* Mobile Preview Overlay */}
                 {showMobilePreview && (
-                    <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.9)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(8px)', padding: '20px', touchAction: 'none' }}>
-                        <button onClick={() => setShowMobilePreview(false)} style={{ position: 'absolute', top: '20px', right: '20px', background: 'white', border: 'none', width: '44px', height: '44px', borderRadius: '50%', fontSize: '20px', fontWeight: '900', cursor: 'pointer', zIndex: 1001, boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>✕</button>
+                    <div style={{ position: 'fixed', inset: 0, background: 'rgba(255, 255, 255, 0.98)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(16px)', padding: '20px', touchAction: 'none' }}>
+                        <button onClick={() => setShowMobilePreview(false)} style={{ position: 'absolute', top: '20px', right: '20px', background: '#F1F5F9', color: '#1E293B', border: 'none', width: '44px', height: '44px', borderRadius: '50%', fontSize: '20px', fontWeight: '900', cursor: 'pointer', zIndex: 1001, boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}>✕</button>
                         <div style={{ transform: 'scale(0.85)', transformOrigin: 'center', pointerEvents: 'auto', touchAction: 'auto' }}>
                             <DashboardPhonePreview profile={publicProfile} isDark={isDark} textColor={textColor} subTextColor={subTextColor} cardBg={cardBg} />
                         </div>

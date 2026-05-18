@@ -36,7 +36,7 @@ export default function ProfileForm({
                     alignItems: 'center', 
                     justifyContent: 'space-between', 
                     cursor: 'pointer',
-                    background: openSection === id ? '#F8FAFC' : 'white',
+                    background: openSection === id ? '#F9FAFB' : 'white',
                     transition: '0.2s'
                 }}
             >
@@ -233,7 +233,7 @@ export default function ProfileForm({
                             ))}
                         </div>
 
-                        <div style={{ padding: '16px', background: '#F8FAFC', borderRadius: '16px', border: '1px solid #E2E8F0' }}>
+                        <div style={{ padding: '16px', background: '#F9FAFB', borderRadius: '16px', border: '1px solid #E2E8F0' }}>
                             <label style={{ display: 'block', fontSize: '11px', fontWeight: '800', color: '#64748B', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Réinitialiser via Thème Officiel</label>
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: '8px' }}>
                                 {Object.entries(OFFICIAL_CARD_COLORS).map(([key, theme]) => (
@@ -354,7 +354,7 @@ export default function ProfileForm({
                             const net = SOCIAL_NETWORKS.find(n => n.id === key);
                             if (!net) return null;
                             return (
-                                <div key={key} className="field" style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: 12, background: '#F8FAFC', borderRadius: 16, border: '1px solid #E2E8F0' }}>
+                                <div key={key} className="field" style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: 12, background: '#F9FAFB', borderRadius: 16, border: '1px solid #E2E8F0' }}>
                                     <div style={{ width: 36, height: 36, borderRadius: 10, background: net.color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 4 }}>
                                         <div style={{ width: 20, height: 20, color: net.id === 'snapchat' ? '#000000' : (net.iconColor || net.color) }} dangerouslySetInnerHTML={{ __html: net.svg }} />
                                     </div>
@@ -443,7 +443,7 @@ export default function ProfileForm({
                             {DAYS.map(day => {
                                 const h = profile.business_hours?.[day] || { open: '09:00', close: '18:00', active: true };
                                 return (
-                                    <div key={day} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px', background: h.active ? '#F8FAFC' : 'transparent', borderRadius: 12, opacity: h.active ? 1 : 0.5 }}>
+                                    <div key={day} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px', background: h.active ? '#F9FAFB' : 'transparent', borderRadius: 12, opacity: h.active ? 1 : 0.5 }}>
                                         <input type="checkbox" checked={h.active} onChange={e => updateHours(day, 'active', e.target.checked)} />
                                         <span style={{ flex: 1, fontSize: 13, fontWeight: 700, color: '#1A1265' }}>{day}</span>
                                         {h.active && (
@@ -486,7 +486,7 @@ export default function ProfileForm({
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                         {(profile.products || []).map(p => (
-                            <div key={p.id} style={{ background: '#F8FAFC', borderRadius: 20, padding: 20, border: '1px solid #E2E8F0', position: 'relative' }}>
+                            <div key={p.id} style={{ background: '#F9FAFB', borderRadius: 20, padding: 20, border: '1px solid #E2E8F0', position: 'relative' }}>
                                 <button onClick={() => removeProduct(p.id)} style={{ position: 'absolute', top: 12, right: 12, width: 32, height: 32, borderRadius: '50%', background: '#FEE2E2', color: '#EF4444', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
                                 
                                 <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
@@ -598,7 +598,7 @@ export default function ProfileForm({
             {acc('links', `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>`, 'Liens Personnalisés', 'Boutique, portfolio, autres liens.', (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                     {(profile.customLinks || []).map((link, idx) => (
-                        <div key={idx} style={{ background: '#F8FAFC', borderRadius: 16, padding: 16, border: '1px solid #E2E8F0' }}>
+                        <div key={idx} style={{ background: '#F9FAFB', borderRadius: 16, padding: 16, border: '1px solid #E2E8F0' }}>
                             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12, alignItems: 'center' }}>
                                 <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', flex: 1 }}>
                                     {LINK_ICONS.map(li => (
@@ -648,7 +648,7 @@ export default function ProfileForm({
                     </label>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
                         {(profile.gallery || []).filter(item => item.type !== 'video').map(item => (
-                            <div key={item.id} style={{ width: 90, height: 90, borderRadius: 12, overflow: 'hidden', position: 'relative', border: '1px solid #E2E8F0', background: '#F8FAFC' }}>
+                            <div key={item.id} style={{ width: 90, height: 90, borderRadius: 12, overflow: 'hidden', position: 'relative', border: '1px solid #E2E8F0', background: '#F9FAFB' }}>
                                 <img src={item.url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                 <button onClick={() => removeGalleryItem(item.id)} style={{ position: 'absolute', top: 4, right: 4, width: 22, height: 22, borderRadius: '50%', background: '#FEE2E2', color: '#EF4444', border: 'none', cursor: 'pointer', fontSize: 10, fontWeight: 900 }}>✕</button>
                             </div>
@@ -690,7 +690,7 @@ export default function ProfileForm({
                         ))}
                     </div>
                     <div style={{ display: 'flex', gap: 8 }}>
-                        <input type="text" value={skillInput} onChange={e => setSkillInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addSkill())} placeholder="Ex: Design, Marketing..." style={{ flex: 1, padding: '12px 16px', borderRadius: 12, border: '1px solid #E2E8F0', background: '#F8FAFC' }} />
+                        <input type="text" value={skillInput} onChange={e => setSkillInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addSkill())} placeholder="Ex: Design, Marketing..." style={{ flex: 1, padding: '12px 16px', borderRadius: 12, border: '1px solid #E2E8F0', background: '#F9FAFB' }} />
                         <button onClick={addSkill} style={{ padding: '12px 20px', borderRadius: 12, background: '#4F46E5', color: 'white', border: 'none', fontWeight: 800, cursor: 'pointer' }}>+</button>
                     </div>
                 </div>
@@ -743,7 +743,7 @@ export default function ProfileForm({
                         <input type="checkbox" checked={profile.show_faq || false} onChange={e => setProfile({ ...profile, show_faq: e.target.checked })} />
                     </label>
                     {(profile.faq || []).map(q => (
-                        <div key={q.id} style={{ background: '#F8FAFC', borderRadius: 16, padding: 16, border: '1px solid #E2E8F0', position: 'relative' }}>
+                        <div key={q.id} style={{ background: '#F9FAFB', borderRadius: 16, padding: 16, border: '1px solid #E2E8F0', position: 'relative' }}>
                             <button onClick={() => removeFaq(q.id)} style={{ position: 'absolute', top: 10, right: 10, width: 28, height: 28, borderRadius: '50%', background: '#FEE2E2', color: '#EF4444', border: 'none', cursor: 'pointer', fontSize: 12 }}>✕</button>
                             <div className="field" style={{ marginBottom: 10 }}><label>Question</label><input type="text" value={q.question} onChange={e => updateFaq(q.id, 'question', e.target.value)} placeholder="Comment ça marche ?" style={{ background: 'white' }} /></div>
                             <div className="field" style={{ marginBottom: 0 }}><label>Réponse</label><textarea value={q.answer} onChange={e => updateFaq(q.id, 'answer', e.target.value)} placeholder="Très simplement..." rows={2} style={{ background: 'white', width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #E2E8F0', resize: 'vertical', fontFamily: 'inherit' }} /></div>
@@ -776,7 +776,7 @@ export default function ProfileForm({
                         <input type="checkbox" checked={profile.show_events || false} onChange={e => setProfile({ ...profile, show_events: e.target.checked })} />
                     </label>
                     {(profile.events || []).map(ev => (
-                        <div key={ev.id} style={{ background: '#F8FAFC', borderRadius: 16, padding: 16, border: '1px solid #E2E8F0', position: 'relative' }}>
+                        <div key={ev.id} style={{ background: '#F9FAFB', borderRadius: 16, padding: 16, border: '1px solid #E2E8F0', position: 'relative' }}>
                             <button onClick={() => removeEvent(ev.id)} style={{ position: 'absolute', top: 10, right: 10, width: 28, height: 28, borderRadius: '50%', background: '#FEE2E2', color: '#EF4444', border: 'none', cursor: 'pointer', fontSize: 12 }}>✕</button>
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
                                 <div className="field" style={{ marginBottom: 0 }}><label>Titre</label><input type="text" value={ev.title} onChange={e => updateEvent(ev.id, 'title', e.target.value)} placeholder="Workshop Design" style={{ background: 'white' }} /></div>
@@ -814,7 +814,7 @@ export default function ProfileForm({
                         <input type="checkbox" checked={profile.show_portfolio || false} onChange={e => setProfile({ ...profile, show_portfolio: e.target.checked })} />
                     </label>
                     {(profile.portfolio || []).map(item => (
-                        <div key={item.id} style={{ background: '#F8FAFC', borderRadius: 16, padding: 16, border: '1px solid #E2E8F0', position: 'relative' }}>
+                        <div key={item.id} style={{ background: '#F9FAFB', borderRadius: 16, padding: 16, border: '1px solid #E2E8F0', position: 'relative' }}>
                             <button onClick={() => removePortfolioItem(item.id)} style={{ position: 'absolute', top: 10, right: 10, width: 28, height: 28, borderRadius: '50%', background: '#FEE2E2', color: '#EF4444', border: 'none', cursor: 'pointer', fontSize: 12 }}>✕</button>
                             {item.image_url && <img src={item.image_url} style={{ width: '100%', height: 120, objectFit: 'cover', borderRadius: 10, marginBottom: 10 }} alt="" />}
                             <button onClick={() => triggerPortfolioUpload(item.id)} style={{ width: '100%', padding: '10px', borderRadius: 10, border: '1px dashed #CBD5E1', background: 'white', color: '#64748B', cursor: 'pointer', fontSize: 12, marginBottom: 10 }}>{item.image_url ? 'Changer l\'image' : '+ Ajouter une image'}</button>
@@ -850,7 +850,7 @@ export default function ProfileForm({
                         <input type="checkbox" checked={profile.show_certifications || false} onChange={e => setProfile({ ...profile, show_certifications: e.target.checked })} />
                     </label>
                     {(profile.certifications || []).map(cert => (
-                        <div key={cert.id} style={{ background: '#F8FAFC', borderRadius: 16, padding: 16, border: '1px solid #E2E8F0', position: 'relative' }}>
+                        <div key={cert.id} style={{ background: '#F9FAFB', borderRadius: 16, padding: 16, border: '1px solid #E2E8F0', position: 'relative' }}>
                             <button onClick={() => removeCertification(cert.id)} style={{ position: 'absolute', top: 10, right: 10, width: 28, height: 28, borderRadius: '50%', background: '#FEE2E2', color: '#EF4444', border: 'none', cursor: 'pointer', fontSize: 12 }}>✕</button>
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
                                 <div className="field" style={{ marginBottom: 0 }}><label>Nom</label><input type="text" value={cert.name} onChange={e => updateCertification(cert.id, 'name', e.target.value)} placeholder="Ex: Google Analytics" style={{ background: 'white' }} /></div>
@@ -905,7 +905,7 @@ export default function ProfileForm({
                         return (
                             <>
                                 {sections.map((s, i) => (
-                                    <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', background: '#F8FAFC', borderRadius: 12, border: '1px solid #E2E8F0' }}>
+                                    <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', background: '#F9FAFB', borderRadius: 12, border: '1px solid #E2E8F0' }}>
                                         <div style={{ flex: 1, fontWeight: 700, fontSize: 14, color: '#1A1265' }}>{sectionLabels[s] || s}</div>
                                         <div style={{ display: 'flex', gap: 4 }}>
                                             <button disabled={i === 0} onClick={() => move(i, -1)} style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid #E2E8F0', background: 'white', cursor: i === 0 ? 'default' : 'pointer', opacity: i === 0 ? 0.3 : 1 }}>↑</button>
