@@ -21,6 +21,18 @@ export default function Activate() {
     const [customCardName, setCustomCardName] = useState('')
     const [customUrlSlug, setCustomUrlSlug] = useState('')
     const qrRef = useRef(null)
+    const [isOffline, setIsOffline] = useState(!navigator.onLine);
+
+    useEffect(() => {
+        const goOnline = () => setIsOffline(false);
+        const goOffline = () => setIsOffline(true);
+        window.addEventListener('online', goOnline);
+        window.addEventListener('offline', goOffline);
+        return () => {
+            window.removeEventListener('online', goOnline);
+            window.removeEventListener('offline', goOffline);
+        };
+    }, []);
 
     useEffect(() => {
         if (cardInfo && qrRef.current) {
@@ -39,7 +51,14 @@ export default function Activate() {
 
     useEffect(() => { 
         console.log("Activation Attempt:", { cardId, token });
-        if (cardId && token) verifyCard();
+        if (cardId && token) {
+            if (!navigator.onLine) {
+                setError("Connexion internet requise.");
+                setVerifying(false);
+                return;
+            }
+            verifyCard();
+        }
         else {
             setError("Lien incomplet : ID ou Jeton manquant.");
             setVerifying(false);
@@ -237,7 +256,22 @@ export default function Activate() {
             <div className="activation-card">
                 <h1 style={{ fontSize: '28px', fontWeight: '800', letterSpacing: '-1px', color: themeColor, margin: '0 0 12px 0' }}>ACTIVATION</h1>
                 
-                {verifying ? (
+                {isOffline ? (
+                    <div style={{ marginTop: '16px' }}>
+                        <div style={{ textAlign: 'center', padding: '30px 20px', color: '#B45309', fontSize: '48px' }}>
+                            📶
+                        </div>
+                        <div style={{ padding: '24px', background: '#FFFBEB', borderRadius: '20px', color: '#B45309', border: '1px solid #FEF3C7', textAlign: 'left' }}>
+                            <div style={{ fontSize: '17px', fontWeight: '800', marginBottom: 8 }}>Connexion Internet requise</div>
+                            <div style={{ fontSize: '13px', lineHeight: 1.5, opacity: 0.9 }}>
+                                Une connexion internet active est nécessaire pour activer votre carte et configurer votre profil.
+                            </div>
+                        </div>
+                        <button onClick={() => navigate('/dashboard')} className="btn-primary" style={{ width: '100%', marginTop: 24, padding: '16px', background: themeColor, borderRadius: '16px', border: 'none', color: 'white', fontWeight: '800', cursor: 'pointer' }}>
+                            Accéder à mon espace client
+                        </button>
+                    </div>
+                ) : verifying ? (
                     <div style={{ padding: '40px 0' }}>Vérification en cours...</div>
                 ) : cardInfo ? (
                     <>

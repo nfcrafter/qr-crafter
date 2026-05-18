@@ -40,6 +40,19 @@ export default function ClientDashboard() {
     const editorRef = useRef(null);
     const offlineQrRef = useRef(null);
     
+    const [isOffline, setIsOffline] = useState(!navigator.onLine);
+
+    useEffect(() => {
+        const handleOnline = () => setIsOffline(false);
+        const handleOffline = () => setIsOffline(true);
+        window.addEventListener('online', handleOnline);
+        window.addEventListener('offline', handleOffline);
+        return () => {
+            window.removeEventListener('online', handleOnline);
+            window.removeEventListener('offline', handleOffline);
+        };
+    }, []);
+    
     // Listen for PWA installation prompt
     useEffect(() => {
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
@@ -287,6 +300,11 @@ export default function ClientDashboard() {
     
     async function handleRenameCard(e, cardId) {
         e.stopPropagation();
+        if (isOffline) {
+            toast('Connexion Internet requise pour renommer vos profils.', 'error');
+            setRenamingCardId(null);
+            return;
+        }
         if (!newName.trim()) return setRenamingCardId(null);
         
         const { error } = await supabase
@@ -303,6 +321,10 @@ export default function ClientDashboard() {
     }
 
     async function savePublicProfile() {
+        if (isOffline) {
+            toast('Connexion Internet requise pour enregistrer les modifications.', 'error');
+            return;
+        }
         if (!selectedCardId) return;
         setSaving(true);
         const { error } = await supabase
@@ -638,6 +660,29 @@ export default function ClientDashboard() {
                         
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
                             
+                            {/* Warning Banner: Offline Mode Alert */}
+                            {isOffline && (
+                                <div style={{ 
+                                    background: '#FFFBEB', 
+                                    padding: '14px 20px', 
+                                    borderRadius: '16px', 
+                                    color: '#B45309', 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    gap: '12px',
+                                    boxShadow: '0 4px 12px rgba(245,158,11,0.05)',
+                                    animation: 'fadeIn 0.4s ease-out',
+                                    border: '1px solid #FEF3C7',
+                                    fontSize: '13px',
+                                    lineHeight: '1.5'
+                                }}>
+                                    <span style={{ fontSize: '18px' }}>📶</span>
+                                    <span>
+                                        <strong>Mode hors-ligne actif :</strong> Votre QR Code et vos coordonnées vCard restent 100% opérationnels pour le partage de contacts. Cependant, vous devez vous connecter à Internet pour modifier votre profil ou enregistrer de nouvelles modifications.
+                                    </span>
+                                </div>
+                            )}
+
                             {/* Compact PWA Android Banner */}
                             {showInstallBtn && !localStorage.getItem('nfc_pwa_dismissed') && (
                                 <div style={{ 
@@ -749,6 +794,10 @@ export default function ClientDashboard() {
                                     </div>
                                     <button 
                                         onClick={() => {
+                                            if (isOffline) {
+                                                toast("Connexion Internet requise pour éditer votre profil.", "warning");
+                                                return;
+                                            }
                                             setViewMode('edit');
                                             setTimeout(() => {
                                                 editorRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -901,7 +950,16 @@ export default function ClientDashboard() {
                                         <h2 style={{ fontSize: '26px', fontWeight: '900', color: '#1A1265', margin: '0 0 8px 0' }}>Configuration</h2>
                                         <p style={{ color: '#64748B', fontSize: '14px', margin: 0 }}>Personnalisez l'apparence de votre profil.</p>
                                     </div>
-                                    <button onClick={() => setViewMode(viewMode === 'view' ? 'edit' : 'view')} style={{ padding: '12px 28px', borderRadius: '16px', background: viewMode === 'edit' ? '#F1F5F9' : '#1A1265', color: viewMode === 'edit' ? '#1A1265' : 'white', border: 'none', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', transition: '0.2s' }}>
+                                    <button 
+                                        onClick={() => {
+                                            if (viewMode === 'view' && isOffline) {
+                                                toast("Connexion Internet requise pour éditer votre profil.", "warning");
+                                                return;
+                                            }
+                                            setViewMode(viewMode === 'view' ? 'edit' : 'view');
+                                        }} 
+                                        style={{ padding: '12px 28px', borderRadius: '16px', background: viewMode === 'edit' ? '#F1F5F9' : '#1A1265', color: viewMode === 'edit' ? '#1A1265' : 'white', border: 'none', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', transition: '0.2s' }}
+                                    >
                                         {viewMode === 'edit' ? (
                                             <>Annuler</>
                                         ) : (
@@ -939,7 +997,16 @@ export default function ClientDashboard() {
                                     <div style={{ textAlign: 'center', padding: '60px 0', background: '#F8FAFC', borderRadius: '28px', border: '2px dashed #E2E8F0' }}>
                                         <div style={{ width: '48px', height: '48px', margin: '0 auto 16px auto', color: '#6366F1' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>` }} />
                                         <p style={{ color: '#64748B', fontWeight: '500', marginBottom: '24px' }}>Votre profil est en ligne et prêt à être partagé.</p>
-                                        <button onClick={() => setViewMode('edit')} style={{ background: 'white', color: '#1A1265', border: '1px solid #E2E8F0', padding: '14px 32px', borderRadius: '16px', fontWeight: '800', cursor: 'pointer', boxShadow: '0 4px 6px rgba(0,0,0,0.02)', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                                        <button 
+                                            onClick={() => {
+                                                if (isOffline) {
+                                                    toast("Connexion Internet requise pour éditer vos informations.", "warning");
+                                                    return;
+                                                }
+                                                setViewMode('edit');
+                                            }} 
+                                            style={{ background: 'white', color: '#1A1265', border: '1px solid #E2E8F0', padding: '14px 32px', borderRadius: '16px', fontWeight: '800', cursor: 'pointer', boxShadow: '0 4px 6px rgba(0,0,0,0.02)', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+                                        >
                                             <div style={{ width: 16, height: 16 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>` }} /> Éditer les informations
                                         </button>
                                     </div>
