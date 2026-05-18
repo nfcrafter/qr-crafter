@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nfcrafter-v2';
+const CACHE_NAME = 'nfcrafter-v3';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -34,13 +34,31 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch Event - dynamic caching with Network-First strategy
+// Fetch Event - dynamic caching with Network-First strategy & offline bypass
 self.addEventListener('fetch', (event) => {
   // Only handle GET requests and HTTP/HTTPS schemes
   if (event.request.method !== 'GET' || !event.request.url.startsWith(self.location.origin)) {
     return;
   }
 
+  // 1. Safari Offline Bypass: If navigator says offline, go straight to cache
+  if (event.defaultPrevented || !navigator.onLine) {
+    event.respondWith(
+      caches.match(event.request).then((cachedResponse) => {
+        if (cachedResponse) {
+          return cachedResponse;
+        }
+        
+        // SPA Fallback for route navigation when offline
+        if (event.request.mode === 'navigate') {
+          return caches.match('/') || caches.match('/index.html');
+        }
+      })
+    );
+    return;
+  }
+
+  // 2. Online: Network-first, fall back to cache
   event.respondWith(
     fetch(event.request)
       .then((networkResponse) => {
@@ -54,7 +72,7 @@ self.addEventListener('fetch', (event) => {
         return networkResponse;
       })
       .catch(() => {
-        // If network fails (offline), look in the cache
+        // If network fails unexpectedly, look in the cache
         return caches.match(event.request).then((cachedResponse) => {
           if (cachedResponse) {
             return cachedResponse;
