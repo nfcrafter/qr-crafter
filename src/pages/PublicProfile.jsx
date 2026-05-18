@@ -15,8 +15,24 @@ export default function PublicProfile() {
   const [isBioExpanded, setIsBioExpanded] = useState(false)
   const [selectedImageIndex, setSelectedImageIndex] = useState(null)
   const [testimonialSuccess, setTestimonialSuccess] = useState(false)
+  const [isOwner, setIsOwner] = useState(false)
 
   useEffect(() => { loadProfile() }, [lookupValue])
+
+  useEffect(() => {
+    async function checkOwner() {
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        const user = session?.user
+        if (user && profile && (profile.id === user.id || profile.user_id === user.id)) {
+          setIsOwner(true)
+        }
+      } catch (e) {
+        console.error("Error checking owner:", e)
+      }
+    }
+    checkOwner()
+  }, [profile])
 
   async function loadProfile() {
     setLoading(true)
@@ -226,6 +242,38 @@ export default function PublicProfile() {
         transition: 'all 0.3s ease',
         color: textColor
     }}>
+      {isOwner && (
+        <div 
+          onClick={() => window.location.href = '/dashboard'}
+          style={{
+            position: 'fixed',
+            top: '16px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 9999,
+            background: 'rgba(26, 18, 101, 0.95)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            padding: '10px 20px',
+            borderRadius: '100px',
+            boxShadow: '0 8px 32px rgba(26, 18, 101, 0.3)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            color: 'white',
+            fontSize: '13px',
+            fontWeight: '800',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+            whiteSpace: 'nowrap'
+          }}
+          onMouseOver={e => e.currentTarget.style.transform = 'translateX(-50%) scale(1.05)'}
+          onMouseOut={e => e.currentTarget.style.transform = 'translateX(-50%) scale(1)'}
+        >
+          <div style={{ width: 14, height: 14, display: 'flex', alignItems: 'center', color: 'white' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>` }} />
+          Retour au Dashboard
+        </div>
+      )}
       <style>{`
         @keyframes fadeUp { from { opacity:0;transform:translateY(16px) } to { opacity:1;transform:translateY(0) } }
         .pl { transition: transform .18s, box-shadow .18s; }

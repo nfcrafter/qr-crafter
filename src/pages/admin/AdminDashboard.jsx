@@ -523,7 +523,7 @@ export default function AdminDashboard() {
         if (e) e.stopPropagation();
         setModalConfig({
             isOpen: true, title: 'Action critique',
-            children: (<div><p>Supprimer <strong style={{ color: '#1A1265' }}>"{name}"</strong> ?</p><p style={{ color: '#EF4444', fontWeight: '700', fontSize: '13px', marginTop: '10px' }}>⚠️ Tous les sous-dossiers seront aussi supprimés.</p></div>),
+            children: (<div><p>Supprimer <strong style={{ color: '#1A1265' }}>"{name}"</strong> ?</p><p style={{ color: '#EF4444', fontWeight: '700', fontSize: '13px', marginTop: '10px' }}>Tous les sous-dossiers seront aussi supprimés.</p></div>),
             onConfirm: () => handleDeleteFolder(id), type: 'warning', confirmText: 'Supprimer'
         });
     }
@@ -1307,7 +1307,7 @@ export default function AdminDashboard() {
                                                                             <button
                                                                                 onClick={() => setModalConfig({
                                                                                     isOpen: true,
-                                                                                    title: '⚠️ Déjà imprimé !',
+                                                                                    title: 'Déjà imprimé !',
                                                                                     type: 'danger',
                                                                                     children: <div><p style={{ marginBottom: 8 }}>Ce lot <strong>{batch.name}</strong> a déjà été marqué comme <strong>imprimé</strong>.</p><p style={{ color: '#EF4444', fontWeight: 700 }}>Êtes-vous sûr de vouloir le réimprimer ? Cela risque de créer des doublons.</p></div>,
                                                                                     onConfirm: () => { handleMarkBatchStatus(batch.cards, 'pending'); setModalConfig(p => ({ ...p, isOpen: false })); },

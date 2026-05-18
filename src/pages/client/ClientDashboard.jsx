@@ -1089,17 +1089,17 @@ export default function ClientDashboard() {
                             background: '#F0FDF4', 
                             border: '1px solid #BBF7D0', 
                             color: '#15803D', 
-                            padding: '8px 16px', 
+                            padding: '5px 12px', 
                             borderRadius: '100px', 
-                            fontSize: '13px', 
+                            fontSize: '11px', 
                             fontWeight: '700', 
                             display: 'inline-flex', 
                             alignItems: 'center', 
-                            gap: '8px',
+                            gap: '6px',
                             justifyContent: 'center',
-                            boxShadow: '0 2px 8px rgba(21, 128, 61, 0.05)'
+                            boxShadow: '0 2px 6px rgba(21, 128, 61, 0.04)'
                         }}>
-                            <div style={{ width: 14, height: 14, color: '#15803D', display: 'flex', alignItems: 'center' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>` }} />
+                            <div style={{ width: 12, height: 12, color: '#15803D', display: 'flex', alignItems: 'center' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>` }} />
                             <span>Fonctionne 100% sans connexion internet</span>
                         </div>
                     </div>
