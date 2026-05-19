@@ -128,8 +128,8 @@ export default function LandingPage() {
     const [showLiveDemoModal, setShowLiveDemoModal] = useState(false);
     const [showVideoModal, setShowVideoModal] = useState(false);
     const DEMO_LIVE_PREVIEW_URL = "/u/VDDOHE3O";
-    // YouTube embed — remplacez par votre vrai ID de vidéo
-    const DEMO_VIDEO_ID = "dQw4w9WgXcQ";
+    // Chemin vers votre vidéo MP4 dans le dossier public/
+    const DEMO_VIDEO_SRC = "/demo-video.mp4";
 
     useEffect(() => {
         const handleScroll = () => {
@@ -772,7 +772,7 @@ export default function LandingPage() {
             <section style={{ padding: '80px 0', overflow: 'hidden', background: '#F8FAFC' }}>
                 <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', marginBottom: '36px', textAlign: 'center' }}>
                     <h2 className="responsive-h2" style={{ fontWeight: '800', color: '#0F172A' }}>Vous pouvez personnaliser votre carte</h2>
-                    <p style={{ color: '#475569', marginTop: '8px' }}>Vous avez envie d'avoir une carte ultra personnalisée qui parle à votre place et est à votre image ? Eh bien il suffit de nous contacter et nous ferons de votre envie une réalité.</p>
+                    <p style={{ color: '#475569', marginTop: '8px' }}>Vous rêvez d'avoir une carte intelligente NFC ultra personnalisée qui parle à votre place et est à votre image ? Eh bien il suffit de nous contacter et nous ferons de votre rêve une réalité.</p>
                 </div>
                 
                 <div className="gallery-row">
@@ -843,7 +843,7 @@ export default function LandingPage() {
                             Pas juste une carte ou un site web personnel. <span style={{ color: '#1A1265' }}>Un écosystème complet.</span>
                         </h2>
                         <p style={{ color: '#475569', fontSize: '17px', maxWidth: '600px', margin: '0 auto' }}>
-                            Découvrez les 10 fonctionnalités clés de NFCrafter qui propulsent votre visibilité.
+                            Découvrez les 12 fonctionnalités clés de NFCrafter qui propulsent votre visibilité.
                         </p>
                     </div>
 
@@ -858,7 +858,7 @@ export default function LandingPage() {
                                         <div style={{width:'8px', height:'8px', borderRadius:'50%', background:'#10B981'}}></div> 100% SANS CONNEXION
                                     </span>
                                     <h3 style={{ fontSize: '26px', fontWeight: '900', margin: '0 0 12px 0', color: '#0F172A', letterSpacing: '-0.02em' }}>Le partage qui marche sans connexion internet.</h3>
-                                    <p style={{ color: '#475569', fontSize: '15px', lineHeight: '1.6', margin: 0 }}>Partagez vos coordonnées juste en effleurant un téléphone. Plus de connexion ? Aucun problème. Notre <strong style={{color:'#1A1265'}}>technologie de QR Code de secours</strong> contenue dans l'application installable via votre tableau de bord vous permet de transmettre vos contacts même en mode avion.</p>
+                                    <p style={{ color: '#475569', fontSize: '15px', lineHeight: '1.6', margin: 0 }}>Partagez vos coordonnées juste en effleurant un téléphone. Plus de connexion ? Aucun problème. Notre <strong style={{ color: '#1A1265' }}>technologie de QR Code de secours</strong> vous permet de transmettre vos contacts même en mode avion depuis l'application installable via votre tableau de bord NFCrafter.</p>
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(26, 18, 101, 0.05)', padding: '24px', borderRadius: '24px', boxShadow: 'inset 0 2px 10px rgba(0,0,0,0.02)' }}>
                                     <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#1A1265" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
@@ -1657,13 +1657,14 @@ export default function LandingPage() {
                         </div>
 
                         {/* Responsive video wrapper 16:9 */}
-                        <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, borderRadius: '20px', overflow: 'hidden', boxShadow: '0 30px 80px rgba(0,0,0,0.5)' }}>
-                            <iframe
-                                src={`https://www.youtube.com/embed/${DEMO_VIDEO_ID}?autoplay=1&rel=0&modestbranding=1`}
-                                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                allowFullScreen
-                                title="NFCrafter — Comment ça marche"
+                        <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, borderRadius: '20px', overflow: 'hidden', boxShadow: '0 30px 80px rgba(0,0,0,0.5)', background: '#000' }}>
+                            <video
+                                src={DEMO_VIDEO_SRC}
+                                autoPlay
+                                controls
+                                playsInline
+                                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'contain', background: '#000' }}
+                                onError={e => { e.currentTarget.parentElement.innerHTML = '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:rgba(255,255,255,0.5);gap:12px"><svg width=48 height=48 viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><path d=\"M15 10l4.553-2.07A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.9L15 14M4 8a2 2 0 012-2h9a2 2 0 012 2v8a2 2 0 01-2 2H6a2 2 0 01-2-2V8z\"/></svg><span style=\"font-size:13px\">Vidéo bientôt disponible</span></div>'; }}
                             />
                         </div>
 
