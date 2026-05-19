@@ -1020,7 +1020,7 @@ export default function LandingPage() {
                             Voici un exemple de ce que <span style={{ color: '#1A1265' }}>vos interlocuteurs verront.</span>
                         </h2>
                         <p style={{ color: '#475569', fontSize: '17px', maxWidth: '600px', margin: '0 auto' }}>
-                            Découvrez notre interface mobile d'exception. Testez les couleurs en temps réel.
+                            Testez les couleurs en temps réel.
                         </p>
                     </div>
 
