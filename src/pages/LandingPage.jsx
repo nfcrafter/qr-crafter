@@ -479,6 +479,7 @@ export default function LandingPage() {
                         <div style={{ display: 'flex', gap: '20px', color: '#475569', fontSize: '13px', marginTop: '16px', flexWrap: 'wrap' }}>
                             <span>✓ Paiement Unique</span>
                             <span>✓ Livraison rapide</span>
+                            <span>✓ Page personnalisable avec photo de profil et bannière</span>
                         </div>
                     </div>
 
