@@ -598,7 +598,7 @@ export default function LandingPage() {
                             </div>
                             <div style={{ background: '#1A1265', color: 'white', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px', position: 'absolute', top: '-14px', right: 'calc(50% - 14px)', boxShadow: '0 4px 10px rgba(26,18,101,0.2)' }}>3</div>
                             <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#0F172A', marginBottom: '12px' }}>La Personnalisation</h3>
-                            <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.6', margin: 0 }}>Complétez votre profil en temps réel. Ajoutez vos réseaux sociaux et vos produits.</p>
+                            <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.6', margin: 0 }}>Personnalisez votre page en temps réel : ajoutez une belle photo, une bannière de couverture et vos réseaux.</p>
                         </div>
 
                         {/* Step 4 */}
@@ -786,7 +786,7 @@ export default function LandingPage() {
                                 <h3 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Mini-Site Web Personnel</h3>
                             </div>
                             <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>
-                                Une vraie page professionnelle très élégante qui rassemble vos adresses, Instagram, TikTok et toutes vos infos de vente.
+                                Une vraie page professionnelle personnalisable avec votre photo, votre bannière de couverture, et tous vos réseaux sociaux.
                             </p>
                         </div>
 
