@@ -337,6 +337,12 @@ export default function LandingPage() {
                         grid-template-columns: 1fr !important;
                         gap: 24px !important;
                     }
+                    .demo-controls-wrapper {
+                        order: 1 !important;
+                    }
+                    .demo-mockup-wrapper {
+                        order: 2 !important;
+                    }
                 }
 
                 @keyframes continuousSpin {
@@ -896,20 +902,20 @@ export default function LandingPage() {
                             Voici ce que <span style={{ color: '#1A1265' }}>vos contacts verront.</span>
                         </h2>
                         <p style={{ color: '#475569', fontSize: '17px', maxWidth: '600px', margin: '0 auto' }}>
-                            Découvrez notre interface mobile d'exception. Testez les couleurs et changez de profil en temps réel.
+                            Découvrez notre interface mobile d'exception. Testez les couleurs et basculez les modes de couleur en temps réel.
                         </p>
                     </div>
 
                     <div className="responsive-grid" style={{ gap: '40px', alignItems: 'center' }}>
                         
-                        {/* Left Side - Interactive Phone Mockup with Real Iframe */}
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', justifyContent: 'center' }}>
+                        {/* Phone Mockup Wrapper (Visual Preview) */}
+                        <div className="demo-mockup-wrapper" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', justifyContent: 'center' }}>
                             <div style={{
-                                width: '275px',
-                                height: '550px',
+                                width: '266px', /* 250px + 16px borders */
+                                height: '516px', /* 500px + 16px borders */
                                 background: '#0F172A',
-                                borderRadius: '38px',
-                                border: '10px solid #1F2937',
+                                borderRadius: '36px',
+                                border: '8px solid #1F2937',
                                 boxShadow: '0 25px 60px rgba(26, 18, 101, 0.12)',
                                 position: 'relative',
                                 overflow: 'hidden',
@@ -922,26 +928,35 @@ export default function LandingPage() {
                                     top: '0', 
                                     left: '50%', 
                                     transform: 'translateX(-50%)', 
-                                    width: '90px', 
-                                    height: '18px', 
+                                    width: '80px', 
+                                    height: '16px', 
                                     background: '#1F2937', 
-                                    borderBottomLeftRadius: '12px', 
-                                    borderBottomRightRadius: '12px', 
+                                    borderBottomLeftRadius: '10px', 
+                                    borderBottomRightRadius: '10px', 
                                     zIndex: 10,
                                     pointerEvents: 'none' 
                                 }}></div>
 
-                                {/* Iframe rendering the real PublicProfile template */}
-                                <iframe 
-                                    src={`/u/demo?profile_index=${selectedDemoProfileIndex}&theme_color=${encodeURIComponent(demoThemeColor)}&bg_color=${encodeURIComponent(demoBgColor)}`}
-                                    style={{ width: '100%', height: '100%', border: 'none', background: demoBgColor }}
-                                    title="NFCrafter Live Preview"
-                                />
+                                {/* Scaled Iframe to prevent responsiveness/overflow issues */}
+                                <div style={{ width: '250px', height: '500px', overflow: 'hidden', position: 'relative' }}>
+                                    <iframe 
+                                        src={`/u/demo?profile_index=0&theme_color=${encodeURIComponent(demoThemeColor)}&bg_color=${encodeURIComponent(demoBgColor)}`}
+                                        style={{ 
+                                            width: '360px', 
+                                            height: '720px', 
+                                            border: 'none', 
+                                            transform: 'scale(0.694)', 
+                                            transformOrigin: 'top left',
+                                            background: demoBgColor 
+                                        }}
+                                        title="NFCrafter Live Preview"
+                                    />
+                                </div>
                             </div>
 
                             {/* Open Fullscreen Link */}
                             <a 
-                                href={`/u/demo?profile_index=${selectedDemoProfileIndex}&theme_color=${encodeURIComponent(demoThemeColor)}&bg_color=${encodeURIComponent(demoBgColor)}`}
+                                href={`/u/demo?profile_index=0&theme_color=${encodeURIComponent(demoThemeColor)}&bg_color=${encodeURIComponent(demoBgColor)}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 style={{
@@ -968,45 +983,26 @@ export default function LandingPage() {
                         </div>
 
                         {/* Right Side - Interactive Customization Panel */}
-                        <div className="glass-card" style={{ padding: '32px', display: 'flex', flexDirection: 'column', gap: '28px', background: 'rgba(255, 255, 255, 0.85)' }}>
+                        <div className="demo-controls-wrapper glass-card" style={{ padding: '32px', display: 'flex', flexDirection: 'column', gap: '28px', background: 'rgba(255, 255, 255, 0.85)' }}>
                             
-                            {/* 1. Profile selection */}
+                            {/* Profile Info Label */}
                             <div>
-                                <span style={{ color: '#475569', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: '12px' }}>
-                                    1. Choisir un Profil Professionnel
+                                <span style={{ color: '#475569', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: '8px' }}>
+                                    Profil en démonstration
                                 </span>
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '10px' }}>
-                                    {HERO_PROFILES.map((p, idx) => (
-                                        <button
-                                            key={idx}
-                                            onClick={() => {
-                                                setSelectedDemoProfileIndex(idx);
-                                                setDemoThemeColor(p.color || '#1A1265');
-                                            }}
-                                            style={{
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                                alignItems: 'flex-start',
-                                                padding: '10px 12px',
-                                                borderRadius: '12px',
-                                                background: selectedDemoProfileIndex === idx ? 'rgba(26, 18, 101, 0.05)' : 'white',
-                                                border: selectedDemoProfileIndex === idx ? '2px solid #1A1265' : '1px solid rgba(26, 18, 101, 0.1)',
-                                                cursor: 'pointer',
-                                                textAlign: 'left',
-                                                transition: 'all 0.2s'
-                                            }}
-                                        >
-                                            <span style={{ fontWeight: '800', fontSize: '13px', color: '#0F172A' }}>{p.name}</span>
-                                            <span style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>{p.role}</span>
-                                        </button>
-                                    ))}
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'white', padding: '12px 16px', borderRadius: '12px', border: '1px solid rgba(26, 18, 101, 0.1)' }}>
+                                    <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#111827', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: '900', fontSize: '14px' }}>R</div>
+                                    <div>
+                                        <div style={{ fontWeight: '800', fontSize: '14px', color: '#0F172A' }}>Romuald K.</div>
+                                        <div style={{ fontSize: '12px', color: '#64748B' }}>Architecte d'intérieur</div>
+                                    </div>
                                 </div>
                             </div>
 
-                            {/* 2. Theme color customize */}
+                            {/* 1. Theme color customize */}
                             <div>
                                 <span style={{ color: '#475569', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: '12px' }}>
-                                    2. Personnaliser la Couleur de Thème
+                                    1. Personnaliser la Couleur de Thème
                                 </span>
                                 <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
                                     {CARD_COLORS.map((color) => (
@@ -1042,10 +1038,10 @@ export default function LandingPage() {
                                 </div>
                             </div>
 
-                            {/* 3. Light / Dark mode toggles */}
+                            {/* 2. Light / Dark mode toggles */}
                             <div>
                                 <span style={{ color: '#475569', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: '12px' }}>
-                                    3. Choisir le Mode Visuel
+                                    2. Choisir le Mode Visuel
                                 </span>
                                 <div style={{ display: 'flex', gap: '12px' }}>
                                     <button
