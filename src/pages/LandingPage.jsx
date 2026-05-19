@@ -794,22 +794,22 @@ export default function LandingPage() {
                 
                 <div className="gallery-row">
                     {[1, 2, 3, 4, 5, 6, 7, 8].map(num => (
-                        <div key={num} className="glass-card" style={{ width: '280px', height: '180px', flexShrink: 0, overflow: 'hidden', padding: '8px', background: 'rgba(255,255,255,0.8)' }}>
+                        <div key={num} className="glass-card" style={{ width: '280px', height: '180px', flexShrink: 0, overflow: 'hidden', padding: 0, background: 'rgba(255,255,255,0.8)' }}>
                             <img 
                                 src={`/gallery-${num}.jpg`} 
                                 alt={`NFCrafter Real ${num}`} 
-                                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '16px' }}
+                                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                                 onError={(e) => { e.target.src = '/placeholder-qr-custom.jpg'; }}
                             />
                         </div>
                     ))}
                     {/* Repeat for seamless infinite scrolling */}
                     {[1, 2, 3, 4, 5, 6, 7, 8].map(num => (
-                        <div key={`dup-${num}`} className="glass-card" style={{ width: '280px', height: '180px', flexShrink: 0, overflow: 'hidden', padding: '8px', background: 'rgba(255,255,255,0.8)' }}>
+                        <div key={`dup-${num}`} className="glass-card" style={{ width: '280px', height: '180px', flexShrink: 0, overflow: 'hidden', padding: 0, background: 'rgba(255,255,255,0.8)' }}>
                             <img 
                                 src={`/gallery-${num}.jpg`} 
                                 alt={`NFCrafter Real ${num}`} 
-                                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '16px' }}
+                                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                                 onError={(e) => { e.target.src = '/placeholder-qr-custom.jpg'; }}
                             />
                         </div>
