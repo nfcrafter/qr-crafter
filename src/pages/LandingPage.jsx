@@ -605,7 +605,7 @@ export default function LandingPage() {
                             </div>
                             <div style={{ background: '#6366F1', color: 'white', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px', position: 'absolute', top: '-14px', right: 'calc(50% - 14px)', boxShadow: '0 4px 10px rgba(99,102,241,0.3)' }}>4</div>
                             <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#0F172A', marginBottom: '12px' }}>Le Partage Magique</h3>
-                            <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.6', margin: 0 }}>Approchez la carte d'un téléphone. Votre prospect enregistre votre contact en 1 seconde.</p>
+                            <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.6', margin: 0 }}>Approchez la carte d'un téléphone. Votre interlocuteur enregistre vos coordonnées en 1 seconde.</p>
                         </div>
                     </div>
                 </div>
@@ -616,10 +616,10 @@ export default function LandingPage() {
                 <div style={{ maxWidth: '1200px', width: '100%', margin: '0 auto', padding: '0 24px' }}>
                     <div style={{ textAlign: 'center', marginBottom: '60px' }}>
                         <h2 className="responsive-h2" style={{ fontWeight: '900', color: '#0F172A', letterSpacing: '-0.02em', margin: '0 0 16px 0' }}>
-                            Les cartes papier vous font <span style={{ color: '#DC2626' }}>perdre des clients</span>.
+                            Les cartes papier vous font <span style={{ color: '#DC2626' }}>perdre des contacts</span>.
                         </h2>
                         <p style={{ color: '#475569', fontSize: '17px', maxWidth: '600px', margin: '0 auto' }}>
-                            Chaque rencontre physique manquée est une opportunité d'affaires qui s'envole.
+                            Chaque rencontre physique non sauvegardée est une opportunité (amicale ou professionnelle) qui s'envole.
                         </p>
                     </div>
 
@@ -757,7 +757,7 @@ export default function LandingPage() {
                                 <h3 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Bouton "Sauvegarder" intelligent</h3>
                             </div>
                             <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>
-                                Votre contact va directement dans le répertoire du client, avec votre photo et <strong style={{color:'#1A1265'}}>un lien direct vers votre numéro WhatsApp</strong>.
+                                Vos informations vont directement dans le répertoire de votre contact, avec votre photo et <strong style={{color:'#1A1265'}}>un lien vers votre WhatsApp</strong>.
                             </p>
                         </div>
 
@@ -767,10 +767,10 @@ export default function LandingPage() {
                                 <div style={{width:'40px', height:'40px', background:'rgba(16, 185, 129, 0.1)', borderRadius:'12px', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'16px'}}>
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
                                 </div>
-                                <h3 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Boutique WhatsApp 0% de frais</h3>
+                                <h3 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Catalogue & E-commerce</h3>
                             </div>
                             <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>
-                                Exposez vos produits. Vos clients cliquent dessus et passent commande directement sur votre numéro WhatsApp.
+                                Exposez vos produits. Redirigez vos visiteurs vers votre WhatsApp pour commander, ou vers votre site externe (Systeme.io, Shopify, etc.).
                             </p>
                         </div>
 
@@ -796,7 +796,7 @@ export default function LandingPage() {
                                 <h3 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Récolte d'Avis Clients</h3>
                             </div>
                             <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>
-                                Recevez des avis 5 étoiles de vos clients directement via la carte, et consultez-les dans votre espace pour améliorer vos services.
+                                Recevez des avis 5 étoiles de vos contacts directement via la carte, et consultez-les dans votre espace pour améliorer vos services ou projets.
                             </p>
                         </div>
 
@@ -835,7 +835,7 @@ export default function LandingPage() {
                                 <h3 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Gestion Multi-Cartes</h3>
                             </div>
                             <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>
-                                Pour les patrons et chefs de projets : gérez la carte de votre entreprise et toutes celles de vos employés avec un seul compte administrateur.
+                                Que vous soyez chef d'entreprise ou étudiant avec plusieurs projets, gérez plusieurs cartes ou celles de votre équipe depuis un seul compte.
                             </p>
                         </div>
 
@@ -874,7 +874,7 @@ export default function LandingPage() {
                                 <h3 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Prise de Rendez-vous</h3>
                             </div>
                             <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>
-                                Intégrez un lien direct vers votre agenda pour que vos prospects réservent vos services dès la première rencontre.
+                                Intégrez un lien direct vers votre agenda pour que vos rencontres réservent un moment avec vous dès le premier contact.
                             </p>
                         </div>
                     </div>
