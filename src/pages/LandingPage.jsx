@@ -425,23 +425,10 @@ export default function LandingPage() {
                         </h1>
 
                         <p style={{ fontSize: '17px', color: '#475569', lineHeight: '1.6', margin: 0, maxWidth: '500px' }}>
-                            Partagez instantanément vos coordonnées : numéro, e-mail, réseaux sociaux, portfolio, etc. Redirigez vos visiteurs vers votre boutique en ligne(Maketou,Shopify,etc). Impressionnez vos contacts sans jamais dicter votre numéro ou réimprimer vos cartes.
+                            Partagez instantanément vos coordonnées : numéro, e-mail, réseaux sociaux, portfolio, etc. Redirigez vos visiteurs vers votre boutique en ligne(Maketou,Shopify,etc). Impressionnez vos futurs contacts sans jamais dicter votre numéro ou réimprimer vos cartes.
                         </p>
 
                         <div className="hero-buttons" style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '12px' }}>
-                            <a href="#tarifs" style={{
-                                background: 'linear-gradient(135deg, #1A1265, #6366F1)',
-                                color: 'white',
-                                padding: '18px 36px',
-                                borderRadius: '16px',
-                                fontWeight: '800',
-                                fontSize: '16px',
-                                textDecoration: 'none',
-                                boxShadow: '0 10px 30px rgba(26, 18, 101, 0.15)',
-                                transition: 'transform 0.2s, box-shadow 0.2s'
-                            }} onMouseOver={e => e.currentTarget.style.transform = 'scale(1.02)'} onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}>
-                                Créer mon profil — 7 000 FCFA
-                            </a>
                             <a href="#demo" style={{
                                 background: 'rgba(255, 255, 255, 0.8)',
                                 border: '1px solid rgba(26, 18, 101, 0.15)',
