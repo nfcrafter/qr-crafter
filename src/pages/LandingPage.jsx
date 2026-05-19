@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import PhonePreview from '../components/PhonePreview.jsx';
 
 const CARD_COLORS = [
     { id: 'black', name: 'Noir Onyx', hex: '#111827', imgCombined: '/assets/cards/black-combined.png', imgRecto: '/assets/cards/black-recto.png', imgVerso: '/assets/cards/black-verso.png' },
@@ -111,6 +112,10 @@ export default function LandingPage() {
     
     // States for Hero Audacious flipping color-shifting card
     const [heroColorIndex, setHeroColorIndex] = useState(0);
+
+    // Modal state for Live Demo
+    const [showLiveDemoModal, setShowLiveDemoModal] = useState(false);
+    const DEMO_LIVE_PREVIEW_URL = "https://www.nfcrafter.com/u/VDDOHE3O";
 
     useEffect(() => {
         const handleScroll = () => {
@@ -358,6 +363,16 @@ export default function LandingPage() {
                     100% { transform: rotateY(360deg); }
                 }
 
+                @keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+
+                @keyframes scaleUp {
+                    from { transform: scale(0.9); opacity: 0; }
+                    to { transform: scale(1); opacity: 1; }
+                }
+
                 .spin-card-3d {
                     width: 100%;
                     height: 100%;
@@ -429,26 +444,30 @@ export default function LandingPage() {
                         </p>
 
                         <div className="hero-buttons" style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '12px' }}>
-                            <a href="#demo" style={{
-                                background: 'rgba(255, 255, 255, 0.8)',
-                                border: '1px solid rgba(26, 18, 101, 0.15)',
-                                color: '#1A1265',
-                                padding: '18px 36px',
-                                borderRadius: '16px',
-                                fontWeight: '700',
-                                fontSize: '16px',
-                                textDecoration: 'none',
-                                transition: 'all 0.3s ease',
-                                boxShadow: '0 4px 12px rgba(26, 18, 101, 0.03)'
-                            }} onMouseOver={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.95)'; e.currentTarget.style.borderColor = 'rgba(26, 18, 101, 0.3)'; }} onMouseOut={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.8)'; e.currentTarget.style.borderColor = 'rgba(26, 18, 101, 0.15)'; }}>
+                            <button 
+                                onClick={() => setShowLiveDemoModal(true)}
+                                style={{
+                                    background: 'rgba(255, 255, 255, 0.8)',
+                                    border: '1px solid rgba(26, 18, 101, 0.15)',
+                                    color: '#1A1265',
+                                    padding: '18px 36px',
+                                    borderRadius: '16px',
+                                    fontWeight: '700',
+                                    fontSize: '16px',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s ease',
+                                    boxShadow: '0 4px 12px rgba(26, 18, 101, 0.03)'
+                                }} 
+                                onMouseOver={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.95)'; e.currentTarget.style.borderColor = 'rgba(26, 18, 101, 0.3)'; }} 
+                                onMouseOut={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.8)'; e.currentTarget.style.borderColor = 'rgba(26, 18, 101, 0.15)'; }}
+                            >
                                 Voir une démo live →
-                            </a>
+                            </button>
                         </div>
 
                         <div style={{ display: 'flex', gap: '20px', color: '#475569', fontSize: '13px', marginTop: '16px', flexWrap: 'wrap' }}>
                             <span>✓ Paiement Unique</span>
-                            <span>• Aucun Abonnement</span>
-                            <span>• Expédié sous 48h à Cotonou</span>
+                            <span>✓ Livraison rapide</span>
                         </div>
                     </div>
 
@@ -1391,6 +1410,80 @@ export default function LandingPage() {
                     <path d="M12.012 2C6.485 2 2 6.485 2 12.012c0 1.765.459 3.486 1.33 5.011L2 22l5.127-1.343c1.472.802 3.125 1.226 4.885 1.226 5.527 0 10.012-4.485 10.012-10.012C22.024 6.485 17.539 2 12.012 2zm6.059 14.398c-.25.702-1.246 1.285-1.721 1.344-.475.059-.95.089-2.73-.623-2.278-.91-3.704-3.21-3.818-3.364-.114-.154-.93-1.233-.93-2.353 0-1.12.583-1.67.792-1.898.208-.228.455-.287.607-.287.152 0 .303.003.435.01.135.007.316-.051.495.38.185.443.633 1.543.687 1.654.054.111.089.24.015.388-.074.148-.111.24-.222.37-.111.13-.233.29-.332.39-.1.1-.205.21-.089.41.116.2.515.85.1 1.488.497.443.917.72 1.396.953.479.232.571.2.782-.047.21-.247.917-1.077 1.164-1.448.247-.37.495-.308.825-.185.33.123 2.102 1.025 2.463 1.205.36.18.601.272.688.423.087.151.087.876-.163 1.578z" />
                 </svg>
             </div>
+
+            {/* GORGEOUS LIVE DEMO PREVIEW MODAL */}
+            {showLiveDemoModal && (
+                <div 
+                    onClick={() => setShowLiveDemoModal(false)}
+                    style={{
+                        position: 'fixed',
+                        inset: 0,
+                        background: 'rgba(15, 23, 42, 0.75)',
+                        backdropFilter: 'blur(12px)',
+                        zIndex: 1000,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        animation: 'fadeIn 0.3s ease',
+                        padding: '20px'
+                    }}
+                >
+                    <div 
+                        onClick={e => e.stopPropagation()}
+                        style={{
+                            position: 'relative',
+                            width: '320px',
+                            maxWidth: '100%',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            animation: 'scaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)'
+                        }}
+                    >
+                        {/* Floating Close Button */}
+                        <button 
+                            onClick={() => setShowLiveDemoModal(false)}
+                            style={{
+                                position: 'fixed',
+                                top: '24px',
+                                right: '24px',
+                                background: 'white',
+                                border: 'none',
+                                width: '40px',
+                                height: '40px',
+                                borderRadius: '50%',
+                                color: '#1A1265',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                zIndex: 1020,
+                                fontWeight: '900',
+                                fontSize: '18px',
+                                boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+                                transition: 'transform 0.2s'
+                            }}
+                            onMouseOver={e => e.currentTarget.style.transform = 'scale(1.1)'}
+                            onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
+                        >
+                            ✕
+                        </button>
+
+                        <PhonePreview>
+                            <iframe 
+                                src={DEMO_LIVE_PREVIEW_URL}
+                                style={{ 
+                                    width: '100%', 
+                                    height: '100%', 
+                                    border: 'none', 
+                                    background: 'white'
+                                }}
+                                title="NFCrafter Real Live Demo"
+                            />
+                        </PhonePreview>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
