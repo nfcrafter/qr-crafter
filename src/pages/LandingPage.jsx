@@ -343,6 +343,14 @@ export default function LandingPage() {
                     .demo-mockup-wrapper {
                         order: 2 !important;
                     }
+                    .gallery-cta-btn {
+                        width: 100% !important;
+                        max-width: 340px !important;
+                        font-size: 14px !important;
+                        padding: 12px 20px !important;
+                        justify-content: center !important;
+                        box-sizing: border-box !important;
+                    }
                 }
 
                 @keyframes continuousSpin {
@@ -408,7 +416,7 @@ export default function LandingPage() {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', border: '1px solid rgba(26, 18, 101, 0.15)', background: 'rgba(26, 18, 101, 0.03)', padding: '6px 16px', borderRadius: '100px', width: 'fit-content' }}>
                             <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#1A1265', animation: 'pulseBadge 2s infinite' }}></span>
-                            <span style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '2px', color: '#1A1265' }}>L'identité digitale des pros d'élite</span>
+                            <span style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '2px', color: '#1A1265' }}>L'identité digitale des pros</span>
                         </div>
 
                         <h1 className="hero-title" style={{ fontSize: '64px', fontWeight: '900', letterSpacing: '-0.04em', lineHeight: '1.05', margin: 0, color: '#0F172A' }}>
@@ -417,7 +425,7 @@ export default function LandingPage() {
                         </h1>
 
                         <p style={{ fontSize: '17px', color: '#475569', lineHeight: '1.6', margin: 0, maxWidth: '500px' }}>
-                            Présentez-vous et partagez instantanément vos coordonnées : numéro, e-mail, réseaux sociaux, portfolio, etc. Redirigez vos visiteurs vers votre boutique. Impressionnez vos contacts sans jamais dicter votre numéro.
+                            Partagez instantanément vos coordonnées : numéro, e-mail, réseaux sociaux, portfolio, etc. Redirigez vos visiteurs vers votre boutique en ligne(Maketou,Shopify,etc). Impressionnez vos contacts sans jamais dicter votre numéro ou réimprimer vos cartes.
                         </p>
 
                         <div className="hero-buttons" style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '12px' }}>
@@ -730,9 +738,10 @@ export default function LandingPage() {
                 </div>
 
                 {/* Button Centered Below the Scrolling Gallery */}
-                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '40px' }}>
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '40px', padding: '0 24px', width: '100%', boxSizing: 'border-box' }}>
                     <a 
                         href="#tarifs"
+                        className="gallery-cta-btn"
                         style={{
                             background: 'linear-gradient(135deg, #1A1265, #6366F1)',
                             color: 'white',
@@ -746,7 +755,8 @@ export default function LandingPage() {
                             transition: 'all 0.3s ease',
                             display: 'inline-flex',
                             alignItems: 'center',
-                            gap: '8px'
+                            gap: '8px',
+                            textAlign: 'center'
                         }}
                         onMouseOver={e => {
                             e.currentTarget.style.transform = 'translateY(-2px)';
@@ -757,7 +767,7 @@ export default function LandingPage() {
                             e.currentTarget.style.boxShadow = '0 8px 20px rgba(26, 18, 101, 0.15)';
                         }}
                     >
-                        <span>Commander ma carte personnalisée (17 000 FCFA)</span>
+                        <span>Commander ma carte personnalisée <span style={{ whiteSpace: 'nowrap' }}>(17 000 FCFA)</span></span>
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                     </a>
                 </div>
