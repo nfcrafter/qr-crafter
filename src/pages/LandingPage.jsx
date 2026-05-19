@@ -351,9 +351,8 @@ export default function LandingPage() {
             {/* 1. NAVIGATION BAR */}
             <nav className="glass-nav" style={{ position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 100, height: '80px', display: 'flex', alignItems: 'center' }}>
                 <div className="nav-container" style={{ maxWidth: '1200px', width: '100%', margin: '0 auto', padding: '0 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-                        <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'linear-gradient(135deg, #1A1265, #6366F1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', fontSize: '20px', color: 'white', boxShadow: '0 0 20px rgba(26, 18, 101, 0.2)' }}>N</div>
-                        <span style={{ fontSize: '22px', fontWeight: '900', letterSpacing: '-0.03em', background: 'linear-gradient(90deg, #1A1265, #6366F1)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>NFCrafter</span>
+                    <div style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+                        <img src="/logo.png" alt="NFCrafter Logo" style={{ height: '45px', width: 'auto', objectFit: 'contain' }} />
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }} className="desktop-menu">
@@ -363,24 +362,25 @@ export default function LandingPage() {
                         <a href="#faq" style={{ color: '#475569', textDecoration: 'none', fontSize: '15px', fontWeight: '500', transition: 'color 0.2s' }} onMouseOver={e => e.target.style.color = '#1A1265'} onMouseOut={e => e.target.style.color = '#475569'}>FAQ</a>
                     </div>
 
-                    <div className="nav-actions" style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                    <div className="nav-actions" style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                         {session ? (
-                            <button onClick={() => navigate('/dashboard')} style={{ background: 'transparent', border: '1px solid rgba(26, 18, 101, 0.15)', color: '#1A1265', padding: '10px 20px', borderRadius: '12px', fontWeight: '600', fontSize: '14px', cursor: 'pointer' }}>Tableau de bord</button>
+                            <button onClick={() => navigate('/dashboard')} style={{ background: 'transparent', border: '1px solid rgba(26, 18, 101, 0.15)', color: '#1A1265', padding: '8px 16px', borderRadius: '12px', fontWeight: '600', fontSize: '14px', cursor: 'pointer', whiteSpace: 'nowrap' }}>Tableau de bord</button>
                         ) : (
-                            <button onClick={() => navigate('/login')} style={{ background: 'transparent', border: '1px solid rgba(26, 18, 101, 0.15)', color: '#1A1265', padding: '10px 20px', borderRadius: '12px', fontWeight: '600', fontSize: '14px', cursor: 'pointer' }}>Connexion</button>
+                            <button onClick={() => navigate('/login')} style={{ background: 'transparent', border: '1px solid rgba(26, 18, 101, 0.15)', color: '#1A1265', padding: '8px 16px', borderRadius: '12px', fontWeight: '600', fontSize: '14px', cursor: 'pointer', whiteSpace: 'nowrap' }}>Connexion</button>
                         )}
                         <a href="#tarifs" style={{
                             background: 'linear-gradient(135deg, #1A1265, #6366F1)',
                             color: 'white',
                             border: 'none',
-                            padding: '12px 24px',
+                            padding: '8px 20px',
                             borderRadius: '12px',
                             fontWeight: '700',
                             fontSize: '14px',
                             textDecoration: 'none',
                             boxShadow: '0 4px 15px rgba(26, 18, 101, 0.15)',
                             transition: 'all 0.3s ease',
-                            display: 'inline-block'
+                            display: 'inline-block',
+                            whiteSpace: 'nowrap'
                         }} onMouseOver={e => e.currentTarget.style.boxShadow = '0 6px 20px rgba(26, 18, 101, 0.25)'} onMouseOut={e => e.currentTarget.style.boxShadow = '0 4px 15px rgba(26, 18, 101, 0.15)'}>
                             Commander
                         </a>
