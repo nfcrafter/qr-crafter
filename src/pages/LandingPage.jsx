@@ -1468,7 +1468,7 @@ export default function LandingPage() {
                 pointerEvents: scrollY > 200 ? 'auto' : 'none'
             }}>
                 <a
-                    href="https://wa.me/22961000000"
+                    href="https://wa.me/22969473921"
                     target="_blank"
                     rel="noopener noreferrer"
                     title="Nous contacter sur WhatsApp"
