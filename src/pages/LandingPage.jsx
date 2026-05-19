@@ -522,7 +522,7 @@ export default function LandingPage() {
                                 onMouseOut={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.85)'; e.currentTarget.style.borderColor = 'rgba(26, 18, 101, 0.15)'; e.currentTarget.style.transform = 'translateY(0)'; }}
                             >
                                 {/* Icône play */}
-                                <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'linear-gradient(135deg, #EF4444, #DC2626)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'linear-gradient(135deg, #1A1265, #6366F1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                                     <svg width="10" height="10" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                                 </div>
                                 Comment ça marche ?
@@ -725,6 +725,14 @@ export default function LandingPage() {
                                 <div>
                                     <h4 style={{ margin: '0 0 6px 0', fontSize: '17px', color: '#0F172A' }}>88% finissent à la poubelle</h4>
                                     <p style={{ margin: 0, color: '#475569', fontSize: '14px', lineHeight: '1.5' }}>Les cartes papier se perdent ou finissent froissées dans un sac en moins de 7 jours.</p>
+                                </div>
+                            </div>
+
+                            <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
+                                <div style={{ background: 'rgba(239, 68, 68, 0.08)', color: '#EF4444', padding: '10px', borderRadius: '12px', fontWeight: 'bold' }}>✕</div>
+                                <div>
+                                    <h4 style={{ margin: '0 0 6px 0', fontSize: '17px', color: '#0F172A' }}>Limite d'écriture</h4>
+                                    <p style={{ margin: 0, color: '#475569', fontSize: '14px', lineHeight: '1.5' }}>Le format papier restreint l'information à des données statiques. À l'inverse, les cartes de NFCrafter permettent d'intégrer des liens dynamiques vers des réseaux sociaux, des portfolios en ligne,etc.</p>
                                 </div>
                             </div>
 
@@ -1601,11 +1609,11 @@ export default function LandingPage() {
                         alignItems: 'center',
                         justifyContent: 'center',
                         animation: 'fadeIn 0.3s ease',
-                        padding: '20px',
-                        flexDirection: 'column',
-                        gap: '20px'
+                        padding: '60px 20px 20px',
+                        overflowY: 'auto',
                     }}
                 >
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', width: '100%' }}>
                     {/* Close button */}
                     <button 
                         onClick={() => setShowLiveDemoModal(false)}
@@ -1638,25 +1646,27 @@ export default function LandingPage() {
                     {/* Phone mockup */}
                     <div 
                         onClick={e => e.stopPropagation()}
-                        style={{ animation: 'scaleUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)' }}
+                        style={{ animation: 'scaleUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)', flexShrink: 0 }}
                     >
-                        <PhonePreview>
-                            <iframe 
-                                src={`${DEMO_LIVE_PREVIEW_URL}?theme_color=${encodeURIComponent(demoThemeColor)}&bg_color=${encodeURIComponent(demoBgColor)}`}
-                                style={{ 
-                                    position: 'absolute',
-                                    top: 0,
-                                    left: 0,
-                                    width: '375px', 
-                                    height: '792px', 
-                                    border: 'none', 
-                                    transform: 'scale(0.768)',
-                                    transformOrigin: 'top left',
-                                    background: demoBgColor
-                                }}
-                                title="NFCrafter Real Live Demo"
-                            />
-                        </PhonePreview>
+                        <div style={{ transform: 'scale(min(1, calc((100vh - 200px) / 650)))', transformOrigin: 'top center' }}>
+                            <PhonePreview>
+                                <iframe 
+                                    src={`${DEMO_LIVE_PREVIEW_URL}?theme_color=${encodeURIComponent(demoThemeColor)}&bg_color=${encodeURIComponent(demoBgColor)}`}
+                                    style={{ 
+                                        position: 'absolute',
+                                        top: 0,
+                                        left: 0,
+                                        width: '375px', 
+                                        height: '792px', 
+                                        border: 'none', 
+                                        transform: 'scale(0.768)',
+                                        transformOrigin: 'top left',
+                                        background: demoBgColor
+                                    }}
+                                    title="NFCrafter Real Live Demo"
+                                />
+                            </PhonePreview>
+                        </div>
                     </div>
 
                     {/* Inline Color Picker — below the phone */}
@@ -1709,6 +1719,7 @@ export default function LandingPage() {
                         <span style={{ color: 'rgba(255,255,255,0.45)', fontSize: '10px' }}>
                             Le profil se recharge avec la couleur sélectionnée
                         </span>
+                    </div>
                     </div>
                 </div>
             )}
