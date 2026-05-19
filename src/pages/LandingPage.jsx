@@ -701,8 +701,8 @@ export default function LandingPage() {
             {/* REAL-LIFE PRODUCT GALLERY SECTION (Using gallery-1 to gallery-8) */}
             <section style={{ padding: '80px 0', overflow: 'hidden', background: '#F8FAFC' }}>
                 <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', marginBottom: '36px', textAlign: 'center' }}>
-                    <h2 className="responsive-h2" style={{ fontWeight: '800', color: '#0F172A' }}>Nos cartes en action</h2>
-                    <p style={{ color: '#475569', marginTop: '8px' }}>Découvrez la qualité réelle et les finitions exceptionnelles de nos cartes Signature.</p>
+                    <h2 className="responsive-h2" style={{ fontWeight: '800', color: '#0F172A' }}>Vous pouvez personnaliser votre carte</h2>
+                    <p style={{ color: '#475569', marginTop: '8px' }}>Commandez votre carte ultra personnalisé selon vos envies à 15000 FCFA</p>
                 </div>
                 
                 <div className="gallery-row">
@@ -983,26 +983,12 @@ export default function LandingPage() {
                         </div>
 
                         {/* Right Side - Interactive Customization Panel */}
-                        <div className="demo-controls-wrapper glass-card" style={{ padding: '32px', display: 'flex', flexDirection: 'column', gap: '28px', background: 'rgba(255, 255, 255, 0.85)' }}>
+                        <div className="demo-controls-wrapper glass-card" style={{ padding: '32px', display: 'flex', flexDirection: 'column', gap: '20px', background: 'rgba(255, 255, 255, 0.85)', justifyContent: 'center' }}>
                             
-                            {/* Profile Info Label */}
-                            <div>
-                                <span style={{ color: '#475569', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: '8px' }}>
-                                    Profil en démonstration
-                                </span>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'white', padding: '12px 16px', borderRadius: '12px', border: '1px solid rgba(26, 18, 101, 0.1)' }}>
-                                    <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#111827', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: '900', fontSize: '14px' }}>R</div>
-                                    <div>
-                                        <div style={{ fontWeight: '800', fontSize: '14px', color: '#0F172A' }}>Romuald K.</div>
-                                        <div style={{ fontSize: '12px', color: '#64748B' }}>Architecte d'intérieur</div>
-                                    </div>
-                                </div>
-                            </div>
-
                             {/* 1. Theme color customize */}
                             <div>
                                 <span style={{ color: '#475569', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: '12px' }}>
-                                    1. Personnaliser la Couleur de Thème
+                                    Personnaliser la Couleur de Thème
                                 </span>
                                 <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
                                     {CARD_COLORS.map((color) => (
@@ -1035,51 +1021,6 @@ export default function LandingPage() {
                                             style={{ width: '28px', height: '28px', padding: 0, border: 'none', borderRadius: '50%', cursor: 'pointer', background: 'transparent' }} 
                                         />
                                     </div>
-                                </div>
-                            </div>
-
-                            {/* 2. Light / Dark mode toggles */}
-                            <div>
-                                <span style={{ color: '#475569', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: '12px' }}>
-                                    2. Choisir le Mode Visuel
-                                </span>
-                                <div style={{ display: 'flex', gap: '12px' }}>
-                                    <button
-                                        onClick={() => setDemoBgColor('#f8fafc')}
-                                        style={{
-                                            flex: 1,
-                                            padding: '12px',
-                                            borderRadius: '12px',
-                                            background: demoBgColor === '#f8fafc' ? 'linear-gradient(135deg, #1A1265, #6366F1)' : 'white',
-                                            color: demoBgColor === '#f8fafc' ? 'white' : '#1A1265',
-                                            border: demoBgColor === '#f8fafc' ? 'none' : '1px solid rgba(26, 18, 101, 0.15)',
-                                            fontWeight: '800',
-                                            fontSize: '13px',
-                                            cursor: 'pointer',
-                                            transition: 'all 0.2s',
-                                            boxShadow: demoBgColor === '#f8fafc' ? '0 4px 15px rgba(26, 18, 101, 0.15)' : 'none'
-                                        }}
-                                    >
-                                        ☀️ Mode Clair
-                                    </button>
-                                    <button
-                                        onClick={() => setDemoBgColor('#0F172A')}
-                                        style={{
-                                            flex: 1,
-                                            padding: '12px',
-                                            borderRadius: '12px',
-                                            background: demoBgColor === '#0F172A' ? 'linear-gradient(135deg, #1A1265, #6366F1)' : 'white',
-                                            color: demoBgColor === '#0F172A' ? 'white' : '#1A1265',
-                                            border: demoBgColor === '#0F172A' ? 'none' : '1px solid rgba(26, 18, 101, 0.15)',
-                                            fontWeight: '800',
-                                            fontSize: '13px',
-                                            cursor: 'pointer',
-                                            transition: 'all 0.2s',
-                                            boxShadow: demoBgColor === '#0F172A' ? '0 4px 15px rgba(26, 18, 101, 0.15)' : 'none'
-                                        }}
-                                    >
-                                        🌙 Mode Sombre
-                                    </button>
                                 </div>
                             </div>
                         </div>
