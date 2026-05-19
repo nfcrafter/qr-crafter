@@ -475,30 +475,6 @@ export default function LandingPage() {
                         </p>
 
                         <div className="hero-buttons" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '12px' }}>
-                            {/* Bouton Profil Démo */}
-                            <button 
-                                onClick={() => setShowLiveDemoModal(true)}
-                                style={{
-                                    background: 'linear-gradient(135deg, #1A1265, #6366F1)',
-                                    border: 'none',
-                                    color: 'white',
-                                    padding: '16px 28px',
-                                    borderRadius: '16px',
-                                    fontWeight: '700',
-                                    fontSize: '15px',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.3s ease',
-                                    boxShadow: '0 8px 20px rgba(26, 18, 101, 0.3)',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '8px'
-                                }} 
-                                onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 28px rgba(26, 18, 101, 0.4)'; }} 
-                                onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(26, 18, 101, 0.3)'; }}
-                            >
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
-                                Voir un profil démo
-                            </button>
 
                             {/* Bouton Vidéo */}
                             <button 
@@ -667,7 +643,7 @@ export default function LandingPage() {
                             </div>
                             <div style={{ background: '#1A1265', color: 'white', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px', position: 'absolute', top: '-14px', right: 'calc(50% - 14px)', boxShadow: '0 4px 10px rgba(26,18,101,0.2)' }}>1</div>
                             <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#0F172A', marginBottom: '12px' }}>La Commande</h3>
-                            <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.6', margin: 0 }}>Choisissez votre pack (Site personnalisée: 7000FCFA, Carte NFCrafter avec votre site : 10000FCFA, Carte ultra personnalisée avec votre nom/photo/logo + site personnalisée : 17000FCFA).</p>
+                            <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.6', margin: 0 }}>Choisissez votre pack (Site personnalisée: 7000FCFA, Carte NFCrafter avec votre site : 10000FCFA, Carte ultra personnalisée avec votre nom/photo/logo + site personnalisée : 15000FCFA).</p>
                         </div>
 
                         {/* Step 2 */}
@@ -1174,9 +1150,34 @@ export default function LandingPage() {
                         <h2 className="responsive-h2" style={{ fontWeight: '900', fontFamily: 'Outfit', color: '#0F172A', letterSpacing: '-0.02em', margin: '0 0 16px 0' }}>
                             Un seul profil, <span style={{ color: '#1A1265' }}>des milliers de façons de le partager.</span>
                         </h2>
-                        <p style={{ color: '#475569', fontSize: '17px', maxWidth: '750px', margin: '0 auto' }}>
+                        <p style={{ color: '#475569', fontSize: '17px', maxWidth: '750px', margin: '0 auto 28px' }}>
                             Votre carte NFC est magique, mais votre profil digital est conçu pour être partagé partout où se trouvent vos clients potentiels.
                         </p>
+                        {/* CTA Sans Carte */}
+                        <a
+                            href={`https://wa.me/22969473921?text=${encodeURIComponent('Bonjour NFCrafter, je souhaite créer mon Profil Digital Unique sans carte à 7.000f.')}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '10px',
+                                background: 'linear-gradient(135deg, #1A1265, #6366F1)',
+                                color: 'white',
+                                padding: '14px 28px',
+                                borderRadius: '14px',
+                                fontWeight: '800',
+                                fontSize: '15px',
+                                textDecoration: 'none',
+                                boxShadow: '0 8px 24px rgba(26,18,101,0.25)',
+                                transition: 'all 0.3s ease'
+                            }}
+                            onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(26,18,101,0.35)'; }}
+                            onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(26,18,101,0.25)'; }}
+                        >
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                            Créer mon profil sans carte — 7 000 FCFA
+                        </a>
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '30px' }}>
