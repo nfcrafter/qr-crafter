@@ -189,7 +189,9 @@ export default function LandingPage() {
     const getWhatsAppUrl = (type = cardType) => {
         let message = '';
         if (type === 'physical') {
-            message = `Bonjour NFCrafter, je souhaite commander la Carte Premium NFC en couleur *${activeColor.name}* à 10.000f.`;
+            message = `Bonjour NFCrafter, je souhaite commander la Carte NFC Signature en couleur *${activeColor.name}* à 10.000f.`;
+        } else if (type === 'premium') {
+            message = `Bonjour NFCrafter, je souhaite commander la Carte Ultra Personnalisée (Pack Premium) à 15.000f. Je souhaite y faire graver mon nom/photo/logo.`;
         } else if (type === 'pro') {
             message = `Bonjour NFCrafter, je souhaite commander le Pack Pro (3 Cartes) à 25.000f.`;
         } else if (type === 'corporate') {
@@ -1186,7 +1188,7 @@ export default function LandingPage() {
                             </div>
                             <h3 style={{ fontSize: '20px', fontWeight: '800', color: '#0F172A', margin: 0 }}>Affiches, Flyers & Vitrines</h3>
                             <p style={{ color: '#475569', fontSize: '14.5px', lineHeight: '1.6', margin: 0 }}>
-                                Téléchargez votre <strong style={{ color: '#1A1265' }}>QR code en ligne haute résolution</strong> depuis votre tableau de bord et imprimez-le sur vos flyers, cartes de visite papier, menus de table ou vitrines de magasin.
+                                Téléchargez votre <strong style={{ color: '#1A1265' }}>QR code en ligne haute résolution</strong> depuis votre tableau de bord et imprimez-le sur vos flyers, menus de table ou vitrines de magasin.
                             </p>
                         </div>
                         
@@ -1215,7 +1217,7 @@ export default function LandingPage() {
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
                             Créer mon profil sans carte — 7 000 FCFA
                         </a>
-                        
+
                     </div>
                 </div>
             </section>
@@ -1235,10 +1237,10 @@ export default function LandingPage() {
                         </p>
                     </div>
 
-                    <div className="config-wrapper" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '48px', alignItems: 'center' }}>
+                    <div className="config-wrapper" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '48px', alignItems: 'start' }}>
                         
-                        {/* Configurator Visualizer Left - Static display of the dynamic color combined image */}
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                        {/* Visualizer Left — adapts to selected pack */}
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '20px' }}>
                             <div style={{
                                 width: '100%',
                                 maxWidth: '380px',
@@ -1246,63 +1248,129 @@ export default function LandingPage() {
                                 boxShadow: '0 30px 60px rgba(26, 18, 101, 0.1)',
                                 overflow: 'hidden',
                                 background: '#FFFFFF',
-                                border: '1px solid rgba(26, 18, 101, 0.05)'
+                                border: '1px solid rgba(26, 18, 101, 0.05)',
+                                transition: 'all 0.4s ease'
                             }}>
-                                <img 
-                                    src={activeColor.imgCombined} 
-                                    alt={`NFCrafter Carte ${activeColor.name} Recto Verso Réel`} 
-                                    style={{ width: '100%', height: 'auto', display: 'block', transition: 'opacity 0.3s ease' }}
-                                    onError={(e) => {
-                                        /* Falls back to generic card-recto image if color-combined photo not loaded yet */
-                                        e.target.src = '/card-recto.png';
-                                    }}
-                                />
+                                {cardType === 'digital' ? (
+                                    /* Digital pack: show a phone mockup illustration */
+                                    <div style={{ background: 'linear-gradient(135deg, #1A1265 0%, #6366F1 100%)', padding: '48px 32px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+                                        <div style={{ width: '80px', height: '80px', borderRadius: '24px', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                                        </div>
+                                        <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '15px', fontWeight: '700', textAlign: 'center', margin: 0 }}>Votre profil digital</p>
+                                        <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: '13px', textAlign: 'center', margin: 0, lineHeight: '1.5' }}>nfcrafter.com/u/votre-nom<br/>Partageable partout, tout de suite</p>
+                                    </div>
+                                ) : (
+                                    <img 
+                                        src={activeColor.imgCombined} 
+                                        alt={`NFCrafter Carte ${activeColor.name} Recto Verso Réel`} 
+                                        style={{ width: '100%', height: 'auto', display: 'block', transition: 'opacity 0.3s ease' }}
+                                        onError={(e) => { e.target.src = '/card-recto.png'; }}
+                                    />
+                                )}
+                            </div>
+                            {/* Pack badge */}
+                            <div style={{
+                                display: 'inline-flex', alignItems: 'center', gap: '8px',
+                                background: cardType === 'digital' ? 'rgba(99,102,241,0.08)' : cardType === 'physical' ? 'rgba(26,18,101,0.06)' : 'rgba(217,119,6,0.08)',
+                                border: `1px solid ${cardType === 'digital' ? 'rgba(99,102,241,0.2)' : cardType === 'physical' ? 'rgba(26,18,101,0.15)' : 'rgba(217,119,6,0.25)'}`,
+                                borderRadius: '100px', padding: '8px 16px'
+                            }}>
+                                <span style={{ fontSize: '13px', fontWeight: '800', color: cardType === 'digital' ? '#6366F1' : cardType === 'physical' ? '#1A1265' : '#D97706' }}>
+                                    {cardType === 'digital' ? '📱 Pack Digital' : cardType === 'physical' ? '💳 Pack Signature' : '✨ Pack Premium'}
+                                </span>
+                                <span style={{ fontSize: '13px', fontWeight: '900', color: cardType === 'premium' ? '#D97706' : '#1A1265' }}>
+                                    {cardType === 'digital' ? '7 000 FCFA' : cardType === 'physical' ? '10 000 FCFA' : '15 000 FCFA'}
+                                </span>
                             </div>
                         </div>
 
                         {/* Configurator Controls Right */}
                         <div className="glass-card" style={{ padding: '32px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                            {/* Step 1: Pack Selection */}
+                            {/* Step 1: Pack Selection — 3 cards */}
                             <div>
                                 <span style={{ color: '#475569', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: '12px' }}>Étape 1 : Choisir le Pack</span>
-                                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                    
+                                    {/* Pack Digital */}
                                     <div onClick={() => setCardType('digital')} style={{
-                                        flex: 1,
-                                        minWidth: '130px',
-                                        border: cardType === 'digital' ? '2px solid #1A1265' : '1px solid rgba(26, 18, 101, 0.1)',
-                                        background: cardType === 'digital' ? 'rgba(26, 18, 101, 0.03)' : 'transparent',
-                                        padding: '16px',
+                                        border: cardType === 'digital' ? '2px solid #6366F1' : '1px solid rgba(26, 18, 101, 0.1)',
+                                        background: cardType === 'digital' ? 'rgba(99, 102, 241, 0.04)' : 'transparent',
+                                        padding: '14px 16px',
                                         borderRadius: '12px',
                                         cursor: 'pointer',
                                         display: 'flex',
-                                        flexDirection: 'column',
-                                        gap: '4px'
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        transition: 'all 0.2s',
+                                        gap: '12px'
                                     }}>
-                                        <span style={{ fontWeight: '800', fontSize: '14px', color: '#0F172A' }}>Pack Digital</span>
-                                        <span style={{ color: '#1A1265', fontWeight: '900', fontSize: '16px' }}>7 000 FCFA</span>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                            <span style={{ fontWeight: '800', fontSize: '14px', color: '#0F172A' }}>📱 Pack Digital</span>
+                                            <span style={{ fontSize: '12px', color: '#64748B' }}>Profil digital uniquement · Sans carte</span>
+                                        </div>
+                                        <span style={{ color: '#6366F1', fontWeight: '900', fontSize: '15px', whiteSpace: 'nowrap' }}>7 000 FCFA</span>
                                     </div>
+
+                                    {/* Pack Signature */}
                                     <div onClick={() => setCardType('physical')} style={{
-                                        flex: 1,
-                                        minWidth: '130px',
                                         border: cardType === 'physical' ? '2px solid #1A1265' : '1px solid rgba(26, 18, 101, 0.1)',
                                         background: cardType === 'physical' ? 'rgba(26, 18, 101, 0.03)' : 'transparent',
-                                        padding: '16px',
+                                        padding: '14px 16px',
                                         borderRadius: '12px',
                                         cursor: 'pointer',
                                         display: 'flex',
-                                        flexDirection: 'column',
-                                        gap: '4px',
-                                        position: 'relative'
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        transition: 'all 0.2s',
+                                        position: 'relative',
+                                        gap: '12px'
                                     }}>
-                                        <div style={{ position: 'absolute', top: '-10px', right: '10px', background: '#1A1265', color: 'white', fontSize: '8px', fontWeight: '800', padding: '2px 6px', borderRadius: '100px', textTransform: 'uppercase' }}>Populaire</div>
-                                        <span style={{ fontWeight: '800', fontSize: '14px', color: '#0F172A' }}>Pack Signature</span>
-                                        <span style={{ color: '#1A1265', fontWeight: '900', fontSize: '16px' }}>10 000 FCFA</span>
+                                        <div style={{ position: 'absolute', top: '-10px', right: '12px', background: '#1A1265', color: 'white', fontSize: '9px', fontWeight: '800', padding: '2px 8px', borderRadius: '100px', textTransform: 'uppercase' }}>⭐ Populaire</div>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                            <span style={{ fontWeight: '800', fontSize: '14px', color: '#0F172A' }}>💳 Pack Signature</span>
+                                            <span style={{ fontSize: '12px', color: '#64748B' }}>Carte NFC couleur + Profil digital</span>
+                                        </div>
+                                        <span style={{ color: '#1A1265', fontWeight: '900', fontSize: '15px', whiteSpace: 'nowrap' }}>10 000 FCFA</span>
+                                    </div>
+
+                                    {/* Pack Premium */}
+                                    <div onClick={() => setCardType('premium')} style={{
+                                        border: cardType === 'premium' ? '2px solid #D97706' : '1px solid rgba(26, 18, 101, 0.1)',
+                                        background: cardType === 'premium' ? 'rgba(217, 119, 6, 0.04)' : 'transparent',
+                                        padding: '14px 16px',
+                                        borderRadius: '12px',
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        transition: 'all 0.2s',
+                                        gap: '12px'
+                                    }}>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                            <span style={{ fontWeight: '800', fontSize: '14px', color: '#0F172A' }}>✨ Pack Premium</span>
+                                            <span style={{ fontSize: '12px', color: '#64748B' }}>Carte ultra personnalisée (logo/photo) + Profil</span>
+                                        </div>
+                                        <span style={{ color: '#D97706', fontWeight: '900', fontSize: '15px', whiteSpace: 'nowrap' }}>15 000 FCFA</span>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Step 2: Color Picker (Only visible if physical pack is selected) */}
-                            {cardType === 'physical' && (
+                            {/* Description du pack sélectionné */}
+                            <div style={{ background: 'rgba(26,18,101,0.02)', borderRadius: '12px', padding: '14px 16px', fontSize: '13px', color: '#475569', lineHeight: '1.6' }}>
+                                {cardType === 'digital' && (
+                                    <span>🌐 <strong style={{ color: '#1A1265' }}>Profil digital complet</strong> accessible via lien personnalisé. Partagez-le sur WhatsApp, Instagram, TikTok, par QR code imprimable… Sans jamais dicter votre numéro.</span>
+                                )}
+                                {cardType === 'physical' && (
+                                    <span>💳 <strong style={{ color: '#1A1265' }}>Carte NFC</strong> dans la couleur de votre choix + profil digital. Un simple effleurement et votre contact est transmis instantanément.</span>
+                                )}
+                                {cardType === 'premium' && (
+                                    <span>✨ <strong style={{ color: '#D97706' }}>Carte ultra personnalisée</strong> avec votre nom, photo et logo gravés + profil digital complet. L'identité professionnelle ultime.</span>
+                                )}
+                            </div>
+
+                            {/* Step 2: Color Picker (uniquement pour les packs avec carte) */}
+                            {(cardType === 'physical' || cardType === 'premium') && (
                                 <div>
                                     <span style={{ color: '#475569', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: '12px' }}>Étape 2 : Couleur de la carte — <span style={{ color: '#1A1265' }}>{activeColor.name}</span></span>
                                     <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
@@ -1328,26 +1396,36 @@ export default function LandingPage() {
                                 </div>
                             )}
 
-                            {/* Buy button dynamics */}
+                            {/* CTA Button — adapté au pack */}
                             <button onClick={() => window.open(getWhatsAppUrl(), '_blank')} style={{
                                 width: '100%',
-                                background: buttonColor,
-                                color: buttonTextColor,
+                                background: cardType === 'premium'
+                                    ? 'linear-gradient(135deg, #D97706, #F59E0B)'
+                                    : cardType === 'digital'
+                                    ? 'linear-gradient(135deg, #1A1265, #6366F1)'
+                                    : buttonColor,
+                                color: cardType === 'physical' ? buttonTextColor : 'white',
                                 border: 'none',
                                 padding: '16px',
                                 borderRadius: '14px',
                                 fontWeight: '900',
                                 fontSize: '15px',
                                 cursor: 'pointer',
-                                boxShadow: `0 10px 30px ${buttonColor}30`,
+                                boxShadow: cardType === 'premium' ? '0 10px 30px rgba(217,119,6,0.3)' : `0 10px 30px ${cardType === 'digital' ? 'rgba(99,102,241,0.25)' : buttonColor + '30'}`,
                                 transition: 'all 0.3s ease'
-                            }} onMouseOver={e => e.currentTarget.style.boxShadow = `0 15px 40px ${buttonColor}50`} onMouseOut={e => e.currentTarget.style.boxShadow = `0 10px 30px ${buttonColor}30`}>
-                                Commander cette carte → ({cardType === 'physical' ? '10 000 FCFA' : '7 000 FCFA'})
+                            }}
+                            onMouseOver={e => e.currentTarget.style.transform = 'translateY(-1px)'}
+                            onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}
+                            >
+                                {cardType === 'digital' && '📱 Créer mon profil digital — 7 000 FCFA'}
+                                {cardType === 'physical' && `💳 Commander ma carte ${activeColor.name} — 10 000 FCFA`}
+                                {cardType === 'premium' && '✨ Commander ma carte Premium — 15 000 FCFA'}
                             </button>
                         </div>
                     </div>
                 </div>
             </section>
+
 
             {/* 7. PREUVE SOCIALE — BULLS DE MESSAGE */}
             <section className="responsive-section" style={{ background: 'rgba(255,255,255,0.5)', position: 'relative', borderTop: '1px solid rgba(26, 18, 101, 0.03)', borderBottom: '1px solid rgba(26, 18, 101, 0.03)' }}>
