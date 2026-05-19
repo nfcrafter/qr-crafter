@@ -1000,16 +1000,16 @@ export default function LandingPage() {
                             </p>
                         </div>
 
-                        {/* 11. Partage & Diffusion Omnicanale */}
+                        {/* 11. Certifications/Compétences */}
                         <div className="bento-card" style={{ minHeight: '300px' }}>
                             <div>
                                 <div style={{width:'40px', height:'40px', background:'rgba(14, 165, 233, 0.1)', borderRadius:'12px', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'16px'}}>
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
                                 </div>
-                                <h3 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Diffusion Omnicanale</h3>
+                                <h3 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Certifications/Compétences</h3>
                             </div>
                             <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>
-                                Intégrez votre lien unique dans vos bios (Instagram, TikTok, Facebook) ou WhatsApp Business, et imprimez votre QR Code haute résolution sur vos flyers, affiches, menus ou vitrines.
+                                Vous avez des compétences ou vous disposez de certifications ? Mentionnez-les directement sur votre profil.
                             </p>
                         </div>
 
@@ -1124,7 +1124,7 @@ export default function LandingPage() {
                             <div>
                                 <span style={{ color: '#475569', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: '12px' }}>
                                     Personnaliser la Couleur de Thème
-                                </span>
+                                </span >
                                 <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
                                     {CARD_COLORS.map((color) => {
                                         const config = COLOR_MAP[color.id] || { theme: color.hex, bg: '#f8fafc' };
@@ -1153,6 +1153,57 @@ export default function LandingPage() {
                                     })}
                                 </div>
                             </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            {/* 5.5 SECTION LIENS BIO & CODES QR IMPRIMABLES (Diffuser au-delà de la carte) */}
+            <section style={{ padding: '80px 0', background: 'linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%)', position: 'relative', borderBottom: '1px solid rgba(26, 18, 101, 0.03)' }}>
+                <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px' }}>
+                    <div style={{ textAlign: 'center', marginBottom: '50px' }}>
+                        <h2 className="responsive-h2" style={{ fontWeight: '900', fontFamily: 'Outfit', color: '#0F172A', letterSpacing: '-0.02em', margin: '0 0 16px 0' }}>
+                            Un seul profil, <span style={{ color: '#1A1265' }}>des milliers de façons de le partager.</span>
+                        </h2>
+                        <p style={{ color: '#475569', fontSize: '17px', maxWidth: '750px', margin: '0 auto' }}>
+                            Votre carte NFC est magique, mais votre profil digital est conçu pour être partagé partout où se trouvent vos clients potentiels.
+                        </p>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '30px' }}>
+                        
+                        {/* Channel 1: Social Bios */}
+                        <div className="glass-card" style={{ padding: '36px 30px', background: 'rgba(255,255,255,0.85)', borderRadius: '24px', border: '1px solid rgba(26, 18, 101, 0.04)', display: 'flex', flexDirection: 'column', gap: '18px', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
+                            <div style={{ width: '50px', height: '50px', borderRadius: '16px', background: 'rgba(99, 102, 241, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6366F1' }}>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                            </div>
+                            <h3 style={{ fontSize: '20px', fontWeight: '800', color: '#0F172A', margin: 0 }}>Lien en Bio Réseaux Sociaux</h3>
+                            <p style={{ color: '#475569', fontSize: '14.5px', lineHeight: '1.6', margin: 0 }}>
+                                Insérez votre lien personnalisé <strong style={{ color: '#1A1265' }}>nfcrafter.com/u/votre-nom</strong> dans votre bio <strong style={{ color: '#1A1265' }}>Instagram, TikTok, Facebook ou YouTube</strong>. Dirigez tout votre trafic vers votre hub professionnel unique.
+                            </p>
+                        </div>
+
+                        {/* Channel 2: WhatsApp Business */}
+                        <div className="glass-card" style={{ padding: '36px 30px', background: 'rgba(255,255,255,0.85)', borderRadius: '24px', border: '1px solid rgba(26, 18, 101, 0.04)', display: 'flex', flexDirection: 'column', gap: '18px', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
+                            <div style={{ width: '50px', height: '50px', borderRadius: '16px', background: 'rgba(37, 211, 102, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#25D366' }}>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                            </div>
+                            <h3 style={{ fontSize: '20px', fontWeight: '800', color: '#0F172A', margin: 0 }}>WhatsApp Business</h3>
+                            <p style={{ color: '#475569', fontSize: '14.5px', lineHeight: '1.6', margin: 0 }}>
+                                Intégrez votre lien NFCrafter comme site web de votre profil <strong style={{ color: '#1A1265' }}>WhatsApp Business</strong>. Vos clients accèdent à vos informations, catalogues de produits et portfolios directement depuis leur chat.
+                            </p>
+                        </div>
+
+                        {/* Channel 3: Printable QR Code */}
+                        <div className="glass-card" style={{ padding: '36px 30px', background: 'rgba(255,255,255,0.85)', borderRadius: '24px', border: '1px solid rgba(26, 18, 101, 0.04)', display: 'flex', flexDirection: 'column', gap: '18px', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
+                            <div style={{ width: '50px', height: '50px', borderRadius: '16px', background: 'rgba(249, 115, 22, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#F97316' }}>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                            </div>
+                            <h3 style={{ fontSize: '20px', fontWeight: '800', color: '#0F172A', margin: 0 }}>Affiches, Flyers & Vitrines</h3>
+                            <p style={{ color: '#475569', fontSize: '14.5px', lineHeight: '1.6', margin: 0 }}>
+                                Téléchargez votre <strong style={{ color: '#1A1265' }}>QR code en ligne haute résolution</strong> depuis votre tableau de bord et imprimez-le sur vos flyers, cartes de visite papier, menus de table ou vitrines de magasin.
+                            </p>
                         </div>
 
                     </div>
@@ -1712,7 +1763,7 @@ export default function LandingPage() {
                         onClick={e => e.stopPropagation()}
                         style={{
                             width: '100%',
-                            maxWidth: '800px',
+                            maxWidth: '430px', // More portrait/upright for portrait phone demo
                             animation: 'scaleUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)',
                             display: 'flex',
                             flexDirection: 'column',
@@ -1724,14 +1775,14 @@ export default function LandingPage() {
                             <h3 style={{ color: 'white', fontFamily: 'Outfit', fontSize: '22px', fontWeight: '900', margin: '6px 0 0 0' }}>Comment fonctionne la carte ? 📲</h3>
                         </div>
 
-                        {/* Responsive video wrapper 16:9 */}
-                        <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, borderRadius: '20px', overflow: 'hidden', boxShadow: '0 30px 80px rgba(0,0,0,0.5)', background: '#000' }}>
+                        {/* Responsive video wrapper 4:5 aspect ratio (Vertical Screen Format) */}
+                        <div style={{ position: 'relative', paddingBottom: '125%', height: 0, borderRadius: '24px', overflow: 'hidden', boxShadow: '0 30px 80px rgba(0,0,0,0.5)', background: '#000', border: '1px solid rgba(255,255,255,0.1)' }}>
                             <video
                                 src={DEMO_VIDEO_SRC}
                                 autoPlay
                                 controls
                                 playsInline
-                                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'contain', background: '#000' }}
+                                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', background: '#000' }}
                                 onError={e => { e.currentTarget.parentElement.innerHTML = '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:rgba(255,255,255,0.5);gap:12px"><svg width=48 height=48 viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><path d=\"M15 10l4.553-2.07A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.9L15 14M4 8a2 2 0 012-2h9a2 2 0 012 2v8a2 2 0 01-2 2H6a2 2 0 01-2-2V8z\"/></svg><span style=\"font-size:13px\">Vidéo bientôt disponible</span></div>'; }}
                             />
                         </div>
