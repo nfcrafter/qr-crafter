@@ -914,7 +914,7 @@ export default function LandingPage() {
                                 <h3 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Avis Clients Privés</h3>
                             </div>
                             <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>
-                                Recevez des avis 5 étoiles de vos contacts directement via la carte, et consultez-les dans votre espace pour améliorer vos services ou projets.
+                                Recevez des avis et commentaires privés de vos contacts directement via votre page pro, et consultez-les dans votre espace pour améliorer vos services ou projets.
                             </p>
                         </div>
 
