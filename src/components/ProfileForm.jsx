@@ -25,6 +25,7 @@ export default function ProfileForm({
     const [draggedOverIndex, setDraggedOverIndex] = useState(null);
     const certificationFileRef = useRef();
     const [activeCertificationId, setActiveCertificationId] = useState(null);
+    const dragIndexRef = useRef(null);
 
     const openConfirm = (title, message, onConfirm) => setConfirmModal({ isOpen: true, title, message, onConfirm });
 
@@ -995,40 +996,62 @@ export default function ProfileForm({
                                         key={s} 
                                         draggable
                                         onDragStart={(e) => {
+                                            dragIndexRef.current = i;
                                             e.dataTransfer.effectAllowed = 'move';
                                             e.dataTransfer.setData('text/plain', i.toString());
                                             e.currentTarget.style.opacity = '0.4';
+                                            e.currentTarget.style.border = '1px dashed #6366F1';
+                                            e.currentTarget.style.background = '#EEF2FF';
                                         }}
                                         onDragEnd={(e) => {
+                                            dragIndexRef.current = null;
                                             e.currentTarget.style.opacity = '1';
+                                            e.currentTarget.style.border = '1px solid #E2E8F0';
+                                            e.currentTarget.style.background = '#F8FAFC';
                                             setDraggedOverIndex(null);
                                         }}
                                         onDragOver={(e) => {
                                             e.preventDefault();
-                                            if (draggedOverIndex !== i) {
-                                                setDraggedOverIndex(i);
-                                            }
-                                        }}
-                                        onDragLeave={() => {
-                                            if (draggedOverIndex === i) {
-                                                setDraggedOverIndex(null);
+                                            const dragIdx = dragIndexRef.current;
+                                            if (dragIdx !== null && dragIdx !== i) {
+                                                const newOrder = [...sections];
+                                                const draggedItem = newOrder[dragIdx];
+                                                newOrder.splice(dragIdx, 1);
+                                                newOrder.splice(i, 0, draggedItem);
+                                                setProfile({ ...profile, section_order: newOrder });
+                                                dragIndexRef.current = i;
                                             }
                                         }}
                                         onDrop={(e) => {
-                                            const dragIdx = parseInt(e.dataTransfer.getData('text/plain'), 10);
-                                            handleDrop(dragIdx, i);
+                                            e.preventDefault();
+                                            dragIndexRef.current = null;
+                                            setDraggedOverIndex(null);
                                         }}
                                         style={{ 
                                             display: 'flex', 
                                             alignItems: 'center', 
                                             gap: 12, 
-                                            padding: '12px 16px', 
-                                            background: draggedOverIndex === i ? '#EEF2FF' : '#F9FAFB', 
-                                            borderRadius: 12, 
-                                            border: draggedOverIndex === i ? '1px dashed #6366F1' : '1px solid #E2E8F0',
+                                            padding: '14px 18px', 
+                                            background: '#F8FAFC', 
+                                            borderRadius: 16, 
+                                            border: '1px solid #E2E8F0',
                                             cursor: 'grab',
-                                            transition: 'background 0.2s, border 0.2s',
-                                            transform: draggedOverIndex === i ? 'scale(1.01)' : 'scale(1)'
+                                            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                                            boxShadow: '0 2px 4px rgba(0,0,0,0.01)'
+                                        }}
+                                        onMouseOver={e => {
+                                            if (dragIndexRef.current === null) {
+                                                e.currentTarget.style.borderColor = '#6366F1';
+                                                e.currentTarget.style.boxShadow = '0 6px 20px rgba(99,102,241,0.06)';
+                                                e.currentTarget.style.transform = 'translateY(-1px)';
+                                            }
+                                        }}
+                                        onMouseOut={e => {
+                                            if (dragIndexRef.current === null) {
+                                                e.currentTarget.style.borderColor = '#E2E8F0';
+                                                e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.01)';
+                                                e.currentTarget.style.transform = 'none';
+                                            }
                                         }}
                                     >
                                         <div style={{ color: '#94A3B8', display: 'flex', alignItems: 'center', cursor: 'grab' }}>
