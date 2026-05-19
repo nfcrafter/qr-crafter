@@ -552,6 +552,65 @@ export default function LandingPage() {
                 </div>
             </section>
 
+            {/* 2.5 COMMENT ÇA MARCHE (LE PARCOURS) */}
+            <section className="responsive-section" style={{ padding: '100px 0', background: '#FFFFFF', position: 'relative' }}>
+                <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px' }}>
+                    <div style={{ textAlign: 'center', marginBottom: '80px' }}>
+                        <h2 className="responsive-h2" style={{ fontWeight: '900', color: '#0F172A', letterSpacing: '-0.02em', margin: '0 0 16px 0' }}>
+                            Comment ça <span style={{ color: '#1A1265' }}>fonctionne ?</span>
+                        </h2>
+                        <p style={{ color: '#475569', fontSize: '17px', maxWidth: '600px', margin: '0 auto' }}>
+                            Une expérience magique et sans friction, de la commande jusqu'au partage de vos coordonnées.
+                        </p>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '40px', position: 'relative' }}>
+                        {/* Connecting Line (Desktop only) - Note: hidden on mobile in CSS but kept simple here */}
+                        <div style={{ position: 'absolute', top: '40px', left: '10%', right: '10%', height: '2px', background: 'linear-gradient(90deg, rgba(26, 18, 101, 0.05), rgba(99, 102, 241, 0.2), rgba(26, 18, 101, 0.05))', zIndex: 0 }} />
+
+                        {/* Step 1 */}
+                        <div className="glass-card" style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '32px 24px', background: 'rgba(255, 255, 255, 0.9)' }}>
+                            <div style={{ width: '80px', height: '80px', borderRadius: '24px', background: 'linear-gradient(135deg, #F8FAFC, #FFFFFF)', border: '2px solid rgba(26, 18, 101, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px', boxShadow: '0 10px 30px rgba(26, 18, 101, 0.05)' }}>
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1A1265" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                            </div>
+                            <div style={{ background: '#1A1265', color: 'white', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px', position: 'absolute', top: '-14px', right: 'calc(50% - 14px)', boxShadow: '0 4px 10px rgba(26,18,101,0.2)' }}>1</div>
+                            <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#0F172A', marginBottom: '12px' }}>La Commande</h3>
+                            <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.6', margin: 0 }}>Choisissez votre design. Expédition express sous 48h sur Cotonou.</p>
+                        </div>
+
+                        {/* Step 2 */}
+                        <div className="glass-card" style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '32px 24px', background: 'rgba(255, 255, 255, 0.9)' }}>
+                            <div style={{ width: '80px', height: '80px', borderRadius: '24px', background: 'linear-gradient(135deg, #F8FAFC, #FFFFFF)', border: '2px solid rgba(26, 18, 101, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px', boxShadow: '0 10px 30px rgba(26, 18, 101, 0.05)' }}>
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1A1265" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                            </div>
+                            <div style={{ background: '#1A1265', color: 'white', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px', position: 'absolute', top: '-14px', right: 'calc(50% - 14px)', boxShadow: '0 4px 10px rgba(26,18,101,0.2)' }}>2</div>
+                            <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#0F172A', marginBottom: '12px' }}>L'Activation</h3>
+                            <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.6', margin: 0 }}>Scannez la carte à la réception. Liez-la à votre compte sécurisé en 1 clic.</p>
+                        </div>
+
+                        {/* Step 3 */}
+                        <div className="glass-card" style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '32px 24px', background: 'rgba(255, 255, 255, 0.9)' }}>
+                            <div style={{ width: '80px', height: '80px', borderRadius: '24px', background: 'linear-gradient(135deg, #F8FAFC, #FFFFFF)', border: '2px solid rgba(26, 18, 101, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px', boxShadow: '0 10px 30px rgba(26, 18, 101, 0.05)' }}>
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1A1265" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                            </div>
+                            <div style={{ background: '#1A1265', color: 'white', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px', position: 'absolute', top: '-14px', right: 'calc(50% - 14px)', boxShadow: '0 4px 10px rgba(26,18,101,0.2)' }}>3</div>
+                            <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#0F172A', marginBottom: '12px' }}>La Personnalisation</h3>
+                            <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.6', margin: 0 }}>Complétez votre profil en temps réel. Ajoutez vos réseaux sociaux et vos produits.</p>
+                        </div>
+
+                        {/* Step 4 */}
+                        <div className="glass-card" style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '32px 24px', background: 'rgba(255, 255, 255, 0.9)', border: '1px solid rgba(99, 102, 241, 0.3)' }}>
+                            <div style={{ width: '80px', height: '80px', borderRadius: '24px', background: 'linear-gradient(135deg, #EEF2FF, #FFFFFF)', border: '2px solid rgba(99, 102, 241, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px', boxShadow: '0 10px 30px rgba(99, 102, 241, 0.1)' }}>
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6366F1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                            </div>
+                            <div style={{ background: '#6366F1', color: 'white', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px', position: 'absolute', top: '-14px', right: 'calc(50% - 14px)', boxShadow: '0 4px 10px rgba(99,102,241,0.3)' }}>4</div>
+                            <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#0F172A', marginBottom: '12px' }}>Le Partage Magique</h3>
+                            <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.6', margin: 0 }}>Approchez la carte d'un téléphone. Votre prospect enregistre votre contact en 1 seconde.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* 3. SECTION PROBLÈME — CONSTAT BRUTAL */}
             <section className="responsive-section" style={{ background: 'rgba(255,255,255,0.5)', position: 'relative', borderTop: '1px solid rgba(26, 18, 101, 0.03)', borderBottom: '1px solid rgba(26, 18, 101, 0.03)' }}>
                 <div style={{ maxWidth: '1200px', width: '100%', margin: '0 auto', padding: '0 24px' }}>
@@ -673,119 +732,125 @@ export default function LandingPage() {
                     {/* Bento Grid */}
                     <div className="bento-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px' }}>
                         
-                        {/* 1. Partage NFC (L - 2 columns) */}
-                        <div className="bento-card" style={{ gridColumn: 'span 2', minHeight: '320px' }}>
+                        {/* 1. Partage NFC & Mode Hors-Ligne (L - 2 columns) */}
+                        <div className="bento-card" style={{ gridColumn: 'span 2', minHeight: '320px', background: 'linear-gradient(135deg, rgba(255,255,255,0.9), rgba(248,250,252,0.9))' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '20px' }}>
                                 <div style={{ maxWidth: '380px' }}>
-                                    <span style={{ color: '#1A1265', fontWeight: '700', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '2px', display: 'block', marginBottom: '8px' }}>Fonctionnalité 1</span>
-                                    <h3 style={{ fontSize: '24px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Technologie NFC Sans App</h3>
-                                    <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.6', margin: 0 }}>Partagez vos coordonnées instantanément en effleurant n'importe quel smartphone moderne. Aucune application à télécharger pour votre interlocuteur. Transmission 1 seconde.</p>
+                                    <span style={{ color: '#1A1265', fontWeight: '800', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '2px', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '12px' }}>
+                                        <div style={{width:'8px', height:'8px', borderRadius:'50%', background:'#10B981'}}></div> 100% HORS-LIGNE
+                                    </span>
+                                    <h3 style={{ fontSize: '26px', fontWeight: '900', margin: '0 0 12px 0', color: '#0F172A', letterSpacing: '-0.02em' }}>La seule carte qui fonctionne sans internet.</h3>
+                                    <p style={{ color: '#475569', fontSize: '15px', lineHeight: '1.6', margin: 0 }}>Partagez vos coordonnées instantanément en effleurant un smartphone (NFC). Plus de réseau ? Aucun problème. Notre <strong style={{color:'#1A1265'}}>technologie PWA et notre QR Code de secours</strong> intégré transmettent vos contacts même en mode avion.</p>
                                 </div>
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(26, 18, 101, 0.05)', padding: '20px', borderRadius: '20px' }}>
-                                    <div style={{ width: '40px', height: '40px', color: '#1A1265' }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>` }} />
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(26, 18, 101, 0.05)', padding: '24px', borderRadius: '24px', boxShadow: 'inset 0 2px 10px rgba(0,0,0,0.02)' }}>
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#1A1265" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
                                 </div>
                             </div>
                         </div>
 
-                        {/* 2. QR Code de Secours (S - 1 column) */}
-                        <div className="bento-card" style={{ minHeight: '320px' }}>
+                        {/* 2. Enregistrement Intelligent vCard (S - 1 column) */}
+                        <div className="bento-card" style={{ minHeight: '320px', borderTop: '4px solid #6366F1' }}>
                             <div>
-                                <span style={{ color: '#1A1265', fontWeight: '700', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '2px', display: 'block', marginBottom: '8px' }}>Fonctionnalité 2</span>
-                                <h3 style={{ fontSize: '22px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>QR Code Universel</h3>
+                                <div style={{width:'40px', height:'40px', background:'rgba(99, 102, 241, 0.1)', borderRadius:'12px', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'16px'}}>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6366F1" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5c-1.1 0-2 .9-2 2v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>
+                                </div>
+                                <h3 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Bouton "Sauvegarder" intelligent</h3>
                             </div>
                             <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>
-                                Gravé au dos de votre carte de signature, il assure 100% de compatibilité, même avec les téléphones plus anciens sans puce NFC.
+                                Fini les erreurs de frappe. Votre prospect télécharge votre fichier de contact (vCard) natif. Il inclut même un <strong style={{color:'#1A1265'}}>lien direct vers votre WhatsApp</strong> pour engager la discussion.
                             </p>
                         </div>
 
-                        {/* 3. Boutique WhatsApp sans commission (S - 1 column) */}
+                        {/* 3. Boutique WhatsApp (S - 1 column) */}
                         <div className="bento-card" style={{ minHeight: '300px' }}>
                             <div>
-                                <span style={{ color: '#1A1265', fontWeight: '700', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '2px', display: 'block', marginBottom: '8px' }}>Fonctionnalité 3</span>
-                                <h3 style={{ fontSize: '22px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Boutique WhatsApp</h3>
+                                <div style={{width:'40px', height:'40px', background:'rgba(16, 185, 129, 0.1)', borderRadius:'12px', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'16px'}}>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                                </div>
+                                <h3 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Boutique WhatsApp intégrée</h3>
                             </div>
                             <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>
-                                Vendez vos produits directement. Vos clients consultent vos images, choisissent et commandent directement sur WhatsApp. ZÉRO commission sur vos ventes.
+                                Vendez vos produits directement depuis votre profil. Vos clients commandent via WhatsApp. Zéro commission.
                             </p>
                         </div>
 
                         {/* 4. Mini-Site Pro Inclus (M - 1 column) */}
                         <div className="bento-card" style={{ minHeight: '300px' }}>
                             <div>
-                                <span style={{ color: '#1A1265', fontWeight: '700', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '2px', display: 'block', marginBottom: '8px' }}>Fonctionnalité 4</span>
-                                <h3 style={{ fontSize: '22px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Mini-Site Web Pro</h3>
+                                <div style={{width:'40px', height:'40px', background:'rgba(245, 158, 11, 0.1)', borderRadius:'12px', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'16px'}}>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                                </div>
+                                <h3 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Mini-Site Web Premium</h3>
                             </div>
                             <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>
-                                Votre vitrine professionnelle créée automatiquement en ligne. Présentez vos horaires, votre localisation et vos formulaires de contact.
+                                Une vitrine digitale au design "Glassmorphism" élégant regroupant tous vos réseaux sociaux (Instagram, LinkedIn, TikTok).
                             </p>
                         </div>
 
-                        {/* 5. Google Business Profile & Référencement (M - 1 column) */}
+                        {/* 5. Drag & Drop Dashboard (M - 1 column) */}
                         <div className="bento-card" style={{ minHeight: '300px' }}>
                             <div>
-                                <span style={{ color: '#1A1265', fontWeight: '700', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '2px', display: 'block', marginBottom: '8px' }}>Fonctionnalité 5</span>
-                                <h3 style={{ fontSize: '22px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Avis & Google Business</h3>
+                                <div style={{width:'40px', height:'40px', background:'rgba(236, 72, 153, 0.1)', borderRadius:'12px', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'16px'}}>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EC4899" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="5 9 2 12 5 15"></polyline><polyline points="9 5 12 2 15 5"></polyline><polyline points="19 9 22 12 19 15"></polyline><polyline points="9 19 12 22 15 19"></polyline><line x1="2" y1="12" x2="22" y2="12"></line><line x1="12" y1="2" x2="12" y2="22"></line></svg>
+                                </div>
+                                <h3 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Dashboard Temps Réel</h3>
                             </div>
                             <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>
-                                Récupérez des avis clients Google instantanément lors des rencontres physiques, et apparaissez plus haut dans les recherches locales.
+                                Modifiez vos infos en direct. Réorganisez vos sections par simple "Glisser-Déposer" et visualisez le rendu instantanément.
                             </p>
                         </div>
 
-                        {/* 6. Portfolio & Galerie d'images */}
+                        {/* 6. Portfolio & Galerie (S - 1 column) */}
                         <div className="bento-card" style={{ minHeight: '300px' }}>
                             <div>
-                                <span style={{ color: '#1A1265', fontWeight: '700', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '2px', display: 'block', marginBottom: '8px' }}>Fonctionnalité 6</span>
-                                <h3 style={{ fontSize: '22px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Portfolio Visuel</h3>
+                                <div style={{width:'40px', height:'40px', background:'rgba(139, 92, 246, 0.1)', borderRadius:'12px', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'16px'}}>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                                </div>
+                                <h3 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Portfolio & Galerie fluides</h3>
                             </div>
                             <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>
-                                Exposez vos réalisations en haute définition (books, photos de projets, réalisations graphiques, plats).
+                                Exposez vos réalisations en haute définition avec notre carrousel horizontal optimisé pour une expérience mobile parfaite.
                             </p>
                         </div>
 
-                        {/* 7. Certifications & Badges */}
+                        {/* 7. Multi-profils */}
                         <div className="bento-card" style={{ minHeight: '300px' }}>
                             <div>
-                                <span style={{ color: '#1A1265', fontWeight: '700', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '2px', display: 'block', marginBottom: '8px' }}>Fonctionnalité 7</span>
-                                <h3 style={{ fontSize: '22px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Certifications & Badges</h3>
+                                <div style={{width:'40px', height:'40px', background:'rgba(56, 189, 248, 0.1)', borderRadius:'12px', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'16px'}}>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                                </div>
+                                <h3 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Gestion Multi-Cartes</h3>
                             </div>
                             <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>
-                                Affichez vos diplômes officiels ou labels de compétences pour inspirer une confiance immédiate chez vos prospects.
+                                Dirigeant d'entreprise ? Gérez votre profil personnel, celui de votre entreprise, et les cartes de vos employés depuis un seul compte.
                             </p>
                         </div>
 
-                        {/* 8. Statistiques scans live */}
+                        {/* 8. Analytics */}
                         <div className="bento-card" style={{ minHeight: '300px' }}>
                             <div>
-                                <span style={{ color: '#1A1265', fontWeight: '700', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '2px', display: 'block', marginBottom: '8px' }}>Fonctionnalité 8</span>
-                                <h3 style={{ fontSize: '22px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Analytics Temps Réel</h3>
+                                <div style={{width:'40px', height:'40px', background:'rgba(239, 68, 68, 0.1)', borderRadius:'12px', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'16px'}}>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                                </div>
+                                <h3 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Analytics & Scans</h3>
                             </div>
                             <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>
-                                Suivez vos statistiques de scan en direct pour mesurer l'efficacité de votre networking lors de vos événements.
+                                Suivez la croissance de votre réseau avec un graphique détaillé du nombre de scans de vos cartes sur les 14 derniers jours.
                             </p>
                         </div>
 
-                        {/* 9. Mise à jour illimitée à vie */}
+                        {/* 9. Mise à jour illimitée */}
                         <div className="bento-card" style={{ minHeight: '300px' }}>
                             <div>
-                                <span style={{ color: '#1A1265', fontWeight: '700', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '2px', display: 'block', marginBottom: '8px' }}>Fonctionnalité 9</span>
-                                <h3 style={{ fontSize: '22px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Mise à jour Gratuite</h3>
+                                <div style={{width:'40px', height:'40px', background:'rgba(168, 85, 247, 0.1)', borderRadius:'12px', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'16px'}}>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A855F7" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path><path d="M3 22v-6h6"></path><path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path></svg>
+                                </div>
+                                <h3 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Mise à jour illimitée</h3>
                             </div>
                             <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>
-                                Modifiez vos numéros, réseaux et tarifs en 2 clics. Votre profil est actualisé instantanément, sans aucune réimpression.
+                                Vous changez de numéro ou de logo ? Actualisez vos données instantanément et gratuitement, sans devoir racheter de carte.
                             </p>
                         </div>
-
-                        {/* 10. Prise de RDV simplifiée */}
-                        <div className="bento-card" style={{ minHeight: '300px' }}>
-                            <div>
-                                <span style={{ color: '#1A1265', fontWeight: '700', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '2px', display: 'block', marginBottom: '8px' }}>Fonctionnalité 10</span>
-                                <h3 style={{ fontSize: '22px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Prise de Rendez-vous</h3>
-                            </div>
-                            <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>
-                                Intégrez un calendrier (type Calendly) ou un formulaire de réservation de services directement sur votre profil public.
-                            </p>
-                        </div>
-
                     </div>
                 </div>
             </section>
