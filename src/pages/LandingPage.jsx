@@ -124,9 +124,12 @@ export default function LandingPage() {
     // States for Hero Audacious flipping color-shifting card
     const [heroColorIndex, setHeroColorIndex] = useState(0);
 
-    // Modal state for Live Demo
+    // Modal states
     const [showLiveDemoModal, setShowLiveDemoModal] = useState(false);
+    const [showVideoModal, setShowVideoModal] = useState(false);
     const DEMO_LIVE_PREVIEW_URL = "/u/VDDOHE3O";
+    // YouTube embed — remplacez par votre vrai ID de vidéo
+    const DEMO_VIDEO_ID = "dQw4w9WgXcQ";
 
     useEffect(() => {
         const handleScroll = () => {
@@ -454,25 +457,58 @@ export default function LandingPage() {
                             Partagez instantanément vos coordonnées : numéro, e-mail, réseaux sociaux, portfolio, etc. Redirigez vos visiteurs vers votre boutique en ligne(Maketou,Shopify,etc). Impressionnez vos futurs contacts sans jamais dicter votre numéro ou réimprimer vos cartes.
                         </p>
 
-                        <div className="hero-buttons" style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '12px' }}>
+                        <div className="hero-buttons" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '12px' }}>
+                            {/* Bouton Profil Démo */}
                             <button 
                                 onClick={() => setShowLiveDemoModal(true)}
                                 style={{
-                                    background: 'rgba(255, 255, 255, 0.8)',
-                                    border: '1px solid rgba(26, 18, 101, 0.15)',
-                                    color: '#1A1265',
-                                    padding: '18px 36px',
+                                    background: 'linear-gradient(135deg, #1A1265, #6366F1)',
+                                    border: 'none',
+                                    color: 'white',
+                                    padding: '16px 28px',
                                     borderRadius: '16px',
                                     fontWeight: '700',
-                                    fontSize: '16px',
+                                    fontSize: '15px',
                                     cursor: 'pointer',
                                     transition: 'all 0.3s ease',
-                                    boxShadow: '0 4px 12px rgba(26, 18, 101, 0.03)'
+                                    boxShadow: '0 8px 20px rgba(26, 18, 101, 0.3)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px'
                                 }} 
-                                onMouseOver={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.95)'; e.currentTarget.style.borderColor = 'rgba(26, 18, 101, 0.3)'; }} 
-                                onMouseOut={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.8)'; e.currentTarget.style.borderColor = 'rgba(26, 18, 101, 0.15)'; }}
+                                onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 28px rgba(26, 18, 101, 0.4)'; }} 
+                                onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(26, 18, 101, 0.3)'; }}
                             >
-                                Voir une démo live →
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                                Voir un profil démo
+                            </button>
+
+                            {/* Bouton Vidéo */}
+                            <button 
+                                onClick={() => setShowVideoModal(true)}
+                                style={{
+                                    background: 'rgba(255, 255, 255, 0.85)',
+                                    border: '1px solid rgba(26, 18, 101, 0.15)',
+                                    color: '#1A1265',
+                                    padding: '16px 28px',
+                                    borderRadius: '16px',
+                                    fontWeight: '700',
+                                    fontSize: '15px',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s ease',
+                                    boxShadow: '0 4px 12px rgba(26, 18, 101, 0.06)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px'
+                                }} 
+                                onMouseOver={e => { e.currentTarget.style.background = 'white'; e.currentTarget.style.borderColor = 'rgba(26, 18, 101, 0.3)'; e.currentTarget.style.transform = 'translateY(-2px)'; }} 
+                                onMouseOut={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.85)'; e.currentTarget.style.borderColor = 'rgba(26, 18, 101, 0.15)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                            >
+                                {/* Icône play */}
+                                <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'linear-gradient(135deg, #EF4444, #DC2626)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                                </div>
+                                Comment ça marche ?
                             </button>
                         </div>
 
@@ -644,7 +680,7 @@ export default function LandingPage() {
                             </div>
                             <div style={{ background: '#6366F1', color: 'white', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px', position: 'absolute', top: '-14px', right: 'calc(50% - 14px)', boxShadow: '0 4px 10px rgba(99,102,241,0.3)' }}>4</div>
                             <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#0F172A', marginBottom: '12px' }}>Le Partage Magique</h3>
-                            <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.6', margin: 0 }}>Approchez la carte d'un téléphone. Votre interlocuteur enregistre vos coordonnées en 1 seconde. Il a un très ancien téléphone ? Pas de panique, il a un QR code au dos de la carte que votre interlocuteur peut scanner avec son téléphone.</p>
+                            <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.6', margin: 0 }}>Approchez la carte d'un téléphone. Votre interlocuteur enregistre vos coordonnées en 1 seconde. Son téléphone est très ancien ? Pas de panique, la carte dispose d'un QR code que votre interlocuteur peut scanner avec son téléphone.</p>
                         </div>
                     </div>
                 </div>
@@ -679,7 +715,7 @@ export default function LandingPage() {
                                 <div style={{ background: 'rgba(239, 68, 68, 0.08)', color: '#EF4444', padding: '10px', borderRadius: '12px', fontWeight: 'bold' }}>✕</div>
                                 <div>
                                     <h4 style={{ margin: '0 0 6px 0', fontSize: '17px', color: '#0F172A' }}>La dictée pénible du numéro</h4>
-                                    <p style={{ margin: 0, color: '#475569', fontSize: '14px', lineHeight: '1.5' }}>"Zéro-Six..." Vous épelez pendant 2 minutes. Votre interlocuteur note mal votre nom et ne vous rappelle jamais.</p>
+                                    <p style={{ margin: 0, color: '#475569', fontSize: '14px', lineHeight: '1.5' }}>"Zéro-Six..." Vous épelez pendant 2 minutes. Votre interlocuteur note mal votre numéro et ne vous rappelle jamais.</p>
                                 </div>
                             </div>
 
@@ -700,7 +736,7 @@ export default function LandingPage() {
                                 <div style={{ background: 'rgba(26, 18, 101, 0.05)', color: '#1A1265', padding: '10px', borderRadius: '12px', fontWeight: 'bold' }}>✓</div>
                                 <div>
                                     <h4 style={{ margin: '0 0 6px 0', fontSize: '17px', color: '#0F172A' }}>Un simple "Tap" magique</h4>
-                                    <p style={{ margin: 0, color: '#475569', fontSize: '14px', lineHeight: '1.5' }}>La carte effleure le téléphone de votre interlocuteur, votre profil professionnel s'ouvre en 1 seconde chrono.</p>
+                                    <p style={{ margin: 0, color: '#475569', fontSize: '14px', lineHeight: '1.5' }}>La carte effleure le téléphone de votre interlocuteur, votre profil professionnel s'ouvre en 1 seconde chrono. Simple, rapide et très professionnel.</p>
                                 </div>
                             </div>
 
@@ -716,7 +752,15 @@ export default function LandingPage() {
                                 <div style={{ background: 'rgba(26, 18, 101, 0.05)', color: '#1A1265', padding: '10px', borderRadius: '12px', fontWeight: 'bold' }}>✓</div>
                                 <div>
                                     <h4 style={{ margin: '0 0 6px 0', fontSize: '17px', color: '#0F172A' }}>Boutique & Commande</h4>
-                                    <p style={{ margin: 0, color: '#475569', fontSize: '14px', lineHeight: '1.5' }}>Le client navigue dans votre mini-site, choisit un produit, est redirigé vers WhatsApp ou votre boutique en ligne pour finaliser la commande.</p>
+                                    <p style={{ margin: 0, color: '#475569', fontSize: '14px', lineHeight: '1.5' }}>Le client navigue dans votre mini-site, choisit un produit, est redirigé vers votre boutique en ligne pour finaliser la commande.</p>
+                                </div>
+                            </div>
+
+                            <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
+                                <div style={{ background: 'rgba(26, 18, 101, 0.05)', color: '#1A1265', padding: '10px', borderRadius: '12px', fontWeight: 'bold' }}>✓</div>
+                                <div>
+                                    <h4 style={{ margin: '0 0 6px 0', fontSize: '17px', color: '#0F172A' }}>Prise de contact rapide</h4>
+                                    <p style={{ margin: 0, color: '#475569', fontSize: '14px', lineHeight: '1.5' }}>Que vous soyez dans le bruit,  pressé ou stressé de prendre le contact de votre crush, un simple effleurement de la carte suffit pour transmettre vos coordonnées instantanément. Aucune application requise de la part de votre interlocuteur.</p>
                                 </div>
                             </div>
                         </div>
@@ -728,7 +772,7 @@ export default function LandingPage() {
             <section style={{ padding: '80px 0', overflow: 'hidden', background: '#F8FAFC' }}>
                 <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', marginBottom: '36px', textAlign: 'center' }}>
                     <h2 className="responsive-h2" style={{ fontWeight: '800', color: '#0F172A' }}>Vous pouvez personnaliser votre carte</h2>
-                    <p style={{ color: '#475569', marginTop: '8px' }}>Vous avez envie d'avoir une carte à votre effigie, avec vos couleurs, votre logo/photo ? Eh bien c'est possible avec NFCrafter.</p>
+                    <p style={{ color: '#475569', marginTop: '8px' }}>Vous avez envie d'avoir une carte ultra personnalisée qui parle à votre place et est à votre image ? Eh bien il suffit de nous contacter et nous ferons de votre envie une réalité.</p>
                 </div>
                 
                 <div className="gallery-row">
@@ -1424,64 +1468,59 @@ export default function LandingPage() {
                 </svg>
             </div>
 
-            {/* GORGEOUS LIVE DEMO PREVIEW MODAL */}
+            {/* LIVE DEMO PREVIEW MODAL — with inline color picker */}
             {showLiveDemoModal && (
                 <div 
                     onClick={() => setShowLiveDemoModal(false)}
                     style={{
                         position: 'fixed',
                         inset: 0,
-                        background: 'rgba(15, 23, 42, 0.75)',
-                        backdropFilter: 'blur(12px)',
+                        background: 'rgba(15, 23, 42, 0.80)',
+                        backdropFilter: 'blur(14px)',
                         zIndex: 1000,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         animation: 'fadeIn 0.3s ease',
-                        padding: '20px'
+                        padding: '20px',
+                        flexDirection: 'column',
+                        gap: '20px'
                     }}
                 >
+                    {/* Close button */}
+                    <button 
+                        onClick={() => setShowLiveDemoModal(false)}
+                        style={{
+                            position: 'fixed',
+                            top: '20px',
+                            right: '20px',
+                            background: 'white',
+                            border: 'none',
+                            width: '40px',
+                            height: '40px',
+                            borderRadius: '50%',
+                            color: '#1A1265',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            zIndex: 1020,
+                            fontWeight: '900',
+                            fontSize: '18px',
+                            boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+                            transition: 'transform 0.2s'
+                        }}
+                        onMouseOver={e => e.currentTarget.style.transform = 'scale(1.1)'}
+                        onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
+                    >
+                        ✕
+                    </button>
+
+                    {/* Phone mockup */}
                     <div 
                         onClick={e => e.stopPropagation()}
-                        style={{
-                            position: 'relative',
-                            width: '320px',
-                            maxWidth: '100%',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            animation: 'scaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)'
-                        }}
+                        style={{ animation: 'scaleUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)' }}
                     >
-                        {/* Floating Close Button */}
-                        <button 
-                            onClick={() => setShowLiveDemoModal(false)}
-                            style={{
-                                position: 'fixed',
-                                top: '24px',
-                                right: '24px',
-                                background: 'white',
-                                border: 'none',
-                                width: '40px',
-                                height: '40px',
-                                borderRadius: '50%',
-                                color: '#1A1265',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                cursor: 'pointer',
-                                zIndex: 1020,
-                                fontWeight: '900',
-                                fontSize: '18px',
-                                boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
-                                transition: 'transform 0.2s'
-                            }}
-                            onMouseOver={e => e.currentTarget.style.transform = 'scale(1.1)'}
-                            onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
-                        >
-                            ✕
-                        </button>
-
                         <PhonePreview>
                             <iframe 
                                 src={`${DEMO_LIVE_PREVIEW_URL}?theme_color=${encodeURIComponent(demoThemeColor)}&bg_color=${encodeURIComponent(demoBgColor)}`}
@@ -1499,6 +1538,138 @@ export default function LandingPage() {
                                 title="NFCrafter Real Live Demo"
                             />
                         </PhonePreview>
+                    </div>
+
+                    {/* Inline Color Picker — below the phone */}
+                    <div
+                        onClick={e => e.stopPropagation()}
+                        style={{
+                            background: 'rgba(255,255,255,0.10)',
+                            backdropFilter: 'blur(20px)',
+                            border: '1px solid rgba(255,255,255,0.2)',
+                            borderRadius: '20px',
+                            padding: '14px 20px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            gap: '10px',
+                            animation: 'scaleUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)'
+                        }}
+                    >
+                        <span style={{ color: 'rgba(255,255,255,0.75)', fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
+                            🎨 Choisir la couleur du profil
+                        </span>
+                        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                            {CARD_COLORS.map((color) => {
+                                const config = COLOR_MAP[color.id] || { theme: color.hex, bg: '#f8fafc' };
+                                const isActive = demoThemeColor === config.theme && demoBgColor === config.bg;
+                                return (
+                                    <button
+                                        key={color.id}
+                                        onClick={() => { setDemoThemeColor(config.theme); setDemoBgColor(config.bg); }}
+                                        title={color.name}
+                                        style={{
+                                            width: '32px',
+                                            height: '32px',
+                                            borderRadius: '50%',
+                                            background: color.hex,
+                                            border: isActive ? '3px solid white' : '2px solid rgba(255,255,255,0.25)',
+                                            cursor: 'pointer',
+                                            outline: isActive ? '2px solid rgba(255,255,255,0.6)' : 'none',
+                                            outlineOffset: '2px',
+                                            boxShadow: isActive ? '0 0 12px rgba(255,255,255,0.4)' : '0 2px 6px rgba(0,0,0,0.3)',
+                                            transition: 'all 0.2s',
+                                            transform: isActive ? 'scale(1.18)' : 'scale(1)'
+                                        }}
+                                        onMouseOver={e => { if (!isActive) e.currentTarget.style.transform = 'scale(1.15)'; }}
+                                        onMouseOut={e => { if (!isActive) e.currentTarget.style.transform = 'scale(1)'; }}
+                                    />
+                                );
+                            })}
+                        </div>
+                        <span style={{ color: 'rgba(255,255,255,0.45)', fontSize: '10px' }}>
+                            Le profil se recharge avec la couleur sélectionnée
+                        </span>
+                    </div>
+                </div>
+            )}
+
+            {/* VIDEO MODAL — Comment ça marche ? */}
+            {showVideoModal && (
+                <div
+                    onClick={() => setShowVideoModal(false)}
+                    style={{
+                        position: 'fixed',
+                        inset: 0,
+                        background: 'rgba(10, 15, 30, 0.90)',
+                        backdropFilter: 'blur(16px)',
+                        zIndex: 1000,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        animation: 'fadeIn 0.3s ease',
+                        padding: '20px'
+                    }}
+                >
+                    {/* Close */}
+                    <button
+                        onClick={() => setShowVideoModal(false)}
+                        style={{
+                            position: 'fixed',
+                            top: '20px',
+                            right: '20px',
+                            background: 'white',
+                            border: 'none',
+                            width: '40px',
+                            height: '40px',
+                            borderRadius: '50%',
+                            color: '#1A1265',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            zIndex: 1020,
+                            fontWeight: '900',
+                            fontSize: '18px',
+                            boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
+                            transition: 'transform 0.2s'
+                        }}
+                        onMouseOver={e => e.currentTarget.style.transform = 'scale(1.1)'}
+                        onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
+                    >
+                        ✕
+                    </button>
+
+                    <div
+                        onClick={e => e.stopPropagation()}
+                        style={{
+                            width: '100%',
+                            maxWidth: '800px',
+                            animation: 'scaleUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '16px'
+                        }}
+                    >
+                        <div style={{ textAlign: 'center' }}>
+                            <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '2px' }}>Démonstration NFCrafter</span>
+                            <h3 style={{ color: 'white', fontFamily: 'Outfit', fontSize: '22px', fontWeight: '900', margin: '6px 0 0 0' }}>Comment fonctionne la carte ? 📲</h3>
+                        </div>
+
+                        {/* Responsive video wrapper 16:9 */}
+                        <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, borderRadius: '20px', overflow: 'hidden', boxShadow: '0 30px 80px rgba(0,0,0,0.5)' }}>
+                            <iframe
+                                src={`https://www.youtube.com/embed/${DEMO_VIDEO_ID}?autoplay=1&rel=0&modestbranding=1`}
+                                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                                title="NFCrafter — Comment ça marche"
+                            />
+                        </div>
+
+                        <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px', textAlign: 'center', margin: 0 }}>
+                            Cliquez en dehors de la vidéo pour fermer
+                        </p>
                     </div>
                 </div>
             )}
