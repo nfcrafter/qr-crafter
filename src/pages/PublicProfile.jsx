@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase.js'
 
 import { SOCIAL_NETWORKS, LINK_ICONS } from '../constants/socials.js'
+import { DEMO_PROFILES } from '../constants/demoProfiles.js'
 
 export default function PublicProfile() {
   const { cardId, slug } = useParams()
@@ -36,6 +37,28 @@ export default function PublicProfile() {
 
   async function loadProfile() {
     setLoading(true)
+    
+    if (lookupValue?.toLowerCase() === 'demo') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const profileIndex = parseInt(urlParams.get('profile_index') || '0', 10);
+      const themeColorOverride = urlParams.get('theme_color');
+      const bgColorOverride = urlParams.get('bg_color');
+      
+      const baseProfile = DEMO_PROFILES[profileIndex] || DEMO_PROFILES[0];
+      const demoProfileData = {
+        ...baseProfile,
+        id: 'demo-user-id',
+        user_id: 'demo-user-id',
+        theme_color: themeColorOverride || baseProfile.theme_color,
+        backgroundColor: bgColorOverride || baseProfile.backgroundColor,
+      };
+      
+      setProfile(demoProfileData);
+      setCustomLinks([]);
+      setLoading(false);
+      return;
+    }
+
     const { data: card, error } = await supabase
       .from('cards')
       .select('*')

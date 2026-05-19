@@ -103,7 +103,11 @@ export default function LandingPage() {
     const [session, setSession] = useState(null);
     const [selectedColorIndex, setSelectedColorIndex] = useState(0);
     const [cardType, setCardType] = useState('physical'); // 'physical', 'digital', 'pro', 'corporate'
-    const [activeDemoTab, setActiveDemoTab] = useState('visitor'); // 'visitor' or 'dashboard'
+    
+    // Live preview states for Demo Section
+    const [selectedDemoProfileIndex, setSelectedDemoProfileIndex] = useState(0);
+    const [demoThemeColor, setDemoThemeColor] = useState('#111827');
+    const [demoBgColor, setDemoBgColor] = useState('#f8fafc');
     
     // States for Hero Audacious flipping color-shifting card
     const [heroColorIndex, setHeroColorIndex] = useState(0);
@@ -892,115 +896,198 @@ export default function LandingPage() {
                             Voici ce que <span style={{ color: '#1A1265' }}>vos contacts verront.</span>
                         </h2>
                         <p style={{ color: '#475569', fontSize: '17px', maxWidth: '600px', margin: '0 auto' }}>
-                            Découvrez notre interface mobile d'exception et le panneau d'administration.
+                            Découvrez notre interface mobile d'exception. Testez les couleurs et changez de profil en temps réel.
                         </p>
                     </div>
 
                     <div className="responsive-grid" style={{ gap: '40px', alignItems: 'center' }}>
                         
-                        {/* Left Side - Interactive 3D Phone Mockup */}
-                        <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        {/* Left Side - Interactive Phone Mockup with Real Iframe */}
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', justifyContent: 'center' }}>
                             <div style={{
-                                width: '270px',
-                                height: '540px',
+                                width: '275px',
+                                height: '550px',
                                 background: '#0F172A',
-                                borderRadius: '36px',
-                                border: '8px solid #1F2937',
-                                boxShadow: '0 30px 80px rgba(26, 18, 101, 0.08)',
+                                borderRadius: '38px',
+                                border: '10px solid #1F2937',
+                                boxShadow: '0 25px 60px rgba(26, 18, 101, 0.12)',
                                 position: 'relative',
                                 overflow: 'hidden',
-                                padding: '24px 16px',
                                 display: 'flex',
                                 flexDirection: 'column'
                             }}>
                                 {/* Notch */}
-                                <div style={{ position: 'absolute', top: '0', left: '50%', transform: 'translateX(-50%)', width: '90px', height: '18px', background: '#1F2937', borderBottomLeftRadius: '12px', borderBottomRightRadius: '12px', zIndex: 10 }}></div>
+                                <div style={{ 
+                                    position: 'absolute', 
+                                    top: '0', 
+                                    left: '50%', 
+                                    transform: 'translateX(-50%)', 
+                                    width: '90px', 
+                                    height: '18px', 
+                                    background: '#1F2937', 
+                                    borderBottomLeftRadius: '12px', 
+                                    borderBottomRightRadius: '12px', 
+                                    zIndex: 10,
+                                    pointerEvents: 'none' 
+                                }}></div>
 
-                                {activeDemoTab === 'visitor' ? (
-                                    /* Visitor View Mockup */
-                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', overflowY: 'auto' }}>
-                                        <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'linear-gradient(135deg, #1A1265, #6366F1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', fontSize: '22px', color: 'white', marginTop: '20px', marginBottom: '12px', boxShadow: '0 0 20px rgba(99, 102, 241, 0.3)' }}>R</div>
-                                        <h3 style={{ margin: '0 0 4px 0', fontSize: '17px', fontWeight: '800', color: 'white' }}>Romuald K.</h3>
-                                        <span style={{ fontSize: '11px', color: '#6366F1', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '16px' }}>Architecte d'intérieur</span>
-
-                                        <button style={{ width: '100%', background: '#6366F1', color: 'white', border: 'none', padding: '12px', borderRadius: '10px', fontWeight: '800', fontSize: '13px', cursor: 'pointer', marginBottom: '20px' }}>
-                                            Enregistrer le Contact
-                                        </button>
-
-                                        {/* Fake Links */}
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
-                                            <div style={{ background: 'rgba(255,255,255,0.05)', padding: '12px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                <div style={{ width: '18px', height: '18px', background: '#6366F1', borderRadius: '4px' }}></div>
-                                                <span style={{ fontSize: '12px', color: 'white' }}>Mon Portfolio en Ligne</span>
-                                            </div>
-                                            <div style={{ background: 'rgba(255,255,255,0.05)', padding: '12px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                <div style={{ width: '18px', height: '18px', background: '#6366F1', borderRadius: '4px' }}></div>
-                                                <span style={{ fontSize: '12px', color: 'white' }}>Boutique de nos créations</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    /* Owner View Mockup (Dashboard) */
-                                    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                                        <h4 style={{ fontSize: '15px', fontWeight: '900', margin: '20px 0 12px 0', color: '#6366F1' }}>Éditer le profil</h4>
-                                        
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                                            <div style={{ border: '1px dashed rgba(99, 102, 241, 0.4)', background: 'rgba(99, 102, 241, 0.05)', padding: '10px', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                <span style={{ fontSize: '11px', color: 'white' }}>✥ En-tête de profil</span>
-                                                <span style={{ fontSize: '10px', color: '#9CA3AF' }}>Modifier</span>
-                                            </div>
-                                            <div style={{ border: '1px dashed rgba(99, 102, 241, 0.4)', background: 'rgba(99, 102, 241, 0.05)', padding: '10px', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                <span style={{ fontSize: '11px', color: 'white' }}>✥ Bouton Contact</span>
-                                                <span style={{ fontSize: '10px', color: '#9CA3AF' }}>Modifier</span>
-                                            </div>
-                                            <div style={{ border: '1px dashed rgba(99, 102, 241, 0.4)', background: 'rgba(99, 102, 241, 0.05)', padding: '10px', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                <span style={{ fontSize: '11px', color: 'white' }}>✥ Section Portfolio</span>
-                                                <span style={{ fontSize: '10px', color: '#9CA3AF' }}>Modifier</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
+                                {/* Iframe rendering the real PublicProfile template */}
+                                <iframe 
+                                    src={`/u/demo?profile_index=${selectedDemoProfileIndex}&theme_color=${encodeURIComponent(demoThemeColor)}&bg_color=${encodeURIComponent(demoBgColor)}`}
+                                    style={{ width: '100%', height: '100%', border: 'none', background: demoBgColor }}
+                                    title="NFCrafter Live Preview"
+                                />
                             </div>
+
+                            {/* Open Fullscreen Link */}
+                            <a 
+                                href={`/u/demo?profile_index=${selectedDemoProfileIndex}&theme_color=${encodeURIComponent(demoThemeColor)}&bg_color=${encodeURIComponent(demoBgColor)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    padding: '10px 20px',
+                                    background: 'white',
+                                    border: '1px solid rgba(26, 18, 101, 0.15)',
+                                    borderRadius: '12px',
+                                    color: '#1A1265',
+                                    textDecoration: 'none',
+                                    fontWeight: '700',
+                                    fontSize: '13px',
+                                    boxShadow: '0 4px 10px rgba(0,0,0,0.03)',
+                                    transition: 'all 0.2s'
+                                }}
+                                onMouseOver={e => e.currentTarget.style.background = '#F8FAFC'}
+                                onMouseOut={e => e.currentTarget.style.background = 'white'}
+                            >
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
+                                Ouvrir en plein écran (Lien Réel)
+                            </a>
                         </div>
 
-                        {/* Right Side - Toggles */}
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                        {/* Right Side - Interactive Customization Panel */}
+                        <div className="glass-card" style={{ padding: '32px', display: 'flex', flexDirection: 'column', gap: '28px', background: 'rgba(255, 255, 255, 0.85)' }}>
+                            
+                            {/* 1. Profile selection */}
                             <div>
-                                <h3 className="responsive-h2" style={{ fontWeight: '800', fontFamily: 'Outfit', color: '#0F172A', margin: '0 0 16px 0' }}>Basculez entre les vues</h3>
-                                <p style={{ color: '#475569', fontSize: '15px', lineHeight: '1.6', margin: 0 }}>
-                                    Visualisez le site du côté visiteur ou accédez à l'administration simplifiée pour modifier vos contenus en direct depuis votre dashboard NFCrafter.
-                                </p>
+                                <span style={{ color: '#475569', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: '12px' }}>
+                                    1. Choisir un Profil Professionnel
+                                </span>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '10px' }}>
+                                    {HERO_PROFILES.map((p, idx) => (
+                                        <button
+                                            key={idx}
+                                            onClick={() => {
+                                                setSelectedDemoProfileIndex(idx);
+                                                setDemoThemeColor(p.color || '#1A1265');
+                                            }}
+                                            style={{
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                alignItems: 'flex-start',
+                                                padding: '10px 12px',
+                                                borderRadius: '12px',
+                                                background: selectedDemoProfileIndex === idx ? 'rgba(26, 18, 101, 0.05)' : 'white',
+                                                border: selectedDemoProfileIndex === idx ? '2px solid #1A1265' : '1px solid rgba(26, 18, 101, 0.1)',
+                                                cursor: 'pointer',
+                                                textAlign: 'left',
+                                                transition: 'all 0.2s'
+                                            }}
+                                        >
+                                            <span style={{ fontWeight: '800', fontSize: '13px', color: '#0F172A' }}>{p.name}</span>
+                                            <span style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>{p.role}</span>
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
 
-                            <div style={{ display: 'flex', gap: '16px' }}>
-                                <button onClick={() => setActiveDemoTab('visitor')} style={{
-                                    flex: 1,
-                                    background: activeDemoTab === 'visitor' ? 'linear-gradient(135deg, #1A1265, #6366F1)' : 'rgba(26, 18, 101, 0.03)',
-                                    border: activeDemoTab === 'visitor' ? 'none' : '1px solid rgba(26, 18, 101, 0.15)',
-                                    color: activeDemoTab === 'visitor' ? 'white' : '#1A1265',
-                                    padding: '14px',
-                                    borderRadius: '12px',
-                                    fontWeight: '800',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.3s ease'
-                                }}>
-                                    Vue Visiteur
-                                </button>
-                                <button onClick={() => setActiveDemoTab('dashboard')} style={{
-                                    flex: 1,
-                                    background: activeDemoTab === 'dashboard' ? 'linear-gradient(135deg, #1A1265, #6366F1)' : 'rgba(26, 18, 101, 0.03)',
-                                    border: activeDemoTab === 'dashboard' ? 'none' : '1px solid rgba(26, 18, 101, 0.15)',
-                                    color: activeDemoTab === 'dashboard' ? 'white' : '#1A1265',
-                                    padding: '14px',
-                                    borderRadius: '12px',
-                                    fontWeight: '800',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.3s ease'
-                                }}>
-                                    Vue Dashboard
-                                </button>
+                            {/* 2. Theme color customize */}
+                            <div>
+                                <span style={{ color: '#475569', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: '12px' }}>
+                                    2. Personnaliser la Couleur de Thème
+                                </span>
+                                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
+                                    {CARD_COLORS.map((color) => (
+                                        <div
+                                            key={color.id}
+                                            onClick={() => setDemoThemeColor(color.hex)}
+                                            style={{
+                                                width: '28px',
+                                                height: '28px',
+                                                borderRadius: '50%',
+                                                background: color.hex,
+                                                cursor: 'pointer',
+                                                border: demoThemeColor === color.hex ? '3px solid #1D4ED8' : '2px solid transparent',
+                                                boxShadow: '0 4px 8px rgba(0,0,0,0.08)',
+                                                transition: 'transform 0.2s'
+                                            }}
+                                            onMouseOver={e => e.currentTarget.style.transform = 'scale(1.15)'}
+                                            onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
+                                        />
+                                    ))}
+                                    
+                                    {/* Custom Color Input */}
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '6px', borderLeft: '1px solid #E2E8F0', paddingLeft: '14px' }}>
+                                        <label htmlFor="custom-theme-color" style={{ fontSize: '11px', fontWeight: '800', color: '#64748B', cursor: 'pointer', textTransform: 'uppercase' }}>Perso :</label>
+                                        <input 
+                                            id="custom-theme-color"
+                                            type="color" 
+                                            value={demoThemeColor} 
+                                            onChange={(e) => setDemoThemeColor(e.target.value)} 
+                                            style={{ width: '28px', height: '28px', padding: 0, border: 'none', borderRadius: '50%', cursor: 'pointer', background: 'transparent' }} 
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* 3. Light / Dark mode toggles */}
+                            <div>
+                                <span style={{ color: '#475569', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: '12px' }}>
+                                    3. Choisir le Mode Visuel
+                                </span>
+                                <div style={{ display: 'flex', gap: '12px' }}>
+                                    <button
+                                        onClick={() => setDemoBgColor('#f8fafc')}
+                                        style={{
+                                            flex: 1,
+                                            padding: '12px',
+                                            borderRadius: '12px',
+                                            background: demoBgColor === '#f8fafc' ? 'linear-gradient(135deg, #1A1265, #6366F1)' : 'white',
+                                            color: demoBgColor === '#f8fafc' ? 'white' : '#1A1265',
+                                            border: demoBgColor === '#f8fafc' ? 'none' : '1px solid rgba(26, 18, 101, 0.15)',
+                                            fontWeight: '800',
+                                            fontSize: '13px',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s',
+                                            boxShadow: demoBgColor === '#f8fafc' ? '0 4px 15px rgba(26, 18, 101, 0.15)' : 'none'
+                                        }}
+                                    >
+                                        ☀️ Mode Clair
+                                    </button>
+                                    <button
+                                        onClick={() => setDemoBgColor('#0F172A')}
+                                        style={{
+                                            flex: 1,
+                                            padding: '12px',
+                                            borderRadius: '12px',
+                                            background: demoBgColor === '#0F172A' ? 'linear-gradient(135deg, #1A1265, #6366F1)' : 'white',
+                                            color: demoBgColor === '#0F172A' ? 'white' : '#1A1265',
+                                            border: demoBgColor === '#0F172A' ? 'none' : '1px solid rgba(26, 18, 101, 0.15)',
+                                            fontWeight: '800',
+                                            fontSize: '13px',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s',
+                                            boxShadow: demoBgColor === '#0F172A' ? '0 4px 15px rgba(26, 18, 101, 0.15)' : 'none'
+                                        }}
+                                    >
+                                        🌙 Mode Sombre
+                                    </button>
+                                </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </section>
