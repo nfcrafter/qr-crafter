@@ -136,6 +136,11 @@ export default function PublicProfile() {
           const url = s.getUrl(val)
           if (s.id === 'website') {
             vc += `URL:${url}\r\n`
+          } else if (s.id === 'whatsapp' || s.id === 'whatsapp_business') {
+            vc += `item${itemIndex}.URL:${url}\r\n`
+            vc += `item${itemIndex}.X-ABLabel:WhatsApp\r\n`
+            vc += `X-WHATSAPP:${val}\r\n`
+            itemIndex++;
           } else {
             vc += `item${itemIndex}.URL:${url}\r\n`
             vc += `item${itemIndex}.X-ABLabel:${s.label}\r\n`
@@ -606,11 +611,6 @@ export default function PublicProfile() {
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
                         </div>
                         <h3 style={{ fontSize: 16, fontWeight: 800, color: textColor, margin: 0 }}>{profile.section_titles?.gallery || 'Galerie'}</h3>
-                        {items.length > 2 && (
-                            <span style={{ fontSize: 11, fontWeight: 700, color: textColor + '70', marginLeft: 'auto', background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)', padding: '4px 8px', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 4 }}>
-                                Balayer ↔
-                            </span>
-                        )}
                     </div>
                     <div className="gallery-scroll">
                         {items.map((item, index) => (

@@ -454,6 +454,7 @@ export default function ClientDashboard() {
         }
 
         // Add standard socials
+        let itemIndex = 1;
         if (publicProfile.socials) {
             Object.entries(publicProfile.socials).forEach(([key, val]) => {
                 let value = '';
@@ -463,7 +464,26 @@ export default function ClientDashboard() {
                     value = val;
                 }
                 if (value && value.trim()) {
-                    lines.push(`X-SOCIALPROFILE;TYPE=${key.toUpperCase()}:${value}`);
+                    const network = SOCIAL_NETWORKS.find(n => n.id === key);
+                    if (network) {
+                        try {
+                            const url = network.getUrl(value);
+                            if (key === 'whatsapp' || key === 'whatsapp_business') {
+                                lines.push(`item${itemIndex}.URL:${url}`);
+                                lines.push(`item${itemIndex}.X-ABLabel:WhatsApp`);
+                                lines.push(`X-WHATSAPP:${value}`);
+                                itemIndex++;
+                            } else {
+                                lines.push(`item${itemIndex}.URL:${url}`);
+                                lines.push(`item${itemIndex}.X-ABLabel:${network.label}`);
+                                itemIndex++;
+                            }
+                        } catch (e) {
+                            lines.push(`X-SOCIALPROFILE;TYPE=${key.toUpperCase()}:${value}`);
+                        }
+                    } else {
+                        lines.push(`X-SOCIALPROFILE;TYPE=${key.toUpperCase()}:${value}`);
+                    }
                 }
             });
         }
