@@ -602,7 +602,7 @@ export default function ClientDashboard() {
                     <button onClick={() => setIsMobileMenuOpen(false)} className="mobile-only" style={{ background: '#F1F5F9', border: 'none', width: '32px', height: '32px', borderRadius: '50%', display: 'none', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>✕</button>
                 </div>
 
-                <div style={{ flex: 1, overflowY: 'auto', padding: '0 16px' }}>
+                <div style={{ flex: 1, overflowY: 'auto', padding: '0 16px', display: 'flex', flexDirection: 'column' }}>
                     <button onClick={() => navigate('/')} style={{ width: '100%', padding: '14px 16px', borderRadius: '16px', border: 'none', textAlign: 'left', cursor: 'pointer', background: 'transparent', color: '#64748B', fontWeight: '700', transition: '0.2s', display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
                         <div style={{ width: 18, height: 18 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>` }} />
                         Accueil
@@ -673,13 +673,10 @@ export default function ClientDashboard() {
                                 )}
                             </div>
                         ))}
+                    <div style={{ marginTop: 'auto', paddingTop: '32px', paddingBottom: '24px' }}>
+                        <button onClick={() => { localStorage.removeItem('nfc_cached_user'); localStorage.removeItem('nfc_cached_cards'); supabase.auth.signOut(); navigate('/login'); }} style={{ width: '100%', padding: '14px', borderRadius: '14px', background: 'white', color: '#EF4444', border: '1px solid #FEE2E2', fontWeight: '800', cursor: 'pointer', fontSize: '13px', boxShadow: '0 4px 6px rgba(239, 68, 68, 0.05)' }}>Déconnexion</button>
                     </div>
 
-
-                </div>
-
-                <div style={{ padding: '24px', background: '#FFFFFF' }}>
-                    <button onClick={() => { localStorage.removeItem('nfc_cached_user'); localStorage.removeItem('nfc_cached_cards'); supabase.auth.signOut(); navigate('/login'); }} style={{ width: '100%', padding: '14px', borderRadius: '14px', background: 'white', color: '#EF4444', border: '1px solid #FEE2E2', fontWeight: '800', cursor: 'pointer', fontSize: '13px', boxShadow: '0 4px 6px rgba(239, 68, 68, 0.05)' }}>Déconnexion</button>
                 </div>
             </aside>
 
