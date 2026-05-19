@@ -1000,16 +1000,16 @@ export default function LandingPage() {
                             </p>
                         </div>
 
-                        {/* 11. Certifications/Compétences */}
+                        {/* 11. Partage & Diffusion Omnicanale */}
                         <div className="bento-card" style={{ minHeight: '300px' }}>
                             <div>
                                 <div style={{width:'40px', height:'40px', background:'rgba(14, 165, 233, 0.1)', borderRadius:'12px', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'16px'}}>
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
                                 </div>
-                                <h3 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Certifications/Compétences</h3>
+                                <h3 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Diffusion Omnicanale</h3>
                             </div>
                             <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>
-                                Vous avez des compétences ou vous disposez de certifications ? Mentionnez-les directement sur votre profil.
+                                Intégrez votre lien unique dans vos bios (Instagram, TikTok, Facebook) ou WhatsApp Business, et imprimez votre QR Code haute résolution sur vos flyers, affiches, menus ou vitrines.
                             </p>
                         </div>
 
