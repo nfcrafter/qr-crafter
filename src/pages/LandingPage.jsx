@@ -1369,8 +1369,8 @@ export default function LandingPage() {
                                 )}
                             </div>
 
-                            {/* Step 2: Color Picker (uniquement pour les packs avec carte) */}
-                            {(cardType === 'physical' || cardType === 'premium') && (
+                            {/* Step 2: Color Picker (Pack Signature uniquement) */}
+                            {cardType === 'physical' && (
                                 <div>
                                     <span style={{ color: '#475569', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: '12px' }}>Étape 2 : Couleur de la carte — <span style={{ color: '#1A1265' }}>{activeColor.name}</span></span>
                                     <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
@@ -1395,6 +1395,16 @@ export default function LandingPage() {
                                     </div>
                                 </div>
                             )}
+                            {/* Premium: design 100% sur mesure, pas de color picker */}
+                            {cardType === 'premium' && (
+                                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', background: 'rgba(217,119,6,0.05)', border: '1px solid rgba(217,119,6,0.15)', borderRadius: '12px', padding: '14px 16px' }}>
+                                    <span style={{ fontSize: '20px', flexShrink: 0 }}>🎨</span>
+                                    <p style={{ margin: 0, fontSize: '13px', color: '#92400E', lineHeight: '1.6' }}>
+                                        <strong>Design 100% sur mesure.</strong> Votre carte sera conçue par notre équipe selon vos préférences (couleur, logo, photo, police…). Précisez vos souhaits directement sur WhatsApp.
+                                    </p>
+                                </div>
+                            )}
+
 
                             {/* CTA Button — adapté au pack */}
                             <button onClick={() => window.open(getWhatsAppUrl(), '_blank')} style={{
