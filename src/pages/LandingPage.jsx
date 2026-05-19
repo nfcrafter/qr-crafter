@@ -763,7 +763,7 @@ export default function LandingPage() {
                                 <div style={{ background: 'rgba(26, 18, 101, 0.05)', color: '#1A1265', padding: '10px', borderRadius: '12px', fontWeight: 'bold' }}>✓</div>
                                 <div>
                                     <h4 style={{ margin: '0 0 6px 0', fontSize: '17px', color: '#0F172A' }}>Prise de contact rapide</h4>
-                                    <p style={{ margin: 0, color: '#475569', fontSize: '14px', lineHeight: '1.5' }}>Que vous soyez dans le bruit,  pressé ou stressé de prendre le contact de votre crush, un simple effleurement de la carte suffit pour transmettre vos coordonnées instantanément. Aucune application requise de la part de votre interlocuteur.</p>
+                                    <p style={{ margin: 0, color: '#475569', fontSize: '14px', lineHeight: '1.5' }}>Que vous soyez dans le bruit ou  pressé, un simple effleurement de la carte suffit pour transmettre vos coordonnées instantanément. Aucune application requise de la part de votre interlocuteur.</p>
                                 </div>
                             </div>
                         </div>
