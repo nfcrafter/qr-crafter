@@ -687,7 +687,7 @@ export default function LandingPage() {
                             </div>
                             <div style={{ background: '#1A1265', color: 'white', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px', position: 'absolute', top: '-14px', right: 'calc(50% - 14px)', boxShadow: '0 4px 10px rgba(26,18,101,0.2)' }}>3</div>
                             <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#0F172A', marginBottom: '12px' }}>La Personnalisation</h3>
-                            <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.6', margin: 0 }}>Personnalisez votre page en temps réel depuis votre tableau de bord: ajoutez une belle photo, une bannière de couverture,une bio pour vous présenter,des liens vers vos réseaux sociaux, d'autres liens personnalisés utiles, vos compétences, portfolios, une gallerie d'image,etc. NB: L'ajout de tout cela est optionnel, vous personnalisez votre page en fonction de vos informations et envies.</p>
+                            <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.6', margin: 0 }}>Personnalisez votre page en temps réel depuis votre tableau de bord: ajoutez photo, bannière, des liens vers vos réseaux sociaux, d'autres liens utiles, vos compétences, portfolios, une gallerie d'image,etc. NB: L'ajout de tout cela est optionnel, vous personnalisez votre page en fonction de vos informations et envies.</p>
                         </div>
 
                         {/* Step 4 */}
