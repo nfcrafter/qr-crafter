@@ -673,6 +673,8 @@ export default function ClientDashboard() {
                                 )}
                             </div>
                         ))}
+                    </div>
+
                     <div style={{ marginTop: 'auto', paddingTop: '32px', paddingBottom: '24px' }}>
                         <button onClick={() => { localStorage.removeItem('nfc_cached_user'); localStorage.removeItem('nfc_cached_cards'); supabase.auth.signOut(); navigate('/login'); }} style={{ width: '100%', padding: '14px', borderRadius: '14px', background: 'white', color: '#EF4444', border: '1px solid #FEE2E2', fontWeight: '800', cursor: 'pointer', fontSize: '13px', boxShadow: '0 4px 6px rgba(239, 68, 68, 0.05)' }}>Déconnexion</button>
                     </div>

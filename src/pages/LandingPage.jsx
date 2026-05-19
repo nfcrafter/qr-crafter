@@ -404,7 +404,7 @@ export default function LandingPage() {
                         </h1>
 
                         <p style={{ fontSize: '17px', color: '#475569', lineHeight: '1.6', margin: 0, maxWidth: '500px' }}>
-                            Partagez vos contacts en 1 seconde. Vendez vos services directement via WhatsApp. Impressionnez vos futurs clients sans jamais avoir besoin de réimprimer.
+                            Présentez-vous et partagez vos contacts en 1 seconde. Vendez vos services directement via WhatsApp. Impressionnez vos futurs contacts sans jamais avoir besoin de réimprimer une carte ou dicter votre numéro.
                         </p>
 
                         <div className="hero-buttons" style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '12px' }}>
