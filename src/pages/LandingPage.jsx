@@ -1134,18 +1134,6 @@ export default function LandingPage() {
                                             />
                                         );
                                     })}
-                                    
-                                    {/* Custom Color Input */}
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '6px', borderLeft: '1px solid #E2E8F0', paddingLeft: '14px' }}>
-                                        <label htmlFor="custom-theme-color" style={{ fontSize: '11px', fontWeight: '800', color: '#64748B', cursor: 'pointer', textTransform: 'uppercase' }}>Perso :</label>
-                                        <input 
-                                            id="custom-theme-color"
-                                            type="color" 
-                                            value={demoThemeColor} 
-                                            onChange={(e) => setDemoThemeColor(e.target.value)} 
-                                            style={{ width: '28px', height: '28px', padding: 0, border: 'none', borderRadius: '50%', cursor: 'pointer', background: 'transparent' }} 
-                                        />
-                                    </div>
                                 </div>
                             </div>
                         </div>
