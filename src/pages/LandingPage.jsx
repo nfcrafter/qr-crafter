@@ -14,6 +14,17 @@ const CARD_COLORS = [
     { id: 'pink', name: 'Rose Poudré', hex: '#DB2777', imgCombined: '/assets/cards/pink-combined.png', imgRecto: '/assets/cards/pink-recto.png', imgVerso: '/assets/cards/pink-verso.png' }
 ];
 
+const COLOR_MAP = {
+    black: { theme: '#111827', bg: '#0F172A' },
+    white: { theme: '#111827', bg: '#F8FAFC' },
+    blue: { theme: '#2563EB', bg: '#EFF6FF' },
+    gold: { theme: '#D97706', bg: '#FEF3C7' },
+    red: { theme: '#DC2626', bg: '#FEF2F2' },
+    green: { theme: '#059669', bg: '#ECFDF5' },
+    purple: { theme: '#7C3AED', bg: '#F5F3FF' },
+    pink: { theme: '#DB2777', bg: '#FDF2F8' }
+};
+
 const HERO_PROFILES = [
     {
         name: 'Romuald K.',
@@ -108,14 +119,14 @@ export default function LandingPage() {
     // Live preview states for Demo Section
     const [selectedDemoProfileIndex, setSelectedDemoProfileIndex] = useState(0);
     const [demoThemeColor, setDemoThemeColor] = useState('#111827');
-    const [demoBgColor, setDemoBgColor] = useState('#f8fafc');
+    const [demoBgColor, setDemoBgColor] = useState('#0F172A');
     
     // States for Hero Audacious flipping color-shifting card
     const [heroColorIndex, setHeroColorIndex] = useState(0);
 
     // Modal state for Live Demo
     const [showLiveDemoModal, setShowLiveDemoModal] = useState(false);
-    const DEMO_LIVE_PREVIEW_URL = "https://www.nfcrafter.com/u/VDDOHE3O";
+    const DEMO_LIVE_PREVIEW_URL = "/u/VDDOHE3O";
 
     useEffect(() => {
         const handleScroll = () => {
@@ -569,10 +580,10 @@ export default function LandingPage() {
                         {[1, 2, 3, 4].map(idx => (
                             <React.Fragment key={idx}>
                                 <span style={{ color: '#1A1265', fontWeight: '800', letterSpacing: '2px', textTransform: 'uppercase', fontSize: '13px' }}>✦ 500+ PROFESSIONNELS ACTIFS</span>
-                                <span style={{ color: '#475569', fontWeight: '800', letterSpacing: '2px', textTransform: 'uppercase', fontSize: '13px' }}>✦ LIVRAISON 48H COTONOU</span>
-                                <span style={{ color: '#6366F1', fontWeight: '800', letterSpacing: '2px', textTransform: 'uppercase', fontSize: '13px' }}>✦ ZÉRO ABONNEMENT</span>
-                                <span style={{ color: '#1A1265', fontWeight: '800', letterSpacing: '2px', textTransform: 'uppercase', fontSize: '13px' }}>✦ BOUTIQUE WHATSAPP INCLUSE</span>
-                                <span style={{ color: '#475569', fontWeight: '800', letterSpacing: '2px', textTransform: 'uppercase', fontSize: '13px' }}>✦ FABRIQUÉ POUR L'AFRIQUE 🇧🇯</span>
+                                <span style={{ color: '#475569', fontWeight: '800', letterSpacing: '2px', textTransform: 'uppercase', fontSize: '13px' }}>✦ LIVRAISON RAPIDE</span>
+                                <span style={{ color: '#6366F1', fontWeight: '800', letterSpacing: '2px', textTransform: 'uppercase', fontSize: '13px' }}>✦ TOUS VOS RESEAUX SOCIAUX EN 1 SEULE TOUCHE</span>
+                                <span style={{ color: '#1A1265', fontWeight: '800', letterSpacing: '2px', textTransform: 'uppercase', fontSize: '13px' }}>✦ LIEN VERS BOUTIQUE INCLUSE</span>
+                                <span style={{ color: '#475569', fontWeight: '800', letterSpacing: '2px', textTransform: 'uppercase', fontSize: '13px' }}>✦ MINI SITE WEB PERSONNEL</span>
                             </React.Fragment>
                         ))}
                     </div>
@@ -587,7 +598,7 @@ export default function LandingPage() {
                             Comment ça <span style={{ color: '#1A1265' }}>fonctionne ?</span>
                         </h2>
                         <p style={{ color: '#475569', fontSize: '17px', maxWidth: '600px', margin: '0 auto' }}>
-                            Une expérience magique et sans friction, de la commande jusqu'au partage de vos coordonnées.
+                            Une expérience simple et rapide, de la commande jusqu'au partage de vos coordonnées.
                         </p>
                     </div>
 
@@ -602,7 +613,7 @@ export default function LandingPage() {
                             </div>
                             <div style={{ background: '#1A1265', color: 'white', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px', position: 'absolute', top: '-14px', right: 'calc(50% - 14px)', boxShadow: '0 4px 10px rgba(26,18,101,0.2)' }}>1</div>
                             <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#0F172A', marginBottom: '12px' }}>La Commande</h3>
-                            <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.6', margin: 0 }}>Choisissez votre design. Expédition express sous 48h sur Cotonou.</p>
+                            <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.6', margin: 0 }}>Choisissez votre pack (Site personnalisée: 7000FCFA, Carte NFCrafter avec votre site : 10000FCFA, Carte ultra personnalisée avec votre nom/photo/logo + site personnalisée : 17000FCFA).</p>
                         </div>
 
                         {/* Step 2 */}
@@ -612,7 +623,7 @@ export default function LandingPage() {
                             </div>
                             <div style={{ background: '#1A1265', color: 'white', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px', position: 'absolute', top: '-14px', right: 'calc(50% - 14px)', boxShadow: '0 4px 10px rgba(26,18,101,0.2)' }}>2</div>
                             <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#0F172A', marginBottom: '12px' }}>L'Activation</h3>
-                            <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.6', margin: 0 }}>Scannez la carte à la réception. Liez-la à votre compte sécurisé en 1 clic.</p>
+                            <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.6', margin: 0 }}>Si vous avez opté pour une carte, scannez le code QR au dos de la carte et vous serez redirigé vers une page. Créez donc votre compte et accédez à votre tableau de bord.</p>
                         </div>
 
                         {/* Step 3 */}
@@ -622,7 +633,7 @@ export default function LandingPage() {
                             </div>
                             <div style={{ background: '#1A1265', color: 'white', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px', position: 'absolute', top: '-14px', right: 'calc(50% - 14px)', boxShadow: '0 4px 10px rgba(26,18,101,0.2)' }}>3</div>
                             <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#0F172A', marginBottom: '12px' }}>La Personnalisation</h3>
-                            <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.6', margin: 0 }}>Personnalisez votre page en temps réel : ajoutez une belle photo, une bannière de couverture et vos réseaux.</p>
+                            <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.6', margin: 0 }}>Personnalisez votre page en temps réel depuis votre tableau de bord: ajoutez une belle photo, une bannière de couverture,une bio pour vous présenter,des liens vers vos réseaux sociaux, d'autres liens personnalisés utiles, vos compétences, portfolios, une gallerie d'image,etc. NB: L'ajout de tout cela est optionnel, vous personnalisez votre page en fonction de vos informations et envies.</p>
                         </div>
 
                         {/* Step 4 */}
@@ -632,7 +643,7 @@ export default function LandingPage() {
                             </div>
                             <div style={{ background: '#6366F1', color: 'white', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px', position: 'absolute', top: '-14px', right: 'calc(50% - 14px)', boxShadow: '0 4px 10px rgba(99,102,241,0.3)' }}>4</div>
                             <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#0F172A', marginBottom: '12px' }}>Le Partage Magique</h3>
-                            <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.6', margin: 0 }}>Approchez la carte d'un téléphone. Votre interlocuteur enregistre vos coordonnées en 1 seconde.</p>
+                            <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.6', margin: 0 }}>Approchez la carte d'un téléphone. Votre interlocuteur enregistre vos coordonnées en 1 seconde. Il a un très ancien téléphone ? Pas de panique, il a un QR code au dos de la carte que votre interlocuteur peut scanner avec son téléphone.</p>
                         </div>
                     </div>
                 </div>
@@ -667,7 +678,7 @@ export default function LandingPage() {
                                 <div style={{ background: 'rgba(239, 68, 68, 0.08)', color: '#EF4444', padding: '10px', borderRadius: '12px', fontWeight: 'bold' }}>✕</div>
                                 <div>
                                     <h4 style={{ margin: '0 0 6px 0', fontSize: '17px', color: '#0F172A' }}>La dictée pénible du numéro</h4>
-                                    <p style={{ margin: 0, color: '#475569', fontSize: '14px', lineHeight: '1.5' }}>"Zéro-Six..." Vous épelez pendant 5 minutes. Le prospect note mal votre nom et ne vous rappelle jamais.</p>
+                                    <p style={{ margin: 0, color: '#475569', fontSize: '14px', lineHeight: '1.5' }}>"Zéro-Six..." Vous épelez pendant 2 minutes. Votre interlocuteur note mal votre nom et ne vous rappelle jamais.</p>
                                 </div>
                             </div>
 
@@ -675,7 +686,7 @@ export default function LandingPage() {
                                 <div style={{ background: 'rgba(239, 68, 68, 0.08)', color: '#EF4444', padding: '10px', borderRadius: '12px', fontWeight: 'bold' }}>✕</div>
                                 <div>
                                     <h4 style={{ margin: '0 0 6px 0', fontSize: '17px', color: '#0F172A' }}>Coûteuse réimpression</h4>
-                                    <p style={{ margin: 0, color: '#475569', fontSize: '14px', lineHeight: '1.5' }}>Un simple changement de numéro ou de logo vous oblige à réimprimer tout un lot (10 000f perdus).</p>
+                                    <p style={{ margin: 0, color: '#475569', fontSize: '14px', lineHeight: '1.5' }}>Un simple changement de numéro ou de logo vous oblige à réimprimer tout un lot (plus de 10 000f perdus).</p>
                                 </div>
                             </div>
                         </div>
@@ -688,7 +699,7 @@ export default function LandingPage() {
                                 <div style={{ background: 'rgba(26, 18, 101, 0.05)', color: '#1A1265', padding: '10px', borderRadius: '12px', fontWeight: 'bold' }}>✓</div>
                                 <div>
                                     <h4 style={{ margin: '0 0 6px 0', fontSize: '17px', color: '#0F172A' }}>Un simple "Tap" magique</h4>
-                                    <p style={{ margin: 0, color: '#475569', fontSize: '14px', lineHeight: '1.5' }}>La carte effleure le téléphone de votre prospect, votre profil professionnel s'ouvre en 1 seconde chrono.</p>
+                                    <p style={{ margin: 0, color: '#475569', fontSize: '14px', lineHeight: '1.5' }}>La carte effleure le téléphone de votre interlocuteur, votre profil professionnel s'ouvre en 1 seconde chrono.</p>
                                 </div>
                             </div>
 
@@ -696,15 +707,15 @@ export default function LandingPage() {
                                 <div style={{ background: 'rgba(26, 18, 101, 0.05)', color: '#1A1265', padding: '10px', borderRadius: '12px', fontWeight: 'bold' }}>✓</div>
                                 <div>
                                     <h4 style={{ margin: '0 0 6px 0', fontSize: '17px', color: '#0F172A' }}>Enregistrement direct</h4>
-                                    <p style={{ margin: 0, color: '#475569', fontSize: '14px', lineHeight: '1.5' }}>Votre contact (numéro, email, site web) est enregistré automatiquement dans leur répertoire sans aucune erreur.</p>
+                                    <p style={{ margin: 0, color: '#475569', fontSize: '14px', lineHeight: '1.5' }}>Votre contact (numéro, email, réseaux sociaux, le lien de votre page NFCrafter,etc) est enregistré automatiquement dans leur répertoire sans aucune erreur.</p>
                                 </div>
                             </div>
 
                             <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
                                 <div style={{ background: 'rgba(26, 18, 101, 0.05)', color: '#1A1265', padding: '10px', borderRadius: '12px', fontWeight: 'bold' }}>✓</div>
                                 <div>
-                                    <h4 style={{ margin: '0 0 6px 0', fontSize: '17px', color: '#0F172A' }}>Boutique WhatsApp & Commande</h4>
-                                    <p style={{ margin: 0, color: '#475569', fontSize: '14px', lineHeight: '1.5' }}>Le client navigue dans votre mini-site, choisit un produit, commande via WhatsApp, et vous le livrez.</p>
+                                    <h4 style={{ margin: '0 0 6px 0', fontSize: '17px', color: '#0F172A' }}>Boutique & Commande</h4>
+                                    <p style={{ margin: 0, color: '#475569', fontSize: '14px', lineHeight: '1.5' }}>Le client navigue dans votre mini-site, choisit un produit, est redirigé vers WhatsApp ou votre boutique en ligne pour finaliser la commande.</p>
                                 </div>
                             </div>
                         </div>
@@ -716,7 +727,7 @@ export default function LandingPage() {
             <section style={{ padding: '80px 0', overflow: 'hidden', background: '#F8FAFC' }}>
                 <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', marginBottom: '36px', textAlign: 'center' }}>
                     <h2 className="responsive-h2" style={{ fontWeight: '800', color: '#0F172A' }}>Vous pouvez personnaliser votre carte</h2>
-                    <p style={{ color: '#475569', marginTop: '8px' }}>Commandez votre carte ultra personnalisée selon vos envies à 17 000 FCFA</p>
+                    <p style={{ color: '#475569', marginTop: '8px' }}>Vous avez envie d'avoir une carte à votre effigie, avec vos couleurs, votre logo/photo ? Eh bien c'est possible avec NFCrafter.</p>
                 </div>
                 
                 <div className="gallery-row">
@@ -773,7 +784,7 @@ export default function LandingPage() {
                             e.currentTarget.style.boxShadow = '0 8px 20px rgba(26, 18, 101, 0.15)';
                         }}
                     >
-                        <span>Commander ma carte personnalisée <span style={{ whiteSpace: 'nowrap' }}>(17 000 FCFA)</span></span>
+                        <span>Commander ma carte personnalisée <span style={{ whiteSpace: 'nowrap' }}>(15 000 FCFA)</span></span>
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                     </a>
                 </div>
@@ -784,7 +795,7 @@ export default function LandingPage() {
                 <div style={{ maxWidth: '1200px', width: '100%', margin: '0 auto', padding: '0 24px' }}>
                     <div style={{ textAlign: 'center', marginBottom: '60px' }}>
                         <h2 className="responsive-h2" style={{ fontWeight: '900', fontFamily: 'Outfit', color: '#0F172A', letterSpacing: '-0.02em', margin: '0 0 16px 0' }}>
-                            Pas juste une carte. <span style={{ color: '#1A1265' }}>Un écosystème complet.</span>
+                            Pas juste une carte ou un site web personnel. <span style={{ color: '#1A1265' }}>Un écosystème complet.</span>
                         </h2>
                         <p style={{ color: '#475569', fontSize: '17px', maxWidth: '600px', margin: '0 auto' }}>
                             Découvrez les 10 fonctionnalités clés de NFCrafter qui propulsent votre visibilité.
@@ -801,8 +812,8 @@ export default function LandingPage() {
                                     <span style={{ color: '#1A1265', fontWeight: '800', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '2px', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '12px' }}>
                                         <div style={{width:'8px', height:'8px', borderRadius:'50%', background:'#10B981'}}></div> 100% SANS CONNEXION
                                     </span>
-                                    <h3 style={{ fontSize: '26px', fontWeight: '900', margin: '0 0 12px 0', color: '#0F172A', letterSpacing: '-0.02em' }}>La carte qui marche sans forfait internet.</h3>
-                                    <p style={{ color: '#475569', fontSize: '15px', lineHeight: '1.6', margin: 0 }}>Partagez vos coordonnées juste en effleurant un téléphone. Plus de connexion ? Aucun problème. Notre <strong style={{color:'#1A1265'}}>technologie de QR Code de secours</strong> et d'application installable transmettent vos contacts même en mode avion.</p>
+                                    <h3 style={{ fontSize: '26px', fontWeight: '900', margin: '0 0 12px 0', color: '#0F172A', letterSpacing: '-0.02em' }}>Le partage qui marche sans connexion internet.</h3>
+                                    <p style={{ color: '#475569', fontSize: '15px', lineHeight: '1.6', margin: 0 }}>Partagez vos coordonnées juste en effleurant un téléphone. Plus de connexion ? Aucun problème. Notre <strong style={{color:'#1A1265'}}>technologie de QR Code de secours</strong> contenue dans l'application installable via votre tableau de bord vous permet de transmettre vos contacts même en mode avion.</p>
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(26, 18, 101, 0.05)', padding: '24px', borderRadius: '24px', boxShadow: 'inset 0 2px 10px rgba(0,0,0,0.02)' }}>
                                     <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#1A1265" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
@@ -816,10 +827,10 @@ export default function LandingPage() {
                                 <div style={{width:'40px', height:'40px', background:'rgba(99, 102, 241, 0.1)', borderRadius:'12px', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'16px'}}>
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6366F1" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5c-1.1 0-2 .9-2 2v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>
                                 </div>
-                                <h3 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Bouton "Sauvegarder" intelligent</h3>
+                                <h3 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Bouton "Enregistrer le contact" intelligent</h3>
                             </div>
                             <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>
-                                Vos informations vont directement dans le répertoire de votre contact, avec votre photo et <strong style={{color:'#1A1265'}}>un lien vers votre WhatsApp</strong>.
+                                Grâce à ce bouton, vos informations vont directement dans le répertoire de votre interlocuteur, avec votre photo de profil et <strong style={{color:'#1A1265'}}>tous vos liens inclus</strong>.
                             </p>
                         </div>
 
@@ -832,7 +843,7 @@ export default function LandingPage() {
                                 <h3 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Catalogue & E-commerce</h3>
                             </div>
                             <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>
-                                Exposez vos produits. Redirigez vos visiteurs vers votre WhatsApp pour commander, ou vers votre site externe (Systeme.io, Shopify, etc.).
+                                Affichez vos produits digital ou physique. Redirigez vos visiteurs vers votre WhatsApp, ou vers votre site externe (Maketou, Shopify, etc.).
                             </p>
                         </div>
 
@@ -855,7 +866,7 @@ export default function LandingPage() {
                                 <div style={{width:'40px', height:'40px', background:'rgba(234, 179, 8, 0.1)', borderRadius:'12px', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'16px'}}>
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EAB308" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                                 </div>
-                                <h3 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Récolte d'Avis Clients</h3>
+                                <h3 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Avis Clients Privés</h3>
                             </div>
                             <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>
                                 Recevez des avis 5 étoiles de vos contacts directement via la carte, et consultez-les dans votre espace pour améliorer vos services ou projets.
@@ -871,7 +882,7 @@ export default function LandingPage() {
                                 <h3 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Galerie de Réalisations</h3>
                             </div>
                             <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>
-                                Mettez en avant vos plus beaux travaux ou vos articles grâce à notre galerie d'images fluide, parfaite sur téléphone mobile.
+                                Mettez en avant vos plus beaux travaux ou vos articles grâce à notre galerie d'images fluide et parfaite.
                             </p>
                         </div>
 
@@ -881,10 +892,10 @@ export default function LandingPage() {
                                 <div style={{width:'40px', height:'40px', background:'rgba(236, 72, 153, 0.1)', borderRadius:'12px', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'16px'}}>
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EC4899" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="5 9 2 12 5 15"></polyline><polyline points="9 5 12 2 15 5"></polyline><polyline points="19 9 22 12 19 15"></polyline><polyline points="9 19 12 22 15 19"></polyline><line x1="2" y1="12" x2="22" y2="12"></line><line x1="12" y1="2" x2="12" y2="22"></line></svg>
                                 </div>
-                                <h3 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Modification très facile</h3>
+                                <h3 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Promotion de vos évènements</h3>
                             </div>
                             <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>
-                                Vous changez vos numéros ou déplacez vos informations simplement en glissant votre doigt sur l'écran. Tout est pris en compte à la seconde.
+                                Vous organisez un évènement ? Formations, Coaching, Conférence,Chill ? Mentionnez le directement dans votre profil et ajouter le lien vers la billeterie ou WhatsApp.
                             </p>
                         </div>
 
@@ -897,7 +908,7 @@ export default function LandingPage() {
                                 <h3 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Gestion Multi-Cartes</h3>
                             </div>
                             <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>
-                                Que vous soyez chef d'entreprise ou étudiant avec plusieurs projets, gérez plusieurs cartes ou celles de votre équipe depuis un seul compte.
+                                Que vous soyez chef d'entreprise,étudiant ou freelancer avec plusieurs projets, vous pouvez gérer plusieurs cartes ou celles de votre équipe depuis un seul compte.
                             </p>
                         </div>
 
@@ -910,7 +921,7 @@ export default function LandingPage() {
                                 <h3 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Statistiques des Scans</h3>
                             </div>
                             <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>
-                                Surveillez l'impact de vos rencontres. Découvrez combien de fois votre carte a été consultée sur les 14 derniers jours.
+                                Surveillez l'impact de vos rencontres. Découvrez combien de fois votre profil a été consulté.
                             </p>
                         </div>
 
@@ -927,16 +938,29 @@ export default function LandingPage() {
                             </p>
                         </div>
 
-                        {/* 11. Prise de RDV */}
+                        {/* 11. Certifications/Compétences */}
                         <div className="bento-card" style={{ minHeight: '300px' }}>
                             <div>
                                 <div style={{width:'40px', height:'40px', background:'rgba(14, 165, 233, 0.1)', borderRadius:'12px', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'16px'}}>
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
                                 </div>
-                                <h3 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Prise de Rendez-vous</h3>
+                                <h3 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Certifications/Compétences</h3>
                             </div>
                             <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>
-                                Intégrez un lien direct vers votre agenda pour que vos rencontres réservent un moment avec vous dès le premier contact.
+                                Vous avez des compétences ou vous disposez de certifications ? Mentionnez-les directement sur votre profil.
+                            </p>
+                        </div>
+
+                        {/* 12. Modification Facile (M - 1 column) */}
+                        <div className="bento-card" style={{ minHeight: '300px' }}>
+                            <div>
+                                <div style={{ width: '40px', height: '40px', background: 'rgba(236, 72, 153, 0.1)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EC4899" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="5 9 2 12 5 15"></polyline><polyline points="9 5 12 2 15 5"></polyline><polyline points="19 9 22 12 19 15"></polyline><polyline points="9 19 12 22 15 19"></polyline><line x1="2" y1="12" x2="22" y2="12"></line><line x1="12" y1="2" x2="12" y2="22"></line></svg>
+                                </div>
+                                <h3 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 12px 0', color: '#0F172A' }}>Modification très facile</h3>
+                            </div>
+                            <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>
+                                Vous changez de position à vos sections(portfolio, boutiques, liens réseaux sociaux) simplement en glissant et déposant depuis votre tableau de bord dans l'onglet  "Mise en page". Tout est pris en compte à la seconde.
                             </p>
                         </div>
                     </div>
@@ -948,7 +972,7 @@ export default function LandingPage() {
                 <div style={{ maxWidth: '1200px', width: '100%', margin: '0 auto', padding: '0 24px' }}>
                     <div style={{ textAlign: 'center', marginBottom: '60px' }}>
                         <h2 className="responsive-h2" style={{ fontWeight: '900', fontFamily: 'Outfit', color: '#0F172A', letterSpacing: '-0.02em', margin: '0 0 16px 0' }}>
-                            Voici ce que <span style={{ color: '#1A1265' }}>vos contacts verront.</span>
+                            Voici un exemple de ce que <span style={{ color: '#1A1265' }}>vos interlocuteurs verront.</span>
                         </h2>
                         <p style={{ color: '#475569', fontSize: '17px', maxWidth: '600px', margin: '0 auto' }}>
                             Découvrez notre interface mobile d'exception. Testez les couleurs en temps réel.
@@ -989,12 +1013,12 @@ export default function LandingPage() {
                                 {/* Scaled Iframe to prevent responsiveness/overflow issues */}
                                 <div style={{ width: '250px', height: '500px', overflow: 'hidden', position: 'relative' }}>
                                     <iframe 
-                                        src={`/u/demo?profile_index=0&theme_color=${encodeURIComponent(demoThemeColor)}&bg_color=${encodeURIComponent(demoBgColor)}`}
+                                        src={`/u/VDDOHE3O?theme_color=${encodeURIComponent(demoThemeColor)}&bg_color=${encodeURIComponent(demoBgColor)}`}
                                         style={{ 
-                                            width: '360px', 
-                                            height: '720px', 
+                                            width: '375px', 
+                                            height: '750px', 
                                             border: 'none', 
-                                            transform: 'scale(0.694)', 
+                                            transform: 'scale(0.667)', 
                                             transformOrigin: 'top left',
                                             background: demoBgColor 
                                         }}
@@ -1005,7 +1029,7 @@ export default function LandingPage() {
 
                             {/* Open Fullscreen Link */}
                             <a 
-                                href={`/u/demo?profile_index=0&theme_color=${encodeURIComponent(demoThemeColor)}&bg_color=${encodeURIComponent(demoBgColor)}`}
+                                href={`/u/VDDOHE3O?theme_color=${encodeURIComponent(demoThemeColor)}&bg_color=${encodeURIComponent(demoBgColor)}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 style={{
@@ -1027,7 +1051,7 @@ export default function LandingPage() {
                                 onMouseOut={e => e.currentTarget.style.background = 'white'}
                             >
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
-                                Ouvrir en plein écran (Lien Réel)
+                                Ouvrir en plein écran
                             </a>
                         </div>
 
@@ -1040,24 +1064,31 @@ export default function LandingPage() {
                                     Personnaliser la Couleur de Thème
                                 </span>
                                 <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
-                                    {CARD_COLORS.map((color) => (
-                                        <div
-                                            key={color.id}
-                                            onClick={() => setDemoThemeColor(color.hex)}
-                                            style={{
-                                                width: '28px',
-                                                height: '28px',
-                                                borderRadius: '50%',
-                                                background: color.hex,
-                                                cursor: 'pointer',
-                                                border: demoThemeColor === color.hex ? '3px solid #1D4ED8' : '2px solid transparent',
-                                                boxShadow: '0 4px 8px rgba(0,0,0,0.08)',
-                                                transition: 'transform 0.2s'
-                                            }}
-                                            onMouseOver={e => e.currentTarget.style.transform = 'scale(1.15)'}
-                                            onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
-                                        />
-                                    ))}
+                                    {CARD_COLORS.map((color) => {
+                                        const config = COLOR_MAP[color.id] || { theme: color.hex, bg: '#f8fafc' };
+                                        const isActive = demoThemeColor === config.theme && demoBgColor === config.bg;
+                                        return (
+                                            <div
+                                                key={color.id}
+                                                onClick={() => {
+                                                    setDemoThemeColor(config.theme);
+                                                    setDemoBgColor(config.bg);
+                                                }}
+                                                style={{
+                                                    width: '28px',
+                                                    height: '28px',
+                                                    borderRadius: '50%',
+                                                    background: color.hex,
+                                                    cursor: 'pointer',
+                                                    border: isActive ? '3px solid #1D4ED8' : '2px solid transparent',
+                                                    boxShadow: '0 4px 8px rgba(0,0,0,0.08)',
+                                                    transition: 'transform 0.2s'
+                                                }}
+                                                onMouseOver={e => e.currentTarget.style.transform = 'scale(1.15)'}
+                                                onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
+                                            />
+                                        );
+                                    })}
                                     
                                     {/* Custom Color Input */}
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '6px', borderLeft: '1px solid #E2E8F0', paddingLeft: '14px' }}>
@@ -1221,7 +1252,7 @@ export default function LandingPage() {
                         <div className="glass-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
                             <div style={{ display: 'flex', gap: '4px', color: '#1A1265' }}>★★★★★</div>
                             <p style={{ margin: 0, color: '#475569', fontSize: '14px', lineHeight: '1.6', fontStyle: 'italic' }}>
-                                "Avant, je distribuais mes cartes de visite papier lors des cocktails d'affaires et la plupart finissaient jetées. Maintenant, les gens scannent ma carte NFCrafter, mon contact est directement mémorisé et ils parcourent mes conceptions de meubles. En 2 semaines, j'ai conclu 3 contrats importants !"
+                                "Avant, je distribuais mes cartes de visite papier lors des cocktails d'affaires et la plupart finissaient jetées. Maintenant, les gens scannent ma carte NFCrafter, mon contact est directement mémorisé et ils parcourent mes conceptions de meubles. En 1 semaine, j'ai conclu 3 contrats importants !"
                             </p>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                 <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'linear-gradient(135deg, #1A1265, #6366F1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', color: 'white' }}>R</div>
@@ -1265,7 +1296,6 @@ export default function LandingPage() {
                                 <tr style={{ borderBottom: '1px solid rgba(26, 18, 101, 0.08)' }}>
                                     <th style={{ textAlign: 'left', padding: '16px', color: '#475569', fontSize: '14px' }}>Critères</th>
                                     <th style={{ textAlign: 'center', padding: '16px', color: '#475569', fontSize: '14px' }}>Cartes Papier</th>
-                                    <th style={{ textAlign: 'center', padding: '16px', color: '#475569', fontSize: '14px' }}>Site E-commerce classique</th>
                                     <th style={{ textAlign: 'center', padding: '16px', color: '#1A1265', background: 'rgba(26, 18, 101, 0.03)', fontWeight: '900', fontSize: '14px' }}>🏆 NFCrafter</th>
                                 </tr>
                             </thead>
@@ -1273,25 +1303,16 @@ export default function LandingPage() {
                                 <tr style={{ borderBottom: '1px solid rgba(26, 18, 101, 0.05)' }}>
                                     <td style={{ padding: '16px', fontWeight: '700', fontSize: '14px' }}>Partage instantané</td>
                                     <td style={{ textAlign: 'center', padding: '16px', color: '#EF4444' }}>✕</td>
-                                    <td style={{ textAlign: 'center', padding: '16px', color: '#EF4444' }}>✕</td>
                                     <td style={{ textAlign: 'center', padding: '16px', color: '#10B981', background: 'rgba(26, 18, 101, 0.03)', fontWeight: 'bold', fontSize: '14px' }}>✓ Oui (NFC)</td>
                                 </tr>
                                 <tr style={{ borderBottom: '1px solid rgba(26, 18, 101, 0.05)' }}>
                                     <td style={{ padding: '16px', fontWeight: '700', fontSize: '14px' }}>Boutique intégrée</td>
                                     <td style={{ textAlign: 'center', padding: '16px', color: '#EF4444' }}>✕</td>
-                                    <td style={{ textAlign: 'center', padding: '16px', color: '#10B981' }}>✓</td>
                                     <td style={{ textAlign: 'center', padding: '16px', color: '#10B981', background: 'rgba(26, 18, 101, 0.03)', fontWeight: 'bold', fontSize: '14px' }}>✓ Incluse</td>
-                                </tr>
-                                <tr style={{ borderBottom: '1px solid rgba(26, 18, 101, 0.05)' }}>
-                                    <td style={{ padding: '16px', fontWeight: '700', fontSize: '14px' }}>Frais ou commission</td>
-                                    <td style={{ textAlign: 'center', padding: '16px', fontSize: '14px' }}>N/A</td>
-                                    <td style={{ textAlign: 'center', padding: '16px', color: '#EF4444', fontSize: '14px' }}>15% à 20%</td>
-                                    <td style={{ textAlign: 'center', padding: '16px', color: '#10B981', background: 'rgba(26, 18, 101, 0.03)', fontWeight: 'bold', fontSize: '14px' }}>✓ 0% commission</td>
                                 </tr>
                                 <tr style={{ borderBottom: '1px solid rgba(26, 18, 101, 0.05)' }}>
                                     <td style={{ padding: '16px', fontWeight: '700', fontSize: '14px' }}>Durée de vie</td>
                                     <td style={{ textAlign: 'center', padding: '16px', color: '#EF4444', fontSize: '14px' }}>Se perd / se déchire</td>
-                                    <td style={{ textAlign: 'center', padding: '16px', fontSize: '14px' }}>N/A</td>
                                     <td style={{ textAlign: 'center', padding: '16px', color: '#10B981', background: 'rgba(26, 18, 101, 0.03)', fontWeight: 'bold', fontSize: '14px' }}>✓ À vie</td>
                                 </tr>
                             </tbody>
@@ -1321,19 +1342,10 @@ export default function LandingPage() {
 
                         <details>
                             <summary style={{ padding: '20px', fontWeight: '800', color: '#0F172A', cursor: 'pointer' }}>
-                                Comment fonctionne la boutique WhatsApp ?
-                            </summary>
-                            <div style={{ padding: '0 20px 20px 20px', color: '#475569', fontSize: '14px', lineHeight: '1.6' }}>
-                                Vous ajoutez vos articles avec photos et prix dans votre Espace Client NFCrafter. Vos clients parcourent votre boutique sur leur téléphone et cliquent sur commander. Cela vous envoie un message WhatsApp pré-rempli pour convenir de la livraison.
-                            </div>
-                        </details>
-
-                        <details>
-                            <summary style={{ padding: '20px', fontWeight: '800', color: '#0F172A', cursor: 'pointer' }}>
                                 Que se passe-t-il si je change de numéro ou d'adresse ?
                             </summary>
                             <div style={{ padding: '0 20px 20px 20px', color: '#475569', fontSize: '14px', lineHeight: '1.6' }}>
-                                Pas besoin de réimprimer votre carte ! Vous vous connectez à votre tableau de bord NFCrafter, vous modifiez vos coordonnées en 2 clics et la mise à jour est instantanée pour toutes les personnes détenant votre carte physique.
+                                Pas besoin de réimprimer votre carte ! Vous vous connectez à votre tableau de bord NFCrafter, vous modifiez vos coordonnées en 2 clics et la mise à jour est instantanée.
                             </div>
                         </details>
                     </div>
@@ -1471,12 +1483,17 @@ export default function LandingPage() {
 
                         <PhonePreview>
                             <iframe 
-                                src={DEMO_LIVE_PREVIEW_URL}
+                                src={`${DEMO_LIVE_PREVIEW_URL}?theme_color=${encodeURIComponent(demoThemeColor)}&bg_color=${encodeURIComponent(demoBgColor)}`}
                                 style={{ 
-                                    width: '100%', 
-                                    height: '100%', 
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    width: '375px', 
+                                    height: '792px', 
                                     border: 'none', 
-                                    background: 'white'
+                                    transform: 'scale(0.768)',
+                                    transformOrigin: 'top left',
+                                    background: demoBgColor
                                 }}
                                 title="NFCrafter Real Live Demo"
                             />

@@ -101,8 +101,20 @@ export default function PublicProfile() {
       setCustomLinks(merged.customLinks || [])
     }
 
+    const urlParams = new URLSearchParams(window.location.search);
+    const themeColorOverride = urlParams.get('theme_color');
+    const bgColorOverride = urlParams.get('bg_color');
+
+    if (themeColorOverride) {
+      merged.theme_color = themeColorOverride;
+      merged.primaryColor = themeColorOverride;
+    }
+    if (bgColorOverride) {
+      merged.backgroundColor = bgColorOverride;
+    }
+
     setProfile(merged)
-    supabase.from('scan_logs').insert({ card_id: cardId, user_agent: navigator.userAgent }).then()
+    supabase.from('scan_logs').insert({ card_id: card.card_id, user_agent: navigator.userAgent }).then()
     setLoading(false)
   }
 
