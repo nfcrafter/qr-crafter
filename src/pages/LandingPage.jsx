@@ -114,7 +114,10 @@ export default function LandingPage() {
     const [scrolled, setScrolled] = useState(false);
     const [session, setSession] = useState(null);
     const [selectedColorIndex, setSelectedColorIndex] = useState(0);
-    const [cardType, setCardType] = useState('physical'); // 'physical', 'digital', 'pro', 'corporate'
+    const [cardType, setCardType] = useState('physical');
+    // Scroll position for smart back-to-top
+    const [scrollY, setScrollY] = useState(0);
+    const [backToTopStage, setBackToTopStage] = useState(0); // 0=hidden, 1=scroll-to-tarifs, 2=scroll-to-top
     
     // Live preview states for Demo Section
     const [selectedDemoProfileIndex, setSelectedDemoProfileIndex] = useState(0);
@@ -133,7 +136,21 @@ export default function LandingPage() {
 
     useEffect(() => {
         const handleScroll = () => {
-            setScrolled(window.scrollY > 20);
+            const y = window.scrollY;
+            setScrolled(y > 20);
+            setScrollY(y);
+            // Show buttons after passing #tarifs section (~1000px, adjust if needed)
+            const tarifsEl = document.getElementById('tarifs');
+            if (tarifsEl) {
+                const tarifsBottom = tarifsEl.getBoundingClientRect().bottom + y;
+                if (y > tarifsBottom) {
+                    setBackToTopStage(2); // past tarifs: direct to top
+                } else if (y > tarifsEl.offsetTop) {
+                    setBackToTopStage(1); // in tarifs: scroll to tarifs first
+                } else {
+                    setBackToTopStage(0);
+                }
+            }
         };
 
         window.addEventListener('scroll', handleScroll);
@@ -1434,27 +1451,90 @@ export default function LandingPage() {
                 </div>
             </footer>
 
-            {/* Sticky Mobile WhatsApp CTA */}
+            {/* ── FLOATING BUTTONS (WhatsApp left + Back-to-top right) ── */}
+
+            {/* WhatsApp — Bottom Left */}
             <div style={{
                 position: 'fixed',
-                bottom: '24px',
-                right: '24px',
+                bottom: '28px',
+                left: '24px',
                 zIndex: 999,
-                background: '#25D366',
-                width: '60px',
-                height: '60px',
-                borderRadius: '50%',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 10px 30px rgba(37, 211, 102, 0.4)',
-                cursor: 'pointer',
-                transition: 'transform 0.3s'
-            }} onClick={() => window.open(`https://wa.me/${whatsappNumber}`, '_blank')} onMouseOver={e => e.currentTarget.style.transform = 'scale(1.1)'} onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}>
-                <svg viewBox="0 0 24 24" fill="white" style={{ width: '32px', height: '32px' }}>
-                    <path d="M12.012 2C6.485 2 2 6.485 2 12.012c0 1.765.459 3.486 1.33 5.011L2 22l5.127-1.343c1.472.802 3.125 1.226 4.885 1.226 5.527 0 10.012-4.485 10.012-10.012C22.024 6.485 17.539 2 12.012 2zm6.059 14.398c-.25.702-1.246 1.285-1.721 1.344-.475.059-.95.089-2.73-.623-2.278-.91-3.704-3.21-3.818-3.364-.114-.154-.93-1.233-.93-2.353 0-1.12.583-1.67.792-1.898.208-.228.455-.287.607-.287.152 0 .303.003.435.01.135.007.316-.051.495.38.185.443.633 1.543.687 1.654.054.111.089.24.015.388-.074.148-.111.24-.222.37-.111.13-.233.29-.332.39-.1.1-.205.21-.089.41.116.2.515.85.1 1.488.497.443.917.72 1.396.953.479.232.571.2.782-.047.21-.247.917-1.077 1.164-1.448.247-.37.495-.308.825-.185.33.123 2.102 1.025 2.463 1.205.36.18.601.272.688.423.087.151.087.876-.163 1.578z" />
-                </svg>
+                gap: '10px',
+                opacity: scrollY > 200 ? 1 : 0,
+                transform: scrollY > 200 ? 'translateY(0)' : 'translateY(12px)',
+                transition: 'opacity 0.4s ease, transform 0.4s ease',
+                pointerEvents: scrollY > 200 ? 'auto' : 'none'
+            }}>
+                <a
+                    href="https://wa.me/22961000000"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="Nous contacter sur WhatsApp"
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        background: '#25D366',
+                        borderRadius: '50px',
+                        padding: '10px 18px 10px 12px',
+                        boxShadow: '0 8px 24px rgba(37, 211, 102, 0.35)',
+                        textDecoration: 'none',
+                        transition: 'transform 0.25s, box-shadow 0.25s'
+                    }}
+                    onMouseOver={e => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(37,211,102,0.5)'; }}
+                    onMouseOut={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(37,211,102,0.35)'; }}
+                >
+                    <svg viewBox="0 0 24 24" fill="white" style={{ width: '24px', height: '24px', flexShrink: 0 }}>
+                        <path d="M12.012 2C6.485 2 2 6.485 2 12.012c0 1.765.459 3.486 1.33 5.011L2 22l5.127-1.343c1.472.802 3.125 1.226 4.885 1.226 5.527 0 10.012-4.485 10.012-10.012C22.024 6.485 17.539 2 12.012 2zm6.059 14.398c-.25.702-1.246 1.285-1.721 1.344-.475.059-.95.089-2.73-.623-2.278-.91-3.704-3.21-3.818-3.364-.114-.154-.93-1.233-.93-2.353 0-1.12.583-1.67.792-1.898.208-.228.455-.287.607-.287.152 0 .303.003.435.01.135.007.316-.051.495.38.185.443.633 1.543.687 1.654.054.111.089.24.015.388-.074.148-.111.24-.222.37-.111.13-.233.29-.332.39-.1.1-.205.21-.089.41.116.2.515.85.1 1.488.497.443.917.72 1.396.953.479.232.571.2.782-.047.21-.247.917-1.077 1.164-1.448.247-.37.495-.308.825-.185.33.123 2.102 1.025 2.463 1.205.36.18.601.272.688.423.087.151.087.876-.163 1.578z"/>
+                    </svg>
+                </a>
             </div>
+
+            {/* Back-to-top — Bottom Right (glass, smart 2-stage) */}
+            <button
+                onClick={() => {
+                    if (backToTopStage === 1) {
+                        // First click: scroll to start of #tarifs
+                        const el = document.getElementById('tarifs');
+                        if (el) el.scrollIntoView({ behavior: 'smooth' });
+                    } else {
+                        // Second click (or past tarifs): scroll to very top
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                }}
+                title={backToTopStage === 1 ? 'Revenir au catalogue' : 'Haut de page'}
+                style={{
+                    position: 'fixed',
+                    bottom: '28px',
+                    right: '24px',
+                    zIndex: 999,
+                    width: '48px',
+                    height: '48px',
+                    borderRadius: '50%',
+                    border: '1px solid rgba(255,255,255,0.25)',
+                    background: 'rgba(255, 255, 255, 0.15)',
+                    backdropFilter: 'blur(16px)',
+                    WebkitBackdropFilter: 'blur(16px)',
+                    boxShadow: '0 8px 24px rgba(26, 18, 101, 0.15)',
+                    color: '#1A1265',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    opacity: backToTopStage > 0 ? 1 : 0,
+                    transform: backToTopStage > 0 ? 'translateY(0)' : 'translateY(16px)',
+                    transition: 'opacity 0.4s ease, transform 0.4s ease, background 0.2s',
+                    pointerEvents: backToTopStage > 0 ? 'auto' : 'none'
+                }}
+                onMouseOver={e => { e.currentTarget.style.background = 'rgba(26, 18, 101, 0.12)'; }}
+                onMouseOut={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)'; }}
+            >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A1265" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="18 15 12 9 6 15"/>
+                </svg>
+            </button>
 
             {/* LIVE DEMO PREVIEW MODAL — with inline color picker */}
             {showLiveDemoModal && (
