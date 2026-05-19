@@ -280,6 +280,9 @@ export default function LandingPage() {
                     .responsive-section {
                         padding: 60px 0 !important;
                     }
+                    .hero-section {
+                        padding-top: 130px !important;
+                    }
                     .responsive-h2 {
                         font-size: 28px !important;
                     }
@@ -389,7 +392,7 @@ export default function LandingPage() {
             </nav>
 
             {/* 2. HERO SECTION — AUDACIOUS 3D CARD FLIP LOOP (Light White Glass theme) */}
-            <section className="responsive-section" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingTop: '100px', position: 'relative', overflow: 'hidden' }}>
+            <section className="responsive-section hero-section" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingTop: '120px', position: 'relative', overflow: 'hidden' }}>
                 <div style={{ maxWidth: '1200px', width: '100%', margin: '0 auto', padding: '0 24px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '48px', alignItems: 'center', position: 'relative', zIndex: 10 }}>
                     {/* Hero Left Content */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -404,7 +407,7 @@ export default function LandingPage() {
                         </h1>
 
                         <p style={{ fontSize: '17px', color: '#475569', lineHeight: '1.6', margin: 0, maxWidth: '500px' }}>
-                            Présentez-vous et partagez vos contacts en 1 seconde. Vendez vos services directement via WhatsApp. Impressionnez vos futurs contacts sans jamais avoir besoin de réimprimer une carte ou dicter votre numéro.
+                            Présentez-vous et partagez vos coordonnées () en 1 seconde. Vendez vos services directement via WhatsApp. Impressionnez vos futurs contacts sans jamais avoir besoin de réimprimer une carte ou dicter votre numéro.
                         </p>
 
                         <div className="hero-buttons" style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '12px' }}>
