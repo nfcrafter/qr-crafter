@@ -702,7 +702,7 @@ export default function LandingPage() {
             <section style={{ padding: '80px 0', overflow: 'hidden', background: '#F8FAFC' }}>
                 <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', marginBottom: '36px', textAlign: 'center' }}>
                     <h2 className="responsive-h2" style={{ fontWeight: '800', color: '#0F172A' }}>Vous pouvez personnaliser votre carte</h2>
-                    <p style={{ color: '#475569', marginTop: '8px' }}>Commandez votre carte ultra personnalisé selon vos envies à 15000 FCFA</p>
+                    <p style={{ color: '#475569', marginTop: '8px' }}>Commandez votre carte ultra personnalisée selon vos envies à 17 000 FCFA</p>
                 </div>
                 
                 <div className="gallery-row">
@@ -728,6 +728,39 @@ export default function LandingPage() {
                         </div>
                     ))}
                 </div>
+
+                {/* Button Centered Below the Scrolling Gallery */}
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '40px' }}>
+                    <a 
+                        href="#tarifs"
+                        style={{
+                            background: 'linear-gradient(135deg, #1A1265, #6366F1)',
+                            color: 'white',
+                            border: 'none',
+                            padding: '14px 32px',
+                            borderRadius: '12px',
+                            fontWeight: '800',
+                            fontSize: '15px',
+                            textDecoration: 'none',
+                            boxShadow: '0 8px 20px rgba(26, 18, 101, 0.15)',
+                            transition: 'all 0.3s ease',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '8px'
+                        }}
+                        onMouseOver={e => {
+                            e.currentTarget.style.transform = 'translateY(-2px)';
+                            e.currentTarget.style.boxShadow = '0 10px 25px rgba(26, 18, 101, 0.25)';
+                        }}
+                        onMouseOut={e => {
+                            e.currentTarget.style.transform = 'none';
+                            e.currentTarget.style.boxShadow = '0 8px 20px rgba(26, 18, 101, 0.15)';
+                        }}
+                    >
+                        <span>Commander ma carte personnalisée (17 000 FCFA)</span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
+                </div>
             </section>
 
             {/* 4. SECTION ECOSYSTÈME — BENTO GRID WITH 10 FULL FEATURES (White Glass Theme) */}
@@ -738,7 +771,7 @@ export default function LandingPage() {
                             Pas juste une carte. <span style={{ color: '#1A1265' }}>Un écosystème complet.</span>
                         </h2>
                         <p style={{ color: '#475569', fontSize: '17px', maxWidth: '600px', margin: '0 auto' }}>
-                            Découvrez les 10 fonctionnalités clés de NFCrafter qui propulsent votre visibilité et vos ventes au Bénin.
+                            Découvrez les 10 fonctionnalités clés de NFCrafter qui propulsent votre visibilité.
                         </p>
                     </div>
 
@@ -902,7 +935,7 @@ export default function LandingPage() {
                             Voici ce que <span style={{ color: '#1A1265' }}>vos contacts verront.</span>
                         </h2>
                         <p style={{ color: '#475569', fontSize: '17px', maxWidth: '600px', margin: '0 auto' }}>
-                            Découvrez notre interface mobile d'exception. Testez les couleurs et basculez les modes de couleur en temps réel.
+                            Découvrez notre interface mobile d'exception. Testez les couleurs en temps réel.
                         </p>
                     </div>
 
