@@ -763,7 +763,7 @@ export default function LandingPage() {
                                 <div style={{ background: 'rgba(26, 18, 101, 0.05)', color: '#1A1265', padding: '10px', borderRadius: '12px', fontWeight: 'bold' }}>✓</div>
                                 <div>
                                     <h4 style={{ margin: '0 0 6px 0', fontSize: '17px', color: '#0F172A' }}>Prise de contact rapide</h4>
-                                    <p style={{ margin: 0, color: '#475569', fontSize: '14px', lineHeight: '1.5' }}>Que vous soyez dans le bruit ou  pressé, un simple effleurement de la carte suffit pour transmettre vos coordonnées instantanément. Aucune application requise de la part de votre interlocuteur.</p>
+                                    <p style={{ margin: 0, color: '#475569', fontSize: '14px', lineHeight: '1.5' }}>Que vous soyez dans le bruit ou pressé, un simple effleurement de la carte suffit pour transmettre vos coordonnées instantanément. Aucune application requise de la part de votre interlocuteur.</p>
                                 </div>
                             </div>
                         </div>
@@ -775,7 +775,7 @@ export default function LandingPage() {
             <section style={{ padding: '80px 0', overflow: 'hidden', background: '#F8FAFC' }}>
                 <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', marginBottom: '36px', textAlign: 'center' }}>
                     <h2 className="responsive-h2" style={{ fontWeight: '800', color: '#0F172A' }}>Vous pouvez personnaliser votre carte</h2>
-                    <p style={{ color: '#475569', marginTop: '8px' }}>Vous rêvez d'avoir une carte intelligente NFC ultra personnalisée qui parle à votre place et est à votre image ? Eh bien il suffit de nous contacter et nous ferons de votre rêve une réalité.</p>
+                    <p style={{ color: '#475569', marginTop: '8px' }}>Vous rêvez d'avoir une carte intelligente NFC ultra personnalisée qui parle à votre place et est à votre image ? Eh bien il suffit de nous contacter.</p>
                 </div>
                 
                 <div className="gallery-row">
@@ -1260,6 +1260,13 @@ export default function LandingPage() {
                                         <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '15px', fontWeight: '700', textAlign: 'center', margin: 0 }}>Votre profil digital</p>
                                         <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: '13px', textAlign: 'center', margin: 0, lineHeight: '1.5' }}>nfcrafter.com/u/votre-nom<br/>Partageable partout, tout de suite</p>
                                     </div>
+                                ) : cardType === 'premium' ? (
+                                    <img 
+                                        src="/gallery-2.jpg" 
+                                        alt="NFCrafter Carte Premium Personnalisée Sarah Kouamé" 
+                                        style={{ width: '100%', height: 'auto', display: 'block', transition: 'opacity 0.3s ease' }}
+                                        onError={(e) => { e.target.src = '/card-recto.png'; }}
+                                    />
                                 ) : (
                                     <img 
                                         src={activeColor.imgCombined} 
