@@ -1606,6 +1606,61 @@ export default function LandingPage() {
                 </div>
             </section>
 
+            {/* 8.5. CRÉATION DE SITES WEB SUR MESURE */}
+            <section className="responsive-section" style={{ background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)', color: 'white', position: 'relative', overflow: 'hidden' }}>
+                <div style={{ position: 'absolute', top: 0, right: 0, width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%)', transform: 'translate(30%, -30%)' }}></div>
+                <div style={{ maxWidth: '1200px', width: '100%', margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 10 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '48px', alignItems: 'center' }}>
+                        <div>
+                            <div style={{ display: 'inline-block', background: 'rgba(245, 158, 11, 0.2)', border: '1px solid rgba(245, 158, 11, 0.5)', color: '#FCD34D', padding: '6px 12px', borderRadius: '100px', fontSize: '12px', fontWeight: '800', marginBottom: '20px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                Offre Spéciale
+                            </div>
+                            <h2 className="responsive-h2" style={{ fontWeight: '900', fontFamily: 'Outfit', color: 'white', letterSpacing: '-0.02em', margin: '0 0 20px 0' }}>
+                                Besoin de plus qu'un simple profil ? <span style={{ color: '#818CF8' }}>Nous créons votre site web sur mesure.</span>
+                            </h2>
+                            <p style={{ color: '#94A3B8', fontSize: '16px', lineHeight: '1.7', marginBottom: '32px' }}>
+                                Vous voulez une présence en ligne complète pour votre entreprise ? Notre équipe de développeurs conçoit des sites web professionnels, performants et adaptés à votre image de marque.
+                            </p>
+                            
+                            <div style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', padding: '20px', marginBottom: '32px' }}>
+                                <p style={{ margin: 0, fontSize: '15px', color: '#E2E8F0', fontWeight: '500' }}>
+                                    🎁 <strong style={{ color: 'white' }}>1 site web commandé</strong> = <strong style={{ color: '#FCD34D' }}>1 carte Premium ultra-personnalisée offerte</strong> (valeur 15 000 FCFA).
+                                </p>
+                            </div>
+
+                            <a href={`https://wa.me/22967646161?text=Bonjour%20NFCrafter%2C%20je%20souhaite%20discuter%20de%20la%20cr%C3%A9ation%20d'un%20site%20web%20sur%20mesure`} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#25D366', color: 'white', padding: '16px 32px', borderRadius: '12px', fontWeight: '800', fontSize: '15px', textDecoration: 'none', transition: 'all 0.3s ease' }}>
+                                En discuter sur WhatsApp
+                            </a>
+                        </div>
+                        <div style={{ position: 'relative' }}>
+                            <div style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px', padding: '32px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '20px' }}>
+                                    <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: '#3B82F6', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold' }}>💻</div>
+                                    <div>
+                                        <h4 style={{ margin: 0, color: 'white', fontSize: '16px' }}>Sites Vitrines</h4>
+                                        <p style={{ margin: 0, color: '#94A3B8', fontSize: '13px' }}>Présentez vos services avec élégance</p>
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '20px' }}>
+                                    <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: '#10B981', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold' }}>🛒</div>
+                                    <div>
+                                        <h4 style={{ margin: 0, color: 'white', fontSize: '16px' }}>E-commerce</h4>
+                                        <p style={{ margin: 0, color: '#94A3B8', fontSize: '13px' }}>Vendez vos produits en ligne 24/7</p>
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                                    <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: '#8B5CF6', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold' }}>🚀</div>
+                                    <div>
+                                        <h4 style={{ margin: 0, color: 'white', fontSize: '16px' }}>Applications Web</h4>
+                                        <p style={{ margin: 0, color: '#94A3B8', fontSize: '13px' }}>Des outils sur mesure pour votre gestion</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* 9. FOIRE AUX QUESTIONS (FAQ) */}
             <section id="faq" className="responsive-section" style={{ background: 'rgba(255,255,255,0.5)', borderTop: '1px solid rgba(26, 18, 101, 0.03)' }}>
                 <div style={{ maxWidth: '800px', width: '100%', margin: '0 auto', padding: '0 24px' }}>
@@ -1671,7 +1726,7 @@ export default function LandingPage() {
 
                     <div style={{ marginTop: '48px', textAlign: 'center', background: 'rgba(26,18,101,0.03)', border: '1px solid rgba(26,18,101,0.08)', borderRadius: '20px', padding: '32px 24px' }}>
                         <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', fontWeight: '800', color: '#0F172A' }}>Vous avez une autre question ?</h3>
-                        <p style={{ color: '#64748B', fontSize: '14px', margin: '0 0 20px 0' }}>Notre équipe répond en moins de 5 minutes sur WhatsApp.</p>
+                        <p style={{ color: '#64748B', fontSize: '14px', margin: '0 0 20px 0' }}>Notre équipe répond sur WhatsApp.</p>
                         <a href={`https://wa.me/22967646161?text=Bonjour%20NFCrafter%2C%20j'ai%20une%20question%20svp`} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#25D366', color: 'white', padding: '14px 28px', borderRadius: '12px', fontWeight: '800', fontSize: '14px', textDecoration: 'none', boxShadow: '0 8px 20px rgba(37,211,102,0.25)' }}>
                             Poser ma question sur WhatsApp
                         </a>
