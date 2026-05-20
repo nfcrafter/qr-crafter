@@ -1479,9 +1479,9 @@ export default function LandingPage() {
                             onMouseOver={e => e.currentTarget.style.transform = 'translateY(-1px)'}
                             onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}
                             >
-                                {cardType === 'digital' && '📱 Créer mon profil digital — 7 000 FCFA'}
-                                {cardType === 'physical' && `💳 Commander ma carte ${activeColor.name} — 10 000 FCFA`}
-                                {cardType === 'premium' && '✨ Commander ma carte Premium — 15 000 FCFA'}
+                                {cardType === 'digital' && 'Créer mon profil digital — 7 000 FCFA'}
+                                {cardType === 'physical' && `Commander ma carte ${activeColor.name} — 10 000 FCFA`}
+                                {cardType === 'premium' && 'Commander ma carte Premium — 15 000 FCFA'}
                             </button>
                         </div>
                     </div>
@@ -1489,80 +1489,74 @@ export default function LandingPage() {
             </section>
 
 
-
-            {/* 7. PREUVE SOCIALE — TÉMOIGNAGES RICHES */}
+            {/* 7. PREUVE SOCIALE — TÉMOIGNAGES */}
             <section className="responsive-section" style={{ background: 'rgba(255,255,255,0.5)', position: 'relative', borderTop: '1px solid rgba(26, 18, 101, 0.03)', borderBottom: '1px solid rgba(26, 18, 101, 0.03)' }}>
                 <div style={{ maxWidth: '1200px', width: '100%', margin: '0 auto', padding: '0 24px' }}>
                     <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-                        <p style={{ color: '#6366F1', fontSize: '13px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '12px' }}>Ils ont sauté le pas 🚀</p>
                         <h2 className="responsive-h2" style={{ fontWeight: '900', fontFamily: 'Outfit', color: '#0F172A', letterSpacing: '-0.02em', margin: '0 0 16px 0' }}>
                             Les pros qui avancent <span style={{ color: '#1A1265' }}>utilisent NFCrafter.</span>
                         </h2>
-                        <p style={{ color: '#64748B', fontSize: '16px', maxWidth: '500px', margin: '0 auto' }}>Rejoignez + de 200 professionnels en Afrique de l'Ouest.</p>
+                        <p style={{ color: '#64748B', fontSize: '16px', maxWidth: '500px', margin: '0 auto' }}>Plus de 200 professionnels en Afrique de l'Ouest nous font confiance.</p>
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '24px' }}>
 
                         {/* Testimonial 1 */}
-                        <div className="glass-card" style={{ padding: '28px', display: 'flex', flexDirection: 'column', gap: '16px', position: 'relative' }}>
-                            <div style={{ position: 'absolute', top: '20px', right: '20px', background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: '100px', padding: '3px 10px', fontSize: '11px', fontWeight: '800', color: '#10B981' }}>✓ Vérifié</div>
+                        <div className="glass-card" style={{ padding: '28px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
                             <div style={{ display: 'flex', gap: '3px' }}>{'★★★★★'.split('').map((s,i) => <span key={i} style={{ color: '#FBBF24', fontSize: '16px' }}>{s}</span>)}</div>
                             <p style={{ margin: 0, color: '#334155', fontSize: '14px', lineHeight: '1.7', fontStyle: 'italic' }}>
-                                "3 contrats signés en 1 semaine 🔥 Mes clients scannent, mon profil s'ouvre. Fini les cartes papier jetées."
+                                "3 contrats signés en une semaine. Mes clients scannent, mon profil s'ouvre. Fini les cartes papier."
                             </p>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginTop: 'auto', paddingTop: '8px', borderTop: '1px solid rgba(26,18,101,0.05)' }}>
-                                <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'linear-gradient(135deg, #1A1265, #6366F1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', flexShrink: 0 }}>👷🏾</div>
+                                <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'linear-gradient(135deg, #1A1265, #6366F1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', color: 'white', fontSize: '18px', flexShrink: 0 }}>R</div>
                                 <div>
                                     <h4 style={{ margin: 0, fontSize: '14px', fontWeight: '800', color: '#0F172A' }}>Romuald K.</h4>
-                                    <span style={{ fontSize: '12px', color: '#64748B' }}>🏗️ Architecte · Cotonou</span>
+                                    <span style={{ fontSize: '12px', color: '#64748B' }}>Architecte · Cotonou</span>
                                 </div>
                             </div>
                         </div>
 
                         {/* Testimonial 2 */}
-                        <div className="glass-card" style={{ padding: '28px', display: 'flex', flexDirection: 'column', gap: '16px', position: 'relative' }}>
-                            <div style={{ position: 'absolute', top: '20px', right: '20px', background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: '100px', padding: '3px 10px', fontSize: '11px', fontWeight: '800', color: '#10B981' }}>✓ Vérifié</div>
+                        <div className="glass-card" style={{ padding: '28px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
                             <div style={{ display: 'flex', gap: '3px' }}>{'★★★★★'.split('').map((s,i) => <span key={i} style={{ color: '#FBBF24', fontSize: '16px' }}>{s}</span>)}</div>
                             <p style={{ margin: 0, color: '#334155', fontSize: '14px', lineHeight: '1.7', fontStyle: 'italic' }}>
-                                "Ma boutique WhatsApp intégrée = mes ventes x2 💸 Zéro commission, mes clientes commandent en direct. Incroyable !"
+                                "Ma boutique WhatsApp intégrée a doublé mes ventes. Zéro commission, mes clientes commandent en direct."
                             </p>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginTop: 'auto', paddingTop: '8px', borderTop: '1px solid rgba(26,18,101,0.05)' }}>
-                                <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'linear-gradient(135deg, #DB2777, #F472B6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', flexShrink: 0 }}>👩🏾‍💼</div>
+                                <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'linear-gradient(135deg, #DB2777, #F472B6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', color: 'white', fontSize: '18px', flexShrink: 0 }}>M</div>
                                 <div>
                                     <h4 style={{ margin: 0, fontSize: '14px', fontWeight: '800', color: '#0F172A' }}>Mariam D.</h4>
-                                    <span style={{ fontSize: '12px', color: '#64748B' }}>👗 Mode & Prêt-à-porter · Calavi</span>
+                                    <span style={{ fontSize: '12px', color: '#64748B' }}>Mode et prêt-à-porter · Calavi</span>
                                 </div>
                             </div>
                         </div>
 
                         {/* Testimonial 3 */}
-                        <div className="glass-card" style={{ padding: '28px', display: 'flex', flexDirection: 'column', gap: '16px', position: 'relative' }}>
-                            <div style={{ position: 'absolute', top: '20px', right: '20px', background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: '100px', padding: '3px 10px', fontSize: '11px', fontWeight: '800', color: '#10B981' }}>✓ Vérifié</div>
+                        <div className="glass-card" style={{ padding: '28px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
                             <div style={{ display: 'flex', gap: '3px' }}>{'★★★★★'.split('').map((s,i) => <span key={i} style={{ color: '#FBBF24', fontSize: '16px' }}>{s}</span>)}</div>
                             <p style={{ margin: 0, color: '#334155', fontSize: '14px', lineHeight: '1.7', fontStyle: 'italic' }}>
-                                "Je présente mes services d'un seul tap lors des séminaires 🤝 Les investisseurs adorent. Classe et professionnel !"
+                                "Je présente mes services d'un seul tap lors des séminaires. Les investisseurs apprécient le professionnalisme."
                             </p>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginTop: 'auto', paddingTop: '8px', borderTop: '1px solid rgba(26,18,101,0.05)' }}>
-                                <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'linear-gradient(135deg, #D97706, #F59E0B)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', flexShrink: 0 }}>👨🏾‍💻</div>
+                                <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'linear-gradient(135deg, #D97706, #F59E0B)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', color: 'white', fontSize: '18px', flexShrink: 0 }}>K</div>
                                 <div>
                                     <h4 style={{ margin: 0, fontSize: '14px', fontWeight: '800', color: '#0F172A' }}>Kofi A.</h4>
-                                    <span style={{ fontSize: '12px', color: '#64748B' }}>💡 Entrepreneur · Lomé</span>
+                                    <span style={{ fontSize: '12px', color: '#64748B' }}>Entrepreneur · Lomé</span>
                                 </div>
                             </div>
                         </div>
 
                         {/* Testimonial 4 */}
-                        <div className="glass-card" style={{ padding: '28px', display: 'flex', flexDirection: 'column', gap: '16px', position: 'relative' }}>
-                            <div style={{ position: 'absolute', top: '20px', right: '20px', background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: '100px', padding: '3px 10px', fontSize: '11px', fontWeight: '800', color: '#10B981' }}>✓ Vérifié</div>
+                        <div className="glass-card" style={{ padding: '28px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
                             <div style={{ display: 'flex', gap: '3px' }}>{'★★★★★'.split('').map((s,i) => <span key={i} style={{ color: '#FBBF24', fontSize: '16px' }}>{s}</span>)}</div>
                             <p style={{ margin: 0, color: '#334155', fontSize: '14px', lineHeight: '1.7', fontStyle: 'italic' }}>
-                                "Mon agenda est plein depuis que j'ai la carte NFCrafter 📅 Mes patients trouvent mes horaires directement. Top !"
+                                "Mon agenda est plein depuis que j'ai la carte NFCrafter. Mes patients trouvent mes horaires directement."
                             </p>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginTop: 'auto', paddingTop: '8px', borderTop: '1px solid rgba(26,18,101,0.05)' }}>
-                                <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'linear-gradient(135deg, #059669, #34D399)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', flexShrink: 0 }}>👩🏽‍⚕️</div>
+                                <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'linear-gradient(135deg, #059669, #34D399)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', color: 'white', fontSize: '18px', flexShrink: 0 }}>A</div>
                                 <div>
                                     <h4 style={{ margin: 0, fontSize: '14px', fontWeight: '800', color: '#0F172A' }}>Dr. Aïssatou M.</h4>
-                                    <span style={{ fontSize: '12px', color: '#64748B' }}>🏥 Médecin généraliste · Abidjan</span>
+                                    <span style={{ fontSize: '12px', color: '#64748B' }}>Médecin généraliste · Abidjan</span>
                                 </div>
                             </div>
                         </div>
@@ -1570,6 +1564,7 @@ export default function LandingPage() {
                     </div>
                 </div>
             </section>
+
 
             {/* 8. TABLEAU COMPARATIF */}
             <section className="responsive-section" style={{ position: 'relative' }}>
@@ -1615,7 +1610,6 @@ export default function LandingPage() {
             <section id="faq" className="responsive-section" style={{ background: 'rgba(255,255,255,0.5)', borderTop: '1px solid rgba(26, 18, 101, 0.03)' }}>
                 <div style={{ maxWidth: '800px', width: '100%', margin: '0 auto', padding: '0 24px' }}>
                     <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-                        <p style={{ color: '#6366F1', fontSize: '13px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '12px' }}>On répond à tout 💬</p>
                         <h2 className="responsive-h2" style={{ fontWeight: '900', fontFamily: 'Outfit', color: '#0F172A', letterSpacing: '-0.02em', margin: '0 0 16px 0' }}>
                             Questions <span style={{ color: '#1A1265' }}>Fréquentes</span>
                         </h2>
@@ -1625,119 +1619,61 @@ export default function LandingPage() {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
 
                         <details>
-                            <summary>
-                                <span>📱 Est-ce compatible avec tous les téléphones ?</span>
-                            </summary>
-                            <div style={{ padding: '0 24px 24px 24px', color: '#475569', fontSize: '14px', lineHeight: '1.8' }}>
-                                <p style={{ margin: '0 0 12px 0' }}>Oui, à 100%. Voici comment ça fonctionne selon votre téléphone :</p>
-                                <ul style={{ margin: 0, paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                                    <li><strong>iPhone (7 et +) & Android récent :</strong> Un simple effleurement de la carte sur l'arrière du téléphone suffit. Aucune app requise.</li>
-                                    <li><strong>Anciens smartphones :</strong> Chaque carte est gravée d'un QR code universel au verso. Un scan avec l'appareil photo suffit.</li>
-                                    <li><strong>Interlocuteur sans smartphone :</strong> Votre profil est accessible via un lien URL partageable partout (WhatsApp, email, SMS…).</li>
-                                </ul>
+                            <summary><span>Est-ce compatible avec tous les téléphones ?</span></summary>
+                            <div style={{ padding: '0 24px 24px 24px', color: '#475569', fontSize: '14px', lineHeight: '1.7' }}>
+                                Oui. Les téléphones récents utilisent le NFC (un simple effleurement suffit). Pour les anciens modèles, un QR code est gravé au dos de la carte et fonctionne avec n'importe quel appareil photo.
                             </div>
                         </details>
 
                         <details>
-                            <summary>
-                                <span>✏️ Que faire si je change de numéro ou d'adresse ?</span>
-                            </summary>
-                            <div style={{ padding: '0 24px 24px 24px', color: '#475569', fontSize: '14px', lineHeight: '1.8' }}>
-                                <p style={{ margin: '0 0 12px 0' }}>Pas besoin de recommander une nouvelle carte ! Votre carte physique pointe vers votre profil NFCrafter en ligne. Vous pouvez modifier <strong>en temps réel</strong> depuis votre tableau de bord :</p>
-                                <ul style={{ margin: 0, paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                                    <li>Numéro de téléphone, e-mail, adresse</li>
-                                    <li>Liens réseaux sociaux (Instagram, LinkedIn, TikTok…)</li>
-                                    <li>Photo de profil, bannière, couleur du thème</li>
-                                    <li>Produits de votre boutique WhatsApp</li>
-                                </ul>
-                                <p style={{ margin: '12px 0 0 0' }}>La mise à jour est instantanée, sans frais supplémentaires. 🎉</p>
+                            <summary><span>Que faire si je change de numéro ou d'adresse ?</span></summary>
+                            <div style={{ padding: '0 24px 24px 24px', color: '#475569', fontSize: '14px', lineHeight: '1.7' }}>
+                                Pas besoin de racheter une carte. Connectez-vous à votre tableau de bord NFCrafter et modifiez vos infos en 2 clics — la mise à jour est instantanée et sans frais.
                             </div>
                         </details>
 
                         <details>
-                            <summary>
-                                <span>⏱️ Combien de temps pour recevoir ma carte ?</span>
-                            </summary>
-                            <div style={{ padding: '0 24px 24px 24px', color: '#475569', fontSize: '14px', lineHeight: '1.8' }}>
-                                <p style={{ margin: '0 0 12px 0' }}>Voici les délais moyens selon votre pack :</p>
-                                <ul style={{ margin: 0, paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                                    <li>🟢 <strong>Pack Digital :</strong> Votre profil en ligne est activé en moins de <strong>24h</strong> après confirmation du paiement.</li>
-                                    <li>🔵 <strong>Pack Signature (NFC couleur) :</strong> Production + livraison en <strong>3 à 5 jours ouvrés</strong> à Cotonou. Délai variable selon votre ville.</li>
-                                    <li>🟡 <strong>Pack Premium (ultra-personnalisée) :</strong> Design + production + livraison en <strong>5 à 7 jours ouvrés</strong>.</li>
-                                </ul>
-                                <p style={{ margin: '12px 0 0 0' }}>Commandez via WhatsApp et notre équipe vous guide à chaque étape. 📦</p>
+                            <summary><span>Combien de temps pour recevoir ma carte ?</span></summary>
+                            <div style={{ padding: '0 24px 24px 24px', color: '#475569', fontSize: '14px', lineHeight: '1.7' }}>
+                                Le Pack Digital est activé en moins de 24h. Pour les cartes physiques (Signature et Premium), comptez 3 à 7 jours ouvrés selon votre ville.
                             </div>
                         </details>
 
                         <details>
-                            <summary>
-                                <span>💳 Quels sont les modes de paiement acceptés ?</span>
-                            </summary>
-                            <div style={{ padding: '0 24px 24px 24px', color: '#475569', fontSize: '14px', lineHeight: '1.8' }}>
-                                <p style={{ margin: '0 0 12px 0' }}>Nous acceptons les modes de paiement locaux et internationaux les plus courants :</p>
-                                <ul style={{ margin: 0, paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                                    <li>📱 <strong>Mobile Money :</strong> MTN MoMo, Moov Money, Wave</li>
-                                    <li>💳 <strong>Carte bancaire</strong> (Visa, Mastercard) via lien sécurisé</li>
-                                    <li>📲 <strong>Virement bancaire</strong> sur demande</li>
-                                </ul>
-                                <p style={{ margin: '12px 0 0 0' }}>Le paiement se fait directement via WhatsApp après confirmation de votre commande. 100% sécurisé. ✅</p>
+                            <summary><span>Quels modes de paiement sont acceptés ?</span></summary>
+                            <div style={{ padding: '0 24px 24px 24px', color: '#475569', fontSize: '14px', lineHeight: '1.7' }}>
+                                Nous acceptons MTN MoMo, Moov Money, Wave et la carte bancaire (Visa/Mastercard). Le paiement se finalise directement via WhatsApp après confirmation de votre commande.
                             </div>
                         </details>
 
                         <details>
-                            <summary>
-                                <span>🎨 Puis-je personnaliser le design de ma carte ?</span>
-                            </summary>
-                            <div style={{ padding: '0 24px 24px 24px', color: '#475569', fontSize: '14px', lineHeight: '1.8' }}>
-                                <p style={{ margin: '0 0 12px 0' }}>Absolument ! Voici ce que vous pouvez personnaliser selon votre pack :</p>
-                                <ul style={{ margin: 0, paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                                    <li>🎨 <strong>Pack Signature :</strong> Couleur de la carte (Noir, Blanc, Or, Bleu, Rouge, Vert, Violet, Rose)</li>
-                                    <li>✨ <strong>Pack Premium :</strong> Design 100% sur mesure — votre nom, photo, logo, couleurs et police gravés sur la carte</li>
-                                    <li>🖥️ <strong>Tous les packs :</strong> Profil digital personnalisable (photo, bannière, liens, couleur principale…)</li>
-                                </ul>
+                            <summary><span>Puis-je personnaliser le design de ma carte ?</span></summary>
+                            <div style={{ padding: '0 24px 24px 24px', color: '#475569', fontSize: '14px', lineHeight: '1.7' }}>
+                                Oui. Le Pack Signature propose 8 couleurs. Le Pack Premium est 100% sur mesure : votre nom, photo, logo et couleurs gravés sur la carte selon vos préférences.
                             </div>
                         </details>
 
                         <details>
-                            <summary>
-                                <span>🔒 Mes données sont-elles sécurisées ?</span>
-                            </summary>
-                            <div style={{ padding: '0 24px 24px 24px', color: '#475569', fontSize: '14px', lineHeight: '1.8' }}>
-                                <p style={{ margin: '0 0 12px 0' }}>Oui. NFCrafter prend la sécurité très au sérieux :</p>
-                                <ul style={{ margin: 0, paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                                    <li>🔐 Vos données sont hébergées sur des serveurs sécurisés (Supabase, chiffrement SSL)</li>
-                                    <li>👁️ Vous contrôlez ce qui est visible sur votre profil public</li>
-                                    <li>🗑️ Vous pouvez supprimer votre profil et toutes vos données à tout moment</li>
-                                    <li>📵 Nous ne vendons aucune donnée personnelle à des tiers</li>
-                                </ul>
+                            <summary><span>Mes données sont-elles sécurisées ?</span></summary>
+                            <div style={{ padding: '0 24px 24px 24px', color: '#475569', fontSize: '14px', lineHeight: '1.7' }}>
+                                Oui. Vos données sont hébergées sur des serveurs sécurisés (chiffrement SSL). Vous contrôlez ce qui est visible publiquement et pouvez supprimer votre profil à tout moment.
                             </div>
                         </details>
 
                         <details>
-                            <summary>
-                                <span>🌍 Livrez-vous dans toute l'Afrique de l'Ouest ?</span>
-                            </summary>
-                            <div style={{ padding: '0 24px 24px 24px', color: '#475569', fontSize: '14px', lineHeight: '1.8' }}>
-                                <p style={{ margin: '0 0 12px 0' }}>Oui ! Nous livrons dans plusieurs pays. Voici nos zones couvertes :</p>
-                                <ul style={{ margin: 0, paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                                    <li>🇧🇯 <strong>Bénin</strong> — Livraison express à Cotonou (2-3 jours)</li>
-                                    <li>🇨🇮 <strong>Côte d'Ivoire</strong> — Abidjan & grandes villes (5-7 jours)</li>
-                                    <li>🇸🇳 <strong>Sénégal</strong> — Dakar & Saint-Louis (5-7 jours)</li>
-                                    <li>🇹🇬 <strong>Togo</strong> — Lomé (4-6 jours)</li>
-                                    <li>🌐 <strong>Autres pays :</strong> Contactez-nous via WhatsApp pour un devis personnalisé.</li>
-                                </ul>
+                            <summary><span>Livrez-vous dans toute l'Afrique de l'Ouest ?</span></summary>
+                            <div style={{ padding: '0 24px 24px 24px', color: '#475569', fontSize: '14px', lineHeight: '1.7' }}>
+                                Oui, nous livrons au Bénin, en Côte d'Ivoire, au Sénégal, au Togo et dans d'autres pays sur demande. Contactez-nous via WhatsApp pour un délai personnalisé.
                             </div>
                         </details>
 
                     </div>
 
-                    {/* Still have a question? */}
                     <div style={{ marginTop: '48px', textAlign: 'center', background: 'rgba(26,18,101,0.03)', border: '1px solid rgba(26,18,101,0.08)', borderRadius: '20px', padding: '32px 24px' }}>
-                        <p style={{ fontSize: '20px', margin: '0 0 8px 0' }}>🙋🏾</p>
-                        <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', fontWeight: '800', color: '#0F172A' }}>Une autre question ?</h3>
+                        <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', fontWeight: '800', color: '#0F172A' }}>Vous avez une autre question ?</h3>
                         <p style={{ color: '#64748B', fontSize: '14px', margin: '0 0 20px 0' }}>Notre équipe répond en moins de 5 minutes sur WhatsApp.</p>
                         <a href={`https://wa.me/22967646161?text=Bonjour%20NFCrafter%2C%20j'ai%20une%20question%20svp`} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#25D366', color: 'white', padding: '14px 28px', borderRadius: '12px', fontWeight: '800', fontSize: '14px', textDecoration: 'none', boxShadow: '0 8px 20px rgba(37,211,102,0.25)' }}>
-                            💬 Poser ma question sur WhatsApp
+                            Poser ma question sur WhatsApp
                         </a>
                     </div>
                 </div>
