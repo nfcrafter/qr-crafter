@@ -1575,8 +1575,8 @@ export default function LandingPage() {
                         </h2>
                     </div>
 
-                    <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '600px', color: '#0F172A' }}>
+                    <div style={{ width: '100%' }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', color: '#0F172A' }}>
                             <thead>
                                 <tr style={{ borderBottom: '1px solid rgba(26, 18, 101, 0.08)' }}>
                                     <th style={{ textAlign: 'left', padding: '16px', color: '#475569', fontSize: '14px' }}>Critères</th>
