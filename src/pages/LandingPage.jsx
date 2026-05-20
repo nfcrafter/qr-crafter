@@ -1624,7 +1624,7 @@ export default function LandingPage() {
                             
                             <div style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', padding: '20px', marginBottom: '32px' }}>
                                 <p style={{ margin: 0, fontSize: '15px', color: '#E2E8F0', fontWeight: '500' }}>
-                                    🎁 <strong style={{ color: 'white' }}>1 site web commandé</strong> = <strong style={{ color: '#FCD34D' }}>1 carte Premium ultra-personnalisée offerte</strong> (valeur 15 000 FCFA).
+                                    <strong style={{ color: 'white' }}>1 site web commandé</strong> = <strong style={{ color: '#FCD34D' }}>1 carte Premium ultra-personnalisée offerte</strong> (valeur 15 000 FCFA).
                                 </p>
                             </div>
 
@@ -1635,21 +1635,21 @@ export default function LandingPage() {
                         <div style={{ position: 'relative' }}>
                             <div style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px', padding: '32px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
                                 <div style={{ display: 'flex', gap: '12px', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '20px' }}>
-                                    <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: '#3B82F6', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold' }}>💻</div>
+                                    <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: '#3B82F6', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold' }}>V</div>
                                     <div>
                                         <h4 style={{ margin: 0, color: 'white', fontSize: '16px' }}>Sites Vitrines</h4>
                                         <p style={{ margin: 0, color: '#94A3B8', fontSize: '13px' }}>Présentez vos services avec élégance</p>
                                     </div>
                                 </div>
                                 <div style={{ display: 'flex', gap: '12px', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '20px' }}>
-                                    <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: '#10B981', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold' }}>🛒</div>
+                                    <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: '#10B981', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold' }}>E</div>
                                     <div>
                                         <h4 style={{ margin: 0, color: 'white', fontSize: '16px' }}>E-commerce</h4>
                                         <p style={{ margin: 0, color: '#94A3B8', fontSize: '13px' }}>Vendez vos produits en ligne 24/7</p>
                                     </div>
                                 </div>
                                 <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                                    <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: '#8B5CF6', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold' }}>🚀</div>
+                                    <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: '#8B5CF6', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold' }}>A</div>
                                     <div>
                                         <h4 style={{ margin: 0, color: 'white', fontSize: '16px' }}>Applications Web</h4>
                                         <p style={{ margin: 0, color: '#94A3B8', fontSize: '13px' }}>Des outils sur mesure pour votre gestion</p>
