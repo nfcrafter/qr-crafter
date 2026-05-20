@@ -414,6 +414,12 @@ export default function LandingPage() {
                         grid-template-columns: 1fr !important;
                         gap: 24px !important;
                     }
+                    .config-controls {
+                        order: 1 !important;
+                    }
+                    .config-visualizer {
+                        order: 2 !important;
+                    }
                     .demo-controls-wrapper {
                         order: 1 !important;
                     }
@@ -1279,7 +1285,7 @@ export default function LandingPage() {
                     <div className="config-wrapper" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '48px', alignItems: 'start' }}>
                         
                         {/* Visualizer Left — adapts to selected pack */}
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '20px' }}>
+                        <div className="config-visualizer" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '20px' }}>
                             <div style={{
                                 width: '100%',
                                 maxWidth: '380px',
@@ -1332,7 +1338,7 @@ export default function LandingPage() {
                         </div>
 
                         {/* Configurator Controls Right */}
-                        <div className="glass-card" style={{ padding: '32px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                        <div className="config-controls glass-card" style={{ padding: '32px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
                             {/* Step 1: Pack Selection — 3 cards */}
                             <div>
                                 <span style={{ color: '#475569', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: '12px' }}>Étape 1 : Choisir le Pack</span>
