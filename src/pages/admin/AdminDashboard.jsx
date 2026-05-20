@@ -2099,6 +2099,73 @@ function ProductionCard({ card, toast, isPrintMode = false, hideId = false, incl
         qrCode.download({ name: `QR-${card.card_id}`, extension: "png" });
     };
 
+    const handleDownloadPDF = async () => {
+        toast("Génération du PDF en cours...", "info");
+        try {
+            const qrColor = card.admin_profile?.primaryColor || "#1A1265";
+            const bgColor = card.admin_profile?.backgroundColor || "#FFFFFF";
+            
+            // Pour le PDF, on génère le QR avec un fond transparent ou blanc selon le design
+            // S'il y a un design sombre, le QR est souvent blanc avec logo coloré.
+            const tintedLogo = includeLogo ? await getTintedLogo(qrColor) : null;
+
+            const qrCode = new QRCodeStyling({
+                width: 1000, height: 1000, data: activationUrl,
+                margin: 5,
+                dotsOptions: { color: qrColor, type: "rounded" },
+                cornersSquareOptions: { color: qrColor, type: "extra-rounded" },
+                cornersDotOptions: { color: qrColor, type: "dot" },
+                backgroundOptions: { color: bgColor },
+                image: tintedLogo,
+                imageOptions: {
+                    crossOrigin: "anonymous",
+                    margin: 0,
+                    imageSize: 0.18,
+                    hideBackgroundDots: true
+                }
+            });
+
+            const qrBlob = await qrCode.getRawData("png");
+            
+            // Convert Blob to Base64
+            const reader = new FileReader();
+            reader.readAsDataURL(qrBlob);
+            await new Promise(resolve => reader.onloadend = resolve);
+            const qrBase64 = reader.result;
+
+            const { jsPDF } = await import("jspdf");
+            const doc = new jsPDF({
+                orientation: "landscape",
+                unit: "mm",
+                format: [86, 54] // Format CR80 standard
+            });
+
+            // --- RECTO (Front) ---
+            doc.setFillColor(bgColor);
+            doc.rect(0, 0, 86, 54, 'F');
+            
+            // Logo au centre du recto
+            if (tintedLogo) {
+                doc.addImage(tintedLogo, "PNG", 33, 17, 20, 20);
+            }
+
+            doc.addPage();
+
+            // --- VERSO (Back) ---
+            doc.setFillColor(bgColor);
+            doc.rect(0, 0, 86, 54, 'F');
+            
+            // QR Code au centre du verso
+            doc.addImage(qrBase64, "PNG", 23, 7, 40, 40);
+
+            doc.save(`Carte_Impression_${card.card_id}.pdf`);
+            toast("PDF téléchargé !", "success");
+        } catch (err) {
+            console.error(err);
+            toast("Erreur lors de la génération du PDF", "error");
+        }
+    };
+
     return (
         <div className={isPrintMode ? "print-card" : ""} style={{ position: 'relative', background: 'white', borderRadius: isPrintMode ? '0' : '24px', padding: isPrintMode ? '20px' : '24px', border: isPrintMode ? 'none' : isSelected ? '2px solid #1A1265' : '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', breakInside: 'avoid', transition: 'all 0.2s', transform: isSelected ? 'scale(1.02)' : 'none', boxShadow: isSelected ? '0 12px 30px rgba(26,18,101,0.1)' : 'none' }}>
 
@@ -2130,6 +2197,12 @@ function ProductionCard({ card, toast, isPrintMode = false, hideId = false, incl
                         style={{ flex: 1, padding: '10px', borderRadius: '10px', border: 'none', background: '#F1F5F9', color: '#1A1265', fontWeight: '800', cursor: 'pointer', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
                     >
                         <div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>` }} /> QR
+                    </button>
+                    <button
+                        onClick={handleDownloadPDF}
+                        style={{ flex: 1, padding: '10px', borderRadius: '10px', border: 'none', background: '#FEF2F2', color: '#DC2626', fontWeight: '800', cursor: 'pointer', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                    >
+                        <div style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>` }} /> PDF
                     </button>
                 </div>
             )}
