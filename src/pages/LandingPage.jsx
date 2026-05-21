@@ -656,7 +656,6 @@ export default function LandingPage() {
                     <div className="ticker-row">
                         {[1, 2, 3, 4].map(idx => (
                             <React.Fragment key={idx}>
-                                <span style={{ color: '#1A1265', fontWeight: '800', letterSpacing: '2px', textTransform: 'uppercase', fontSize: '13px' }}>✦ 500+ PROFESSIONNELS ACTIFS</span>
                                 <span style={{ color: '#475569', fontWeight: '800', letterSpacing: '2px', textTransform: 'uppercase', fontSize: '13px' }}>✦ LIVRAISON RAPIDE</span>
                                 <span style={{ color: '#6366F1', fontWeight: '800', letterSpacing: '2px', textTransform: 'uppercase', fontSize: '13px' }}>✦ TOUS VOS RESEAUX SOCIAUX EN 1 SEULE TOUCHE</span>
                                 <span style={{ color: '#1A1265', fontWeight: '800', letterSpacing: '2px', textTransform: 'uppercase', fontSize: '13px' }}>✦ LIEN VERS BOUTIQUE INCLUSE</span>

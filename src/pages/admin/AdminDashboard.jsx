@@ -1155,11 +1155,54 @@ export default function AdminDashboard() {
                                                     </div>
                                                 </div>
 
-                                                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                                                    {['#1A1265', '#10B981', '#6366F1', '#F59E0B', '#EF4444', '#000000'].map(c => (
-                                                        <button key={c} onClick={() => setBulkColor(c)} style={{ width: '24px', height: '24px', borderRadius: '6px', background: c, border: bulkColor === c ? '2px solid #1A1265' : 'none', cursor: 'pointer', outline: bulkColor === c ? '2px solid white' : 'none' }} />
-                                                    ))}
+                                                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '8px' }}>
+                                                    {Object.entries(OFFICIAL_CARD_COLORS).map(([key, config]) => {
+                                                        const isSelected = bulkColor.toLowerCase() === config.qrPoints.toLowerCase() && bulkBgColor.toLowerCase() === config.qrBg.toLowerCase();
+                                                        return (
+                                                            <button
+                                                                key={key}
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    setBulkColor(config.qrPoints);
+                                                                    setBulkBgColor(config.qrBg);
+                                                                }}
+                                                                style={{
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    gap: '8px',
+                                                                    padding: '8px 12px',
+                                                                    borderRadius: '12px',
+                                                                    border: isSelected ? '2px solid #1A1265' : '1px solid #E2E8F0',
+                                                                    background: 'white',
+                                                                    cursor: 'pointer',
+                                                                    transition: 'all 0.2s',
+                                                                    boxShadow: isSelected ? '0 4px 12px rgba(26,18,101,0.1)' : 'none'
+                                                                }}
+                                                            >
+                                                                <div style={{ display: 'flex', gap: '3px' }}>
+                                                                    <span style={{ width: '12px', height: '12px', borderRadius: '50%', background: config.card, border: '1px solid #E2E8F0', display: 'inline-block' }} title={`Couleur Carte: ${config.card}`} />
+                                                                    <span style={{ width: '12px', height: '12px', borderRadius: '50%', background: config.qrPoints, border: '1px solid #E2E8F0', display: 'inline-block' }} title={`Couleur QR: ${config.qrPoints}`} />
+                                                                </div>
+                                                                <span style={{ fontSize: '13px', fontWeight: '800', color: '#1A1265' }}>{config.name}</span>
+                                                            </button>
+                                                        );
+                                                    })}
                                                 </div>
+
+                                                {(() => {
+                                                    const selectedOfficialColor = Object.values(OFFICIAL_CARD_COLORS).find(
+                                                        c => c.qrPoints.toLowerCase() === bulkColor.toLowerCase() && c.qrBg.toLowerCase() === bulkBgColor.toLowerCase()
+                                                    );
+                                                    return selectedOfficialColor ? (
+                                                        <div style={{ fontSize: '13px', color: '#64748B', display: 'flex', alignItems: 'center', gap: '8px', background: '#F8FAFC', padding: '10px 16px', borderRadius: '12px', border: '1px solid #E2E8F0', marginTop: '4px', marginBottom: '8px' }}>
+                                                            <span style={{ fontWeight: '900', color: selectedOfficialColor.rating.includes('Excellent') ? '#10B981' : '#F59E0B', textTransform: 'uppercase', fontSize: '11px', letterSpacing: '0.5px' }}>
+                                                                {selectedOfficialColor.rating}
+                                                            </span>
+                                                            <span style={{ color: '#CBD5E1' }}>|</span>
+                                                            <span>{selectedOfficialColor.note}</span>
+                                                        </div>
+                                                    ) : null;
+                                                })()}
 
                                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                                                     <div
@@ -2003,6 +2046,10 @@ export default function AdminDashboard() {
                         padding: 10px !important; 
                         break-inside: avoid !important;
                     }
+                    .print-card canvas, .print-card svg {
+                        max-width: 100% !important;
+                        height: auto !important;
+                    }
                 }
             `}</style>
 
@@ -2051,8 +2098,8 @@ function ProductionCard({ card, toast, isPrintMode = false, hideId = false, incl
                 const tintedLogo = includeLogo ? await getTintedLogo(qrColor) : null;
 
                 const qrCode = new QRCodeStyling({
-                    width: isPrintMode ? 200 : 160,
-                    height: isPrintMode ? 200 : 160,
+                    width: isPrintMode ? 296 : 160,
+                    height: isPrintMode ? 296 : 160,
                     data: activationUrl,
                     margin: 5,
                     dotsOptions: { color: qrColor, type: "rounded" },
@@ -2155,8 +2202,8 @@ function ProductionCard({ card, toast, isPrintMode = false, hideId = false, incl
             doc.setFillColor(bgColor);
             doc.rect(0, 0, 86, 54, 'F');
             
-            // QR Code au centre du verso
-            doc.addImage(qrBase64, "PNG", 23, 7, 40, 40);
+            // QR Code au centre du verso (taille NFCrafter personnalisée 29.6 mm x 29.6 mm, bien centrée)
+            doc.addImage(qrBase64, "PNG", 28.2, 12.2, 29.6, 29.6);
 
             doc.save(`Carte_Impression_${card.card_id}.pdf`);
             toast("PDF téléchargé !", "success");
