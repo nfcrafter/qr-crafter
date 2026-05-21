@@ -8,6 +8,7 @@ import PhonePreview from '../../components/PhonePreview.jsx';
 import { SOCIAL_NETWORKS, LINK_ICONS } from '../../constants/socials.js';
 import ImageUpload from '../../components/ImageUpload.jsx';
 import Modal from '../../components/Modal.jsx';
+import { OFFICIAL_CARD_COLORS } from '../../constants/cardColors.js';
 
 const DOT_STYLES = ['rounded', 'dots', 'classy', 'classy-rounded', 'square', 'extra-rounded'];
 
@@ -793,12 +794,13 @@ export default function CardSettings() {
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                                     <p style={{ fontSize: 13, color: '#64748B', marginBottom: 10 }}>Organisez l'ordre d'apparition des sections sur le profil public.</p>
                                     {(() => {
-                                        const defaultSections = ['contact_buttons', 'links', 'products', 'business_info', 'gallery', 'skills', 'testimonials', 'faq', 'events', 'portfolio', 'certifications'];
+                                        const defaultSections = ['info', 'contact_buttons', 'links', 'products', 'business_info', 'gallery', 'skills', 'testimonials', 'faq', 'events', 'portfolio', 'certifications'];
                                         const currentOrder = profile.section_order || [];
                                         const missing = defaultSections.filter(s => !currentOrder.includes(s));
                                         const sections = [...currentOrder, ...missing].filter(s => s !== 'bio' && defaultSections.includes(s));
                                         
                                         const sectionLabels = {
+                                            info: 'Informations du profil',
                                             contact_buttons: 'Boutons directs (Appel/Email)',
                                             links: 'Réseaux Sociaux & Liens',
                                             products: 'Boutique & Catalogue',
@@ -1042,7 +1044,7 @@ function AdminPhonePreview({ profile, qrStyle, qrRef, previewMode, isDark, textC
                         )}
                         
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 16 }}>
-                            {(profile.section_order || ['contact_buttons', 'links', 'products', 'business_info', 'gallery', 'skills', 'testimonials', 'faq', 'events']).filter(s => s !== 'bio').map(sectionId => {
+                            {(profile.section_order || ['info', 'bio', 'contact_buttons', 'links', 'products', 'business_info', 'gallery', 'skills', 'testimonials', 'faq', 'events', 'portfolio', 'certifications']).filter(s => s !== 'bio').map(sectionId => {
                                 if (sectionId === 'contact_buttons' && (profile.phone || profile.email)) {
                                     return (
                                         <div key="contact_buttons" style={{ display: 'flex', gap: 6 }}>
