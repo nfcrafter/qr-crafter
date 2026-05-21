@@ -294,8 +294,8 @@ export default function ClientDashboard() {
     }, [selectedCardId]);
 
     function handleWhatsAppOrder() {
-        const message = `Bonjour NFCrafter, je souhaite commander ma Carte Signature NFC à 10.000f. Mon email : ${user?.email}`;
-        window.open(`https://wa.me/22969473921?text=${encodeURIComponent(message)}`, '_blank');
+        const message = `Bonjour NFCrafter, je souhaite commander ma Carte Signature NFC à 7.000f. Mon email : ${user?.email}`;
+        window.open(`https://wa.me/22991566846?text=${encodeURIComponent(message)}`, '_blank');
     }
     
     async function handleRenameCard(e, cardId) {

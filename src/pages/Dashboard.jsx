@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase.js'
-import Sidebar from '../components/Sidebar.jsx'
+import Sidebar from '../components/Sidebar.jsx';
+import QRPreview from '../components/QRPreview.jsx';
 import QRCodeStyling from 'qr-code-styling'
 
 export default function Dashboard() {
@@ -151,14 +152,8 @@ export default function Dashboard() {
                                 display: 'flex', alignItems: 'center', gap: '16px',
                                 boxShadow: 'var(--shadow)',
                             }}>
-                                {/* Icône */}
-                                <div style={{
-                                    width: '56px', height: '56px', background: 'var(--accent-light)',
-                                    borderRadius: '10px', display: 'flex', alignItems: 'center',
-                                    justifyContent: 'center', padding: 14, flexShrink: 0,
-                                }}>
-                                    <div style={{ width: '100%', height: '100%', color: 'var(--accent)' }} dangerouslySetInnerHTML={{ __html: TYPE_ICONS[qr.type] || `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><rect x="7" y="7" width="3" height="3"></rect><rect x="14" y="7" width="3" height="3"></rect><rect x="7" y="14" width="3" height="3"></rect><rect x="14" y="14" width="3" height="3"></rect></svg>` }} />
-                                </div>
+                                {/* QR Preview */}
+                                <QRPreview qr={qr} />
 
                                 {/* Infos */}
                                 <div style={{ flex: 1, minWidth: 0 }}>

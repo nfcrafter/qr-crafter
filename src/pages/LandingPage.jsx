@@ -181,7 +181,7 @@ export default function LandingPage() {
         };
     }, []);
 
-    const whatsappNumber = "22969473921";
+    const whatsappNumber = "22991566846";
     const activeColor = CARD_COLORS[selectedColorIndex];
     const buttonColor = activeColor.hex;
     const buttonTextColor = activeColor.hexText || 'white';
@@ -189,15 +189,15 @@ export default function LandingPage() {
     const getWhatsAppUrl = (type = cardType) => {
         let message = '';
         if (type === 'physical') {
-            message = `Bonjour NFCrafter, je souhaite commander la Carte NFC Signature en couleur *${activeColor.name}* à 10.000f.`;
+            message = `Bonjour NFCrafter, je souhaite commander la Carte NFC Signature en couleur *${activeColor.name}* à 7.000f.`;
         } else if (type === 'premium') {
-            message = `Bonjour NFCrafter, je souhaite commander la Carte Ultra Personnalisée (Pack Premium) à 15.000f. Je souhaite y faire graver mon nom/photo/logo.`;
+            message = `Bonjour NFCrafter, je souhaite commander la Carte Ultra Personnalisée (Pack Premium) à 10.000f. Je souhaite y faire graver mon nom/photo/logo.`;
         } else if (type === 'pro') {
             message = `Bonjour NFCrafter, je souhaite commander le Pack Pro (3 Cartes) à 25.000f.`;
         } else if (type === 'corporate') {
             message = `Bonjour NFCrafter, je souhaite obtenir un devis pour la solution Corporate (10+ cartes).`;
         } else {
-            message = `Bonjour NFCrafter, je souhaite souscrire au Profil Digital Unique à 7.000f.`;
+            message = `Bonjour NFCrafter, je souhaite souscrire au Profil Digital Unique à 5.000f.`;
         }
         return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
     };
@@ -689,7 +689,7 @@ export default function LandingPage() {
                             </div>
                             <div style={{ background: '#1A1265', color: 'white', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px', position: 'absolute', top: '-14px', right: 'calc(50% - 14px)', boxShadow: '0 4px 10px rgba(26,18,101,0.2)' }}>1</div>
                             <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#0F172A', marginBottom: '12px' }}>La Commande</h3>
-                            <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.6', margin: 0 }}>Choisissez votre pack (Site personnalisée: 7000FCFA, Carte NFCrafter avec votre site : 10000FCFA, Carte ultra personnalisée avec votre nom/photo/logo + site personnalisée : 15000FCFA).</p>
+                            <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.6', margin: 0 }}>Choisissez votre pack (Profil sans carte : 5000FCFA, Carte Signature : 7000FCFA, Carte personnalisée avec votre nom/photo/logo : 10000FCFA).</p>
                         </div>
 
                         {/* Step 2 */}
@@ -876,7 +876,7 @@ export default function LandingPage() {
                             e.currentTarget.style.boxShadow = '0 8px 20px rgba(26, 18, 101, 0.15)';
                         }}
                     >
-                        <span>Commander ma carte personnalisée <span style={{ whiteSpace: 'nowrap' }}>(15 000 FCFA)</span></span>
+                        <span>Commander ma carte personnalisée <span style={{ whiteSpace: 'nowrap' }}>(10 000 FCFA)</span></span>
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                     </a>
                 </div>
@@ -1238,7 +1238,7 @@ export default function LandingPage() {
                         
                         {/* CTA Sans Carte */}
                         <a
-                            href={`https://wa.me/22969473921?text=${encodeURIComponent('Bonjour NFCrafter, je souhaite créer mon Profil Digital Unique sans carte à 7.000f.')}`}
+                            href={`https://wa.me/22991566846?text=${encodeURIComponent('Bonjour NFCrafter, je souhaite créer mon Profil Digital Unique sans carte à 5.000f.')}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             style={{
@@ -1259,7 +1259,7 @@ export default function LandingPage() {
                             onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(26,18,101,0.25)'; }}
                         >
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
-                            Créer mon profil sans carte — 7 000 FCFA
+                            Créer mon profil sans carte — 5 000 FCFA
                         </a>
 
                     </div>
@@ -1331,7 +1331,7 @@ export default function LandingPage() {
                                     {cardType === 'digital' ? '📱 Pack Digital' : cardType === 'physical' ? '💳 Pack Signature' : '✨ Pack Premium'}
                                 </span>
                                 <span style={{ fontSize: '13px', fontWeight: '900', color: cardType === 'premium' ? '#D97706' : '#1A1265' }}>
-                                    {cardType === 'digital' ? '7 000 FCFA' : cardType === 'physical' ? '10 000 FCFA' : '15 000 FCFA'}
+                                    {cardType === 'digital' ? '5 000 FCFA' : cardType === 'physical' ? '7 000 FCFA' : '10 000 FCFA'}
                                 </span>
                             </div>
                         </div>
@@ -1360,7 +1360,7 @@ export default function LandingPage() {
                                             <span style={{ fontWeight: '800', fontSize: '14px', color: '#0F172A' }}>📱 Pack Digital</span>
                                             <span style={{ fontSize: '12px', color: '#64748B' }}>Profil digital uniquement · Sans carte</span>
                                         </div>
-                                        <span style={{ color: '#6366F1', fontWeight: '900', fontSize: '15px', whiteSpace: 'nowrap' }}>7 000 FCFA</span>
+                                        <span style={{ color: '#6366F1', fontWeight: '900', fontSize: '15px', whiteSpace: 'nowrap' }}>5 000 FCFA</span>
                                     </div>
 
                                     {/* Pack Signature */}
@@ -1382,7 +1382,7 @@ export default function LandingPage() {
                                             <span style={{ fontWeight: '800', fontSize: '14px', color: '#0F172A' }}>💳 Pack Signature</span>
                                             <span style={{ fontSize: '12px', color: '#64748B' }}>Carte NFC couleur + Profil digital</span>
                                         </div>
-                                        <span style={{ color: '#1A1265', fontWeight: '900', fontSize: '15px', whiteSpace: 'nowrap' }}>10 000 FCFA</span>
+                                        <span style={{ color: '#1A1265', fontWeight: '900', fontSize: '15px', whiteSpace: 'nowrap' }}>7 000 FCFA</span>
                                     </div>
 
                                     {/* Pack Premium */}
@@ -1402,7 +1402,7 @@ export default function LandingPage() {
                                             <span style={{ fontWeight: '800', fontSize: '14px', color: '#0F172A' }}>✨ Pack Premium</span>
                                             <span style={{ fontSize: '12px', color: '#64748B' }}>Carte ultra personnalisée (logo/photo) + Profil</span>
                                         </div>
-                                        <span style={{ color: '#D97706', fontWeight: '900', fontSize: '15px', whiteSpace: 'nowrap' }}>15 000 FCFA</span>
+                                        <span style={{ color: '#D97706', fontWeight: '900', fontSize: '15px', whiteSpace: 'nowrap' }}>10 000 FCFA</span>
                                     </div>
                                 </div>
                             </div>
@@ -1478,9 +1478,9 @@ export default function LandingPage() {
                             onMouseOver={e => e.currentTarget.style.transform = 'translateY(-1px)'}
                             onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}
                             >
-                                {cardType === 'digital' && 'Créer mon profil digital — 7 000 FCFA'}
-                                {cardType === 'physical' && `Commander ma carte ${activeColor.name} — 10 000 FCFA`}
-                                {cardType === 'premium' && 'Commander ma carte Premium — 15 000 FCFA'}
+                                {cardType === 'digital' && 'Créer mon profil digital — 5 000 FCFA'}
+                                {cardType === 'physical' && `Commander ma carte ${activeColor.name} — 7 000 FCFA`}
+                                {cardType === 'premium' && 'Commander ma carte Premium — 10 000 FCFA'}
                             </button>
                         </div>
                     </div>
@@ -1623,11 +1623,11 @@ export default function LandingPage() {
                             
                             <div style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', padding: '20px', marginBottom: '32px' }}>
                                 <p style={{ margin: 0, fontSize: '15px', color: '#E2E8F0', fontWeight: '500' }}>
-                                    <strong style={{ color: 'white' }}>1 site web commandé</strong> = <strong style={{ color: '#FCD34D' }}>1 carte Premium ultra-personnalisée offerte</strong> (valeur 15 000 FCFA).
+                                    <strong style={{ color: 'white' }}>1 site web commandé</strong> = <strong style={{ color: '#FCD34D' }}>1 carte Premium ultra-personnalisée offerte</strong> (valeur 10 000 FCFA).
                                 </p>
                             </div>
 
-                            <a href={`https://wa.me/22967646161?text=Bonjour%20NFCrafter%2C%20je%20souhaite%20discuter%20de%20la%20cr%C3%A9ation%20d'un%20site%20web%20sur%20mesure`} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#25D366', color: 'white', padding: '16px 32px', borderRadius: '12px', fontWeight: '800', fontSize: '15px', textDecoration: 'none', transition: 'all 0.3s ease' }}>
+                            <a href={`https://wa.me/22991566846?text=Bonjour%20NFCrafter%2C%20je%20souhaite%20discuter%20de%20la%20cr%C3%A9ation%20d'un%20site%20web%20sur%20mesure`} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#25D366', color: 'white', padding: '16px 32px', borderRadius: '12px', fontWeight: '800', fontSize: '15px', textDecoration: 'none', transition: 'all 0.3s ease' }}>
                                 En discuter sur WhatsApp
                             </a>
                         </div>
@@ -1732,7 +1732,7 @@ export default function LandingPage() {
                     <div style={{ marginTop: '48px', textAlign: 'center', background: 'rgba(26,18,101,0.03)', border: '1px solid rgba(26,18,101,0.08)', borderRadius: '20px', padding: '32px 24px' }}>
                         <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', fontWeight: '800', color: '#0F172A' }}>Vous avez une autre question ?</h3>
                         <p style={{ color: '#64748B', fontSize: '14px', margin: '0 0 20px 0' }}>Notre équipe répond sur WhatsApp.</p>
-                        <a href={`https://wa.me/22967646161?text=Bonjour%20NFCrafter%2C%20j'ai%20une%20question%20svp`} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#25D366', color: 'white', padding: '14px 28px', borderRadius: '12px', fontWeight: '800', fontSize: '14px', textDecoration: 'none', boxShadow: '0 8px 20px rgba(37,211,102,0.25)' }}>
+                        <a href={`https://wa.me/22991566846?text=Bonjour%20NFCrafter%2C%20j'ai%20une%20question%20svp`} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#25D366', color: 'white', padding: '14px 28px', borderRadius: '12px', fontWeight: '800', fontSize: '14px', textDecoration: 'none', boxShadow: '0 8px 20px rgba(37,211,102,0.25)' }}>
                             Poser ma question sur WhatsApp
                         </a>
                     </div>
@@ -1805,7 +1805,7 @@ export default function LandingPage() {
                 pointerEvents: scrollY > 200 ? 'auto' : 'none'
             }}>
                 <a
-                    href="https://wa.me/22969473921"
+                    href="https://wa.me/22991566846"
                     target="_blank"
                     rel="noopener noreferrer"
                     title="Nous contacter sur WhatsApp"
