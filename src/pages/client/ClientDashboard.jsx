@@ -395,8 +395,9 @@ export default function ClientDashboard() {
     }
 
     const downloadQR = () => {
-        const selectedCard = userCards.find(c => c.card_id === selectedCardId);
-        const link = selectedCard?.url_slug ? `${window.location.origin}/${selectedCard.url_slug}` : `${window.location.origin}/u/${selectedCardId}`;
+        // Toujours utiliser le lien permanent pour que le QR code reste valide
+        // même si le lien convivial est modifié plus tard.
+        const link = `${window.location.origin}/u/${selectedCardId}`;
         
         import('qr-code-styling').then(QRCodeStyling => {
             const qrCode = new QRCodeStyling.default({

@@ -132,7 +132,7 @@ export default function CardSettings() {
 
     useEffect(() => {
         if (!qrRef.current || loading) return;
-        const url = urlSlug ? `${window.location.origin}/${urlSlug}` : `${window.location.origin}/u/${cardId}`;
+        const url = `${window.location.origin}/u/${cardId}`;
         if (!qrCode.current) {
             qrCode.current = new QRCodeStyling({
                 width: 256, height: 256, data: url,
@@ -152,7 +152,7 @@ export default function CardSettings() {
                 image: qrStyle.logo_url || ''
             });
         }
-    }, [qrStyle, loading, urlSlug]);
+    }, [qrStyle, loading]);
 
     const isDark = (parseInt((profile.backgroundColor || '#f0f2f5').slice(1, 3), 16) * 299 + parseInt((profile.backgroundColor || '#f0f2f5').slice(3, 5), 16) * 587 + parseInt((profile.backgroundColor || '#f0f2f5').slice(5, 7), 16) * 114) / 1000 < 128;
     const textColor = isDark ? '#F8FAFC' : '#111';
@@ -314,6 +314,7 @@ export default function CardSettings() {
                 updated_at: new Date().toISOString()
             }).eq('card_id', cardId);
             if (error) throw error;
+            setUrlSlug(finalSlug || '');
             toast('Modifications enregistrées !', 'success');
         } catch (err) { toast(err.message, 'error'); }
         finally { setSaving(false); }
@@ -435,12 +436,19 @@ export default function CardSettings() {
                                 <div className="premium-card" style={{ padding: 20, background: 'white' }}>
                                     <h4 style={{ fontSize: 13, fontWeight: 800, color: '#1A1265', marginBottom: 10 }}>
                                         <div style={{ width: 16, height: 16, display: 'inline-block', verticalAlign: 'middle', marginRight: 6 }} dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>` }} />
-                                        Lien Public
+                                        Lien Public {urlSlug && <span style={{ fontSize: 10, color: '#10B981', background: '#D1FAE5', padding: '2px 6px', borderRadius: 6, marginLeft: 6 }}>Personnalisé</span>}
                                     </h4>
                                     <div style={{ background: '#F8FAFC', padding: 10, borderRadius: 10, fontSize: 11, fontWeight: 700, color: '#6366F1', wordBreak: 'break-all', border: '1px solid #E2E8F0', marginBottom: 12 }}>
-                                        {`${window.location.origin}/u/${cardId}`}
+                                        {urlSlug ? `${window.location.origin}/${urlSlug}` : `${window.location.origin}/u/${cardId}`}
                                     </div>
-                                    <button onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/u/${cardId}`); toast('Lien copié !', 'success'); }} className="btn-ghost" style={{ width: '100%', fontSize: 11, padding: '8px' }}>Copier le lien</button>
+                                    <button onClick={() => { 
+                                        const link = urlSlug ? `${window.location.origin}/${urlSlug}` : `${window.location.origin}/u/${cardId}`;
+                                        navigator.clipboard.writeText(link); 
+                                        toast('Lien copié !', 'success'); 
+                                    }} className="btn-ghost" style={{ width: '100%', fontSize: 11, padding: '8px', marginBottom: 8 }}>Copier le lien</button>
+                                    <div style={{ fontSize: 10, color: '#64748B', fontStyle: 'italic', lineHeight: '1.4' }}>
+                                        💡 Le QR Code de la carte physique est lié à l'ID permanent pour garantir son fonctionnement à vie, même si vous modifiez ce lien convivial.
+                                    </div>
                                 </div>
                                 <div className="premium-card" style={{ padding: 20, background: '#EEF2FF', border: '1px solid #C7D2FE' }}>
                                     <h4 style={{ fontSize: 13, fontWeight: 800, color: '#1A1265', marginBottom: 10 }}>🔑 Lien d'Activation</h4>
