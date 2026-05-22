@@ -297,7 +297,7 @@ export default function CardSettings() {
     async function handleSave() {
         setSaving(true);
         try {
-            let finalSlug = urlSlug ? urlSlug.trim().toLowerCase().replace(/[^a-z0-9-]/g, '') : null;
+            let finalSlug = urlSlug ? urlSlug.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '') : null;
             if (finalSlug) {
                 const { data: existingSlug } = await supabase.from('cards').select('card_id').eq('url_slug', finalSlug).single();
                 if (existingSlug && existingSlug.card_id !== cardId) {
@@ -487,7 +487,7 @@ export default function CardSettings() {
                                             <input 
                                                 type="text" 
                                                 value={urlSlug} 
-                                                onChange={e => setUrlSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+                                                onChange={e => setUrlSlug(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ''))}
                                                 placeholder="votre-nom"
                                                 style={{ flex: 1, padding: '14px 12px', border: 'none', fontSize: '14px', outline: 'none', background: 'transparent' }}
                                             />

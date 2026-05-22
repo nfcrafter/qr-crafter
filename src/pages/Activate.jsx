@@ -135,7 +135,7 @@ export default function Activate() {
 
             let finalSlug = null;
             if (customUrlSlug.trim()) {
-                const slug = customUrlSlug.trim().toLowerCase().replace(/[^a-z0-9-]/g, '');
+                const slug = customUrlSlug.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
                 if (slug) {
                     const { data: existingSlug } = await supabase.from('cards').select('card_id').eq('url_slug', slug).single();
                     if (existingSlug && existingSlug.card_id !== normalizedId) {
@@ -329,7 +329,7 @@ export default function Activate() {
                                             <input 
                                                 type="text" 
                                                 value={customUrlSlug} 
-                                                onChange={e => setCustomUrlSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+                                                onChange={e => setCustomUrlSlug(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ''))}
                                                 placeholder="votre-nom"
                                                 style={{ 
                                                     flex: 1, padding: '16px 12px', border: 'none', fontSize: '15px', 
