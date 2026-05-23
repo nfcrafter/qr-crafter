@@ -97,6 +97,10 @@ export default function Activate() {
             }
 
             setCardInfo(existingCard);
+            // Pre-fill the slug if admin already set one
+            if (existingCard.url_slug) {
+                setCustomUrlSlug(existingCard.url_slug);
+            }
         } catch (e) {
             setError("Une erreur inattendue est survenue.");
         } finally {
@@ -134,15 +138,20 @@ export default function Activate() {
             };
 
             let finalSlug = null;
-            if (customUrlSlug.trim()) {
-                const slug = customUrlSlug.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
-                if (slug) {
-                    const { data: existingSlug } = await supabase.from('cards').select('card_id').eq('url_slug', slug).single();
+            const adminSlug = cardInfo?.url_slug || null;
+            const enteredSlug = customUrlSlug.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
+            if (enteredSlug) {
+                // Only check uniqueness if the slug changed from the admin-defined one
+                if (enteredSlug !== adminSlug) {
+                    const { data: existingSlug } = await supabase.from('cards').select('card_id').eq('url_slug', enteredSlug).single();
                     if (existingSlug && existingSlug.card_id !== normalizedId) {
                         throw new Error("Ce lien personnalisé est déjà pris. Veuillez en choisir un autre.");
                     }
-                    finalSlug = slug;
                 }
+                finalSlug = enteredSlug;
+            } else if (adminSlug) {
+                // Use admin-defined slug if user didn't enter anything
+                finalSlug = adminSlug;
             }
 
             console.log('Attempting to activate card:', normalizedId, 'with token:', token);
@@ -338,26 +347,30 @@ export default function Activate() {
                                                 autoFocus
                                             />
                                         </div>
-                                        <p style={{ marginTop: 6, fontSize: 11, color: '#64748B' }}>Ce lien sera unique. Il servira aussi de nom en interne pour cette carte.</p>
+                                        {cardInfo?.url_slug && customUrlSlug === cardInfo.url_slug ? (
+                                            <p style={{ marginTop: 6, fontSize: 11, color: '#16A34A', fontWeight: 600 }}>✓ Lien défini par votre administrateur — vous pouvez le modifier si vous le souhaitez.</p>
+                                        ) : (
+                                            <p style={{ marginTop: 6, fontSize: 11, color: '#64748B' }}>Ce lien sera unique. Il servira aussi de nom en interne pour cette carte.</p>
+                                        )}
                                     </div>
                                 </div>
 
                                  <button 
                                     className="btn-primary" 
                                     onClick={activateCard} 
-                                    disabled={loading || !customUrlSlug.trim()} 
+                                    disabled={loading || (!customUrlSlug.trim() && !cardInfo?.url_slug)} 
                                     style={{ 
                                         width: '100%', 
                                         padding: '18px', 
                                         fontSize: '17px', 
                                         fontWeight: '800',
-                                        background: customUrlSlug.trim() ? themeColor : '#CBD5E1', 
-                                        boxShadow: customUrlSlug.trim() ? `0 10px 25px ${themeColor}40` : 'none', 
+                                        background: (customUrlSlug.trim() || cardInfo?.url_slug) ? themeColor : '#CBD5E1', 
+                                        boxShadow: (customUrlSlug.trim() || cardInfo?.url_slug) ? `0 10px 25px ${themeColor}40` : 'none', 
                                         display: 'flex', 
                                         alignItems: 'center', 
                                         justifyContent: 'center', 
                                         gap: 12,
-                                        cursor: customUrlSlug.trim() ? 'pointer' : 'not-allowed',
+                                        cursor: (customUrlSlug.trim() || cardInfo?.url_slug) ? 'pointer' : 'not-allowed',
                                         transition: 'all 0.3s'
                                     }}
                                 >
