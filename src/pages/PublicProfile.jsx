@@ -77,17 +77,8 @@ export default function PublicProfile() {
 
     if (card.owner_id) {
       // Card is activated — load client profile
-      const { data: profileData } = await supabase
-        .from('profiles').select('*').eq('id', card.owner_id).single()
-
-      // Merge: admin sets base, client overrides but only if truthy
-      const adminBase = card.admin_profile || {}
-      merged = { ...adminBase }
-      for (const k in profileData) {
-        if (profileData[k] !== null && profileData[k] !== undefined && profileData[k] !== '') {
-          merged[k] = profileData[k]
-        }
-      }
+      // Use admin_profile as the single source of truth.
+      merged = { ...(card.admin_profile || {}) }
 
       // Load custom links from DB table
       const { data: linksData } = await supabase

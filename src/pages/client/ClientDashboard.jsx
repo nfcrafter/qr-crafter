@@ -329,11 +329,15 @@ export default function ClientDashboard() {
         if (!selectedCardId || !user) return;
         setSaving(true);
         try {
+            const updatedProfile = {
+                ...publicProfile,
+                theme_color: publicProfile.primaryColor
+            };
             const { data, error } = await supabase
                 .from('cards')
                 .update({ 
-                    admin_profile: publicProfile, 
-                    card_name: publicProfile.full_name || 'Mon Profil'
+                    admin_profile: updatedProfile, 
+                    card_name: updatedProfile.full_name || 'Mon Profil'
                 })
                 .eq('card_id', selectedCardId)
                 .eq('owner_id', user.id)
