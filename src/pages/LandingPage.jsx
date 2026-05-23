@@ -1105,7 +1105,7 @@ export default function LandingPage() {
                                 {/* Scaled Iframe to prevent responsiveness/overflow issues */}
                                 <div style={{ width: '250px', height: '500px', overflow: 'hidden', position: 'relative' }}>
                                     <iframe 
-                                        src={`/u/VDDOHE3O?theme_color=${encodeURIComponent(demoThemeColor)}&bg_color=${encodeURIComponent(demoBgColor)}`}
+                                        src={`https://www.nfcrafter.com/hermine_amz?theme_color=${encodeURIComponent(demoThemeColor)}&bg_color=${encodeURIComponent(demoBgColor)}`}
                                         style={{ 
                                             width: '375px', 
                                             height: '750px', 
@@ -1121,7 +1121,7 @@ export default function LandingPage() {
 
                             {/* Open Fullscreen Link */}
                             <a 
-                                href={`/u/VDDOHE3O?theme_color=${encodeURIComponent(demoThemeColor)}&bg_color=${encodeURIComponent(demoBgColor)}`}
+                                href={`https://www.nfcrafter.com/hermine_amz?theme_color=${encodeURIComponent(demoThemeColor)}&bg_color=${encodeURIComponent(demoBgColor)}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 style={{
