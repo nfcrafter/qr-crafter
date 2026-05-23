@@ -305,12 +305,13 @@ export default function ClientDashboard() {
             setRenamingCardId(null);
             return;
         }
-        if (!newName.trim()) return setRenamingCardId(null);
+        if (!newName.trim() || !user) return setRenamingCardId(null);
         
         const { error } = await supabase
             .from('cards')
             .update({ card_name: newName.trim() })
-            .eq('card_id', cardId);
+            .eq('card_id', cardId)
+            .eq('owner_id', user.id);
             
         if (error) toast('Erreur : ' + error.message, 'error');
         else {
@@ -325,15 +326,58 @@ export default function ClientDashboard() {
             toast('Connexion Internet requise pour enregistrer les modifications.', 'error');
             return;
         }
-        if (!selectedCardId) return;
+        if (!selectedCardId || !user) return;
         setSaving(true);
-        const { error } = await supabase
-            .from('cards')
-            .update({ admin_profile: publicProfile, card_name: publicProfile.full_name || 'Mon Profil' })
-            .eq('card_id', selectedCardId);
+        try {
+            const { data, error } = await supabase
+                .from('cards')
+                .update({ 
+                    admin_profile: publicProfile, 
+                    card_name: publicProfile.full_name || 'Mon Profil'
+                })
+                .eq('card_id', selectedCardId)
+                .eq('owner_id', user.id)
+                .select();
 
-        if (error) toast('Erreur : ' + error.message, 'error');
-        else { toast('Profil mis à jour !', 'success'); setViewMode('view'); loadUserData(); }
+            if (error) {
+                console.error('Save error:', error);
+                toast('Erreur : ' + error.message, 'error');
+            } else if (!data || data.length === 0) {
+                console.error('Save returned no rows — possible RLS issue');
+                toast('Erreur : Impossible de sauvegarder. Essayez de vous reconnecter.', 'error');
+            } else {
+                // Sync all fields to `profiles` so PublicProfile.jsx's merge
+                // (profiles data overrides admin_profile) always uses fresh values.
+                const profileSyncFields = {
+                    full_name:       publicProfile.full_name       ?? null,
+                    job_title:       publicProfile.job_title       ?? null,
+                    bio:             publicProfile.bio             ?? null,
+                    phone:           publicProfile.phone           ?? null,
+                    email:           publicProfile.email           ?? null,
+                    photo_url:       publicProfile.photo_url       ?? null,
+                    banner_url:      publicProfile.banner_url      ?? null,
+                    primaryColor:    publicProfile.primaryColor    ?? null,
+                    theme_color:     publicProfile.primaryColor    ?? null,
+                    backgroundColor: publicProfile.backgroundColor ?? null,
+                    socials:         publicProfile.socials         ?? null,
+                    customLinks:     publicProfile.customLinks     ?? null,
+                    section_order:   publicProfile.section_order   ?? null,
+                };
+                const { error: profileSyncError } = await supabase
+                    .from('profiles')
+                    .update(profileSyncFields)
+                    .eq('id', user.id);
+                if (profileSyncError) {
+                    console.warn('Profile sync warning:', profileSyncError.message);
+                }
+                toast('Profil mis à jour !', 'success');
+                setViewMode('view');
+                loadUserData();
+            }
+        } catch (err) {
+            console.error('Save exception:', err);
+            toast('Erreur inattendue : ' + (err.message || 'Veuillez réessayer.'), 'error');
+        }
         setSaving(false);
     }
 
